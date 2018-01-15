@@ -1,0 +1,9 @@
+---
+#微服务的私有属性
+service_description:
+  name: Server
+  #version: 0.1 optional
+instance_description:
+  #environment: testing
+properties:
+  allowCrossApp: true

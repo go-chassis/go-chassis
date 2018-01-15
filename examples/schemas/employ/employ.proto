@@ -1,0 +1,18 @@
+syntax = "proto3";
+package employ;
+
+message EmployStruct {
+  string name = 1;
+  string phone = 2;
+}
+
+message EmployRequest {
+  string name = 1;
+  EmployStruct employ = 2;
+  repeated EmployStruct employList = 3;
+}
+
+message EmployResponse {
+  EmployStruct employ = 1;
+  repeated EmployStruct employList = 2;
+}

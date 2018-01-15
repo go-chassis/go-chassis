@@ -1,0 +1,47 @@
+---
+#APPLICATION_ID: CSE optional
+
+cse:
+  service:
+    registry:
+      #disabled: false           optional:禁用注册发现选项，默认开始注册发现
+      type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
+      scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
+      address: http://127.0.0.1:30100
+      #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
+      refeshInterval : 30s
+      watch: true
+      api:
+        version: v3
+  protocols:
+    highway:
+      listenAddress: 127.0.0.1:8080
+      advertiseAddress: 127.0.0.1:8080
+      transport: tcp #optional 指定加载那个传输层
+      workerNumber: 10
+    rest:
+      listenAddress: 127.0.0.1:8081
+      advertiseAddress: 127.0.0.1:8081
+      transport: tcp #optional 指定加载那个传输层
+      workerNumber: 10
+      failure: http_500,http_502 # Defines what is considered an unsuccessful attempt of communication with a server.
+  handler:
+    chain:
+      Consumer:
+        default: bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
+  references:    #optional：配置客户端依赖的微服务信息，协议信息
+    Server:
+      version: 0.0.1
+      transport: highway
+    HelloServer:
+      version: 0.0.1
+      transport: highway
+# ssl:
+#   registry.Consumer.cipherPlugin: default
+#   registry.Consumer.verifyPeer: false
+#   registry.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+#   registry.Consumer.protocol: TLSv1.2
+#   registry.Consumer.caFile:
+#   registry.Consumer.certFile:
+#   registry.Consumer.keyFile:
+#   registry.Consumer.certPwdFile:

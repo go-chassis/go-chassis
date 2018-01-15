@@ -1,0 +1,37 @@
+syntax = "proto3";
+package highway;
+
+enum MsgType {
+    REQUEST = 0;
+    LOGIN = 1;
+}
+
+
+message RequestHeader{
+    MsgType		msgType = 2;
+    int32 		flags = 3;
+    string 		destMicroservice = 1;
+    string		schemaId = 5;
+    string		operationName = 6;
+    map<string, string> context = 7;
+}
+
+
+message ResponseHeader{
+    int32		flags = 5;
+    int32		statusCode = 1;
+    string		reason = 2;
+    map<string, string> context = 3;
+}
+
+message LoginRequest{
+    string		protocol = 1;
+    string 		zipName = 2;
+    bool		useProtobufMapCodec=3;
+}
+
+message LoginResponse{
+    string		protocol = 1;
+    string 		zipName = 2;
+    bool		useProtobufMapCodec=3;
+}

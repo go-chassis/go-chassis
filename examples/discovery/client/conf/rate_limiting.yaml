@@ -1,0 +1,10 @@
+---
+#APPLICATION_ID: CSE optional
+
+cse:
+  flowcontrol:
+    Consumer:
+      qps:
+        enabled: true
+        limit:
+          Server.EmployServer: 100

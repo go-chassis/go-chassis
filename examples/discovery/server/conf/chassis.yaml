@@ -1,0 +1,66 @@
+---
+region:
+  name: us-east
+  availableZone: us-east-1
+#APPLICATION_ID: CSE optional
+cse:
+  loadbalance:
+    strategyName: RoundRobin
+    retryEnabled: false
+    retryOnNext: 2
+    retryOnSame: 3
+    backoff:
+      kind: constant
+      minMs: 200
+      maxMs: 400
+  service:
+    registry:
+      type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
+#     type: File #this option is to enable local registry instead of service-center
+      scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
+      autodiscovery: false         #是否启动自动发现功能
+      address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
+      #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
+      refeshInterval : 30s
+      watch: true
+  config:
+    client:
+#      serverUri: http://127.0.0.1:30103
+      refreshMode: 1
+      refreshInterval: 30
+      tenantName:  default
+      autodiscovery: false
+  #metrics:
+    #apiPath: /metric       # we can also give api path having prefix "/" ,like /adas/metrics
+    #enable: true
+    #enableGoRuntimeMetrics: true
+  protocols:
+    highway:
+      listenAddress: 127.0.0.1:8082
+      advertiseAddress: 127.0.0.1:8082
+      transport: tcp #optional 指定加载那个传输层
+    rest:
+      listenAddress: 127.0.0.1:8083
+      advertiseAddress: 127.0.0.1:8083
+  handler:
+    chain:
+      Provider:
+        default: bizkeeper-provider
+# ssl:
+  # registry.Consumer.cipherPlugin: default
+  # registry.Consumer.verifyPeer: false
+  # registry.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  # registry.Consumer.protocol: TLSv1.2
+  # registry.Consumer.caFile:
+  # registry.Consumer.certFile:
+  # registry.Consumer.keyFile:
+  # registry.Consumer.certPwdFile:
+
+  # configcenter.Consumer.cipherPlugin: default
+  # configcenter.Consumer.verifyPeer: false
+  # configcenter.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  # configcenter.Consumer.protocol: TLSv1.2
+  # configcenter.Consumer.caFile:
+  # configcenter.Consumer.certFile:
+  # configcenter.Consumer.keyFile:
+  # configcenter.Consumer.certPwdFile:

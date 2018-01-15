@@ -1,0 +1,26 @@
+basic:
+  build:
+  - github.com/ServiceComb/go-chassis
+  install: 
+  - github.com/ServiceComb/go-chassis/internal/cmd/dsfconfcheck
+  - github.com/ServiceComb/go-chassis/internal/cmd/dsferr
+  test:
+  - github.com/ServiceComb/go-chassis/internal/...
+  - github.com/ServiceComb/go-chassis
+  - github.com/ServiceComb/go-chassis/api/errorcode
+  sttest:
+advance:
+  conf:
+  - package: github.com/ServiceComb/go-chassis/conf
+    to: conf
+    exclude: 
+    include: 
+  tools:
+  - package: /bin/dsfconfcheck
+    to: tools/dsf
+  - package: /bin/dsferr
+    to: tools/dsf
+property:	
+  version: V600R001C10
+  author: DSF
+  product name: dsf

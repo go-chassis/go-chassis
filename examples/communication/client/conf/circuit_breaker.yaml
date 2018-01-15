@@ -1,0 +1,21 @@
+---
+isolation:
+  consumer:
+    Server:
+      timeoutInMilliseconds: 1000
+      maxConcurrentRequests: 2
+circuitBreaker:
+  consumer:
+    Server: # service name.
+      enabled: true
+      forceOpen: false
+      forceClose: true
+      sleepWindowInMilliseconds: 10000
+      requestVolumeThreshold: 20
+      errorThresholdPercentage: 50
+#容错处理函数，目前暂时按照开源的方式来不进行区分处理，统一调用fallback函数
+fallback:
+  consumer:
+    enabled: false
+    maxConcurrentRequests: 20
+    policy: throwexception
