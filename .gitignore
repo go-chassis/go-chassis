@@ -1,0 +1,8 @@
+bin/
+.idea/
+**/log/chassis.log
+
+
+
+vendor/**
+!vendor/manifest
