@@ -19,7 +19,6 @@ Go-chassis is not a enhancement based on it, but  did something more
  - **Tracing**: Integrate with Zipkin and namedpipe to sink tracing data
  - **Logger**: You can custom your own writer to sink log, by default support file and stdout
  - **Hot-reconfiguraion**: A lot of configuration can be reload in runtime, like loadbalancing, circuit breaker, rate limiting
- - 
  
 # Quick Start Guide
 You can rapidly develop microservices using Go-Chassis.
@@ -52,17 +51,16 @@ chassis.RegisterSchema("rest", &HelloServer{},
 <b>Step 3:</b>
 Start the Chassis as a Server
 ```go
-    // you can init CLIENT,SERVER or Both
-	chassis.Init(chassis.Server)
+	chassis.Init()
 	chassis.Run()
 ```
 
 ## Write a Http Consumer
 
 <b>Step 1:</b>
-Initialize your Chassis as a Client
+Initialize your Chassis
 ```
-chassis.Init(chassis.Client)
+chassis.Init()
 
 ```
 <b>Step 2:</b>
@@ -73,10 +71,6 @@ restinvoker := core.NewRestInvoker()
 	resp1, err := restinvoker.ContextDo(context.TODO(), req)
 ```
 
-**Notice**: If service is both provider and consumer
-```go
-   chassis.Init(chassis.Both)
-```
 # Examples
 You can check examples [here](examples)
 # Communication Protocols
