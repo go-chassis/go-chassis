@@ -1,0 +1,24 @@
+language: go
+sudo: required
+go: 
+  - 1.8.3
+before_install:
+ - go get -u github.com/tsenart/deadcode
+ - go get github.com/FiloSottile/gvt
+ 
+before_script:
+  - mkdir -p $HOME/gopath/src/github.com/ServiceComb/go-chassis
+  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/ServiceComb/go-chassis/
+  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/ServiceComb/go-chassis
+  - cd $HOME/gopath/src/github.com/ServiceComb/go-chassis
+  - gvt restore
+install: true
+
+jobs:
+  include:
+    - stage: Format Checker
+      script: bash -x scripts/travis/formatChecker.sh
+    - stage: DeadCode Checker
+      script: bash -x scripts/travis/deadCodeChecker.sh
+    - stage: Build
+      script: go build -o chassis
