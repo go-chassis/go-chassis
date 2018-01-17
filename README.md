@@ -20,8 +20,8 @@ Go-chassis is not a enhancement based on it, but  did something more
  - **Logger**: You can custom your own writer to sink log, by default support file and stdout
  - **Hot-reconfiguraion**: A lot of configuration can be reload in runtime, like loadbalancing, circuit breaker, rate limiting
  
-# Quick Start Guide
-You can rapidly develop microservices using Go-Chassis.
+# Quick Start
+You can see more informations in gitbook https://go.huaweicse.cn/
 
 ## Write a http service provider
 
@@ -45,7 +45,7 @@ func (s *HelloServer) URLPatterns() []restful.Route {
 Register your Schema to go-chassis
 ```go
 chassis.RegisterSchema("rest", &HelloServer{},
-		server.WithSchemaID("HelloServer"), server.WithMicroServiceName("servProvider"))
+		server.WithSchemaID("HelloServer"))
 ```
 
 <b>Step 3:</b>
