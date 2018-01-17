@@ -4,10 +4,6 @@ go:
   - 1.8.3
 install: true
 
-before_install:
- - go get -u github.com/tsenart/deadcode
- - go get github.com/FiloSottile/gvt
- 
 before_script:
   - mkdir -p $HOME/gopath/src/github.com/ServiceComb/go-chassis
   - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/ServiceComb/go-chassis/
@@ -19,8 +15,11 @@ jobs:
     - stage: Format Checker
       script: bash -x scripts/travis/formatChecker.sh
     - stage: DeadCode Checker
-      script: bash -x scripts/travis/deadCodeChecker.sh
+      script: 
+        - go get -u github.com/tsenart/deadcode
+        - bash -x scripts/travis/deadCodeChecker.sh
     - stage: Build
       script: 
+        - go get github.com/FiloSottile/gvt
         - gvt restore
         - go build -o chassis
