@@ -18,6 +18,10 @@ jobs:
       script: 
         - go get -u github.com/tsenart/deadcode
         - bash -x scripts/travis/deadCodeChecker.sh
+    -stage: GoConst Checker
+      script:
+        - go get -u github.com/jgautheron/goconst/cmd/goconst
+        - bash -x scripts/travis/goConstChecker.sh
     - stage: Build
       script: 
         - go get github.com/FiloSottile/gvt
