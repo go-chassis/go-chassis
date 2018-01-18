@@ -1,0 +1,32 @@
+APPLICATION_ID: bmi
+cse:
+  service:
+    registry:
+      type: servicecenter
+      address: http://127.0.0.1:30100
+  handler:
+    chain:
+      consumer:
+        default: loadbalance,transport,tracing-provider
+  flowcontrol:
+    Consumer:
+      qps:
+        enabled: true
+        limit:
+          calculator: 100
+  circuitBreaker:
+    Provider:
+      enabled: true
+      requestVolumeThreshold: 1
+      sleepWindowInMilliseconds: 10000
+  fallbackpolicy:
+    Provider:
+      policy: throwexception
+  metrics:
+    apiPath: /metrics
+    enable: true
+    enableGoRuntimeMetrics: true
+tracing:
+  enabled: true
+  collectorType: zipkin
+  collectorTarget: http://localhost:9411/api/v1/spans
