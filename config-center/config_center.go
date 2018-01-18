@@ -58,7 +58,7 @@ func InitConfigCenter() error {
 	}
 
 	if config.GlobalDefinition.Cse.Config.Client.TenantName == "" {
-		config.GlobalDefinition.Cse.Config.Client.TenantName = "default"
+		config.GlobalDefinition.Cse.Config.Client.TenantName = common.DefaultApp
 	}
 
 	if config.GlobalDefinition.Cse.Config.Client.RefreshInterval == 0 {

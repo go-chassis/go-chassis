@@ -67,7 +67,7 @@ func getTLSForClient() (*tls.Config, error) {
 func getAuthHeaders() http.Header {
 	userName := config.GlobalDefinition.Cse.Monitor.Client.UserName
 	if userName == "" {
-		userName = "default"
+		userName = common.DefaultApp
 	}
 	domainName := config.GlobalDefinition.Cse.Monitor.Client.DomainName
 	if domainName == "" {

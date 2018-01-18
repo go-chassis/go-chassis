@@ -4,6 +4,7 @@ import (
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 // constants for loadbalance strategy name, and timeout
@@ -33,7 +34,7 @@ func (e *LoadbalanceEventListener) Event(event *core.Event) {
 				o := loadbalance.DefaultSelector.Options()
 				o.Strategy = strategy
 			}
-		case "DELETE":
+		case common.Delete:
 			strategyName := "RoundRobin"
 			strategy, err := loadbalance.GetStrategyPlugin(strategyName)
 			if err != nil {

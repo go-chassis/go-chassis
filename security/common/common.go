@@ -13,6 +13,7 @@ import (
 	"github.com/ServiceComb/go-chassis/security"
 	//this import used for plain cipher
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 //SSLConfig struct stores the necessary info for SSL configuration
@@ -128,7 +129,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 
 	// certificate is necessary for server, optional for client
 	var certs []tls.Certificate
-	if !(role == "client" && sslConfig.KeyFile == "" && sslConfig.CertFile == "") {
+	if !(role == common.Client && sslConfig.KeyFile == "" && sslConfig.CertFile == "") {
 		var cipherPlugin security.Cipher
 		if f, err := security.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
 			return nil, fmt.Errorf("Get cipher plugin [%s] failed, %v", sslConfig.CipherPlugin, err)
@@ -152,7 +153,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 			MinVersion:               sslConfig.MinVersion,
 			MaxVersion:               sslConfig.MaxVersion,
 		}
-	case "client":
+	case common.Client:
 		tlsConfig = &tls.Config{
 			RootCAs:            pool,
 			Certificates:       certs,

@@ -8,6 +8,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 type defaultSelector struct {
@@ -78,7 +79,7 @@ func (r *defaultSelector) Select(serviceName, version string, opts ...SelectOpti
 }
 
 func (r *defaultSelector) String() string {
-	return "default"
+	return common.DefaultApp
 }
 
 func newDefaultSelector(opts ...Option) Selector {

@@ -92,10 +92,10 @@ func checkPassLagerDefinition(lag *Lager) {
 
 	if lag.RollingPolicy == "" {
 		log.Println("RollingPolicy is empty, use default policy[size]")
-		lag.RollingPolicy = "size"
-	} else if lag.RollingPolicy != "daily" && lag.RollingPolicy != "size" {
+		lag.RollingPolicy = common.Size
+	} else if lag.RollingPolicy != "daily" && lag.RollingPolicy != common.Size {
 		log.Printf("RollingPolicy is error, RollingPolicy=%s, use default policy[size].", lag.RollingPolicy)
-		lag.RollingPolicy = "size"
+		lag.RollingPolicy = common.Size
 	}
 
 	if lag.LogRotateDate <= 0 || lag.LogRotateDate > 10 {

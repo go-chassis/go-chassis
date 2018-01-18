@@ -4,6 +4,7 @@ import (
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-chassis/core/qpslimiter"
 	"strings"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 const (
@@ -26,11 +27,11 @@ func (e *QPSEventListener) Event(event *core.Event) {
 	}
 
 	switch event.EventType {
-	case "UPDATE":
+	case common.Update:
 		qpsLimiter.UpdateRateLimit(event.Key, event.Value)
-	case "CREATE":
+	case common.Create:
 		qpsLimiter.UpdateRateLimit(event.Key, event.Value)
-	case "DELETE":
+	case common.Delete:
 		qpsLimiter.DeleteRateLimiter(event.Key)
 	}
 }

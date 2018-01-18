@@ -153,7 +153,7 @@ func getOpts(microservice string, options ...InvocationOption) InvokeOptions {
 		o(&opts)
 	}
 	if opts.ContentType == "" {
-		opts.ContentType = "application/json"
+		opts.ContentType = common.JSON
 	}
 	if opts.Version == "" {
 		opts.Version = config.GlobalDefinition.Cse.References[microservice].Version

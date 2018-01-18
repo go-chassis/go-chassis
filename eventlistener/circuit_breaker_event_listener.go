@@ -6,6 +6,7 @@ import (
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 	"regexp"
 	"strings"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 // constants for consumer isolation, circuit breaker, fallback keys
@@ -28,11 +29,11 @@ type CircuitBreakerEventListener struct {
 func (e *CircuitBreakerEventListener) Event(event *core.Event) {
 	lager.Logger.Debug("Circuit key event: " + event.Key)
 	switch event.EventType {
-	case "UPDATE":
+	case common.Update:
 		FlushCircuitByKey(event.Key)
-	case "CREATE":
+	case common.Create:
 		FlushCircuitByKey(event.Key)
-	case "DELETE":
+	case common.Delete:
 		FlushCircuitByKey(event.Key)
 	}
 }
@@ -41,7 +42,7 @@ func (e *CircuitBreakerEventListener) Event(event *core.Event) {
 func FlushCircuitByKey(key string) {
 	sourceName, serviceName := GetNames(key)
 	cmdName := GetCircuitName(sourceName, serviceName)
-	if cmdName == "Consumer" {
+	if cmdName == common.Consumer{
 		lager.Logger.Info("Global Key changed For circuit: [" + cmdName + "]")
 		hystrix.Flush()
 	} else {
@@ -80,7 +81,7 @@ func GetCircuitName(sourceName, serviceName string) string {
 		return strings.Join([]string{"Consumer", serviceName}, ".")
 	}
 	if sourceName == "" && serviceName == "" {
-		return "Consumer"
+		return common.Consumer
 	}
 	return ""
 }

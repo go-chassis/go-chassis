@@ -154,7 +154,7 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 			p.Listen = iputil.DefaultEndpoint4Protocol(name)
 		}
 	}
-	chainName := "default"
+	chainName := common.DefaultApp
 	for name := range providerMap {
 		if name != "default" {
 			chainName = name
