@@ -1,4 +1,5 @@
 # Go-chassis
+[![Build Status](https://travis-ci.org/ServiceComb/go-chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/go-chassis)  
 Go-Chassis is a Software Development Kit(SDK) for rapid development of microservices in GoLang,
  providing service-discovery,  fault-tolerance, circuit breaker, load balancing, monitoring, hot-reconfiguration features 
 
