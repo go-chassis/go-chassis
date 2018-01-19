@@ -164,8 +164,12 @@ func reRegisterSelfMSI(sid string) error {
 		return err
 	}
 	stage := config.Stage
+	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
+	if InstanceEndpoints != nil {
+		eps = InstanceEndpoints
+	}
 	microServiceInstance := &MicroServiceInstance{
-		EndpointsMap: InstanceEndpoints,
+		EndpointsMap: eps,
 		HostName:     hostname,
 		Status:       model.MSInstanceUP,
 		Environment:  stage,
