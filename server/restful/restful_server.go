@@ -198,7 +198,7 @@ func (r *restfulServer) Start() error {
 			WebServices:    r.container.RegisteredWebServices(),
 			WebServicesUrl: config.Address,
 			ApiPath:        "/apidocs.json",
-			// Optionally, specifiy where the UI is located
+			// Optionally, specify where the UI is located
 			SwaggerPath:     "/apidocs/",
 			SwaggerFilePath: val}
 		swagger.RegisterSwaggerService(swaggerConfig, r.container)

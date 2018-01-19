@@ -72,15 +72,16 @@ const (
 	DefaultApp     = "default"
 	DefaultVersion = "0.0.1"
 )
-//constant used
-const(
-	HTTPS  = "https"
-	JSON   = "application/json"
-	Create = "CREATE"
-	Update = "UPDATE"
-	Delete = "DELETE"
-	Size   = "size"
-	Client = "client"
-	File   = "File"
-)
 
+//constant used
+const (
+	HTTPS     = "https"
+	JSON      = "application/json"
+	Create    = "CREATE"
+	Update    = "UPDATE"
+	Delete    = "DELETE"
+	Size      = "size"
+	Client    = "client"
+	File      = "File"
+	SessionID = "sessionid"
+)

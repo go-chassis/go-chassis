@@ -21,7 +21,7 @@ func TestFramework(t *testing.T) {
 
 func TestFrameworkSetNameVersionRegister(t *testing.T) {
 	assert := assert.New(t)
-	t.Log("setting framework name, version and registration componenet by exported Method")
+	t.Log("setting framework name, version and registration component by exported Method")
 	f := metadata.NewFramework()
 	f.SetName("MyFramework")
 	f.SetVersion("0.5")

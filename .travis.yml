@@ -18,6 +18,10 @@ jobs:
       script: 
         - go get -u github.com/tsenart/deadcode
         - bash -x scripts/travis/deadCodeChecker.sh
+    - stage: Misspell Checker
+      script: 
+        - go get -u github.com/client9/misspell
+        - bash -x scripts/travis/misspellChecker.sh
     - stage: GoConst Checker
       script:
         - go get -u github.com/jgautheron/goconst/cmd/goconst
@@ -27,3 +31,4 @@ jobs:
         - go get github.com/FiloSottile/gvt
         - gvt restore
         - go build -o chassis
+

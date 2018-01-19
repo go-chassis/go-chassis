@@ -43,7 +43,7 @@ func getTLSForClient() (*tls.Config, error) {
 	base := config.GlobalDefinition.Cse.Monitor.Client.ServerURI
 	monitorServerURL, err := url.Parse(base)
 	if err != nil {
-		lager.Logger.Error("Error occured while parsing Monitor Server Uri", err)
+		lager.Logger.Error("Error occurred while parsing Monitor Server Uri", err)
 		return nil, err
 	}
 	scheme := monitorServerURL.Scheme
@@ -71,7 +71,7 @@ func getAuthHeaders() http.Header {
 	}
 	domainName := config.GlobalDefinition.Cse.Monitor.Client.DomainName
 	if domainName == "" {
-		domainName = "default"
+		domainName = common.DefaultApp
 	}
 
 	headers := make(http.Header)

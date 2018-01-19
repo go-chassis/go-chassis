@@ -12,8 +12,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/util/string"
 	"github.com/ServiceComb/go-chassis/security"
 	//this import used for plain cipher
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	"github.com/ServiceComb/go-chassis/core/common"
+	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 )
 
 //SSLConfig struct stores the necessary info for SSL configuration

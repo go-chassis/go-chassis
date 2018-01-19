@@ -200,7 +200,7 @@ func suitableMethods(typ reflect.Type, reportErr bool) map[string]*operation {
 		}
 		var in = []reflect.Type{any, requestType}
 		// Method needs 2 out.
-		// reponse must be a pointer.
+		// response must be a pointer.
 		if mtype.NumOut() != 2 {
 			lager.Logger.Warnf(nil, "method has wrong number of outs, method:%s, requestType:%d", mname, mtype.NumOut())
 			continue

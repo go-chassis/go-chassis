@@ -146,7 +146,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 		return nil
 	})
 
-	t.Log("====span should be stored in context after server recieve")
+	t.Log("====span should be stored in context after server receive")
 	assert.NotNil(t, providerSpanHandler.Span)
 
 	t.Log("====spanContext stored in context should be the same with monitor received")
@@ -298,7 +298,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 		return nil
 	})
 
-	t.Log("====span should be stored in context after server recieve")
+	t.Log("====span should be stored in context after server receive")
 	assert.NotNil(t, providerSpanHandler.Span)
 
 	t.Log("====spanContext stored in context should be the same with monitor received")
@@ -447,7 +447,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 		return nil
 	})
 
-	t.Log("====span should be stored in context after server recieve")
+	t.Log("====span should be stored in context after server receive")
 	assert.NotNil(t, providerSpanHandler.Span)
 
 	t.Log("====spanContext stored in context should be the same with monitor received")

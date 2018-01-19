@@ -156,7 +156,7 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 	}
 	chainName := common.DefaultApp
 	for name := range providerMap {
-		if name != "default" {
+		if name != common.DefaultApp {
 			chainName = name
 			break
 		}

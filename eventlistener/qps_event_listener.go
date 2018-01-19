@@ -2,9 +2,9 @@ package eventlistener
 
 import (
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/qpslimiter"
 	"strings"
-	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 const (

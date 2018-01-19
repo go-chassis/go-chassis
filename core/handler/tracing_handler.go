@@ -139,7 +139,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	var span opentracing.Span
 	opts := make([]opentracing.StartSpanOption, 0)
 
-	interfaceName := "unkown"
+	interfaceName := "unknown"
 	switch i.Protocol {
 	case common.ProtocolRest:
 		// set url path to span name

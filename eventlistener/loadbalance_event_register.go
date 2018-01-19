@@ -2,9 +2,9 @@ package eventlistener
 
 import (
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 // constants for loadbalance strategy name, and timeout

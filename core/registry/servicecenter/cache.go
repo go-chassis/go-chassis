@@ -2,6 +2,7 @@ package servicecenter
 
 import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
@@ -11,7 +12,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 // constant values for default expiration time, and refresh interval
