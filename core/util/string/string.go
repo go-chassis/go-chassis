@@ -76,7 +76,7 @@ func ClearStringMemory(src *string) {
 	len := MinInt(p.len, 32)
 	ptr := p.ptr
 	for idx := 0; idx < len; idx = idx + 1 {
-		b := (*byte)(unsafe.Pointer(ptr))
+		b := (*byte)(unsafe.Pointer(&ptr))
 		*b = 0
 		ptr++
 	}

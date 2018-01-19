@@ -39,7 +39,7 @@ func InitConfigCenter() error {
 	var enableSSL bool
 	tlsConfig, tlsError := getTLSForClient()
 	if tlsError != nil {
-		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed, err: %s.", Name, common.Consumer)
+		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed, err:", Name, common.Consumer)
 		return tlsError
 	}
 
@@ -128,7 +128,7 @@ func getUniqueIDForDimInfo() string {
 	}
 
 	if len(serviceName) > maxValue {
-		lager.Logger.Errorf(nil, "exceeded max value ", maxValue, "for dimensionInfo ", serviceName, "with length ",
+		lager.Logger.Errorf(nil, "exceeded max value %d for dimensionInfo %s with length %d", maxValue, serviceName,
 			len(serviceName))
 		return ""
 	}
@@ -141,7 +141,7 @@ func getUniqueIDForDimInfo() string {
 	}
 
 	if !dimRegexVar.Match([]byte(serviceName)) {
-		lager.Logger.Errorf(nil, "invalid value for dimension info, doesnot setisfy the regular expression for dimInfo",
+		lager.Logger.Errorf(nil, "invalid value for dimension info, doesnot setisfy the regular expression for dimInfo:%s",
 			serviceName)
 		return ""
 	}
