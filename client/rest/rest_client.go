@@ -76,8 +76,8 @@ func NewRestClient(options ...clientOption.Option) client.Client {
 		c: &fasthttp.Client{
 			Name:            "restinvoker",
 			MaxConnsPerHost: poolSize,
-			ReadTimeout:     5 * time.Second,
-			WriteTimeout:    5 * time.Second,
+			ReadTimeout:     60 * time.Second,
+			WriteTimeout:    60 * time.Second,
 		},
 	}
 
