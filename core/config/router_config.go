@@ -87,6 +87,7 @@ func GetRouteRules() (*RouterConfig, error) {
 		if err != nil {
 			lager.Logger.Warn("Can not read router.yaml", err)
 			contents = ""
+			return nil, err
 		}
 		contents = string(b)
 		err = yaml.Unmarshal([]byte(contents), routeRules)
@@ -115,26 +116,29 @@ func GetConfigContents(key string) (string, error) {
 	//So read from config center first,if it is empty, Try to set file content into memory key value
 	contents = archaius.GetString(key, "")
 	if contents == "" {
-		contents = SetKeyValueByFile(key, f)
+		contents, err = SetKeyValueByFile(key, f)
+		if err != nil {
+			return "", err
+		}
 	}
 	return contents, nil
 }
 
 // SetKeyValueByFile is for adding configurations of the file to the archaius through external configuration source
-func SetKeyValueByFile(key, f string) string {
+func SetKeyValueByFile(key, f string) (string, error) {
 	var contents string
 	if _, err := os.Stat(f); err != nil {
 		lager.Logger.Warn(err.Error(), nil)
-		return ""
+		return "", err
 	}
 	b, err := ioutil.ReadFile(f)
 	if err != nil {
 		lager.Logger.Error("Can not read router.yaml", err)
-		return ""
+		return "", err
 	}
 	contents = string(b)
 	archaius.AddKeyValue(key, contents)
-	return contents
+	return contents, nil
 }
 
 // TranslateRules translate rules
