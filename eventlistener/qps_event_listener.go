@@ -12,7 +12,7 @@ const (
 	QPSLimitKey = "cse.flowcontrol"
 )
 
-//QpsEventListener is a struct used for Event listener
+//QPSEventListener is a struct used for Event listener
 type QPSEventListener struct {
 	//Key []string
 	Key string

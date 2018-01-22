@@ -12,10 +12,12 @@ const pluginSuffix = ".so"
 //CipherPlugins is a map
 var cipherPlugins map[string]func() Cipher
 
+//InstallCipherPlugin is a function
 func InstallCipherPlugin(name string, f func() Cipher) {
 	cipherPlugins[name] = f
 }
 
+//GetCipherNewFunc is a function
 func GetCipherNewFunc(name string) (func() Cipher, error) {
 	if f, ok := cipherPlugins[name]; ok {
 		return f, nil

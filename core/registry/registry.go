@@ -32,10 +32,10 @@ var RegistryService Registry
 var DefaultAddr = "http://127.0.0.1:30100"
 
 // registryFunc registry function
-var registryFunc map[string]func(opts ...Option) Registry = make(map[string]func(opts ...Option) Registry)
+var registryFunc = make(map[string]func(opts ...Option) Registry)
 
 // HBService variable of heartbeat service
-var HBService *HeartbeatService = &HeartbeatService{
+var HBService = &HeartbeatService{
 	instances: make(map[string]*HeartbeatTask),
 }
 

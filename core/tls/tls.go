@@ -13,7 +13,7 @@ import (
 	"github.com/ServiceComb/go-chassis/third_party/forked/kubernetes/pkg/util/sets"
 )
 
-var sslConfigNotExistErr = errors.New("No SSL config")
+var errSSLConfigNotExist = errors.New("No SSL config")
 var useDefaultSslTag = sets.NewString("registry.Consumer.", "configcenter.Consumer.", "monitor.Consumer.")
 
 func hasDefaultSslTag(tag string) bool {
@@ -121,7 +121,7 @@ func GetSSLConfigByService(svcName, protocol, svcType string) (*secCommon.SSLCon
 
 	sslConfigMap := getSSLConfigMap(tag)
 	if len(sslConfigMap) == 0 {
-		return nil, sslConfigNotExistErr
+		return nil, errSSLConfigNotExist
 	}
 
 	sslConfig, err := parseSSLConfig(sslConfigMap)
@@ -176,7 +176,7 @@ func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *sec
 	case common.Consumer:
 		tlsConfig, err = secCommon.GetClientTLSConfig(sslConfig)
 	default:
-		err = fmt.Errorf("Service type not support: %s, must be: %s|%s.",
+		err = fmt.Errorf("service type not support: %s, must be: %s|%s",
 			svcType, common.Provider, common.Consumer)
 	}
 	if err != nil {
@@ -188,5 +188,5 @@ func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *sec
 
 // IsSSLConfigNotExist check the status of ssl configurations
 func IsSSLConfigNotExist(e error) bool {
-	return e == sslConfigNotExistErr
+	return e == errSSLConfigNotExist
 }

@@ -37,10 +37,7 @@ func GetHostName() string {
 	return "localhost"
 }
 
-// DefaultEndpoint4Protocol:To ensure consistency, we generate default addr for listenAddress and
-// advertiseAddress by one method.
-// To avoid unnecessary port allocation work, we allocate fixed port for
-// user defined protocol.
+// DefaultEndpoint4Protocol : To ensure consistency, we generate default addr for listenAddress and advertiseAddress by one method. To avoid unnecessary port allocation work, we allocate fixed port for user defined protocol.
 func DefaultEndpoint4Protocol(proto string) string {
 	return strings.Join([]string{Localhost(), DefaultPort4Protocol(proto)}, ":")
 }

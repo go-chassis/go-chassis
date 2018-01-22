@@ -16,7 +16,7 @@ const (
 	TracingNamedPipeCollector = "namedPipe"
 )
 
-// collect span to file
+//FileCollector collects span to file
 type FileCollector struct {
 	Fd *os.File
 }

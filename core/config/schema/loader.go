@@ -134,7 +134,8 @@ func loadMicroserviceMeta(schemaPath string) (*MicroserviceMeta, error) {
 		schemaFile := filepath.Base(fullPath)
 		dat, err := ioutil.ReadFile(fullPath)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("The system cannot find the schema file"))
+			e := fmt.Sprintf("The system cannot find the schema file")
+			return nil, errors.New(e)
 		}
 
 		schemaID := strings.TrimSuffix(schemaFile, filepath.Ext(schemaFile))

@@ -77,11 +77,7 @@ func FilterProtocol(protocol string) Filter {
 	}
 }
 
-/* FilterAvailableZoneAffinity is a region and zone based Select Filter which will
-   Do the selection of instance in the same region and zone, if not
-   Do the selection of instance in any zone in same region , if not
-   Do the selection of instance in any zone of any region
-*/
+//FilterAvailableZoneAffinity is a region and zone based Select Filter which will Do the selection of instance in the same region and zone, if not Do the selection of instance in any zone in same region , if not Do the selection of instance in any zone of any region
 func FilterAvailableZoneAffinity(old []*registry.MicroServiceInstance) []*registry.MicroServiceInstance {
 	var instances []*registry.MicroServiceInstance
 	if config.GlobalDefinition.DataCenter == nil {

@@ -9,10 +9,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/pem"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/util/string"
 	"github.com/ServiceComb/go-chassis/security"
 	//this import used for plain cipher
-	"github.com/ServiceComb/go-chassis/core/common"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 )
 

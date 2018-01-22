@@ -84,7 +84,7 @@ const (
 	Client            = "client"
 	File              = "File"
 	SessionID         = "sessionid"
-	ContentTypeJson   = "application/json"
+	ContentTypeJSON   = "application/json"
 	DefaultTenant     = "default"
 	DefaultChainName  = "default"
 	RollingPolicySize = "size"
