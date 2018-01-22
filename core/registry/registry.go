@@ -95,7 +95,7 @@ func Enable() error {
 		return nil
 	}
 
-	if config.GlobalDefinition.Cse.Service.Registry.Type != common.File {
+	if config.GlobalDefinition.Cse.Service.Registry.Type != common.FileRegistry {
 		if config.GlobalDefinition.Cse.Service.Registry.Address == "" {
 			config.GlobalDefinition.Cse.Service.Registry.Address = DefaultAddr
 		}

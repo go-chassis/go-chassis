@@ -50,7 +50,7 @@ func NewRestClient(options ...clientOption.Option) client.Client {
 
 	if len(opts.ContentType) == 0 {
 		//TODO take effect of that option
-		opts.ContentType = common.JSON
+		opts.ContentType = common.ContentTypeJson
 	}
 
 	if opts.Failure == nil || len(opts.Failure) == 0 {

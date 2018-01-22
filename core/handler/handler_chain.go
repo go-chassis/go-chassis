@@ -126,7 +126,7 @@ func addHandler(c *Chain, name string) error {
 // GetChain is to get chain
 func GetChain(serviceType string, name string) (*Chain, error) {
 	if name == "" {
-		name = common.DefaultApp
+		name = common.DefaultChainName
 	}
 	c := &Chain{}
 	origin, ok := ChainMap[serviceType+name]
