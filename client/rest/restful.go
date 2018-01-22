@@ -16,12 +16,12 @@ type Client struct {
 
 //Do is a method
 func (c *Client) Do(req *Request, resp *Response) error {
-	return c.c.Do(req.r, resp.r)
+	return c.c.Do(req.Req, resp.Resp)
 }
 
 //Request is struct
 type Request struct {
-	r *fasthttp.Request
+	Req *fasthttp.Request
 }
 
 //NewRequest is a function which creates new request
@@ -36,115 +36,115 @@ func NewRequest(method, urlStr string, body ...[]byte) (*Request, error) {
 		req.SetBody(body[0])
 	}
 
-	return &Request{r: req}, nil
+	return &Request{Req: req}, nil
 }
 
 //SetURI sets host for the request.
 func (req *Request) SetURI(url string) {
-	req.r.SetRequestURI(url)
+	req.Req.SetRequestURI(url)
 }
 
 //Copy is method
 func (req *Request) Copy() *Request {
 	newReq := fasthttp.AcquireRequest()
-	req.r.CopyTo(newReq)
+	req.Req.CopyTo(newReq)
 	return &Request{
-		r: newReq,
+		Req: newReq,
 	}
 }
 
 //GetRequest is a method
 func (req *Request) GetRequest() *fasthttp.Request {
-	return req.r
+	return req.Req
 }
 
 //SetBody is a method used for setting body for a request
 func (req *Request) SetBody(body []byte) {
-	req.r.SetBody(body)
+	req.Req.SetBody(body)
 }
 
 //GetURI is a method
 func (req *Request) GetURI() string {
-	return string(req.r.RequestURI())
+	return string(req.Req.RequestURI())
 }
 
 //SetHeader is a method used for setting header in a request
 func (req *Request) SetHeader(key, value string) {
-	req.r.Header.Set(key, value)
+	req.Req.Header.Set(key, value)
 }
 
 //SetHeaderCookie is a method used to setting header cookie
 func (req *Request) SetHeaderCookie(key, value string) {
-	req.r.Header.Add(key, value)
+	req.Req.Header.Add(key, value)
 }
 
 //GetHeader is a method which gets head from a request
 func (req *Request) GetHeader(key string) string {
-	return string(req.r.Header.Peek(key))
+	return string(req.Req.Header.Peek(key))
 }
 
 //SetMethod is a method
 func (req *Request) SetMethod(method string) {
-	req.r.Header.SetMethodBytes([]byte(method))
+	req.Req.Header.SetMethodBytes([]byte(method))
 }
 
 //GetMethod is a method
 func (req *Request) GetMethod() string {
-	return string(req.r.Header.Method())
+	return string(req.Req.Header.Method())
 }
 
 //Close is used for closing a request
 func (req *Request) Close() {
-	fasthttp.ReleaseRequest(req.r)
+	fasthttp.ReleaseRequest(req.Req)
 }
 
 //Response is a struct used for handling response
 type Response struct {
-	r *fasthttp.Response
+	Resp *fasthttp.Response
 }
 
 // NewResponse is creating the object of response
 func NewResponse() *Response {
 	res := fasthttp.AcquireResponse()
 	return &Response{
-		r: res,
+		Resp: res,
 	}
 }
 
 // GetResponse is a method used to get response
 func (resp *Response) GetResponse() *fasthttp.Response {
-	return resp.r
+	return resp.Resp
 }
 
 // GetStatusCode returns response status code.
 func (resp *Response) GetStatusCode() int {
-	return resp.r.Header.StatusCode()
+	return resp.Resp.Header.StatusCode()
 }
 
 // SetStatusCode sets the status code
 func (resp *Response) SetStatusCode(s int) {
-	resp.r.Header.SetStatusCode(s)
+	resp.Resp.Header.SetStatusCode(s)
 }
 
 // ReadBody read body from the from the response
 func (resp *Response) ReadBody() []byte {
-	return resp.r.Body()
+	return resp.Resp.Body()
 }
 
 // GetHeader get header from the response
 func (resp *Response) GetHeader() []byte {
-	return resp.r.Header.Header()
+	return resp.Resp.Header.Header()
 }
 
 // Close closes the file descriptor
 func (resp *Response) Close() {
-	fasthttp.ReleaseResponse(resp.r)
+	fasthttp.ReleaseResponse(resp.Resp)
 }
 
 // GetCookie returns response Cookie.
 func (resp *Response) GetCookie(key string) []byte {
 	var c []byte
-	resp.r.Header.VisitAllCookie(func(k, v []byte) {
+	resp.Resp.Header.VisitAllCookie(func(k, v []byte) {
 		if string(k) == key {
 			c = v
 		}
@@ -154,5 +154,5 @@ func (resp *Response) GetCookie(key string) []byte {
 
 // SetCookie sets the cookie.
 func (resp *Response) SetCookie(cookie *fasthttp.Cookie) {
-	resp.r.Header.SetCookie(cookie)
+	resp.Resp.Header.SetCookie(cookie)
 }

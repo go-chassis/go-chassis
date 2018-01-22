@@ -153,14 +153,13 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	urlPath := ""
 	if c.opts.TLSConfig != nil {
-		urlPath = fmt.Sprintf("https://%s%s", addr, opt.UrlPath)
+		reqSend.Req.URI().SetScheme("https")
 	} else {
-		urlPath = fmt.Sprintf("http://%s%s", addr, opt.UrlPath)
+		reqSend.Req.URI().SetScheme("http")
 	}
 
-	reqSend.SetURI(urlPath)
+	reqSend.Req.SetHost(addr)
 
 	//increase the max connection per host to prevent error "no free connection available" error while sending more requests.
 	c.c.MaxConnsPerHost = 512 * 20
