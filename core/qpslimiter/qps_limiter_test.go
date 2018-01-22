@@ -9,8 +9,18 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"os"
+	"path/filepath"
 	"testing"
 )
+
+func initialize() {
+	os.Setenv("CHASSIS_HOME", "/tmp/")
+	chassisConf := filepath.Join("/tmp/", "conf")
+	os.MkdirAll(chassisConf, 0600)
+	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
+	os.Create(filepath.Join(chassisConf, "microservice.yaml"))
+}
 
 func TestProcessQpsTokenReq(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
@@ -28,6 +38,7 @@ func TestProcessQpsTokenReq(t *testing.T) {
 }
 
 func TestGetQpsRateWithPriority(t *testing.T) {
+	initialize()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	archaius.Init()

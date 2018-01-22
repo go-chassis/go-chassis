@@ -92,7 +92,10 @@ func TestTransportHandler_HandleRest(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
-	config.GlobalDefinition.Cse.Protocols["rest"] = model.Protocol{Listen: "0.0.0.0:2678", Advertise: "0.0.0.0:8888", WorkerNumber: 1}
+	config.GlobalDefinition.Cse.Protocols = map[string]model.Protocol{
+		"rest": {Listen: "0.0.0.0:2678", Advertise: "0.0.0.0:8888", WorkerNumber: 1},
+	}
+
 	l, err := tr.Listen("127.0.0.1:9992")
 	if err != nil {
 		t.Errorf("Unexpected listen err: %v", err)

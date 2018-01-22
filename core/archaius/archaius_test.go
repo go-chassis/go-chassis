@@ -93,11 +93,16 @@ cse:
 	filename2 := filepath.Join(root, "conf", "circuit_breaker.yaml")
 	filename3 := filepath.Join(root, "conf", "lager.yaml")
 	filename4 := filepath.Join(root, "conf", "test_addfile.yaml")
+	filename5 := filepath.Join(root, "conf", "chassis.yaml")
+	filename6 := filepath.Join(root, "conf", "microservice.yaml")
 
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	os.Remove(filename1)
 	os.Remove(filename2)
 	os.Remove(filename3)
+	os.Remove(filename4)
+	os.Remove(filename5)
+	os.Remove(filename6)
 	os.Remove(confdir)
 	err := os.Mkdir(confdir, 0777)
 	check(err)
@@ -118,6 +123,14 @@ cse:
 	check(err4)
 	defer f4.Close()
 	defer os.Remove(filename4)
+	f5, err5 := os.Create(filename5)
+	check(err5)
+	defer f5.Close()
+	defer os.Remove(filename5)
+	f6, err6 := os.Create(filename6)
+	check(err6)
+	defer f6.Close()
+	defer os.Remove(filename6)
 
 	_, err1 = io.WriteString(f1, chassisyamlContent)
 	_, err1 = io.WriteString(f2, string(file))
@@ -134,10 +147,7 @@ cse:
 	if err != nil {
 		t.Error(err)
 	}
-	err = archaius.Init()
-	if err != nil {
-		t.Error(err)
-	}
+	archaius.Init()
 
 	time.Sleep(10 * time.Millisecond)
 	eventHandler := EListener{}

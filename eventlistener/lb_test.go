@@ -11,7 +11,7 @@ import (
 
 func TestLbEvent(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/code.huawei.com/cse/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)

@@ -16,7 +16,7 @@ import (
 func TestInitConfigCenter(t *testing.T) {
 	t.Log("Testing InitConfigCenter function")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = ""
@@ -27,7 +27,7 @@ func TestInitConfigCenter(t *testing.T) {
 func TestInitConfigCenterWithTenantEmpty(t *testing.T) {
 	t.Log("Testing InitConfigCenter function with autodiscovery true and tenant name empty")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.Autodiscovery = true
@@ -39,7 +39,7 @@ func TestInitConfigCenterWithTenantEmpty(t *testing.T) {
 func TestInitConfigCenterWithEmptyURI(t *testing.T) {
 	t.Log("Testing InitConfigCenter function with empty ServerURI")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 
 	config.GlobalDefinition = &model.GlobalCfg{}
@@ -51,7 +51,7 @@ func TestInitConfigCenterWithEmptyURI(t *testing.T) {
 func TestInitConfigCenterWithEmptyMicroservice(t *testing.T) {
 	t.Log("Testing InitConfigCenter function with empty microservice definition")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 
 	config.MicroserviceDefinition = &model.MicroserviceCfg{}
@@ -62,7 +62,7 @@ func TestInitConfigCenterWithEmptyMicroservice(t *testing.T) {
 func TestInitConfigCenterWithEnableSSl(t *testing.T) {
 	t.Log("Testing InitConfigCenter function without initializing any parameter")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 
 	err = configcenter.InitConfigCenter()
@@ -72,7 +72,7 @@ func TestInitConfigCenterWithEnableSSl(t *testing.T) {
 func TestInitConfigCenterWithInvalidURI(t *testing.T) {
 	t.Log("Testing InitConfigCenter function with Invalid URI")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = "hdhhhd:njdj"
@@ -83,7 +83,7 @@ func TestInitConfigCenterWithInvalidURI(t *testing.T) {
 func TestInitConfigCenterWithSSL(t *testing.T) {
 	t.Log("Testing InitConfigCenter function with ServerURI https://127.0.0.1:8787")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = "https://127.0.0.1:8787"
@@ -94,7 +94,7 @@ func TestInitConfigCenterWithSSL(t *testing.T) {
 func TestInitConfigCenterWithInvalidName(t *testing.T) {
 	t.Log("Testing InitConfigCenter function with serverURI and microservice definition")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	name := model.MicServiceStruct{Name: "qwertyuiopasdfghjklgsgdfsgdgafdggsahhhhh"}
@@ -112,7 +112,7 @@ func TestEvent(t *testing.T) {
 	factoryObj.Init()
 
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/service-comb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	config.Init()
 	eventValue := &core.Event{Key: "refreshMode", Value: 6}
 	evt := configcenter.EventListener{Name: "EventHandler", Factory: factoryObj}
