@@ -69,13 +69,13 @@ func (s *highwayServer) Register(schema interface{}, options ...serverOption.Reg
 	}
 	mc := config.MicroserviceDefinition
 	if mc == nil {
-		pn = common.DefaultApp
+		pn = common.DefaultProvider
 	}
 	if mc == nil || mc.Provider == "" {
-		pn = common.DefaultApp
+		pn = common.DefaultProvider
 	} else {
 		if mc.Provider == "" {
-			pn = common.DefaultApp
+			pn = common.DefaultProvider
 		} else {
 			pn = mc.Provider
 		}

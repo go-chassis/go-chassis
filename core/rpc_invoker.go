@@ -39,7 +39,7 @@ func newOptions(options ...Option) Options {
 		o(&opts)
 	}
 	if opts.ChainName == "" {
-		opts.ChainName = common.DefaultApp
+		opts.ChainName = common.DefaultChainName
 	}
 	return opts
 }

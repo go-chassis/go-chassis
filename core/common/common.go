@@ -89,4 +89,7 @@ const (
 	DefaultChainName  = "default"
 	RollingPolicySize = "size"
 	FileRegistry      = "File"
+	DefaultUserName   = "default"
+	DefaultDomainName = "default"
+	DefaultProvider   = "default"
 )
