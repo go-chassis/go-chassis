@@ -29,8 +29,8 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 		//use chassis Invoker will send SourceMicroService through network
 		qpsRate, ok := qpslimiter.GetQPSRate(ProviderQPSLimit + "." + i.SourceMicroService)
 		if !ok {
-			qpsRate, _ = qpslimiter.GetQPSRate(ProviderQPSLimit)
-			qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(ProviderQPSLimit, qpsRate)
+			qpsRate, _ = qpslimiter.GetQPSRate(ProviderLimitKeyGlobal)
+			qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(ProviderLimitKeyGlobal, qpsRate)
 		} else {
 			qpsRate, _ = qpslimiter.GetQPSRate(ProviderQPSLimit + "." + i.SourceMicroService)
 			qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(ProviderQPSLimit+"."+i.SourceMicroService, qpsRate)

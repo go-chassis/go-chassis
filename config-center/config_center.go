@@ -118,6 +118,9 @@ func getUniqueIDForDimInfo() string {
 	serviceName := config.MicroserviceDefinition.ServiceDescription.Name
 	version := config.MicroserviceDefinition.ServiceDescription.Version
 	appName := config.MicroserviceDefinition.AppID
+	if appName == "" {
+		appName = config.GlobalDefinition.AppID
+	}
 
 	if appName != "" {
 		serviceName = serviceName + "@" + appName

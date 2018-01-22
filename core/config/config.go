@@ -186,9 +186,7 @@ func ReadMicroserviceConfigFromBytes(data []byte) error {
 	if microserviceDef.ServiceDescription.Version == "" {
 		microserviceDef.ServiceDescription.Version = common.DefaultVersion
 	}
-	if microserviceDef.AppID == "" {
-		microserviceDef.AppID = common.DefaultApp
-	}
+
 	MicroserviceDefinition = &microserviceDef
 	return nil
 }
