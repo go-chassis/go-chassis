@@ -11,7 +11,7 @@ import (
 // TransortFunc transport function
 type TransortFunc func(...transportOption.Option) Transport
 
-var transportFuncMap map[string]TransortFunc = make(map[string]TransortFunc)
+var transportFuncMap = make(map[string]TransortFunc)
 
 // TransportMap transport map
 var TransportMap = make(map[string]Transport)

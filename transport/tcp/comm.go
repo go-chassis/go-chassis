@@ -105,7 +105,8 @@ func (c *baseConn) recvDiscard(bodyLen int32) error {
 		return nil
 	}
 	data := make([]byte, bodyLen)
-	if err := c.recv(c.r, data); err != nil {
+	err := c.recv(c.r, data)
+	if err != nil {
 		return err
 	}
 	return nil

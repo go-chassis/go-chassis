@@ -36,7 +36,7 @@ func TestRegisterHandlerFunc(t *testing.T) {
 	config.Init()
 	e := handler.RegisterHandler("fake", newProviderHandler)
 	assert.NoError(t, e)
-	t.Log("testing registration of a custom handler against a name which is already resistered")
+	t.Log("testing registration of a custom handler against a name which is already registered")
 	e = handler.RegisterHandler(handler.Transport, newProviderHandler)
 	assert.Error(t, e)
 }

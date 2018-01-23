@@ -7,10 +7,10 @@ import (
 )
 
 // plugin name and schemas map
-var providerPlugins map[string]func(string) Provider = make(map[string]func(string) Provider)
+var providerPlugins = make(map[string]func(string) Provider)
 
 // microservice name and schemas map
-var providers map[string]Provider = make(map[string]Provider)
+var providers = make(map[string]Provider)
 var defaultProviderFunc = NewProvider
 
 //TODO locks

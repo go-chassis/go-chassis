@@ -104,7 +104,7 @@ func Route(header fasthttp.RequestHeader, si *registry.SourceInfo, inv *invocati
 			inv.AppID = si.Tags[common.BuildinTagApp]
 		}
 		if inv.AppID == "" {
-			inv.AppID = "default"
+			inv.AppID = common.DefaultApp
 		}
 	}
 	if inv.Version == "" {

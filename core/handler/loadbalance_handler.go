@@ -279,14 +279,14 @@ func getSessionID(i *invocation.Invocation) interface{} {
 		req := i.Args.(*rest.Request)
 		value := req.GetHeader("Cookie")
 		cookieKey := strings.Split(value, "=")
-		if value != "" && (cookieKey[0] == "sessionid" || cookieKey[0] == common.LBSessionID) {
+		if value != "" && (cookieKey[0] == common.SessionID || cookieKey[0] == common.LBSessionID) {
 			metadata = cookieKey[1]
 		}
 	case *fasthttp.Request:
 		req := i.Args.(*fasthttp.Request)
 		value := string(req.Header.Peek("Cookie"))
 		cookieKey := strings.Split(value, "=")
-		if value != "" && (cookieKey[0] == "sessionid" || cookieKey[0] == common.LBSessionID) {
+		if value != "" && (cookieKey[0] == common.SessionID || cookieKey[0] == common.LBSessionID) {
 			metadata = cookieKey[1]
 		}
 	}

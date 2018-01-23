@@ -135,7 +135,8 @@ func (c *highwayClient) Call(ctx context.Context, addr string, req *client.Reque
 		return err
 	case <-ctx.Done():
 		err = ctx.Err()
-		return errors.New(fmt.Sprintf("request timeout: %v", ctx.Err()))
+		e := fmt.Sprintf("request timeout: %v", ctx.Err())
+		return errors.New(e)
 	}
 
 	//return nil

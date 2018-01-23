@@ -9,6 +9,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/codec"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
@@ -49,7 +50,7 @@ func NewRestClient(options ...clientOption.Option) client.Client {
 
 	if len(opts.ContentType) == 0 {
 		//TODO take effect of that option
-		opts.ContentType = "application/json"
+		opts.ContentType = common.ContentTypeJSON
 	}
 
 	if opts.Failure == nil || len(opts.Failure) == 0 {

@@ -97,7 +97,7 @@ func (js *jobSchedule) createWorkerSchedulers(addr string, workerNum int, c *hig
 	var ch chan *job
 	_, ok := js.isWorkerExist(addr)
 	if !ok {
-		//create buffered channel which will recieve jobs
+		//create buffered channel which will receive jobs
 		ch = make(chan *job, 1000)
 		lager.Logger.Infof("Starting %d workers for %s", workerNum, addr)
 		js.Lock()

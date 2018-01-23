@@ -12,8 +12,7 @@ It has these top-level messages:
 	RequestHeader
 	ResponseHeader
 	LoginRequest
-	LoginResponse
-*/
+	LoginResponse  */
 package highway
 
 import proto "github.com/golang/protobuf/proto"

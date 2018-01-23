@@ -168,7 +168,7 @@ func (t *tcpTransport) Listen(addr string, opts ...gomicroTransport.ListenOption
 	}, nil
 }
 
-var protocol string = "tcp"
+var protocol = "tcp"
 
 func (t *tcpTransport) String() string {
 	return protocol

@@ -3,6 +3,7 @@ package eventlistener
 import (
 	"encoding/json"
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/route"
@@ -29,19 +30,19 @@ func (e *DarkLaunchEventListener) Event(event *core.Event) {
 	serviceName := strings.Replace(event.Key, DarkLaunchPrefix, "", 1)
 
 	switch event.EventType {
-	case "UPDATE":
+	case common.Update:
 		if err := json.Unmarshal([]byte(event.Value.(string)), rule); err != nil {
 			lager.Logger.Error("can not update route rule", err)
 		}
 		lager.Logger.Info("Route rule '" + serviceName + "' is updated to " + event.Value.(string))
 		rules[serviceName] = config.TranslateRules(rule)
-	case "CREATE":
+	case common.Create:
 		if err := json.Unmarshal([]byte(event.Value.(string)), rule); err != nil {
 			lager.Logger.Error("can not create route rule", err)
 		}
 		lager.Logger.Info("Route rule '" + serviceName + "' is created. Value=" + event.Value.(string))
 		rules[serviceName] = config.TranslateRules(rule)
-	case "DELETE":
+	case common.Delete:
 		// delete route rule whose destination is the tail of event.key
 		delete(rules, serviceName)
 		lager.Logger.Info("Route rule '" + serviceName + "' is removed!")

@@ -45,7 +45,7 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 		loadbalance.Save(string(valueSessionID), inv.Endpoint, timeValue)
 	} else if string(valueChassisLb) != "" {
 		loadbalance.Save(string(valueChassisLb), inv.Endpoint, timeValue)
-	} else if (sessionID[0] == common.LBSessionID || sessionID[0] == "sessionid") && sessBool {
+	} else if (sessionID[0] == common.LBSessionID || sessionID[0] == common.SessionID) && sessBool {
 
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)

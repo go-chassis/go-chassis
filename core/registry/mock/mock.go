@@ -88,7 +88,7 @@ func (m *RegistryMock) GetSchemaContentByServiceName(svcName, version, appID, en
 	return []*registry.SchemaContent{}
 }
 
-// FindMicroServiceInstancesfind micro-service instances
+//FindMicroServiceInstances find micro-service instances
 func (m *RegistryMock) FindMicroServiceInstances(consumerID, appID, microServiceName, version string) ([]*registry.MicroServiceInstance, error) {
 	args := m.Called(consumerID, appID, microServiceName, version)
 	return args.Get(0).([]*registry.MicroServiceInstance), args.Error(1)

@@ -2,6 +2,7 @@ package eventlistener
 
 import (
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/qpslimiter"
 	"strings"
 )
@@ -11,7 +12,7 @@ const (
 	QPSLimitKey = "cse.flowcontrol"
 )
 
-//QpsEventListener is a struct used for Event listener
+//QPSEventListener is a struct used for Event listener
 type QPSEventListener struct {
 	//Key []string
 	Key string
@@ -26,11 +27,11 @@ func (e *QPSEventListener) Event(event *core.Event) {
 	}
 
 	switch event.EventType {
-	case "UPDATE":
+	case common.Update:
 		qpsLimiter.UpdateRateLimit(event.Key, event.Value)
-	case "CREATE":
+	case common.Create:
 		qpsLimiter.UpdateRateLimit(event.Key, event.Value)
-	case "DELETE":
+	case common.Delete:
 		qpsLimiter.DeleteRateLimiter(event.Key)
 	}
 }

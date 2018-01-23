@@ -15,7 +15,7 @@ import (
 	"sync"
 )
 
-var clients map[string]map[string]Client = make(map[string]map[string]Client)
+var clients = make(map[string]map[string]Client)
 var pl sync.RWMutex
 var sl sync.RWMutex
 

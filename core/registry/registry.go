@@ -32,10 +32,10 @@ var RegistryService Registry
 var DefaultAddr = "http://127.0.0.1:30100"
 
 // registryFunc registry function
-var registryFunc map[string]func(opts ...Option) Registry = make(map[string]func(opts ...Option) Registry)
+var registryFunc = make(map[string]func(opts ...Option) Registry)
 
 // HBService variable of heartbeat service
-var HBService *HeartbeatService = &HeartbeatService{
+var HBService = &HeartbeatService{
 	instances: make(map[string]*HeartbeatTask),
 }
 
@@ -95,14 +95,14 @@ func Enable() error {
 		return nil
 	}
 
-	if config.GlobalDefinition.Cse.Service.Registry.Type != "File" {
+	if config.GlobalDefinition.Cse.Service.Registry.Type != common.FileRegistry {
 		if config.GlobalDefinition.Cse.Service.Registry.Address == "" {
 			config.GlobalDefinition.Cse.Service.Registry.Address = DefaultAddr
 		}
 	}
 
 	if config.GlobalDefinition.Cse.Service.Registry.Tenant == "" {
-		config.GlobalDefinition.Cse.Service.Registry.Tenant = "default"
+		config.GlobalDefinition.Cse.Service.Registry.Tenant = common.DefaultApp
 	}
 
 	var tlsConfig *tls.Config
@@ -124,7 +124,7 @@ func Enable() error {
 		}
 	}
 
-	secure := (scheme == "https")
+	secure := (scheme == common.HTTPS)
 	if secure {
 		sslTag := Name + "." + common.Consumer
 		tmpTLSConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(Name, "", common.Consumer)
@@ -142,7 +142,7 @@ func Enable() error {
 		tlsConfig = tmpTLSConfig
 	}
 
-	if config.GlobalDefinition.Cse.Service.Registry.Type == "File" {
+	if config.GlobalDefinition.Cse.Service.Registry.Type == common.File {
 		hosts = append(hosts, config.GlobalDefinition.Cse.Service.Registry.Address)
 	}
 

@@ -1,6 +1,7 @@
 package lager
 
 import (
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/paas-lager"
 	"github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager"
 	"log"
@@ -92,10 +93,10 @@ func checkPassLagerDefinition(lag *Lager) {
 
 	if lag.RollingPolicy == "" {
 		log.Println("RollingPolicy is empty, use default policy[size]")
-		lag.RollingPolicy = "size"
-	} else if lag.RollingPolicy != "daily" && lag.RollingPolicy != "size" {
+		lag.RollingPolicy = common.RollingPolicySize
+	} else if lag.RollingPolicy != "daily" && lag.RollingPolicy != common.RollingPolicySize {
 		log.Printf("RollingPolicy is error, RollingPolicy=%s, use default policy[size].", lag.RollingPolicy)
-		lag.RollingPolicy = "size"
+		lag.RollingPolicy = common.RollingPolicySize
 	}
 
 	if lag.LogRotateDate <= 0 || lag.LogRotateDate > 10 {

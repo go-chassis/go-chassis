@@ -2,6 +2,7 @@ package servicecenter
 
 import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
@@ -204,7 +205,7 @@ func initCache() *cache.Cache {
 // watch watching micro-service instance status
 func watch(response *model.MicroServiceInstanceChangedEvent) {
 	if response.Instance.Status != model.MSInstanceUP {
-		response.Action = "DELETE"
+		response.Action = common.Delete
 	}
 	switch response.Action {
 	case model.EventCreate:

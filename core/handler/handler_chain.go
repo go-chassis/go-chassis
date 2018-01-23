@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"fmt"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"strings"
@@ -125,7 +126,7 @@ func addHandler(c *Chain, name string) error {
 // GetChain is to get chain
 func GetChain(serviceType string, name string) (*Chain, error) {
 	if name == "" {
-		name = "default"
+		name = common.DefaultChainName
 	}
 	c := &Chain{}
 	origin, ok := ChainMap[serviceType+name]

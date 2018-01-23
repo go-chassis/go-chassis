@@ -131,7 +131,7 @@ func RegisterMicroserviceInstances() error {
 		Metadata:     map[string]string{"nodeIP": config.NodeIP},
 	}
 
-	var dInfo *DataCenterInfo = new(DataCenterInfo)
+	var dInfo = new(DataCenterInfo)
 	if config.GlobalDefinition.DataCenter.Name != "" && config.GlobalDefinition.DataCenter.AvailableZone != "" {
 		dInfo.Name = config.GlobalDefinition.DataCenter.Name
 		dInfo.Region = config.GlobalDefinition.DataCenter.Name

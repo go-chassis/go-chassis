@@ -58,7 +58,7 @@ func InitConfigCenter() error {
 	}
 
 	if config.GlobalDefinition.Cse.Config.Client.TenantName == "" {
-		config.GlobalDefinition.Cse.Config.Client.TenantName = "default"
+		config.GlobalDefinition.Cse.Config.Client.TenantName = common.DefaultTenant
 	}
 
 	if config.GlobalDefinition.Cse.Config.Client.RefreshInterval == 0 {
@@ -93,7 +93,7 @@ func getTLSForClient() (*tls.Config, error) {
 	}
 	ccURL, err := url.Parse(base)
 	if err != nil {
-		lager.Logger.Error("Error occured while parsing config center Server Uri", err)
+		lager.Logger.Error("Error occurred while parsing config center Server Uri", err)
 		return nil, err
 	}
 	if ccURL.Scheme == "http" {

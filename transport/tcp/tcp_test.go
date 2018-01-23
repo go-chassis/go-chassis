@@ -317,7 +317,7 @@ WLPgsQpwo1GuSpECICGsnWH5oaeD9t9jbFoSfhJvv0IZmxdcLpRcpslpeWBBAiEA
 	cert, err := tls.X509KeyPair([]byte(certContent), []byte(keyContent))
 	assert.Nil(t, err)
 
-	var certs []tls.Certificate = []tls.Certificate{cert}
+	var certs = []tls.Certificate{cert}
 	var serverTlsConfig *tls.Config = &tls.Config{
 		Certificates:             certs,
 		CipherSuites:             []uint16{tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256},
