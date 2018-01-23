@@ -19,7 +19,7 @@ type Config struct {
 var DefaultConf *Config
 
 // NewConfig is gives the object of Config(it is having configuration files, and configuration factory)
-func NewConfig(files []string) (*Config, error) {
+func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 	// created config factory object
 	factory, err := goarchaius.NewConfigFactory()
 	if err != nil {
@@ -28,12 +28,24 @@ func NewConfig(files []string) (*Config, error) {
 	factory.DeInit()
 	factory.Init()
 
+	files := make([]string, 0)
 	// created file source object
 	fileSource := filesource.NewYamlConfigurationSource()
 	// adding all files with file source
-	for _, v := range files {
-		fileSource.AddFileSource(v, filesource.DefaultFilePriority)
+	for _, v := range essentialfiles {
+		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority); err != nil {
+			lager.Logger.Errorf(err, "add file source error.")
+			return nil, err
+		}
+		files = append(files, v)
 	}
+	for _, v := range commonfiles {
+		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority); err != nil {
+			lager.Logger.Infof("%v", err)
+		}
+		files = append(files, v)
+	}
+
 	err = factory.AddSource(fileSource)
 	if err != nil {
 		return nil, err
@@ -67,8 +79,11 @@ func (e EventListener) Event(event *core.Event) {
 
 // Init is to initialize the archaius
 func Init() error {
-	files := []string{
+	essentialfiles := []string{
 		fileutil.GlobalDefinition(),
+		fileutil.GetMicroserviceDesc(),
+	}
+	commonfiles := []string{
 		fileutil.HystrixDefinition(),
 		fileutil.GetLoadBalancing(),
 		fileutil.GetRateLimiting(),
@@ -76,15 +91,12 @@ func Init() error {
 		fileutil.GetMonitoring(),
 		fileutil.GetAuth(),
 		fileutil.GetTracing(),
-		fileutil.GetMicroserviceDesc(),
 	}
-	lager.Logger.Infof("Configuration Paths %s", files)
-	dConf, err := NewConfig(files)
-	if err != nil {
-		return err
-	}
+
+	lager.Logger.Infof("Essential Configuration Path: %v, Configuration Paths %v", essentialfiles, commonfiles)
+	dConf, err := NewConfig(essentialfiles, commonfiles)
 	DefaultConf = dConf
-	return nil
+	return err
 }
 
 // Get is for to get the value of configuration key

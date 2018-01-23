@@ -1,11 +1,10 @@
 package fault
 
 import (
-	"github.com/ServiceComb/go-chassis/core/invocation"
-
 	"errors"
 	"fmt"
 	"github.com/ServiceComb/go-chassis/core/config/model"
+	"github.com/ServiceComb/go-chassis/core/invocation"
 	"time"
 )
 
@@ -95,7 +94,7 @@ func ValidateFaultDelay(fault *model.Fault) error {
 		fault.Delay.Percent = DefaultDelayPercentage
 	}
 
-	if time.Second*time.Duration(fault.Delay.FixedDelay) < (1 * time.Second) {
+	if fault.Delay.FixedDelay < time.Millisecond {
 		return errors.New("duration must be greater than 1ms")
 	}
 
@@ -123,6 +122,11 @@ func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configu
 	}
 
 	percentage := calculatePercentage(count, configuredPercent)
+
+	if isMutationOccrred(failureCount, percentage) {
+		resetFaultKeyCount(key, percentage-1)
+	}
+
 	if percentage == failureCount && initialCount != 1 {
 		initialKeyCount[key]++
 		incrementKeyCount(key, count+1)
@@ -153,11 +157,21 @@ func calculatePercentage(count, percent int) int {
 	return (count * percent / 100)
 }
 
+//isMutationOccrred confirm whether the configured percent has mutation occured
+func isMutationOccrred(actualCount, expectedCount int) bool {
+	return (actualCount-expectedCount) > 0 || (expectedCount-actualCount) > 1
+}
+
+//resetFaultKeyCount reset the faultKeyCount to expectedCount
+func resetFaultKeyCount(key string, expectedCount int) {
+	faultKeyCount[key] = expectedCount
+}
+
 //injectFault apply fault based on the type
 func injectFault(faultType string, fault *model.Fault) error {
 	if faultType == "delay" {
 		delayApplied = true
-		time.Sleep(fault.Delay.FixedDelay * time.Second)
+		time.Sleep(fault.Delay.FixedDelay)
 	}
 
 	if faultType == "abort" {

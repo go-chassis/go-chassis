@@ -7,6 +7,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -16,12 +18,21 @@ type bootstrapPlugin struct {
 	Name string
 }
 
+func initialize() {
+	os.Setenv("CHASSIS_HOME", "/tmp/")
+	chassisConf := filepath.Join("/tmp/", "conf")
+	os.MkdirAll(chassisConf, 0600)
+	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
+	os.Create(filepath.Join(chassisConf, "microservice.yaml"))
+}
+
 func (b *bootstrapPlugin) Init() error {
 	success[b.Name] = true
 	return nil
 }
 
 func TestBootstrap(t *testing.T) {
+	initialize()
 	config.Init()
 	archaius.Init()
 

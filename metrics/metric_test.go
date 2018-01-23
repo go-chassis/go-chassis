@@ -15,6 +15,14 @@ import (
 func initialize() {
 	p := filepath.Join(os.Getenv("GOPATH"), "src", "code.huawei.com", "cse", "go-chassis", "examples", "discovery", "server")
 	os.Setenv("CHASSIS_HOME", p)
+	chassisConf := filepath.Join(p, "conf")
+	os.MkdirAll(chassisConf, 0600)
+
+	chassisFilePath := filepath.Join(chassisConf, "chassis.yaml")
+	microserviceFilePath := filepath.Join(chassisConf, "microservice.yaml")
+	os.Create(chassisFilePath)
+	os.Create(microserviceFilePath)
+
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 }

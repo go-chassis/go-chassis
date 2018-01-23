@@ -11,8 +11,18 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"os"
+	"path/filepath"
 	"testing"
 )
+
+func initialize() {
+	os.Setenv("CHASSIS_HOME", "/tmp/")
+	chassisConf := filepath.Join("/tmp/", "conf")
+	os.MkdirAll(chassisConf, 0600)
+	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
+	os.Create(filepath.Join(chassisConf, "microservice.yaml"))
+}
 
 func TestNewHystrixCmd(t *testing.T) {
 	t.Log("testing hystrix command with various parameter")
@@ -31,7 +41,7 @@ func TestNewHystrixCmd(t *testing.T) {
 func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 	t.Log("testing bizkeeper consumer handler")
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-
+	initialize()
 	config.Init()
 	archaius.Init()
 

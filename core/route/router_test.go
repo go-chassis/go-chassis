@@ -9,8 +9,11 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/route"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -106,6 +109,14 @@ var file1 = []byte(`
   ]
 }`)
 
+func initialize() {
+	os.Setenv("CHASSIS_HOME", "/tmp/")
+	chassisConf := filepath.Join("/tmp/", "conf")
+	os.MkdirAll(chassisConf, 0600)
+	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
+	os.Create(filepath.Join(chassisConf, "microservice.yaml"))
+}
+
 func TestInit(t *testing.T) {
 	r := &config.RouteRule{}
 	r.Precedence = 2
@@ -167,7 +178,17 @@ func TestRoute(t *testing.T) {
 }
 func TestRoute1(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	archaius.Init()
+	initialize()
+
+	err := filepath.InitConfigDir()
+	if err != nil {
+		t.Error(err)
+	}
+	err = archaius.Init()
+	if err != nil {
+		t.Error(err)
+	}
+
 	archaius.AddKeyValue("cse.darklaunch.policy.ShoppingCart", string(file1))
 	_ = config.InitRouter()
 	si := &registry.SourceInfo{
@@ -184,7 +205,7 @@ func TestRoute1(t *testing.T) {
 	inv := new(invocation.Invocation)
 	inv.MicroServiceName = "ShoppingCart"
 
-	err := router.Route(header, si, inv)
+	err = router.Route(header, si, inv)
 	assert.Nil(t, err, "")
 	assert.Equal(t, "HelloWorld", inv.AppID)
 	assert.Equal(t, "0.4", inv.Version)

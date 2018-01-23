@@ -12,7 +12,7 @@ import (
 
 func TestCircuitBreakerEventListener_Event(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/code.huawei.com/cse/go-chassis-examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 
 	t.Log("Test circuit_breaker_event_listener.go")
 	config.Init()
@@ -32,7 +32,7 @@ func TestCircuitBreakerEventListener_Event(t *testing.T) {
 }
 func TestGetNames(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/code.huawei.com/cse/go-chassis-examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	t.Log("verifying configuration keys by GetNames method")

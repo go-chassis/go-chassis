@@ -104,7 +104,7 @@ func (c *chassis) initialize() error {
 	}
 	err := config.Init()
 	if err != nil {
-		lager.Logger.Error("Failed to initialize conf, err=%s", err)
+		lager.Logger.Error("Failed to initialize conf,", err)
 		return err
 	}
 	router.Init(config.GetRouterConfig().Destinations, config.GetRouterConfig().SourceTemplates)

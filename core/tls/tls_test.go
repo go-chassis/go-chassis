@@ -32,10 +32,14 @@ func TestInit(t *testing.T) {
 	filename1 := "/tmp/conf/chassis.yaml"
 	filename2 := "/tmp/conf/circuit_breaker.yaml"
 	filename3 := "/tmp/conf/lager.yaml"
+	filename4 := "/tmp/conf/chassis.yaml"
+	filename5 := "/tmp/conf/microservice.yaml"
 
 	os.Remove(filename1)
 	os.Remove(filename2)
 	os.Remove(filename3)
+	os.Remove(filename4)
+	os.Remove(filename5)
 	os.Remove(confdir)
 	err := os.Mkdir(confdir, 0777)
 	check(err)
@@ -46,15 +50,15 @@ func TestInit(t *testing.T) {
 	check(err2)
 	f3, err3 := os.Create(filename3)
 	check(err3)
-
+	_, err4 := os.Create(filename3)
+	check(err4)
+	_, err5 := os.Create(filename3)
+	check(err5)
 	_, err1 = io.WriteString(f1, chassisyamlContent)
 	_, err1 = io.WriteString(f2, yamlContent)
 	_, err1 = io.WriteString(f3, yamlContent)
 
-	err = config.Init()
-	if err != nil {
-		t.Log("TestInit failed.", err)
-	}
+	config.Init()
 
 	testConsumerSslConfig, err := chassisTLS.GetSSLConfigByService("test", "", common.Consumer)
 	assert.NoError(t, err)

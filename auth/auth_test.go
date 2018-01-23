@@ -99,6 +99,9 @@ func Test_loadAkskAuth(t *testing.T) {
 	assert.NoError(t, err)
 
 	chassisFilePath := filepath.Join(chassisConf, "chassis.yaml")
+	microserviceFilePath := filepath.Join(chassisConf, "microservice.yaml")
+	os.Create(chassisFilePath)
+	os.Create(microserviceFilePath)
 	credentialFilePath := filepath.Join(cipherRootDir, keytoolAkskFile)
 	uriWithProjectCnNorth := "https://cse.cn-north-1.myhwclouds.com:443"
 

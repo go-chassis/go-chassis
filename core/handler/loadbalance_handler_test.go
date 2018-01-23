@@ -139,7 +139,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	config.Init()
 	//config.GlobalDefinition = &chassisModel.GlobalCfg{}
 
-	err := archaius.Init()
+	archaius.Init()
 	testConfigFactoryObj := new(MockConfigurationFactory)
 	archaius.DefaultConf.ConfigFactory = testConfigFactoryObj
 	key1 := fmt.Sprint("cse.loadbalance.retryEnabled")
@@ -185,9 +185,6 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	testConfigFactoryObj.On("GetValue", key15).Return(val6)
 	testConfigFactoryObj.On("GetValue", key16).Return(val7)
 	testConfigFactoryObj.On("GetValue", key17).Return(val8)
-	if err != nil {
-		t.Error(err)
-	}
 
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})
@@ -244,11 +241,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	config.Init()
 	//config.GlobalDefinition = &chassisModel.GlobalCfg{}
 
-	err := archaius.Init()
-
-	if err != nil {
-		t.Error(err)
-	}
+	archaius.Init()
 
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})

@@ -112,10 +112,10 @@ func GetFixedDelay(protocol, microServiceName, schema, operation string) time.Du
 	switch fixedDelay.(type) {
 	case int:
 		fixedDelayInt := fixedDelay.(int)
-		fixedDelayTime = time.Duration(fixedDelayInt)
+		fixedDelayTime = time.Duration(fixedDelayInt) * time.Millisecond
 	case string:
 		fixedDelayInt, _ := strconv.Atoi(fixedDelay.(string))
-		fixedDelayTime = time.Duration(fixedDelayInt)
+		fixedDelayTime = time.Duration(fixedDelayInt) * time.Millisecond
 	}
 	return fixedDelayTime
 }
