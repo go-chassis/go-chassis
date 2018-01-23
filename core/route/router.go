@@ -170,14 +170,13 @@ func Match(match config.Match, headers fasthttp.RequestHeader, source *registry.
 
 	return SourceMatch(&match, headers, source)
 }
-
-// SourceMatch check the source route
-func SourceMatch(match *config.Match, headers fasthttp.RequestHeader, source *registry.SourceInfo) bool {
-	//source not match
+func checkSource(match *config.Match, source *registry.SourceInfo) {
 	if match.Source != "" && match.Source != source.Name {
 		return false
 	}
-	//source tags not match
+	return
+}
+func checkSourceLength(match *config.Match, source *registry.SourceInfo) {
 	if len(match.SourceTags) != 0 {
 		for k, v := range match.SourceTags {
 			if v != source.Tags[k] {
@@ -185,6 +184,22 @@ func SourceMatch(match *config.Match, headers fasthttp.RequestHeader, source *re
 			}
 		}
 	}
+}
+
+// SourceMatch check the source route
+func SourceMatch(match *config.Match, headers fasthttp.RequestHeader, source *registry.SourceInfo) bool {
+	//source not match
+	/*	if match.Source != "" && match.Source != source.Name {
+		return false
+	}*/
+	//source tags not match
+	/*	if len(match.SourceTags) != 0 {
+		for k, v := range match.SourceTags {
+			if v != source.Tags[k] {
+				return false
+			}
+		}
+	}*/
 	//source headers not match
 	if match.HTTPHeaders != nil {
 		for k, v := range match.HTTPHeaders {
