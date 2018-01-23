@@ -347,18 +347,12 @@ func (r *Servicecenter) fillCacheAndGetServiceSchemaContent(microServiceList []*
 				if err != nil {
 					continue
 				}
-				value, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
+				_, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
 				if !ok {
 					var allServices []*model.MicroService
 					allServices = append(allServices, ms)
 					registry.SchemaServiceIndexedCache.Set(serviceID, allServices, 0)
-				} else {
-					val, _ := value.([]*model.MicroService)
-					val = append(val, ms)
-					registry.SchemaServiceIndexedCache.Set(serviceID, val, 0)
-
 				}
-
 				schemaContent = append(schemaContent, schema)
 			}
 		}
