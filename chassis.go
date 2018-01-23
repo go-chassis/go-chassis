@@ -195,15 +195,15 @@ func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
-//Run bring up the service
+//Run bring up the service,it will not return error,instead just waiting for os signal,and shutdown gracefully
 func Run() {
 	err := goChassis.start()
 	if err != nil {
-		lager.Logger.Fatal("run chassis fail:", err)
+		lager.Logger.Error("run chassis fail:", err)
 	}
 	//Register instance after Server started
 	if err := registry.DoRegister(); err != nil {
-		lager.Logger.Fatal("register instance fail:", err)
+		lager.Logger.Error("register instance fail:", err)
 	}
 	//Graceful shutdown
 	c := make(chan os.Signal)
