@@ -190,7 +190,7 @@ func WithMethodType(s string) CallOption {
 	}
 }
 
-func WithConnectiPoolSize(n int) Option {
+func WithConnectionPoolSize(n int) Option {
 	return func(o *Options) {
 		o.PoolSize = n
 	}

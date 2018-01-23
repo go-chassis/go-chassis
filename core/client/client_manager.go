@@ -67,7 +67,7 @@ func CreateClient(protocol, service string) (Client, error) {
 		clientOption.Transport(tr),
 		clientOption.ContentType("application/json"),
 		clientOption.TLSConfig(tlsConfig),
-		clientOption.WithConnectiPoolSize(poolSize),
+		clientOption.WithConnectionPoolSize(poolSize),
 		clientOption.WithFailure(failureMap))
 
 	if err = c.Init(); err != nil {

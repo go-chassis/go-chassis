@@ -66,7 +66,7 @@ func NewRestClient(options ...clientOption.Option) client.Client {
 		opts.Failure = tmpFailureMap
 	}
 
-	poolSize := 1000
+	poolSize := fasthttp.DefaultMaxConnsPerHost
 	if opts.PoolSize != 0 {
 		poolSize = opts.PoolSize
 	}
@@ -76,8 +76,6 @@ func NewRestClient(options ...clientOption.Option) client.Client {
 		c: &fasthttp.Client{
 			Name:            "restinvoker",
 			MaxConnsPerHost: poolSize,
-			ReadTimeout:     60 * time.Second,
-			WriteTimeout:    60 * time.Second,
 		},
 	}
 
