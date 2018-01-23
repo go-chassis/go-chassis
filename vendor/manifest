@@ -270,7 +270,7 @@
             "importpath": "github.com/ServiceComb/go-archaius",
             "repository": "https://github.com/ServiceComb/go-archaius",
             "vcs": "git",
-            "revision": "81f809a636cf87887730825d8e29568803c982c2",
+            "revision": "901af3f176be43c428b99aefd11bdb75fd0f56f7",
             "branch": "HEAD",
             "notests": true
         },
