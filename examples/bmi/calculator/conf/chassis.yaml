@@ -1,0 +1,36 @@
+APPLICATION_ID: bmi
+cse:
+  service:
+    registry:
+      type: servicecenter
+      address: http://127.0.0.1:30100
+  protocols:
+    rest:
+      listenAddress: 0.0.0.0:8080
+      advertiseAddress: 0.0.0.0:8080
+  handler:
+    chain:
+      Provider:
+        default: bizkeeper-provider,ratelimiter-provider,tracing-provider
+  flowcontrol:
+    Provider:
+      qps:
+        enabled: true
+        limit:
+          web-app: 1
+  circuitBreaker:
+    Provider:
+      enabled: true
+      requestVolumeThreshold: 3
+      sleepWindowInMilliseconds: 10000
+  fallbackpolicy:
+    Provider:
+      policy: throwexception
+  metrics:
+    apiPath: /metrics
+    enable: true
+    enableGoRuntimeMetrics: true
+tracing:
+  enabled: true
+  collectorType: zipkin
+  collectorTarget: http://localhost:9411/api/v1/spans
