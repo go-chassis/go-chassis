@@ -35,6 +35,9 @@ func TestLoadSchema(t *testing.T) {
 
 	NoExistMicroserviceName := "NoExistMicroservice"
 
+	//Fix the root directory otherwise the Schema dir will be created inside /tmp/go-buildXXX///
+	os.Setenv("CHASSIS_HOME", os.Getenv("GOPATH"))
+
 	schemaDirOfMs1 := fileutil.SchemaDir(microserviceName1)
 	schemaDirOfMs2 := fileutil.SchemaDir(microserviceName2)
 	Ms3Dir := filepath.Join(fileutil.GetConfDir(), microserviceName3)

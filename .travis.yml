@@ -30,6 +30,15 @@ jobs:
       script:
         - go get -u github.com/golang/lint/golint
         - bash -x scripts/travis/goLintChecker.sh
+    - stage: Unit Test
+      script:
+        - docker run -d -p 30100:30100 servicecomb/service-center
+        - go get github.com/FiloSottile/gvt
+        - go get github.com/stretchr/testify
+        - go get github.com/reactivex/rxgo
+        - gvt restore
+        - bash -x scripts/travis/unit_test.sh
+
     - stage: Build
       script: 
         - go get github.com/FiloSottile/gvt

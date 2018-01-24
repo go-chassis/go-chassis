@@ -22,7 +22,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-var addrHighway = "127.0.0.1:5432"
+var addrHighway = "127.0.0.1:8969"
 
 func initEnv() {
 	p := os.Getenv("GOPATH")
