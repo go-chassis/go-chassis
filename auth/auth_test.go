@@ -121,8 +121,7 @@ func Test_loadAkskAuth(t *testing.T) {
 			t.Fail()
 		}
 	}
-
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	archaius.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Service.Registry.Address = uriWithProjectCnNorth

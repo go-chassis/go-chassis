@@ -83,7 +83,9 @@ func GetConfDir() string {
 		if err != nil {
 			log.Panic(err)
 		}
+
 		log.Println("Conf dir is " + configDir)
+
 	}
 
 	return configDir
