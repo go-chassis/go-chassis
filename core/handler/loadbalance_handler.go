@@ -155,7 +155,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 	}
 
 	if i.Strategy == loadbalance.StrategyLatency {
-		metadata = i.MicroServiceName + i.Protocol
+		metadata = i.MicroServiceName + "/" + i.Protocol
 	}
 
 	next, err := loadbalance.DefaultSelector.Select(

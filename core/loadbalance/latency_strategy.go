@@ -18,68 +18,55 @@ func (a ByDuration) Less(i, j int) bool { return a[i] < a[j] }
 // variables for latency map, rest and highway requests count
 var (
 	//LatencyMap key is the combination of instance addr and microservice name separated by "/"
-	LatencyMap      map[string][]time.Duration
-	RestReqCount    = 0
-	HighwayReqCount = 0
+	LatencyMap map[string][]time.Duration
 	//maintain different locks since multiple goroutine access the map
-	mutexLatencyMap   sync.RWMutex
+	LatencyMapRWMutex sync.RWMutex
 	avgmtx            sync.RWMutex
 	weightedRespMutex sync.Mutex
 )
 
 // SetLatency for each requests
-func SetLatency(duration time.Duration, addr, microServiceName string) {
-	if strings.Contains(microServiceName, "rest") {
-		RestReqCount++
-	} else {
-		HighwayReqCount++
-	}
-	//ReqCount++
-	key := addr + "/" + microServiceName
+func SetLatency(duration time.Duration, addr, microServiceNameAndProtocol string) {
+	key := addr + "/" + microServiceNameAndProtocol
 
-	mutexLatencyMap.RLock()
+	LatencyMapRWMutex.RLock()
 	val, ok := LatencyMap[key]
-	mutexLatencyMap.RUnlock()
+	LatencyMapRWMutex.RUnlock()
 
 	if !ok {
 		var durationQueue []time.Duration
 		durationQueue = append(durationQueue, duration)
-		mutexLatencyMap.Lock()
+		LatencyMapRWMutex.Lock()
 		LatencyMap[key] = durationQueue
-		mutexLatencyMap.Unlock()
+		LatencyMapRWMutex.Unlock()
 	} else {
-		mutexLatencyMap.Lock()
+		LatencyMapRWMutex.Lock()
 		if len(val) < 10 {
 			val = append(val, duration)
 			LatencyMap[key] = val
-		} else {
+		} else { // save only latest 10 data for one micro service's protocol endpoint
 			val = val[1:]
 			val = append(val, duration)
 			LatencyMap[key] = val
 		}
-		mutexLatencyMap.Unlock()
+		LatencyMapRWMutex.Unlock()
 	}
 }
 
-// WeightedResponse is a strategy
-func WeightedResponse(instances []*registry.MicroServiceInstance, metadata interface{}) Next {
-	if strings.Contains(metadata.(string), "rest") {
-		return selectWeightedInstance(RestReqCount, instances, metadata)
-	}
-
-	return selectWeightedInstance(HighwayReqCount, instances, metadata)
-
+// WeightedResponse is a strategy plugin,interface must be a service/protocol string
+func WeightedResponse(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) Next {
+	return selectWeightedInstance(instances, serviceAndProtocol)
 }
 
 // SortingLatencyDuration sorting the average latencies recored for each instance
 // and returning the instance addr which has the least latency
-func SortingLatencyDuration(metadata string, avgLatencyMap map[string]time.Duration) string {
+func SortingLatencyDuration(serviceAndProtocol string, avgLatencyMap map[string]time.Duration) string {
 	var mtx sync.Mutex
 	var tempLatencyMap = make(map[string]time.Duration)
 	for k, v := range avgLatencyMap {
 		epMs := strings.Split(k, "/")
-		//comparing the microservice name
-		if epMs[1] == metadata {
+		//comparing the microservice and protocol name
+		if (epMs[1] + "/" + epMs[2]) == serviceAndProtocol {
 			mtx.Lock()
 			tempLatencyMap[epMs[0]] = v
 			mtx.Unlock()
@@ -106,40 +93,40 @@ func SortingLatencyDuration(metadata string, avgLatencyMap map[string]time.Durat
 
 }
 
-// FindingAvgLatency Calculating the average latency for each instance using the statistics collected
-func FindingAvgLatency(metadata string) map[string]time.Duration {
-	var avgLatencyMap = make(map[string]time.Duration)
-	mutexLatencyMap.RLock()
-	defer mutexLatencyMap.RUnlock()
+// FindingAvgLatency Calculating the average latency for each instance using the statistics collected,
+// key is addr/service/protocol
+func FindingAvgLatency(metadata string) (avgMap map[string]time.Duration, protocol string) {
+	avgMap = make(map[string]time.Duration)
+	LatencyMapRWMutex.RLock()
+	defer LatencyMapRWMutex.RUnlock()
 	for k, v := range LatencyMap {
 		epMs := strings.Split(k, "/")
-		//comparing the microservice name
-		if epMs[1] == metadata {
-			var t2, tempDuration time.Duration
+		//comparing the microservice/protocol name
+		if (epMs[1] + "/" + epMs[2]) == metadata {
+			protocol = epMs[2]
+			var sum time.Duration
 			for i := 0; i < len(v); i++ {
-				t2 = t2 + v[i]
+				sum = sum + v[i]
 			}
-
-			tempDuration = t2 / time.Duration(int64(len(v)))
 			avgmtx.Lock()
-			avgLatencyMap[k] = tempDuration
+			avgMap[k] = time.Duration(sum.Nanoseconds() / int64(len(v)))
 			avgmtx.Unlock()
 		}
 	}
-
-	return avgLatencyMap
-
+	return avgMap, protocol
 }
 
 // selectWeightedInstance select instance based on protocol and less latency
-func selectWeightedInstance(reqCount int, instances []*registry.MicroServiceInstance, metadata interface{}) Next {
-	//Checking for length of instances * 10 to get 10 sample latencies for each instance to
-	//get average latency for each instance.
-	if reqCount <= len(instances)*10 {
+func selectWeightedInstance(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) Next {
+	var instanceAddr string
+	avgLatencyMap, protocol := FindingAvgLatency(serviceAndProtocol.(string))
+	if len(avgLatencyMap) == 0 {
 		return func() (*registry.MicroServiceInstance, error) {
 			if len(instances) == 0 {
 				return nil, ErrNoneAvailable
 			}
+
+			//if no instances are selected round robin will be done
 			weightedRespMutex.Lock()
 			node := instances[i%len(instances)]
 			i++
@@ -147,11 +134,7 @@ func selectWeightedInstance(reqCount int, instances []*registry.MicroServiceInst
 			return node, nil
 		}
 	}
-	var instanceAddr string
-	if len(LatencyMap) != 0 {
-		avgLatencyMap := FindingAvgLatency(metadata.(string))
-		instanceAddr = SortingLatencyDuration(metadata.(string), avgLatencyMap)
-	}
+	instanceAddr = SortingLatencyDuration(serviceAndProtocol.(string), avgLatencyMap)
 
 	return func() (*registry.MicroServiceInstance, error) {
 		if len(instances) == 0 {
@@ -160,10 +143,7 @@ func selectWeightedInstance(reqCount int, instances []*registry.MicroServiceInst
 
 		for _, node := range instances {
 			weightedRespMutex.Lock()
-			if instanceAddr == node.EndpointsMap["rest"] {
-				weightedRespMutex.Unlock()
-				return node, nil
-			} else if instanceAddr == node.EndpointsMap["highway"] {
+			if instanceAddr == node.EndpointsMap[protocol] {
 				weightedRespMutex.Unlock()
 				return node, nil
 			}
