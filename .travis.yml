@@ -30,6 +30,10 @@ jobs:
       script:
         - go get -u github.com/golang/lint/golint
         - bash -x scripts/travis/goLintChecker.sh
+    - stage: GoCyclo Checker
+      script:
+        - go get github.com/fzipp/gocyclo
+        - bash -x scripts/travis/goCycloChecker.sh
     - stage: Build
       script: 
         - go get github.com/FiloSottile/gvt

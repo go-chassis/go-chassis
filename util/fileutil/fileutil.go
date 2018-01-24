@@ -83,7 +83,9 @@ func GetConfDir() string {
 		if err != nil {
 			log.Panic(err)
 		}
-		log.Println("Conf dir is "+configDir)
+
+		log.Println("Conf dir is " + configDir)
+
 	}
 
 	return configDir
@@ -153,4 +155,3 @@ func GetTracing() string {
 func SchemaDir(microserviceName string) string {
 	return filepath.Join(GetConfDir(), microserviceName, SchemaDirectory)
 }
-

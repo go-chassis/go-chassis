@@ -121,8 +121,6 @@ func Test_loadAkskAuth(t *testing.T) {
 			t.Fail()
 		}
 	}
-
-
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	archaius.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
