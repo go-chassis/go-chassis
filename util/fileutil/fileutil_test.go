@@ -9,27 +9,17 @@ import (
 )
 
 func TestGetWorkDirHmNotSet(t *testing.T) {
-	//os.Setenv("CHASSIS_HOME", "test")
-	err := fileutil.InitConfigDir()
-	assert.NoError(t, err)
-	assert.Equal(t, "conf", filepath.Base(fileutil.ConfDir()))
+	os.Setenv("CHASSIS_HOME", "test")
+	assert.Equal(t, "conf", filepath.Base(fileutil.GetConfDir()))
 
-	err = fileutil.InitConfigDir()
-	assert.NoError(t, err)
-	assert.Equal(t, "conf", filepath.Base(fileutil.ConfDir()))
 }
 func TestGetWorkDir(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "test")
-	err := fileutil.InitConfigDir()
-	assert.NoError(t, err)
-	assert.Equal(t, "conf", filepath.Base(fileutil.ConfDir()))
-
-	err = fileutil.InitConfigDir()
-	assert.NoError(t, err)
-	assert.Equal(t, "conf", filepath.Base(fileutil.ConfDir()))
+	assert.Equal(t, "conf", filepath.Base(fileutil.GetConfDir()))
 }
 
 func TestHystricDefinaiton(t *testing.T) {
+	os.Setenv("CHASSIS_HOME", "test")
 	def := fileutil.HystrixDefinition()
 	assert.Equal(t, "test/conf/circuit_breaker.yaml", def)
 }
@@ -55,11 +45,5 @@ func TestGetDefinition(t *testing.T) {
 }
 func TestGetWorkDirConfSet(t *testing.T) {
 	os.Setenv("CHASSIS_CONF_DIR", "conf")
-	err := fileutil.InitConfigDir()
-	assert.NoError(t, err)
-	assert.Equal(t, "conf", filepath.Base(fileutil.ConfDir()))
-
-	err = fileutil.InitConfigDir()
-	assert.NoError(t, err)
-	assert.Equal(t, "conf", filepath.Base(fileutil.ConfDir()))
+	assert.Equal(t, "conf", filepath.Base(fileutil.GetConfDir()))
 }
