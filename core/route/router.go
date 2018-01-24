@@ -170,13 +170,73 @@ func Match(match config.Match, headers fasthttp.RequestHeader, source *registry.
 
 	return SourceMatch(&match, headers, source)
 }
-func checkSource(match *config.Match, source *registry.SourceInfo) {
+func matchHeaders(match *config.Match, headers fasthttp.RequestHeader) int {
+	if match.HTTPHeaders != nil {
+		for k, v := range match.HTTPHeaders {
+			header := headers.Peek(k)
+			if regex, ok := v["regex"]; ok {
+				reg := regexp.MustCompilePOSIX(regex)
+				if !reg.Match(header) {
+					return 0
+				}
+				continue
+			}
+			if exact, ok := v["exact"]; ok {
+				if exact != string(header) {
+					return 0
+				}
+				continue
+			}
+			if noEqu, ok := v["noEqu"]; ok {
+				if noEqu == string(header) {
+					return 0
+				}
+				continue
+			}
+
+			headerInt, err := strconv.Atoi(string(header))
+			if err != nil {
+				return 0
+			}
+			if noLess, ok := v["noLess"]; ok {
+				head, _ := strconv.Atoi(noLess)
+				if head > headerInt {
+					return 0
+				}
+				continue
+			}
+			if noGreater, ok := v["noGreater"]; ok {
+				head, _ := strconv.Atoi(noGreater)
+				if head < headerInt {
+					return 0
+				}
+				continue
+			}
+			if greater, ok := v["greater"]; ok {
+				head, _ := strconv.Atoi(greater)
+				if head >= headerInt {
+					return 0
+				}
+				continue
+			}
+			if less, ok := v["less"]; ok {
+				head, _ := strconv.Atoi(less)
+				if head <= headerInt {
+					return 0
+				}
+			}
+		}
+	}
+	return 1
+}
+
+// SourceMatch check the source route
+func SourceMatch(match *config.Match, headers fasthttp.RequestHeader, source *registry.SourceInfo) bool {
+	//source not match
 	if match.Source != "" && match.Source != source.Name {
 		return false
 	}
-	return
-}
-func checkSourceLength(match *config.Match, source *registry.SourceInfo) {
+	//source tags not match
 	if len(match.SourceTags) != 0 {
 		for k, v := range match.SourceTags {
 			if v != source.Tags[k] {
@@ -184,78 +244,10 @@ func checkSourceLength(match *config.Match, source *registry.SourceInfo) {
 			}
 		}
 	}
-}
-
-// SourceMatch check the source route
-func SourceMatch(match *config.Match, headers fasthttp.RequestHeader, source *registry.SourceInfo) bool {
-	//source not match
-	/*	if match.Source != "" && match.Source != source.Name {
-		return false
-	}*/
-	//source tags not match
-	/*	if len(match.SourceTags) != 0 {
-		for k, v := range match.SourceTags {
-			if v != source.Tags[k] {
-				return false
-			}
-		}
-	}*/
 	//source headers not match
-	if match.HTTPHeaders != nil {
-		for k, v := range match.HTTPHeaders {
-			header := headers.Peek(k)
-			if regex, ok := v["regex"]; ok {
-				reg := regexp.MustCompilePOSIX(regex)
-				if !reg.Match(header) {
-					return false
-				}
-				continue
-			}
-			if exact, ok := v["exact"]; ok {
-				if exact != string(header) {
-					return false
-				}
-				continue
-			}
-			if noEqu, ok := v["noEqu"]; ok {
-				if noEqu == string(header) {
-					return false
-				}
-				continue
-			}
-
-			headerInt, err := strconv.Atoi(string(header))
-			if err != nil {
-				return false
-			}
-			if noLess, ok := v["noLess"]; ok {
-				head, _ := strconv.Atoi(noLess)
-				if head > headerInt {
-					return false
-				}
-				continue
-			}
-			if noGreater, ok := v["noGreater"]; ok {
-				head, _ := strconv.Atoi(noGreater)
-				if head < headerInt {
-					return false
-				}
-				continue
-			}
-			if greater, ok := v["greater"]; ok {
-				head, _ := strconv.Atoi(greater)
-				if head >= headerInt {
-					return false
-				}
-				continue
-			}
-			if less, ok := v["less"]; ok {
-				head, _ := strconv.Atoi(less)
-				if head <= headerInt {
-					return false
-				}
-			}
-		}
+	i := matchHeaders(match, headers)
+	if i == 0 {
+		return false
 	}
 	return true
 }
