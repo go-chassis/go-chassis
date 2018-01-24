@@ -193,14 +193,10 @@ func ReadMicroserviceConfigFromBytes(data []byte) error {
 
 // Init is initialize the configuration directory, lager, archaius, route rule, and schema
 func Init() error {
-	err := fileutil.InitConfigDir()
-	if err != nil {
-		return err
-	}
 
 	lagerFile := fileutil.PassLagerDefinition()
 
-	err = readPassLagerConfigFile(lagerFile)
+	err := readPassLagerConfigFile(lagerFile)
 	if err != nil {
 		log.Println("WARN:lager.yaml does not exist,use the default configuration")
 	}
@@ -226,7 +222,7 @@ func Init() error {
 	if schemaEnv != "" {
 		schemaError = schema.LoadSchema(schemaEnv, true)
 	} else {
-		schemaError = schema.LoadSchema(fileutil.ConfDir(), false)
+		schemaError = schema.LoadSchema(fileutil.GetConfDir(), false)
 	}
 
 	if schemaError != nil {
@@ -234,7 +230,7 @@ func Init() error {
 	}
 
 	//set microservice names
-	msError := schema.SetMicroServiceNames(fileutil.ConfDir())
+	msError := schema.SetMicroServiceNames(fileutil.GetConfDir())
 	if msError != nil {
 		return msError
 	}

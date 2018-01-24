@@ -34,7 +34,6 @@ func Test_loadPaasAuth(t *testing.T) {
 	chassisHome := authTestDir
 	os.Setenv("CHASSIS_HOME", chassisHome)
 	libDir := filepath.Join(chassisHome, "lib")
-	fileutil.InitConfigDir()
 	err = os.MkdirAll(libDir, 0600)
 	assert.NoError(t, err)
 	_, err = os.Create(filepath.Join(libDir, paasAuthPlugin))
@@ -93,7 +92,6 @@ func Test_loadAkskAuth(t *testing.T) {
 	chassisConf := filepath.Join(chassisHome, "conf")
 	err := os.MkdirAll(chassisConf, 0600)
 	assert.NoError(t, err)
-	fileutil.InitConfigDir()
 	os.Setenv(cipherRootEnv, cipherRootDir)
 	err = os.MkdirAll(cipherRootDir, 0600)
 	assert.NoError(t, err)
@@ -124,8 +122,7 @@ func Test_loadAkskAuth(t *testing.T) {
 		}
 	}
 
-	// init archaius, lager
-	fileutil.InitConfigDir()
+
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	archaius.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}

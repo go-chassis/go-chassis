@@ -35,15 +35,12 @@ func TestLoadSchema(t *testing.T) {
 
 	NoExistMicroserviceName := "NoExistMicroservice"
 
-	err := fileutil.InitConfigDir()
-	assert.NoError(t, err)
-
 	schemaDirOfMs1 := fileutil.SchemaDir(microserviceName1)
 	schemaDirOfMs2 := fileutil.SchemaDir(microserviceName2)
-	Ms3Dir := filepath.Join(fileutil.ConfDir(), microserviceName3)
+	Ms3Dir := filepath.Join(fileutil.GetConfDir(), microserviceName3)
 
 	// 创建目录
-	err = os.MkdirAll(schemaDirOfMs1, 0644)
+	err := os.MkdirAll(schemaDirOfMs1, 0644)
 	assert.Nil(t, err)
 
 	err = os.MkdirAll(schemaDirOfMs2, 0644)
@@ -67,7 +64,7 @@ func TestLoadSchema(t *testing.T) {
 	}
 
 	t.Log("========加载schema")
-	err = schema.LoadSchema(fileutil.ConfDir(), false)
+	err = schema.LoadSchema(fileutil.GetConfDir(), false)
 	assert.Nil(t, err)
 
 	t.Log("========查询schemaID")
@@ -111,6 +108,6 @@ func TestLoadSchema(t *testing.T) {
 		microserviceName2, microserviceNames[1],
 		microserviceName3, microserviceNames[2])
 
-	err = os.RemoveAll(fileutil.ConfDir())
+	err = os.RemoveAll(fileutil.GetConfDir())
 	assert.Nil(t, err)
 }
