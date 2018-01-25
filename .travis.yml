@@ -36,8 +36,10 @@ jobs:
         - go get github.com/FiloSottile/gvt
         - go get github.com/stretchr/testify
         - go get github.com/reactivex/rxgo
+        - go get github.com/mattn/goveralls
+        - go get golang.org/x/tools/cmd/cover
         - gvt restore
-        - bash -x scripts/travis/unit_test.sh
+        - bash -x scripts/travis/unit_test.sh && $HOME/gopath/bin/goveralls -coverprofile=coverage.txt -service=travis-ci
 
     - stage: Build
       script: 
