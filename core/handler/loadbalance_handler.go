@@ -38,7 +38,7 @@ type LBHandler struct{}
 // StrategyName strategy name
 func StrategyName(i *invocation.Invocation) string {
 
-	global := archaius.GetString(genKey(lbPrefix, propertyStrategyName), loadbalance.StrategyRandom)
+	global := archaius.GetString(genKey(lbPrefix, propertyStrategyName), loadbalance.StrategyRoundRobin)
 	ms := archaius.GetString(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyStrategyName), global)
 	return ms
 }
