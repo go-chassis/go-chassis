@@ -8,14 +8,12 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 // constant for route rule keys
 const (
-	RouterFile         = "router.yaml"
 	DarkLaunchPrefix   = "cse.darklaunch.policy."
 	DarkLaunchTypeRule = "RULE"
 	DarkLaunchTypeRate = "RATE"
@@ -28,15 +26,6 @@ var routerConfig *RouterConfig
 // GetRouterConfig get router configuurations
 func GetRouterConfig() *RouterConfig {
 	return routerConfig
-}
-
-// GetConfigFilePath get configuration file path
-func GetConfigFilePath() (string, error) {
-	wd, err := fileutil.GetWorkDir()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(wd, "conf", RouterFile), nil
 }
 
 // InitRouter initialize router
@@ -64,12 +53,9 @@ func InitRouter() error {
 
 // GetRouteRules get route rules
 func GetRouteRules() (*RouterConfig, error) {
-	f, err := GetConfigFilePath()
+	f := fileutil.GetRouter()
 	routeRules := &RouterConfig{
 		Destinations: map[string][]*RouteRule{},
-	}
-	if err != nil {
-		return routeRules, err
 	}
 	var contents string
 
@@ -85,7 +71,7 @@ func GetRouteRules() (*RouterConfig, error) {
 		lager.Logger.Info("Load route rules from file: " + f)
 		b, err := ioutil.ReadFile(f)
 		if err != nil {
-			lager.Logger.Warn("Can not read router.yaml", err)
+			lager.Logger.Warn("Can not read file", err)
 			contents = ""
 			return nil, err
 		}
@@ -107,16 +93,13 @@ func GetRouteRules() (*RouterConfig, error) {
 
 // GetConfigContents get configuration contents
 func GetConfigContents(key string) (string, error) {
-	f, err := GetConfigFilePath()
-	if err != nil {
-		return "", err
-	}
+	var err error
 	var contents string
 	//route rule yaml file's content is value of a key
 	//So read from config center first,if it is empty, Try to set file content into memory key value
 	contents = archaius.GetString(key, "")
 	if contents == "" {
-		contents, err = SetKeyValueByFile(key, f)
+		contents, err = SetKeyValueByFile(key, fileutil.GetRouter())
 		if err != nil {
 			return "", err
 		}
