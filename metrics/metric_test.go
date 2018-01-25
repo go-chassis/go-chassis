@@ -28,7 +28,7 @@ func initialize() {
 }
 
 func TestInitEmptyServerURI(t *testing.T) {
-	t.Log("Testing metric init function with empty serverURI")
+	//t.Log("Testing metric init function with empty serverURI")
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	baseURL := config.GlobalDefinition.Cse.Monitor.Client.ServerURI
@@ -39,7 +39,7 @@ func TestInitEmptyServerURI(t *testing.T) {
 }
 
 func TestInitServerURItlsError(t *testing.T) {
-	t.Log("Testing metric init function with serverURI https://csemonitor.com")
+	//t.Log("Testing metric init function with serverURI https://csemonitor.com")
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.ServerURI = "https://csemonitor.com"
@@ -51,7 +51,7 @@ func TestInitServerURItlsError(t *testing.T) {
 }
 
 func TestInitServerURItlsConfig(t *testing.T) {
-	t.Log("Testing Init function with tlsConfig")
+	//t.Log("Testing Init function with tlsConfig")
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.ServerURI = "http://csemonitor.com"
@@ -63,7 +63,7 @@ func TestInitServerURItlsConfig(t *testing.T) {
 }
 
 func TestInitServerUriEmptyString(t *testing.T) {
-	t.Log("Testing Init function with ServerURI")
+	//t.Log("Testing Init function with ServerURI")
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.ServerURI = ""
@@ -73,7 +73,7 @@ func TestInitServerUriEmptyString(t *testing.T) {
 }
 
 func TestInitUsernameEmpty(t *testing.T) {
-	t.Log("Testing Init function with empty Username")
+	//t.Log("Testing Init function with empty Username")
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.UserName = ""
@@ -82,7 +82,7 @@ func TestInitUsernameEmpty(t *testing.T) {
 }
 
 func TestInitDomainNameEmpty(t *testing.T) {
-	t.Log("Testing Init function with empty Domain name")
+	//t.Log("Testing Init function with empty Domain name")
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.DomainName = ""
@@ -91,7 +91,7 @@ func TestInitDomainNameEmpty(t *testing.T) {
 }
 
 func TestInitGenAuthHeader(t *testing.T) {
-	t.Log("Testing Init function with array returned from GenAuthHeader")
+	//t.Log("Testing Init function with array returned from GenAuthHeader")
 	initialize()
 
 	config.GlobalDefinition = &model.GlobalCfg{}

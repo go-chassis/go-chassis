@@ -21,9 +21,6 @@ func check(e error) {
 func TestInit(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "/tmp")
 
-	t.Log(os.Getenv("CHASSIS_HOME"))
-	t.Log("Test config.go")
-
 	yamlContent := "a:\n  b:\n    c: valueC\n    d: valueD\n  \ryamlkeytest1: test1"
 	chassisyamlContent := "APPLICATION_ID: CSE\n  \ncse:\n  service:\n    registry:\n      type: servicecenter\n  protocols:\n       highway:\n         listenAddress: 127.0.0.1:8080\n  \nssl:\n  test.Consumer.certFile: test.cer\n  test.Consumer.keyFile: test.key\n"
 	os.Args = append(os.Args, "--argument=cmdtest")
@@ -40,8 +37,7 @@ func TestInit(t *testing.T) {
 	os.Remove(filename3)
 	os.Remove(filename4)
 	os.Remove(filename5)
-	os.Remove(confdir)
-	err := os.Mkdir(confdir, 0777)
+	err := os.MkdirAll(confdir, 0777)
 	check(err)
 
 	f1, err1 := os.Create(filename1)
@@ -50,9 +46,9 @@ func TestInit(t *testing.T) {
 	check(err2)
 	f3, err3 := os.Create(filename3)
 	check(err3)
-	_, err4 := os.Create(filename3)
+	_, err4 := os.Create(filename4)
 	check(err4)
-	_, err5 := os.Create(filename3)
+	_, err5 := os.Create(filename5)
 	check(err5)
 	_, err1 = io.WriteString(f1, chassisyamlContent)
 	_, err1 = io.WriteString(f2, yamlContent)
