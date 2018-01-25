@@ -352,7 +352,6 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	assert.NotEqual(t, parentSpanID, consumerZpSpanContext.SpanID)
 }
 
-
 func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	// the port should be different from test cases

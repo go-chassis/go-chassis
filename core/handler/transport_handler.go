@@ -99,7 +99,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 
 	if i.Strategy == loadbalance.StrategyLatency {
 		timeAfter := time.Since(timeBefore)
-		loadbalance.SetLatency(timeAfter, i.Endpoint, req.MicroServiceName+i.Protocol)
+		loadbalance.SetLatency(timeAfter, i.Endpoint, req.MicroServiceName+"/"+i.Protocol)
 	}
 
 	r.Result = i.Reply
