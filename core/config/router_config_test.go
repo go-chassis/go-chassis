@@ -9,11 +9,6 @@ import (
 	"testing"
 )
 
-func TestGetConfigFilePath(t *testing.T) {
-	f, _ := config.GetConfigFilePath()
-	assert.Contains(t, f, "router.yaml")
-}
-
 var file = []byte(`
 sourceTemplate:
   vmall-with-special-header:

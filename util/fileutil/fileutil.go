@@ -1,9 +1,9 @@
 package fileutil
 
 import (
-	"log"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 const (
@@ -36,10 +36,13 @@ const (
 	Auth = "auth.yaml"
 	//Tracing is constant of type string
 	Tracing = "tracing.yaml"
+	//Router is constant of type string
+	Router = "router.yaml"
 )
 
 var configDir string
 var homeDir string
+var once sync.Once
 
 //GetWorkDir is a function used to get the working directory
 func GetWorkDir() (string, error) {
@@ -50,13 +53,13 @@ func GetWorkDir() (string, error) {
 	return wd, nil
 }
 
-func initDir() error {
+func initDir() {
 	if h := os.Getenv(ChassisHome); h != "" {
 		homeDir = h
 	} else {
 		wd, err := GetWorkDir()
 		if err != nil {
-			return err
+			panic(err)
 		}
 		homeDir = wd
 	}
@@ -68,24 +71,17 @@ func initDir() error {
 		// CHASSIS_HOME has second most high priority
 		configDir = filepath.Join(homeDir, "conf")
 	}
-	return nil
 }
 
 //ChassisHomeDir is function used to get the home directory of chassis
 func ChassisHomeDir() string {
+	once.Do(initDir)
 	return homeDir
 }
 
 //GetConfDir is a function used to get the configuration directory
 func GetConfDir() string {
-	if configDir == "" {
-		err := initDir()
-		if err != nil {
-			log.Panic(err)
-		}
-		log.Println("Conf dir is " + configDir)
-	}
-
+	once.Do(initDir)
 	return configDir
 }
 
@@ -117,6 +113,11 @@ func GetTLS() string {
 //GetMonitoring is a function used to join .yaml file name with configuration directory
 func GetMonitoring() string {
 	return filepath.Join(GetConfDir(), Monitoring)
+}
+
+//GetRouter is a function used to join .yaml file name with configuration directory
+func GetRouter() string {
+	return filepath.Join(GetConfDir(), Router)
 }
 
 //MicroserviceDefinition is a function used to join .yaml file name with configuration directory

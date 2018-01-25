@@ -1,12 +1,12 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"fmt"
 	"github.com/ServiceComb/auth"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
@@ -24,15 +24,16 @@ func Test_isAuthConfNotExist(t *testing.T) {
 }
 
 func Test_loadPaasAuth(t *testing.T) {
-	err := loadPaasAuth()
-	assert.True(t, isAuthConfNotExist(err))
-	// test func nil
-
 	utDir := filepath.Join(os.Getenv("GOPATH"), "test")
 	authTestDir := filepath.Join(utDir, "auth")
 	chassisHome := authTestDir
-	os.Setenv("CHASSIS_HOME", chassisHome)
 	libDir := filepath.Join(chassisHome, "lib")
+	os.Setenv("CHASSIS_HOME", chassisHome)
+	os.Remove(filepath.Join(libDir, paasAuthPlugin))
+	err := loadPaasAuth()
+	assert.True(t, isAuthConfNotExist(err))
+
+	// test func nil
 	err = os.MkdirAll(libDir, 0600)
 	assert.NoError(t, err)
 	// Commenting the OS dependent Test_cases
@@ -41,7 +42,6 @@ func Test_loadPaasAuth(t *testing.T) {
 	err = loadPaasAuth()
 	assert.NotNil(t, err)
 	assert.False(t, isAuthConfNotExist(err))*/
-	// test func nil
 }
 
 func testWriteFile(t *testing.T, name string, ak, sk, project, cipher string) {
