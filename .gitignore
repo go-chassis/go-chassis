@@ -1,8 +1,9 @@
 bin/
 .idea/
 **/log/chassis.log
-
-
+*.exe
+*.log*.zip
+*.lnk
 
 vendor/**
 !vendor/manifest
