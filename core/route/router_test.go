@@ -1,19 +1,13 @@
 package router_test
 
 import (
-	//"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
-	//"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/route"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	//"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
-	//"os"
-	//"path/filepath"
 	"testing"
 )
 
@@ -93,6 +87,25 @@ routeRule:
         weight: 100
   `)
 
+var rpcfile = []byte(`
+routeRule:
+  RPCServer: #这里就是请求里的host,一般来说推荐直接为sc里的service name，或者k8s的serviceName.namespace.dnsSuffix
+    - precedence: 2 #优先权 越大优先级越高
+      route:
+      - tags:
+          version: v2 #对接sc如果不填就自动为0.1
+        weight: 100 #全重 100%到这里
+      match:
+        headers:
+          test: #多个规则的语义是与
+            exact: "user"
+    - precedence: 1 #优先权 越大优先级越高
+      route:
+      - tags:
+          version: v3
+        weight: 100
+ `)
+
 /*var file1 = []byte(`
 {
   "policyType": "RULE",
@@ -117,8 +130,7 @@ func initialize() {
 	os.MkdirAll(chassisConf, 0600)
 	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
 	os.Create(filepath.Join(chassisConf, "microservice.yaml"))
-}
-*/
+}*/
 
 func TestInit(t *testing.T) {
 	r := &config.RouteRule{}
@@ -132,6 +144,33 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "source.service", template["template1"].Source)
 	assert.Equal(t, 2, rr["server"][0].Precedence)
 	assert.Equal(t, "source.service", rr["server"][0].Match.Source)
+}
+
+func TestRPCRoute(t *testing.T) {
+	si := &registry.SourceInfo{
+		Tags: map[string]string{},
+	}
+	si.Tags[common.BuildinTagVersion] = "v2"
+
+	c := &config.RouterConfig{}
+	if err := yaml.Unmarshal([]byte(rpcfile), c); err != nil {
+		t.Error(err)
+	}
+	router.Init(c.Destinations, c.SourceTemplates)
+
+	header := map[string]string{
+		"cookie": "user=jason",
+		"X-Age":  "18",
+		"test":   "user",
+	}
+
+	inv := new(invocation.Invocation)
+	inv.MicroServiceName = "RPCServer"
+	err := router.Route(header, si, inv)
+	assert.Nil(t, err, "")
+	assert.Equal(t, "default", inv.AppID)
+	assert.Equal(t, "v2", inv.Version)
+	assert.Equal(t, "RPCServer", inv.MicroServiceName)
 }
 
 func TestRoute(t *testing.T) {
@@ -148,9 +187,11 @@ func TestRoute(t *testing.T) {
 	}
 	router.Init(c.Destinations, c.SourceTemplates)
 
-	header := fasthttp.RequestHeader{}
-	header.Add("cookie", "user=jason")
-	header.Add("X-Age", "18")
+	header := map[string]string{
+		"cookie": "user=jason",
+		"X-Age":  "18",
+	}
+
 	inv := new(invocation.Invocation)
 	inv.MicroServiceName = "ShoppingCart"
 
@@ -167,7 +208,7 @@ func TestRoute(t *testing.T) {
 
 	inv.Version = ""
 	inv.MicroServiceName = "server"
-	header.Add("test", "test")
+	header["test"] = "test"
 	si.Name = "reviews.default.svc.cluster.local"
 	err = router.Route(header, si, inv)
 	assert.Error(t, err, "")
@@ -237,7 +278,7 @@ func TestRoute2(t *testing.T) {
 	}
 	router.SetRouteRule(c.Destinations)
 
-	header := fasthttp.RequestHeader{}
+	header := map[string]string{}
 	inv := new(invocation.Invocation)
 	inv.MicroServiceName = "carts"
 
@@ -249,6 +290,7 @@ func TestRoute2(t *testing.T) {
 	assert.Equal(t, "0.0.1", inv.Version)
 
 }
+
 func TestMatch(t *testing.T) {
 	si := &registry.SourceInfo{
 		Tags: map[string]string{},
@@ -257,28 +299,28 @@ func TestMatch(t *testing.T) {
 	si.Tags[common.BuildinTagApp] = "app"
 	si.Tags[common.BuildinTagVersion] = "0.1"
 	match := InitMatch("service", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
-	headers := fasthttp.RequestHeader{}
-	headers.Add("cookie", "abc-def-ghi")
+	headers := map[string]string{}
+	headers["cookie"] = "abc-def-ghi"
 	assert.Equal(t, false, router.Match(match, headers, si))
 	si.Tags["tag1"] = "v1"
 	assert.Equal(t, false, router.Match(match, headers, si))
-	headers.Add("age", "15")
+	headers["age"] = "15"
 	assert.Equal(t, true, router.Match(match, headers, si))
 	match.HTTPHeaders["noEqual"] = map[string]string{"noEqu": "e"}
 	assert.Equal(t, true, router.Match(match, headers, si))
-	headers.Add("noEqual", "noe")
+	headers["noEqual"] = "noe"
 	assert.Equal(t, true, router.Match(match, headers, si))
 	match.HTTPHeaders["noLess"] = map[string]string{"noLess": "100"}
-	headers.Add("noLess", "120")
+	headers["noLess"] = "120"
 	assert.Equal(t, true, router.Match(match, headers, si))
 	match.HTTPHeaders["noGreater"] = map[string]string{"noGreater": "100"}
-	headers.Add("noGreater", "120")
+	headers["noGreater"] = "120"
 	assert.Equal(t, false, router.Match(match, headers, si))
 
 	si.Name = "error"
 	assert.Equal(t, false, router.Match(match, headers, si))
 
-	headers.Set("cookie", "7gh")
+	headers["cookie"] = "7gh"
 	si.Name = "service"
 	assert.Equal(t, false, router.Match(match, headers, si))
 }

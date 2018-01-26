@@ -6,7 +6,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"regexp"
 	"strconv"
 	"sync"
@@ -81,7 +80,7 @@ func GetTemplates() map[string]*config.Match {
 }
 
 // Route route the APIs
-func Route(header fasthttp.RequestHeader, si *registry.SourceInfo, inv *invocation.Invocation) error {
+func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.Invocation) error {
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {
 		if Match(rule.Match, header, si) {
@@ -158,13 +157,13 @@ func FitRate(tags []*config.RouteTag, dest string) (tag *config.RouteTag, err er
 }
 
 // Match check the route rule
-func Match(match config.Match, headers fasthttp.RequestHeader, source *registry.SourceInfo) bool {
+func Match(match config.Match, headers map[string]string, source *registry.SourceInfo) bool {
 	//validate template first
 	if refer := match.Refer; refer != "" {
 		return SourceMatch(templates[refer], headers, source)
 	}
 	//match rule is not set
-	if match.Source == "" && match.HTTPHeaders == nil {
+	if match.Source == "" && match.HTTPHeaders == nil && match.Headers == nil {
 		return true
 	}
 
@@ -172,7 +171,7 @@ func Match(match config.Match, headers fasthttp.RequestHeader, source *registry.
 }
 
 // SourceMatch check the source route
-func SourceMatch(match *config.Match, headers fasthttp.RequestHeader, source *registry.SourceInfo) bool {
+func SourceMatch(match *config.Match, headers map[string]string, source *registry.SourceInfo) bool {
 	//source not match
 	if match.Source != "" && match.Source != source.Name {
 		return false
@@ -185,61 +184,79 @@ func SourceMatch(match *config.Match, headers fasthttp.RequestHeader, source *re
 			}
 		}
 	}
-	//source headers not match
-	if match.HTTPHeaders != nil {
-		for k, v := range match.HTTPHeaders {
-			header := headers.Peek(k)
-			if regex, ok := v["regex"]; ok {
-				reg := regexp.MustCompilePOSIX(regex)
-				if !reg.Match(header) {
-					return false
-				}
-				continue
-			}
-			if exact, ok := v["exact"]; ok {
-				if exact != string(header) {
-					return false
-				}
-				continue
-			}
-			if noEqu, ok := v["noEqu"]; ok {
-				if noEqu == string(header) {
-					return false
-				}
-				continue
-			}
 
-			headerInt, err := strconv.Atoi(string(header))
-			if err != nil {
+	//source headers not match
+	if match.Headers != nil {
+		for k, v := range match.Headers {
+			if !isMatch(headers, k, v) {
 				return false
 			}
-			if noLess, ok := v["noLess"]; ok {
-				head, _ := strconv.Atoi(noLess)
-				if head > headerInt {
-					return false
-				}
-				continue
+			continue
+		}
+	}
+	if match.HTTPHeaders != nil {
+		for k, v := range match.HTTPHeaders {
+			if !isMatch(headers, k, v) {
+				return false
 			}
-			if noGreater, ok := v["noGreater"]; ok {
-				head, _ := strconv.Atoi(noGreater)
-				if head < headerInt {
-					return false
-				}
-				continue
-			}
-			if greater, ok := v["greater"]; ok {
-				head, _ := strconv.Atoi(greater)
-				if head >= headerInt {
-					return false
-				}
-				continue
-			}
-			if less, ok := v["less"]; ok {
-				head, _ := strconv.Atoi(less)
-				if head <= headerInt {
-					return false
-				}
-			}
+			continue
+		}
+	}
+	return true
+}
+
+// isMatch check the route rule
+func isMatch(headers map[string]string, k string, v map[string]string) bool {
+	header := headers[k]
+	if regex, ok := v["regex"]; ok {
+		reg := regexp.MustCompilePOSIX(regex)
+		if !reg.Match([]byte(header)) {
+			return false
+		}
+		return true
+	}
+	if exact, ok := v["exact"]; ok {
+		if exact != header {
+			return false
+		}
+		return true
+	}
+	if noEqu, ok := v["noEqu"]; ok {
+		if noEqu == header {
+			return false
+		}
+		return true
+	}
+
+	headerInt, err := strconv.Atoi(header)
+	if err != nil {
+		return false
+	}
+	if noLess, ok := v["noLess"]; ok {
+		head, _ := strconv.Atoi(noLess)
+		if head > headerInt {
+			return false
+		}
+		return true
+	}
+	if noGreater, ok := v["noGreater"]; ok {
+		head, _ := strconv.Atoi(noGreater)
+		if head < headerInt {
+			return false
+		}
+		return true
+	}
+	if greater, ok := v["greater"]; ok {
+		head, _ := strconv.Atoi(greater)
+		if head >= headerInt {
+			return false
+		}
+		return true
+	}
+	if less, ok := v["less"]; ok {
+		head, _ := strconv.Atoi(less)
+		if head <= headerInt {
+			return false
 		}
 	}
 	return true

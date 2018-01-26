@@ -25,6 +25,7 @@ type Match struct {
 	Source      string                       `yaml:"source"`
 	SourceTags  map[string]string            `yaml:"sourceTags"`
 	HTTPHeaders map[string]map[string]string `yaml:"httpHeaders"`
+	Headers     map[string]map[string]string `yaml:"headers"`
 }
 
 // DarkLaunchRule dark launch rule
