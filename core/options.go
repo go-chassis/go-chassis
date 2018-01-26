@@ -39,7 +39,8 @@ type InvokeOptions struct {
 	MethodType   string
 	AppID        string
 	// local data
-	Metadata map[string]interface{}
+	Metadata      map[string]interface{}
+	HighWayHeader map[string]string
 }
 
 //TODO a lot of options
@@ -143,6 +144,13 @@ func WithFilters(f ...loadbalance.Filter) InvocationOption {
 func WithMetadata(h map[string]interface{}) InvocationOption {
 	return func(o *InvokeOptions) {
 		o.Metadata = h
+	}
+}
+
+// WithHighWayHeader is a request option
+func WithHighWayHeader(h map[string]string) InvocationOption {
+	return func(o *InvokeOptions) {
+		o.HighWayHeader = h
 	}
 }
 

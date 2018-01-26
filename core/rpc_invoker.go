@@ -53,14 +53,23 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 	if len(opts.Filters) == 0 {
 		opts.Filters = ri.opts.Filters
 	}
+
+	h := map[string]string{}
 	md, ok := metadata.FromContext(ctx)
 	if ok {
-		md[common.HeaderSourceName] = config.SelfServiceName
-	} else {
-		ctx = metadata.NewContext(context.Background(), map[string]string{
-			common.HeaderSourceName: config.SelfServiceName,
-		})
+		h = md
 	}
+
+	h[common.HeaderSourceName] = config.SelfServiceName
+	if opts.HighWayHeader != nil {
+		for k, v := range opts.HighWayHeader {
+			h[k] = v
+		}
+	}
+	if !ok {
+		ctx = metadata.NewContext(context.Background(), h)
+	}
+
 	i := invocation.CreateInvocation()
 	wrapInvocationWithOpts(i, opts)
 	i.MicroServiceName = microServiceName

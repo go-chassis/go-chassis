@@ -18,8 +18,12 @@ func main() {
 	}
 	//declare reply struct
 	reply := &helloworld.HelloReply{}
+	h := map[string]string{
+		"router": "rpc-server",
+	}
 	//Invoke with microservice name, schema ID and operation ID
-	if err := core.NewRPCInvoker().Invoke(context.Background(), "RPCServer", "HelloService", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, reply); err != nil {
+	if err := core.NewRPCInvoker().Invoke(context.Background(), "RPCServer", "HelloService", "SayHello",
+		&helloworld.HelloRequest{Name: "Peter"}, reply, core.WithHighWayHeader(h)); err != nil {
 		lager.Logger.Error("error", err)
 	}
 	lager.Logger.Info(reply.Message)

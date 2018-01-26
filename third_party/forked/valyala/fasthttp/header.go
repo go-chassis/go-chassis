@@ -1458,6 +1458,46 @@ func (h *RequestHeader) String() string {
 	return string(h.Header())
 }
 
+// HeaderMap returns request header representation.
+func (h *RequestHeader) HeaderMap() map[string]string {
+	dst := map[string]string{}
+
+	if !h.rawHeadersParsed && len(h.rawHeaders) > 0 {
+		h.parseRawHeaders()
+	}
+
+	userAgent := h.UserAgent()
+	if len(userAgent) == 0 {
+		userAgent = defaultUserAgent
+	}
+	dst[string(strUserAgent)] = string(userAgent)
+
+	host := h.Host()
+	if len(host) > 0 {
+		dst[string(strHost)] = string(host)
+	}
+
+	contentType := h.ContentType()
+	if !h.noBody() {
+		if len(contentType) == 0 {
+			contentType = strPostArgsContentType
+		}
+		dst[string(strContentType)] = string(contentType)
+
+		if len(h.contentLengthBytes) > 0 {
+			dst[string(strContentLength)] = string(h.contentLengthBytes)
+		}
+	} else if len(contentType) > 0 {
+		dst[string(strContentType)] = string(contentType)
+	}
+
+	for i, n := 0, len(h.h); i < n; i++ {
+		kv := &h.h[i]
+		dst[string(kv.key)] = string(kv.value)
+	}
+	return dst
+}
+
 // AppendBytes appends request header representation to dst and returns
 // the extended dst.
 func (h *RequestHeader) AppendBytes(dst []byte) []byte {

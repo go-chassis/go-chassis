@@ -70,6 +70,7 @@ func (req *Request) GetURI() string {
 
 //SetHeader is a method used for setting header in a request
 func (req *Request) SetHeader(key, value string) {
+	req.Req.Header.DisableNormalizing()
 	req.Req.Header.Set(key, value)
 }
 
