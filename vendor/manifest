@@ -362,6 +362,14 @@
             "notests": true
         },
         {
+            "importpath":"github.com/stretchr/testify",
+            "repository": "https://github.com/stretchr/testify",
+            "vcs": "git",
+            "revision": "87b1dfb5b2fa649f52695dd9eae19abe404a4308",
+            "branch": "HEAD",
+            "notests": true
+        },
+        {
             "importpath": "golang.org/x/net",
             "repository": "https://github.com/golang/net",
             "vcs": "git",

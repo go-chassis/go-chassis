@@ -53,6 +53,7 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 	if len(opts.Filters) == 0 {
 		opts.Filters = ri.opts.Filters
 	}
+
 	md, ok := metadata.FromContext(ctx)
 	if ok {
 		md[common.HeaderSourceName] = config.SelfServiceName
@@ -61,6 +62,7 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 			common.HeaderSourceName: config.SelfServiceName,
 		})
 	}
+
 	i := invocation.CreateInvocation()
 	wrapInvocationWithOpts(i, opts)
 	i.MicroServiceName = microServiceName

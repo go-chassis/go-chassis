@@ -148,28 +148,29 @@ func TranslateRules(rule *DarkLaunchRule) []*RouteRule {
 			version := strings.Replace(v.GroupCondition, "version=", "", 1)
 			match := Match{
 				HTTPHeaders: map[string]map[string]string{},
+				Headers:     map[string]map[string]string{},
 			}
 			if strings.Contains(con, "!=") {
-				match.HTTPHeaders[strings.Split(con, "!=")[0]] =
-					map[string]string{"noEqu": strings.Split(con, "!=")[1]}
+				match.HTTPHeaders[strings.Split(con, "!=")[0]] = map[string]string{"noEqu": strings.Split(con, "!=")[1]}
+				match.Headers[strings.Split(con, "!=")[0]] = map[string]string{"noEqu": strings.Split(con, "!=")[1]}
 			} else if strings.Contains(con, ">=") {
-				match.HTTPHeaders[strings.Split(con, ">=")[0]] =
-					map[string]string{"noLess": strings.Split(con, ">=")[1]}
+				match.HTTPHeaders[strings.Split(con, ">=")[0]] = map[string]string{"noLess": strings.Split(con, ">=")[1]}
+				match.Headers[strings.Split(con, ">=")[0]] = map[string]string{"noLess": strings.Split(con, ">=")[1]}
 			} else if strings.Contains(con, "<=") {
-				match.HTTPHeaders[strings.Split(con, "<=")[0]] =
-					map[string]string{"noGreater": strings.Split(con, "<=")[1]}
+				match.HTTPHeaders[strings.Split(con, "<=")[0]] = map[string]string{"noGreater": strings.Split(con, "<=")[1]}
+				match.Headers[strings.Split(con, "<=")[0]] = map[string]string{"noGreater": strings.Split(con, "<=")[1]}
 			} else if strings.Contains(con, "=") {
-				match.HTTPHeaders[strings.Split(con, "=")[0]] =
-					map[string]string{"exact": strings.Split(con, "=")[1]}
+				match.HTTPHeaders[strings.Split(con, "=")[0]] = map[string]string{"exact": strings.Split(con, "=")[1]}
+				match.Headers[strings.Split(con, "=")[0]] = map[string]string{"exact": strings.Split(con, "=")[1]}
 			} else if strings.Contains(con, ">") {
-				match.HTTPHeaders[strings.Split(con, ">")[0]] =
-					map[string]string{"greater": strings.Split(con, ">")[1]}
+				match.HTTPHeaders[strings.Split(con, ">")[0]] = map[string]string{"greater": strings.Split(con, ">")[1]}
+				match.Headers[strings.Split(con, ">")[0]] = map[string]string{"greater": strings.Split(con, ">")[1]}
 			} else if strings.Contains(con, "<") {
-				match.HTTPHeaders[strings.Split(con, "<")[0]] =
-					map[string]string{"less": strings.Split(con, "<")[1]}
+				match.HTTPHeaders[strings.Split(con, "<")[0]] = map[string]string{"less": strings.Split(con, "<")[1]}
+				match.Headers[strings.Split(con, "<")[0]] = map[string]string{"less": strings.Split(con, "<")[1]}
 			} else if strings.Contains(con, "~") {
-				match.HTTPHeaders[strings.Split(con, "~")[0]] =
-					map[string]string{"regex": strings.Split(con, "~")[1]}
+				match.HTTPHeaders[strings.Split(con, "~")[0]] = map[string]string{"regex": strings.Split(con, "~")[1]}
+				match.Headers[strings.Split(con, "~")[0]] = map[string]string{"regex": strings.Split(con, "~")[1]}
 			}
 			newRule := &RouteRule{
 				Routes:     GenerateRouteTags(strings.Split(version, ",")),
