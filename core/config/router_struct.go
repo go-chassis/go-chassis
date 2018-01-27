@@ -21,11 +21,11 @@ type RouteTag struct {
 
 // Match is checking source, source tags, and http headers
 type Match struct {
-	Refer          string                       `yaml:"refer"`
-	Source         string                       `yaml:"source"`
-	SourceTags     map[string]string            `yaml:"sourceTags"`
-	HTTPHeaders    map[string]map[string]string `yaml:"httpHeaders"`
-	HighWayHeaders map[string]map[string]string `yaml:"highwayHeaders"`
+	Refer       string                       `yaml:"refer"`
+	Source      string                       `yaml:"source"`
+	SourceTags  map[string]string            `yaml:"sourceTags"`
+	HTTPHeaders map[string]map[string]string `yaml:"httpHeaders"`
+	Headers     map[string]map[string]string `yaml:"headers"`
 }
 
 // DarkLaunchRule dark launch rule
