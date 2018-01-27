@@ -163,7 +163,7 @@ func Match(match config.Match, headers map[string]string, source *registry.Sourc
 		return SourceMatch(templates[refer], headers, source)
 	}
 	//match rule is not set
-	if match.Source == "" && match.HTTPHeaders == nil && match.HighWayHeaders == nil {
+	if match.Source == "" && match.HTTPHeaders == nil && match.Headers == nil {
 		return true
 	}
 
@@ -186,8 +186,8 @@ func SourceMatch(match *config.Match, headers map[string]string, source *registr
 	}
 
 	//source headers not match
-	if match.HighWayHeaders != nil {
-		for k, v := range match.HighWayHeaders {
+	if match.Headers != nil {
+		for k, v := range match.Headers {
 			if !isMatch(headers, k, v) {
 				return false
 			}
