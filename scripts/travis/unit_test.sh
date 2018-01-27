@@ -8,10 +8,16 @@ mkdir -p root/conf
 mkdir -p $GOPATH/src/github.com/ServiceComb/go-chassis/core/transport/tls
 mkdir -p $GOPATH/src/github.com/ServiceComb/go-chassis/examples/discovery/server/log
 mkdir -p $GOPATH/src/github.com/ServiceComb/go-chassis/examples/discovery/server/conf
+
+# For auth test
 mkdir -p $GOPATH/test/auth/conf
 mkdir -p $GOPATH/test/auth/cipher
 mkdir -p $GOPATH/test/auth/lib
 mkdir -p $GOPATH/test/auth/log
+
+# For transport test
+mkdir -p $GOPATH/test/transport/TestCreateTransport/tls
+
 mkdir -p /tmp/conf
 mkdir -p $GOPATH/conf/microservice1/schema
 mkdir -p $GOPATH/conf/microservice2/schema
