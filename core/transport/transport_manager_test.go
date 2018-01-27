@@ -26,8 +26,12 @@ func TestCreateTransport(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "communication", "client"))
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	certpath := "tls/tls_cert.txt"
-	var _, err = os.Stat(certpath)
+	testDir := filepath.Join(os.Getenv("GOPATH"), "test", "transport", "TestCreateTransport")
+	tlsFileDir := filepath.Join(testDir, "tls")
+	err := os.MkdirAll(tlsFileDir, 0600)
+	assert.NoError(t, err)
+	certpath := filepath.Join(tlsFileDir, "tls_cert.txt")
+	_, err = os.Stat(certpath)
 
 	// create file if not exists
 	if os.IsNotExist(err) {
@@ -60,7 +64,7 @@ BgkqhkiG9w0BAQQFAANBAFqPEKFjk6T6CKTHvaQeEAsX0/8YHPHqH/9AnhSjrwuX
 	err = file.Sync()
 	assert.NoError(t, err)
 
-	keypath := "tls/tls_key.txt"
+	keypath := filepath.Join(tlsFileDir, "tls_key.txt")
 	var _, err1 = os.Stat(keypath)
 
 	// create file if not exists
@@ -100,7 +104,7 @@ ycsPDFXsz2rCRSYjojFSTe4hff1YcsIoxY6p0O4Bdwil8CIrR3krz5pGtY/9ZKK1
 	cipher := aesFunc()
 	s, err := cipher.Encrypt("gochassis")
 
-	keypwdpath := "tls/pwd_key.txt"
+	keypwdpath := filepath.Join(tlsFileDir, "pwd_key.txt")
 	var _, err2 = os.Stat(keypwdpath)
 
 	// create file if not exists

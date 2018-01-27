@@ -256,7 +256,8 @@
             "vcs": "git",
             "revision": "4cc33395dd156fce9cb4d8ae505f9297601d5442",
             "branch": "HEAD",
-            "notests": true
+            "notests": true,
+            "allfiles": true
         },
         {
             "importpath": "github.com/ServiceComb/cse-collector",
@@ -264,7 +265,8 @@
             "vcs": "git",
             "revision": "5d3001deae743cd3287ce11f7bbcbaad614bd060",
             "branch": "HEAD",
-            "notests": true
+            "notests": true,
+            "allfiles": true
         },
         {
             "importpath": "github.com/ServiceComb/go-archaius",
@@ -272,7 +274,8 @@
             "vcs": "git",
             "revision": "901af3f176be43c428b99aefd11bdb75fd0f56f7",
             "branch": "HEAD",
-            "notests": true
+            "notests": true,
+            "allfiles": true
         },
         {
             "importpath": "github.com/ServiceComb/go-cc-client",
@@ -280,7 +283,8 @@
             "vcs": "git",
             "revision": "60a10167aabab92ecad8c3abf00e9ee179fe37f3",
             "branch": "HEAD",
-            "notests": true
+            "notests": true,
+            "allfiles": true
         },
         {
             "importpath": "github.com/ServiceComb/go-sc-client",
@@ -288,7 +292,8 @@
             "vcs": "git",
             "revision": "9ad574b99052c71147d10c3c05be7ff9e0aeb378",
             "branch": "HEAD",
-            "notests": true
+            "notests": true,
+            "allfiles": true
         },
         {
             "importpath": "github.com/ServiceComb/http-client",
@@ -296,7 +301,8 @@
             "vcs": "git",
             "revision": "9969254c44708136072453a06cc618d4696ea46b",
             "branch": "HEAD",
-            "notests": true
+            "notests": true,
+            "allfiles": true
         },
         {
             "importpath": "github.com/ServiceComb/paas-lager",
@@ -304,7 +310,8 @@
             "vcs": "git",
             "revision": "378a833fc008d8343083dc73e77db142afccf377",
             "branch": "HEAD",
-            "notests": true
+            "notests": true,
+            "allfiles": true
         },
         {
             "importpath": "github.com/Shopify/sarama",
