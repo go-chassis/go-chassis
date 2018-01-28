@@ -1,11 +1,11 @@
-package selector
+package selector_test
 
 import (
 	"testing"
 
 	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 func TestStrategies(t *testing.T) {
@@ -19,7 +19,7 @@ func TestStrategies(t *testing.T) {
 		},
 	}
 
-	for name, strategy := range map[string]loadbalance.Strategy{"random": loadbalance.Random, "roundrobin": loadbalance.RoundRobin} {
+	for name, strategy := range map[string]selector.Strategy{"random": selector.Random, "roundrobin": selector.RoundRobin} {
 		next := strategy(testData, "")
 		counts := make(map[string]int)
 

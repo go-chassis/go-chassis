@@ -1,4 +1,4 @@
-package selector
+package selector_test
 
 import (
 	"github.com/ServiceComb/go-chassis/core/config"

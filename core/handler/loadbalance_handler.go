@@ -144,7 +144,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 	//append filters in config
 	filters := archaius.GetServerListFilters()
 	for _, fName := range filters {
-		f := selector.Filters[fName]
+		f := loadbalance.Filters[fName]
 		if f != nil {
 			i.Filters = append(i.Filters, f)
 			continue
