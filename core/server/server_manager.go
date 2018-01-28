@@ -12,16 +12,16 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 	"github.com/ServiceComb/go-chassis/core/transport"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"github.com/ServiceComb/go-chassis/util/iputil"
 )
 
 //NewFunc returns a server
-type NewFunc func(...serverOption.Option) Server
+type NewFunc func(...microServer.Option) microServer.Server
 
 var serverPlugins = make(map[string]NewFunc)
-var servers = make(map[string]Server)
+var servers = make(map[string]microServer.Server)
 
 //InstallPlugin For developer
 func InstallPlugin(protocol string, newFunc NewFunc) {
@@ -39,7 +39,7 @@ func GetServerFunc(protocol string) (NewFunc, error) {
 }
 
 //GetServer return the server based on protocol
-func GetServer(protocol string) (Server, error) {
+func GetServer(protocol string) (microServer.Server, error) {
 	s, ok := servers[protocol]
 	if !ok {
 		return nil, fmt.Errorf("[%s] server isn't running ", protocol)
@@ -48,7 +48,7 @@ func GetServer(protocol string) (Server, error) {
 }
 
 //GetServers returns the map of servers
-func GetServers() map[string]Server {
+func GetServers() map[string]microServer.Server {
 	return servers
 }
 
@@ -136,7 +136,7 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 
-	var tr transport.Transport
+	var tr microTransport.Transport
 	if p.Transport == "" {
 		p.Transport = common.TransportTCP
 	}
@@ -145,7 +145,7 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 		return err
 	}
 	//TODO delete this line, Only use Server to accept TLS
-	tr = trF(transportOption.TLSConfig(tlsConfig))
+	tr = trF(microTransport.TLSConfig(tlsConfig))
 
 	if p.Listen == "" {
 		if p.Advertise != "" {
@@ -162,13 +162,13 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 		}
 	}
 
-	var s Server
+	var s microServer.Server
 	s = f(
-		serverOption.Address(p.Listen),
-		serverOption.Transport(tr),
-		serverOption.WithCodecs(codec.GetCodecMap()),
-		serverOption.ChainName(chainName),
-		serverOption.TLSConfig(tlsConfig))
+		microServer.Address(p.Listen),
+		microServer.Transport(tr),
+		microServer.WithCodecs(codec.GetCodecMap()),
+		microServer.ChainName(chainName),
+		microServer.TLSConfig(tlsConfig))
 	servers[name] = s
 	return nil
 }

@@ -17,7 +17,7 @@ import (
 	securityCommon "github.com/ServiceComb/go-chassis/security/common"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	_ "github.com/ServiceComb/go-chassis/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
@@ -153,12 +153,12 @@ ycsPDFXsz2rCRSYjojFSTe4hff1YcsIoxY6p0O4Bdwil8CIrR3krz5pGtY/9ZKK1
 	assert.Nil(t, trF1)
 	assert.Error(t, err)
 
-	serverTr := trF(transportOption.TLSConfig(tlsConfig))
+	serverTr := trF(microTransport.TLSConfig(tlsConfig))
 	l, err := serverTr.Listen("127.0.0.1:9991")
 	assert.NoError(t, err)
 	defer l.Close()
 
-	fn := func(sock transport.Socket) {
+	fn := func(sock microTransport.Socket) {
 		defer sock.Close()
 
 		for {
@@ -186,7 +186,7 @@ ycsPDFXsz2rCRSYjojFSTe4hff1YcsIoxY6p0O4Bdwil8CIrR3krz5pGtY/9ZKK1
 	}()
 	tlsConfig, err = securityCommon.GetClientTLSConfig(sslConfig)
 	assert.Error(t, err)
-	clietTr := trF(transportOption.TLSConfig(tlsConfig))
+	clietTr := trF(microTransport.TLSConfig(tlsConfig))
 	c, err := clietTr.Dial(l.Addr())
 	assert.NoError(t, err)
 	defer c.Close()
@@ -227,39 +227,39 @@ func TestCreateTransportFunc(t *testing.T) {
 	tr := transport.GetTransport("tcp")
 	assert.NotNil(t, tr)
 
-	var o *transportOption.Options = new(transportOption.Options)
+	var o *microTransport.Options = new(microTransport.Options)
 	var c codec.Codec
-	var dopt *transportOption.DialOptions = new(transportOption.DialOptions)
+	var dopt *microTransport.DialOptions = new(microTransport.DialOptions)
 	var tls1 = new(tls.Config)
 	tls1.DynamicRecordSizingDisabled = true
 	t1 := time.Second * 10
 
 	var addrArr = []string{"abc"}
-	op := transportOption.Addrs(addrArr...)
+	op := microTransport.Addrs(addrArr...)
 	op(o)
 	assert.Equal(t, o.Addrs, addrArr)
 
-	op = transportOption.Codec(c)
+	op = microTransport.Codec(c)
 	op(o)
 	assert.Equal(t, c, o.Codec)
 
-	op = transportOption.Timeout(t1)
+	op = microTransport.Timeout(t1)
 	op(o)
 	assert.Equal(t, t1, o.Timeout)
 
-	op = transportOption.Secure(true)
+	op = microTransport.Secure(true)
 	op(o)
 	assert.Equal(t, true, o.Secure)
 
-	op = transportOption.TLSConfig(tls1)
+	op = microTransport.TLSConfig(tls1)
 	op(o)
 	assert.Equal(t, tls1.DynamicRecordSizingDisabled, o.TLSConfig.DynamicRecordSizingDisabled)
 
-	dop := transportOption.WithStream()
+	dop := microTransport.WithStream()
 	dop(dopt)
 	assert.Equal(t, true, dopt.Stream)
 
-	dop = transportOption.WithTimeout(t1)
+	dop = microTransport.WithTimeout(t1)
 	dop(dopt)
 	assert.Equal(t, t1, dopt.Timeout)
 

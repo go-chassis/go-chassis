@@ -11,7 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/codec"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"golang.org/x/net/context"
 )
 
@@ -29,24 +29,24 @@ var localSupportLogin = true
 
 type highwayClient struct {
 	once     sync.Once
-	opts     clientOption.Options
+	opts     microClient.Options
 	reqMutex sync.Mutex // protects following
 }
 
-func (c *highwayClient) Init(opts ...clientOption.Option) error {
+func (c *highwayClient) Init(opts ...microClient.Option) error {
 	for _, o := range opts {
 		o(&c.opts)
 	}
 	return nil
 }
 
-func (c *highwayClient) NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...clientOption.RequestOption) *client.Request {
-	var opts clientOption.RequestOptions
+func (c *highwayClient) NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...microClient.RequestOption) *microClient.Request {
+	var opts microClient.RequestOptions
 
 	for _, o := range reqOpts {
 		o(&opts)
 	}
-	i := &client.Request{
+	i := &microClient.Request{
 		MicroServiceName: service,
 		Struct:           schemaID,
 		Method:           operationID,
@@ -63,9 +63,9 @@ func (c *highwayClient) NewRequest(service, schemaID, operationID string, arg in
 }
 
 //NewHighwayClient is a function
-func NewHighwayClient(options ...clientOption.Option) client.Client {
-	opts := clientOption.Options{
-		PoolTTL: clientOption.DefaultPoolTTL,
+func NewHighwayClient(options ...microClient.Option) microClient.Client {
+	opts := microClient.Options{
+		PoolTTL: microClient.DefaultPoolTTL,
 	}
 	for _, o := range options {
 		o(&opts)
@@ -84,7 +84,7 @@ func NewHighwayClient(options ...clientOption.Option) client.Client {
 		opts: opts,
 	}
 
-	c := client.Client(rc)
+	c := microClient.Client(rc)
 
 	return c
 }
@@ -93,11 +93,11 @@ func (c *highwayClient) String() string {
 	return "highway_client"
 }
 
-func (c *highwayClient) Options() clientOption.Options {
+func (c *highwayClient) Options() microClient.Options {
 	return c.opts
 }
 
-func (c *highwayClient) Call(ctx context.Context, addr string, req *client.Request, rsp interface{}, opts ...clientOption.CallOption) error {
+func (c *highwayClient) Call(ctx context.Context, addr string, req *microClient.Request, rsp interface{}, opts ...microClient.CallOption) error {
 	address := "highway://" + addr
 	u, err := url.Parse(address)
 	if err != nil {

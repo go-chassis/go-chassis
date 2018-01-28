@@ -4,7 +4,7 @@
 cse:
   loadbalance:
     strategy:
-      name: Random
+      name: WeightedResponse
       sessionTimeoutInSeconds: 30
     retryEnabled: false
     retryOnNext: 2

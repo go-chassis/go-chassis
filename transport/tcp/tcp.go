@@ -10,11 +10,11 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/transport"
-	gomicroTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 )
 
 type tcpTransport struct {
-	opts gomicroTransport.Options
+	opts microTransport.Options
 }
 
 type tcpTransportListener struct {
@@ -32,7 +32,7 @@ func (t *tcpTransportListener) Close() error {
 
 var baseConnStatic baseConn
 
-func (t *tcpTransportListener) Accept(fn func(transport.Socket)) error {
+func (t *tcpTransportListener) Accept(fn func(microTransport.Socket)) error {
 	var tmpDelay time.Duration
 
 	for {
@@ -84,9 +84,9 @@ func (t *tcpTransportListener) Accept(fn func(transport.Socket)) error {
 	}
 }
 
-func (t *tcpTransport) Dial(addr string, opts ...gomicroTransport.DialOption) (transport.Client, error) {
-	dopts := gomicroTransport.DialOptions{
-		Timeout: gomicroTransport.DefaultDialTimeout,
+func (t *tcpTransport) Dial(addr string, opts ...microTransport.DialOption) (microTransport.Client, error) {
+	dopts := microTransport.DialOptions{
+		Timeout: microTransport.DefaultDialTimeout,
 	}
 
 	if opts != nil {
@@ -132,8 +132,8 @@ func (t *tcpTransport) Dial(addr string, opts ...gomicroTransport.DialOption) (t
 	}, nil
 }
 
-func (t *tcpTransport) Listen(addr string, opts ...gomicroTransport.ListenOption) (transport.Listener, error) {
-	var lopts gomicroTransport.ListenOptions
+func (t *tcpTransport) Listen(addr string, opts ...microTransport.ListenOption) (microTransport.Listener, error) {
+	var lopts microTransport.ListenOptions
 	for _, o := range opts {
 		o(&lopts)
 	}
@@ -149,13 +149,13 @@ func (t *tcpTransport) Listen(addr string, opts ...gomicroTransport.ListenOption
 			return tls.Listen("tcp", addr, config)
 		}
 
-		l, err = gomicroTransport.Listen(addr, fn)
+		l, err = microTransport.Listen(addr, fn)
 	} else {
 		fn := func(addr string) (net.Listener, error) {
 			return net.Listen("tcp", addr)
 		}
 
-		l, err = gomicroTransport.Listen(addr, fn)
+		l, err = microTransport.Listen(addr, fn)
 	}
 
 	if err != nil {
@@ -175,8 +175,8 @@ func (t *tcpTransport) String() string {
 }
 
 //NewTransport is a function
-func NewTransport(opts ...gomicroTransport.Option) transport.Transport {
-	var topts gomicroTransport.Options
+func NewTransport(opts ...microTransport.Option) microTransport.Transport {
+	var topts microTransport.Options
 	for _, o := range opts {
 		o(&topts)
 	}

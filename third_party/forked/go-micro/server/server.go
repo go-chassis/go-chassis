@@ -1,16 +1,12 @@
 // Package server is an interface for a micro server
 package server
 
-import (
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-)
-
 // Server interface for the server it implements innit, register, start, and stop the server..
 type Server interface {
-	Options() serverOption.Options
-	Init(...serverOption.Option) error
+	Options() Options
+	Init(...Option) error
 	//register a schema of microservice,return unique schema id,you can specify schema id and microservice name of this schema
-	Register(interface{}, ...serverOption.RegisterOption) (string, error)
+	Register(interface{}, ...RegisterOption) (string, error)
 	Start() error
 	Stop() error
 	String() string

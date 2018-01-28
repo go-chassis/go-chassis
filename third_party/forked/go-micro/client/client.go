@@ -2,7 +2,6 @@
 package client
 
 import (
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"golang.org/x/net/context"
 )
 
@@ -14,10 +13,10 @@ import (
 //rcp client,rest client,or you can implement your own
 //for rpc,it could be any client over any protocol,such as rpc over tcp ,rpc over http etc
 type Client interface {
-	Init(...clientOption.Option) error
-	Options() clientOption.Options
-	NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...clientOption.RequestOption) *Request
-	Call(ctx context.Context, addr string, req *Request, rsp interface{}, opts ...clientOption.CallOption) error
+	Init(...Option) error
+	Options() Options
+	NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...RequestOption) *Request
+	Call(ctx context.Context, addr string, req *Request, rsp interface{}, opts ...CallOption) error
 	String() string
 }
 

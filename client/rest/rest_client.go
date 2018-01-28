@@ -11,7 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/codec"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"golang.org/x/net/context"
 )
@@ -38,8 +38,8 @@ func init() {
 }
 
 //NewRestClient is a function
-func NewRestClient(options ...clientOption.Option) client.Client {
-	opts := clientOption.Options{}
+func NewRestClient(options ...microClient.Option) microClient.Client {
+	opts := microClient.Options{}
 	for _, o := range options {
 		o(&opts)
 	}
@@ -88,7 +88,7 @@ func NewRestClient(options ...clientOption.Option) client.Client {
 }
 
 //Init is a method
-func (c *Client) Init(opts ...clientOption.Option) error {
+func (c *Client) Init(opts ...microClient.Option) error {
 	for _, o := range opts {
 		o(&c.opts)
 	}
@@ -97,14 +97,14 @@ func (c *Client) Init(opts ...clientOption.Option) error {
 }
 
 //NewRequest do not use for rest client.
-func (c *Client) NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...clientOption.RequestOption) *client.Request {
-	var opts clientOption.RequestOptions
+func (c *Client) NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...microClient.RequestOption) *microClient.Request {
+	var opts microClient.RequestOptions
 
 	for _, o := range reqOpts {
 		o(&opts)
 	}
 
-	i := &client.Request{
+	i := &microClient.Request{
 		MicroServiceName: service,
 		Struct:           schemaID,
 		Method:           operationID,
@@ -133,8 +133,8 @@ func (c *Client) failure2Error(e error, r *Response) error {
 }
 
 //Call is a method which uses client struct object
-func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp interface{}, opts ...clientOption.CallOption) error {
-	var opt clientOption.CallOptions
+func (c *Client) Call(ctx context.Context, addr string, req *microClient.Request, rsp interface{}, opts ...microClient.CallOption) error {
+	var opt microClient.CallOptions
 
 	for _, o := range opts {
 		o(&opt)
@@ -179,6 +179,6 @@ func (c *Client) String() string {
 }
 
 //Options is a method which used client struct object
-func (c *Client) Options() clientOption.Options {
+func (c *Client) Options() microClient.Options {
 	return c.opts
 }

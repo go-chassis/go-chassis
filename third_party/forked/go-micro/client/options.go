@@ -5,8 +5,7 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/codec"
-	"github.com/ServiceComb/go-chassis/core/transport"
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"golang.org/x/net/context"
 )
 
@@ -18,7 +17,7 @@ type Options struct {
 	Codecs map[string]codec.Codec
 	//TODO
 	ClientCodecs map[string]codec.NewClientCodec
-	Transport    transport.Transport
+	Transport    microTransport.Transport
 
 	// Connection Pool
 	PoolSize int
@@ -72,7 +71,7 @@ func newOptions(options ...Option) Options {
 		CallOptions: CallOptions{
 			Retries:        DefaultRetries,
 			RequestTimeout: DefaultRequestTimeout,
-			DialTimeout:    transportOption.DefaultDialTimeout,
+			DialTimeout:    microTransport.DefaultDialTimeout,
 		},
 		PoolSize: DefaultPoolSize,
 		PoolTTL:  DefaultPoolTTL,
@@ -113,7 +112,7 @@ func PoolTTL(d time.Duration) Option {
 }
 
 // Transport to use for communication e.g http, rabbitmq, etc
-func Transport(t transport.Transport) Option {
+func Transport(t microTransport.Transport) Option {
 	return func(o *Options) {
 		o.Transport = t
 	}

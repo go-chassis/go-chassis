@@ -17,7 +17,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/metrics"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
+	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
 	"golang.org/x/net/context"
@@ -39,13 +39,13 @@ type restfulServer struct {
 	microServiceName string
 	container        *restful.Container
 	ws               *restful.WebService
-	opts             serverOption.Options
+	opts             microServer.Options
 	mux              sync.RWMutex
 	exit             chan chan error
 	server           *http.Server
 }
 
-func newRestfulServer(opts ...serverOption.Option) server.Server {
+func newRestfulServer(opts ...microServer.Option) microServer.Server {
 	options := newOptions(opts...)
 	ws := new(restful.WebService)
 	ws.Path("/").Doc("root path").
@@ -67,8 +67,8 @@ func newRestfulServer(opts ...serverOption.Option) server.Server {
 		ws:        ws,
 	}
 }
-func newOptions(opt ...serverOption.Option) serverOption.Options {
-	opts := serverOption.Options{
+func newOptions(opt ...microServer.Option) microServer.Options {
+	opts := microServer.Options{
 		Metadata: map[string]string{},
 	}
 
@@ -78,7 +78,7 @@ func newOptions(opt ...serverOption.Option) serverOption.Options {
 	return opts
 }
 
-func (r *restfulServer) Init(opts ...serverOption.Option) error {
+func (r *restfulServer) Init(opts ...microServer.Option) error {
 	r.mux.Lock()
 	defer r.mux.Unlock()
 	for _, opt := range opts {
@@ -88,16 +88,16 @@ func (r *restfulServer) Init(opts ...serverOption.Option) error {
 	return nil
 }
 
-func (r *restfulServer) Options() serverOption.Options {
+func (r *restfulServer) Options() microServer.Options {
 	r.mux.RLock()
 	defer r.mux.RUnlock()
 	opts := r.opts
 	return opts
 }
 
-func (r *restfulServer) Register(schema interface{}, options ...serverOption.RegisterOption) (string, error) {
+func (r *restfulServer) Register(schema interface{}, options ...microServer.RegisterOption) (string, error) {
 	lager.Logger.Info("register rest server")
-	opts := serverOption.RegisterOptions{}
+	opts := microServer.RegisterOptions{}
 	r.mux.Lock()
 	defer r.mux.Unlock()
 	for _, o := range options {

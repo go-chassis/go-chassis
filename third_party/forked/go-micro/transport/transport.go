@@ -1,9 +1,5 @@
 package transport
 
-import (
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-)
-
 // Socket wrapp codec and net.conn
 type Socket interface {
 	Send(Header []byte, Body []byte, Metadata map[string]string, ID int) error
@@ -28,7 +24,7 @@ type Listener interface {
 // protocol: HTTP, RabbitMQ, NATS, ...
 type Transport interface {
 	//return a new client
-	Dial(addr string, opts ...transportOption.DialOption) (Client, error)
-	Listen(addr string, opts ...transportOption.ListenOption) (Listener, error)
+	Dial(addr string, opts ...DialOption) (Client, error)
+	Listen(addr string, opts ...ListenOption) (Listener, error)
 	String() string
 }

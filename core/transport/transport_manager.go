@@ -5,16 +5,16 @@ import (
 	"log"
 
 	"github.com/ServiceComb/go-chassis/core/lager"
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 )
 
 // TransortFunc transport function
-type TransortFunc func(...transportOption.Option) Transport
+type TransortFunc func(...microTransport.Option) microTransport.Transport
 
 var transportFuncMap = make(map[string]TransortFunc)
 
 // TransportMap transport map
-var TransportMap = make(map[string]Transport)
+var TransportMap = make(map[string]microTransport.Transport)
 
 // InstallPlugin install plugin of transport
 func InstallPlugin(protocol string, newFunc TransortFunc) {
@@ -33,7 +33,7 @@ func GetTransportFunc(protocol string) (TransortFunc, error) {
 }
 
 // CreateTransport create transport function
-func CreateTransport(protocol string, opts ...transportOption.Option) {
+func CreateTransport(protocol string, opts ...microTransport.Option) {
 	trFunc := transportFuncMap[protocol]
 	if trFunc == nil {
 		lager.Logger.Warnf(nil, "Doesn't support this protocol:%s", protocol)
@@ -44,7 +44,7 @@ func CreateTransport(protocol string, opts ...transportOption.Option) {
 }
 
 // GetTransport get transport
-func GetTransport(protocol string) Transport {
+func GetTransport(protocol string) microTransport.Transport {
 	return TransportMap[protocol]
 }
 

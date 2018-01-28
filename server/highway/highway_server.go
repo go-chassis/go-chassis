@@ -17,9 +17,9 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/provider"
 	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/core/transport"
 	"github.com/ServiceComb/go-chassis/core/util/metadata"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
+	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"log"
 )
 
@@ -38,12 +38,12 @@ var remoteLogin = true
 
 type highwayServer struct {
 	tr   transport.Transport
-	opts serverOption.Options
+	opts microServer.Options
 	exit chan chan error
 	sync.RWMutex
 }
 
-func (s *highwayServer) Init(opts ...serverOption.Option) error {
+func (s *highwayServer) Init(opts ...microServer.Option) error {
 	s.Lock()
 	for _, o := range opts {
 		o(&s.opts)
@@ -52,14 +52,14 @@ func (s *highwayServer) Init(opts ...serverOption.Option) error {
 	s.Unlock()
 	return nil
 }
-func (s *highwayServer) Options() serverOption.Options {
+func (s *highwayServer) Options() microServer.Options {
 	s.RLock()
 	opts := s.opts
 	s.RUnlock()
 	return opts
 }
-func (s *highwayServer) Register(schema interface{}, options ...serverOption.RegisterOption) (string, error) {
-	opts := serverOption.RegisterOptions{}
+func (s *highwayServer) Register(schema interface{}, options ...microServer.RegisterOption) (string, error) {
+	opts := microServer.RegisterOptions{}
 	var pn string
 	for _, o := range options {
 		o(&opts)
@@ -183,14 +183,14 @@ func (s *highwayServer) accept(sock transport.Socket) {
 	}
 }
 
-func newHighwayServer(opts ...serverOption.Option) server.Server {
+func newHighwayServer(opts ...microServer.Option) microServer.Server {
 	return &highwayServer{
 		opts: newOptions(opts...),
 		exit: make(chan chan error),
 	}
 }
-func newOptions(opt ...serverOption.Option) serverOption.Options {
-	opts := serverOption.Options{
+func newOptions(opt ...microServer.Option) microServer.Options {
+	opts := microServer.Options{
 		Metadata: map[string]string{},
 	}
 	if opts.Codecs == nil {

@@ -10,12 +10,12 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 	"github.com/ServiceComb/go-chassis/core/transport"
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"sync"
 )
 
-var clients = make(map[string]map[string]Client)
+var clients = make(map[string]map[string]microClient.Client)
 var pl sync.RWMutex
 var sl sync.RWMutex
 
@@ -25,7 +25,7 @@ func GetProtocolSpec(p string) model.Protocol {
 }
 
 // CreateClient is for to create client based on protocol and the service name
-func CreateClient(protocol, service string) (Client, error) {
+func CreateClient(protocol, service string) (microClient.Client, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
 		err = fmt.Errorf("don not Support [%s] client", protocol)
@@ -42,7 +42,7 @@ func CreateClient(protocol, service string) (Client, error) {
 			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 	p := GetProtocolSpec(protocol)
-	var tr transport.Transport
+	var tr microTransport.Transport
 	if p.Transport == "" {
 		p.Transport = common.TransportTCP
 	}
@@ -50,9 +50,9 @@ func CreateClient(protocol, service string) (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	tr = trF(transportOption.TLSConfig(tlsConfig))
+	tr = trF(microTransport.TLSConfig(tlsConfig))
 
-	poolSize := clientOption.DefaultPoolSize
+	poolSize := microClient.DefaultPoolSize
 
 	failureList := strings.Split(p.Failure, ",")
 	failureMap := make(map[string]bool)
@@ -64,11 +64,11 @@ func CreateClient(protocol, service string) (Client, error) {
 	}
 
 	c := f(
-		clientOption.Transport(tr),
-		clientOption.ContentType("application/json"),
-		clientOption.TLSConfig(tlsConfig),
-		clientOption.WithConnectionPoolSize(poolSize),
-		clientOption.WithFailure(failureMap))
+		microClient.Transport(tr),
+		microClient.ContentType("application/json"),
+		microClient.TLSConfig(tlsConfig),
+		microClient.WithConnectionPoolSize(poolSize),
+		microClient.WithFailure(failureMap))
 
 	if err = c.Init(); err != nil {
 		return nil, err
@@ -77,15 +77,15 @@ func CreateClient(protocol, service string) (Client, error) {
 }
 
 // GetClient is to get the client based on protocol and service name
-func GetClient(protocol, service string) (Client, error) {
-	var c Client
+func GetClient(protocol, service string) (microClient.Client, error) {
+	var c microClient.Client
 	var err error
 	pl.RLock()
 	clientMap, ok := clients[protocol]
 	pl.RUnlock()
 	if !ok {
 		lager.Logger.Info("Create client map for " + protocol)
-		clientMap = make(map[string]Client)
+		clientMap = make(map[string]microClient.Client)
 		pl.Lock()
 		clients[protocol] = clientMap
 		pl.Unlock()

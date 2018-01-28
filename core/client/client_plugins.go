@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 )
 
 // ClientNewFunc is function for the client
-type ClientNewFunc func(...clientOption.Option) Client
+type ClientNewFunc func(...microClient.Option) microClient.Client
 
 var rpcClientPlugins = make(map[string]ClientNewFunc)
 

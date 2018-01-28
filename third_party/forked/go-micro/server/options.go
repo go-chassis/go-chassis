@@ -6,7 +6,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/codec"
 	"github.com/ServiceComb/go-chassis/core/provider"
-	"github.com/ServiceComb/go-chassis/core/transport"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"golang.org/x/net/context"
 )
 
