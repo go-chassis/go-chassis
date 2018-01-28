@@ -7,6 +7,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -57,7 +58,7 @@ func TestDefaultSelector_Init(t *testing.T) {
 	lb := loadbalance.DefaultSelector
 	config.SelfServiceID = sid
 	t.Log(config.SelfServiceID)
-	next, err := lb.Select("Server", common.DefaultVersion, loadbalance.WithConsumerID(sid))
+	next, err := lb.Select("Server", common.DefaultVersion, selector.WithConsumerID(sid))
 	assert.NoError(t, err)
 	ins, err := next()
 	t.Log(ins.EndpointsMap)
@@ -65,11 +66,11 @@ func TestDefaultSelector_Init(t *testing.T) {
 	ins, err = next()
 	assert.NoError(t, err)
 	t.Log(ins.EndpointsMap)
-	next, err = lb.Select("fakeServer", "0.1", loadbalance.WithAppID("fake"), loadbalance.WithConsumerID(sid))
+	next, err = lb.Select("fakeServer", "0.1", selector.WithAppID("fake"), selector.WithConsumerID(sid))
 	assert.Error(t, err)
 	t.Log(err)
 	switch err.(type) {
-	case loadbalance.LBError:
+	case selector.LBError:
 	default:
 		t.Log("Should return lb err")
 		t.Fail()

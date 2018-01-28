@@ -11,6 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/cenkalti/backoff"
 )
@@ -123,27 +124,27 @@ func (lb *LBHandler) getBackOff(i *invocation.Invocation) backoff.BackOff {
 func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.ResponseCallBack) (string, error) {
 	var metadata interface{}
 	strategy := i.Strategy
-	var strategyFun loadbalance.Strategy
+	var strategyFun selector.Strategy
 	var err error
 	if strategy == "" {
 		strategyName := StrategyName(i)
 		i.Strategy = strategyName
 		strategyFun, err = loadbalance.GetStrategyPlugin(strategyName)
 		if err != nil {
-			lager.Logger.Errorf(err, loadbalance.LBError{
+			lager.Logger.Errorf(err, selector.LBError{
 				Message: "Get strategy [" + strategyName + "] failed."}.Error())
 		}
 	} else {
 		strategyFun, err = loadbalance.GetStrategyPlugin(strategy)
 		if err != nil {
-			lager.Logger.Errorf(err, loadbalance.LBError{
+			lager.Logger.Errorf(err, selector.LBError{
 				Message: "Get strategy [" + strategy + "] failed."}.Error())
 		}
 	}
 	//append filters in config
 	filters := archaius.GetServerListFilters()
 	for _, fName := range filters {
-		f := loadbalance.Filters[fName]
+		f := selector.Filters[fName]
 		if f != nil {
 			i.Filters = append(i.Filters, f)
 			continue
@@ -160,11 +161,11 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 
 	next, err := loadbalance.DefaultSelector.Select(
 		i.MicroServiceName, i.Version,
-		loadbalance.WithStrategy(strategyFun),
-		loadbalance.WithFilter(i.Filters),
-		loadbalance.WithAppID(i.AppID),
-		loadbalance.WithConsumerID(i.SourceServiceID),
-		loadbalance.WithMetadata(metadata))
+		selector.WithStrategy(strategyFun),
+		selector.WithFilter(i.Filters),
+		selector.WithAppID(i.AppID),
+		selector.WithConsumerID(i.SourceServiceID),
+		selector.WithMetadata(metadata))
 	if err != nil {
 		writeErr(err, cb)
 		return "", err
@@ -172,7 +173,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 
 	ins, err := next()
 	if err != nil {
-		lbErr := loadbalance.LBError{Message: err.Error()}
+		lbErr := selector.LBError{Message: err.Error()}
 		writeErr(lbErr, cb)
 		return "", lbErr
 	}
@@ -190,7 +191,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 	ep, ok := ins.EndpointsMap[i.Protocol]
 	if !ok {
 		errStr := "No available instance support [" + i.Protocol + "] protocol, msName: " + i.MicroServiceName
-		lbErr := loadbalance.LBError{Message: errStr}
+		lbErr := selector.LBError{Message: errStr}
 		lager.Logger.Errorf(nil, lbErr.Error())
 		writeErr(lbErr, cb)
 		return "", lbErr

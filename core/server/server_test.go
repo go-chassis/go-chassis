@@ -18,7 +18,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/transport"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	_ "github.com/ServiceComb/go-chassis/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
@@ -34,7 +34,7 @@ func TestWithOptions(t *testing.T) {
 
 	cmap["firstcodec"] = val
 
-	var t1 transport.Transport
+	var t1 microTransport.Transport
 
 	var p provider.Provider
 
@@ -214,8 +214,8 @@ func TestSrcMgrErr(t *testing.T) {
 	}
 	server.InstallPlugin("protocol",f)*/
 
-	a := func(...transportOption.Option) transport.Transport {
-		var tp transport.Transport
+	a := func(...microTransport.Option) microTransport.Transport {
+		var tp microTransport.Transport
 		//tp :=tcp.NewTransport()
 		return tp
 	}

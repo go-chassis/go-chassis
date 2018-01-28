@@ -6,6 +6,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"time"
 )
 
@@ -20,7 +21,7 @@ func TestSessionStickyStrategies(t *testing.T) {
 		},
 	}
 
-	for name, strategy := range map[string]loadbalance.Strategy{"sessionstickiness": loadbalance.SessionStickiness} {
+	for name, strategy := range map[string]selector.Strategy{"sessionstickiness": loadbalance.SessionStickiness} {
 
 		next := strategy(testData, nil)
 		counts := make(map[string]int)
@@ -48,7 +49,7 @@ func TestStickySessionStrategy(t *testing.T) {
 		},
 	}
 
-	for name, strategy := range map[string]loadbalance.Strategy{"sessionstickiness": loadbalance.SessionStickiness} {
+	for name, strategy := range map[string]selector.Strategy{"sessionstickiness": loadbalance.SessionStickiness} {
 		loadbalance.SessionCache.Set("sticky1", "sdhgfa", time.Second*10)
 		next := strategy(testData, "sticky1")
 
@@ -71,7 +72,7 @@ func TestStickySessionStrategy(t *testing.T) {
 
 		t.Logf("%s", name)
 	}
-	for name, strategy := range map[string]loadbalance.Strategy{"sessionstickiness": loadbalance.SessionStickiness} {
+	for name, strategy := range map[string]selector.Strategy{"sessionstickiness": loadbalance.SessionStickiness} {
 		LBstr := make(map[string]string)
 		LBstr["name"] = "SessionStickiness"
 		LBstr["sessionTimeoutInSeconds"] = "30"

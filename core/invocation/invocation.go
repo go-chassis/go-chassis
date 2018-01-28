@@ -3,7 +3,7 @@ package invocation
 import (
 	"context"
 	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 // constant values for consumer and provider
@@ -50,7 +50,7 @@ type Invocation struct {
 	//loadbalance stratery
 	//Strategy loadbalance.Strategy
 	Strategy string
-	Filters  []loadbalance.Filter
+	Filters  []selector.Filter
 	AppID    string
 }
 

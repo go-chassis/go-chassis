@@ -1,4 +1,4 @@
-package loadbalance_test
+package selector
 
 import (
 	"github.com/ServiceComb/go-chassis/core/config"

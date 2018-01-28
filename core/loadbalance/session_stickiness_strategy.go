@@ -2,6 +2,7 @@ package loadbalance
 
 import (
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	cache "github.com/patrickmn/go-cache"
 	"sync"
 	"time"
@@ -27,11 +28,11 @@ func initCache() *cache.Cache {
 }
 
 // SessionStickiness is a SessionStickiness strategy algorithm for node selection
-func SessionStickiness(instances []*registry.MicroServiceInstance, metadata interface{}) Next {
+func SessionStickiness(instances []*registry.MicroServiceInstance, metadata interface{}) selector.Next {
 	var mtx sync.Mutex
 	strategyRoundRobinClosur := func() (*registry.MicroServiceInstance, error) {
 		if len(instances) == 0 {
-			return nil, ErrNoneAvailable
+			return nil, selector.ErrNoneAvailable
 		}
 
 		mtx.Lock()
@@ -49,7 +50,7 @@ func SessionStickiness(instances []*registry.MicroServiceInstance, metadata inte
 	if ok {
 		return func() (*registry.MicroServiceInstance, error) {
 			if len(instances) == 0 {
-				return nil, ErrNoneAvailable
+				return nil, selector.ErrNoneAvailable
 			}
 
 			for _, node := range instances {

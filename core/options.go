@@ -4,7 +4,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"time"
 )
 
@@ -12,7 +12,7 @@ import (
 type Options struct {
 	// chain for client
 	ChainName         string
-	Filters           []loadbalance.Filter
+	Filters           []selector.Filter
 	InvocationOptions InvokeOptions
 }
 
@@ -34,7 +34,7 @@ type InvokeOptions struct {
 	//loadbalance stratery
 	//StrategyFunc loadbalance.Strategy
 	StrategyFunc string
-	Filters      []loadbalance.Filter
+	Filters      []selector.Filter
 	URLPath      string
 	MethodType   string
 	AppID        string
@@ -57,7 +57,7 @@ func ChainName(name string) Option {
 }
 
 // Filters is request option
-func Filters(f []loadbalance.Filter) Option {
+func Filters(f []selector.Filter) Option {
 	return func(o *Options) {
 		o.Filters = f
 	}
@@ -133,7 +133,7 @@ func WithStrategy(s string) InvocationOption {
 }
 
 // WithFilters is a request option
-func WithFilters(f ...loadbalance.Filter) InvocationOption {
+func WithFilters(f ...selector.Filter) InvocationOption {
 	return func(o *InvokeOptions) {
 		o.Filters = append(o.Filters, f...)
 	}

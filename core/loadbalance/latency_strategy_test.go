@@ -10,6 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/stretchr/testify/assert"
 	"time"
 )
@@ -18,7 +19,7 @@ func TestLatencyStrategyNoInstanceMapZero(t *testing.T) {
 	config.Init()
 	testData := []*registry.MicroServiceInstance{}
 
-	for _, strategy := range map[string]loadbalance.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
+	for _, strategy := range map[string]selector.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
 
 		next := strategy(testData, "")
 
@@ -38,7 +39,7 @@ func TestLatencyStrategies(t *testing.T) {
 		},
 	}
 
-	for name, strategy := range map[string]loadbalance.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
+	for name, strategy := range map[string]selector.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
 
 		next := strategy(testData, "")
 		counts := make(map[string]int)
@@ -59,7 +60,7 @@ func TestLatencyStrategyNoInstance(t *testing.T) {
 	config.Init()
 	testData := []*registry.MicroServiceInstance{}
 
-	for _, strategy := range map[string]loadbalance.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
+	for _, strategy := range map[string]selector.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
 		next := strategy(testData, "")
 
 		_, err := next()
@@ -87,7 +88,7 @@ func TestLatencyStrategy(t *testing.T) {
 		},
 	}
 
-	for name, strategy := range map[string]loadbalance.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
+	for name, strategy := range map[string]selector.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
 
 		next := strategy(testData, "Server/"+common.ProtocolHighway)
 
@@ -110,7 +111,7 @@ func TestLatencyStrategy(t *testing.T) {
 
 		t.Logf("%s", name)
 	}
-	for name, strategy := range map[string]loadbalance.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
+	for name, strategy := range map[string]selector.Strategy{"weightedresponse": loadbalance.WeightedResponse} {
 		LBstr := make(map[string]string)
 		LBstr["name"] = "WeightedResponse"
 		config.GlobalDefinition = &model.GlobalCfg{}

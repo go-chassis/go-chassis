@@ -1,4 +1,4 @@
-package loadbalance_test
+package selector
 
 import (
 	"testing"

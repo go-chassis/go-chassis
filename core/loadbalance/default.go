@@ -9,29 +9,30 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 type defaultSelector struct {
-	opts Options
+	opts selector.Options
 }
 
 func init() {
 	rand.Seed(time.Now().Unix())
 }
 
-func (r *defaultSelector) Init(opts ...Option) error {
+func (r *defaultSelector) Init(opts ...selector.Option) error {
 	for _, o := range opts {
 		o(&(r.opts))
 	}
 	return nil
 }
 
-func (r *defaultSelector) Options() Options {
+func (r *defaultSelector) Options() selector.Options {
 	return r.opts
 }
 
-func (r *defaultSelector) Select(serviceName, version string, opts ...SelectOption) (Next, error) {
-	sopts := SelectOptions{}
+func (r *defaultSelector) Select(serviceName, version string, opts ...selector.SelectOption) (selector.Next, error) {
+	sopts := selector.SelectOptions{}
 	for _, opt := range opts {
 		opt(&sopts)
 	}
@@ -55,7 +56,7 @@ func (r *defaultSelector) Select(serviceName, version string, opts ...SelectOpti
 
 	instances, err := r.opts.Registry.FindMicroServiceInstances(sopts.ConsumerID, sopts.AppID, serviceName, version)
 	if err != nil {
-		lbErr := LBError{err.Error()}
+		lbErr := selector.LBError{err.Error()}
 		lager.Logger.Errorf(lbErr, "Lb err")
 		return nil, lbErr
 	}
@@ -70,7 +71,7 @@ func (r *defaultSelector) Select(serviceName, version string, opts ...SelectOpti
 
 	// if there's nothing left, return
 	if len(instances) == 0 {
-		lbErr := LBError{fmt.Sprintf("No available instance, key: %s:%s:%s", sopts.AppID, serviceName, version)}
+		lbErr := selector.LBError{fmt.Sprintf("No available instance, key: %s:%s:%s", sopts.AppID, serviceName, version)}
 		lager.Logger.Error(lbErr.Error(), nil)
 		return nil, lbErr
 	}
@@ -82,9 +83,9 @@ func (r *defaultSelector) String() string {
 	return common.DefaultApp
 }
 
-func newDefaultSelector(opts ...Option) Selector {
-	sopts := Options{
-		Strategy: RoundRobin, //default
+func newDefaultSelector(opts ...selector.Option) selector.Selector {
+	sopts := selector.Options{
+		Strategy: selector.RoundRobin, //default
 	}
 
 	for _, opt := range opts {

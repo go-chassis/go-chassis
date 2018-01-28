@@ -2,6 +2,7 @@ package loadbalance
 
 import (
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"sort"
 	"strings"
 	"sync"
@@ -54,7 +55,7 @@ func SetLatency(duration time.Duration, addr, microServiceNameAndProtocol string
 }
 
 // WeightedResponse is a strategy plugin,interface must be a service/protocol string
-func WeightedResponse(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) Next {
+func WeightedResponse(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) selector.Next {
 	return selectWeightedInstance(instances, serviceAndProtocol)
 }
 
@@ -117,13 +118,13 @@ func FindingAvgLatency(metadata string) (avgMap map[string]time.Duration, protoc
 }
 
 // selectWeightedInstance select instance based on protocol and less latency
-func selectWeightedInstance(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) Next {
+func selectWeightedInstance(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) selector.Next {
 	var instanceAddr string
 	avgLatencyMap, protocol := FindingAvgLatency(serviceAndProtocol.(string))
 	if len(avgLatencyMap) == 0 {
 		return func() (*registry.MicroServiceInstance, error) {
 			if len(instances) == 0 {
-				return nil, ErrNoneAvailable
+				return nil, selector.ErrNoneAvailable
 			}
 
 			//if no instances are selected round robin will be done
@@ -138,7 +139,7 @@ func selectWeightedInstance(instances []*registry.MicroServiceInstance, serviceA
 
 	return func() (*registry.MicroServiceInstance, error) {
 		if len(instances) == 0 {
-			return nil, ErrNoneAvailable
+			return nil, selector.ErrNoneAvailable
 		}
 
 		for _, node := range instances {
