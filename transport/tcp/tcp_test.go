@@ -10,8 +10,7 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/transport"
-	transportOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,7 +40,7 @@ func TestTCPTransportCommunication(t *testing.T) {
 	assert.NoError(t, err)
 	defer l.Close()
 
-	fn := func(sock transport.Socket) {
+	fn := func(sock microTransport.Socket) {
 		defer sock.Close()
 
 		for {
@@ -98,7 +97,7 @@ func TestTCPTransportError(t *testing.T) {
 	assert.NoError(t, err)
 	defer l.Close()
 
-	fn := func(sock transport.Socket) {
+	fn := func(sock microTransport.Socket) {
 		defer sock.Close()
 
 		for {
@@ -141,7 +140,7 @@ func TestTCPTransportError(t *testing.T) {
 
 func TestTCPTransportTimeout(t *testing.T) {
 	t.Log("Testing for transport send function timeout")
-	tr := NewTransport(transportOption.Timeout(time.Millisecond * 100))
+	tr := NewTransport(microTransport.Timeout(time.Millisecond * 100))
 
 	l, err := tr.Listen("127.0.0.1:9979")
 	assert.NoError(t, err)
@@ -149,7 +148,7 @@ func TestTCPTransportTimeout(t *testing.T) {
 
 	finish := make(chan bool)
 
-	fn := func(sock transport.Socket) {
+	fn := func(sock microTransport.Socket) {
 		defer func() {
 			sock.Close()
 			close(finish)
@@ -208,7 +207,7 @@ func BenchmarkTcpTransportClient_Send(b *testing.B) {
 	}
 	defer l.Close()
 
-	fn := func(sock transport.Socket) {
+	fn := func(sock microTransport.Socket) {
 		defer sock.Close()
 
 		for {
@@ -266,10 +265,10 @@ func BenchmarkTcpTransportClient_Send(b *testing.B) {
 }
 func TestTCPTransportCommunicationSendError(t *testing.T) {
 	t.Log("Testing for transport listen function with error")
-	tp := NewTransport(func(abc *transportOption.Options) {
+	tp := NewTransport(func(abc *microTransport.Options) {
 		abc.Secure = true
 	})
-	_, err := tp.Listen(":55555", func(abc *transportOption.ListenOptions) {})
+	_, err := tp.Listen(":55555", func(abc *microTransport.ListenOptions) {})
 	assert.Error(t, err)
 }
 func TestTCPTransportDial(t *testing.T) {
@@ -281,7 +280,7 @@ func TestTCPTransportDial(t *testing.T) {
 	assert.NoError(t, err)
 	defer l.Close()
 
-	c, err := tp.Dial(l.Addr(), func(abc *transportOption.DialOptions) {})
+	c, err := tp.Dial(l.Addr(), func(abc *microTransport.DialOptions) {})
 	assert.NoError(t, err)
 	defer c.Close()
 }
@@ -337,13 +336,13 @@ WLPgsQpwo1GuSpECICGsnWH5oaeD9t9jbFoSfhJvv0IZmxdcLpRcpslpeWBBAiEA
 
 	t.Log("Testing for Transport Dial Secure true")
 	tr := NewTransport(
-		transportOption.Secure(true),
-		transportOption.TLSConfig(serverTlsConfig))
+		microTransport.Secure(true),
+		microTransport.TLSConfig(serverTlsConfig))
 
 	l, err := tr.Listen("127.0.0.1:9988")
 	assert.NoError(t, err)
 
-	fn := func(sock transport.Socket) {
+	fn := func(sock microTransport.Socket) {
 		defer sock.Close()
 
 		for {
@@ -373,8 +372,8 @@ WLPgsQpwo1GuSpECICGsnWH5oaeD9t9jbFoSfhJvv0IZmxdcLpRcpslpeWBBAiEA
 	}()
 
 	clientTr := NewTransport(
-		transportOption.Secure(true),
-		transportOption.TLSConfig(clientTlsConfig))
+		microTransport.Secure(true),
+		microTransport.TLSConfig(clientTlsConfig))
 	c, err := clientTr.Dial(l.Addr())
 	assert.NoError(t, err)
 
@@ -400,7 +399,7 @@ func TestTCPTransportDialError(t *testing.T) {
 }
 func TestTCPTransportListenError(t *testing.T) {
 	t.Log("Testing transport Listen function with error")
-	tp := NewTransport(func(abc *transportOption.Options) {
+	tp := NewTransport(func(abc *microTransport.Options) {
 		abc.Secure = true
 	})
 
