@@ -60,13 +60,13 @@ Start the Chassis as a Server
 
 <b>Step 1:</b>
 Initialize your Chassis
-```
+```go
 chassis.Init()
 
 ```
 <b>Step 2:</b>
 Use Rest Invoker to call the provider
-```
+```go
 restinvoker := core.NewRestInvoker()
 	req, _ := rest.NewRequest("GET", "cse://"+providerName+"/sayhello")
 	resp1, err := restinvoker.ContextDo(context.TODO(), req)
