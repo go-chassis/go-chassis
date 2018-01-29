@@ -59,45 +59,45 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		clientOption.WithMethodType(i.MethodType))
 
 	if err != nil {
-		if i.Protocol == common.ProtocolRest &&i.Strategy == loadbalance.StrategySessionStickiness {
-				var reply *rest.Response
-				//set cookie in the error response so that the next request will go the same instance
-				//if we are not setting the session id in the error response then there is no use of keeping
-				//successiveFailedTimes attribute
-				if i.Reply != nil && req.Arg != nil {
-					reply = i.Reply.(*rest.Response)
-					req := req.Arg.(*rest.Request)
-					if r != nil {
-						session.CheckForSessionID(i, StrategySessionTimeout(i), reply.GetResponse(), req.GetRequest())
-					}
+		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalance.StrategySessionStickiness {
+			var reply *rest.Response
+			//set cookie in the error response so that the next request will go the same instance
+			//if we are not setting the session id in the error response then there is no use of keeping
+			//successiveFailedTimes attribute
+			if i.Reply != nil && req.Arg != nil {
+				reply = i.Reply.(*rest.Response)
+				req := req.Arg.(*rest.Request)
+				if r != nil {
+					session.CheckForSessionID(i, StrategySessionTimeout(i), reply.GetResponse(), req.GetRequest())
 				}
-				var statusCode int
-				//process the error string to retrieve the response code
-				actualerrorIs := err.Error()
-				errValues := strings.Split(actualerrorIs, ":")
-				if len(errValues) == 3 {
-					code := strings.Split(errValues[1], " ")
-					statusCode, _ = strconv.Atoi(code[1])
-				}
+			}
+			var statusCode int
+			//process the error string to retrieve the response code
+			actualerrorIs := err.Error()
+			errValues := strings.Split(actualerrorIs, ":")
+			if len(errValues) == 3 {
+				code := strings.Split(errValues[1], " ")
+				statusCode, _ = strconv.Atoi(code[1])
+			}
 
-				// Only in the following cases of errors the successiveFailedTimes count should be increased
-				if statusCode >= 500 || err == fasthttp.ErrConnectionClosed ||
-					err == fasthttp.ErrTimeout || err == fasthttp.ErrNoFreeConns {
-					successiveFailedTimesIs := StrategySuccessiveFailedTimes(i)
-					errCount, ok := loadbalance.SuccessiveFailureCount[i.Endpoint]
-					if ok {
-						errCount++
-						if errCount == successiveFailedTimesIs {
-							session.DeletingKeySuccessiveFailure(reply.GetResponse())
-							loadbalance.SuccessiveFailureCount[i.Endpoint] = 0
-						} else {
-
-							loadbalance.SuccessiveFailureCount[i.Endpoint] = errCount
-						}
+			// Only in the following cases of errors the successiveFailedTimes count should be increased
+			if statusCode >= 500 || err == fasthttp.ErrConnectionClosed ||
+				err == fasthttp.ErrTimeout || err == fasthttp.ErrNoFreeConns {
+				successiveFailedTimesIs := StrategySuccessiveFailedTimes(i)
+				errCount, ok := loadbalance.SuccessiveFailureCount[i.Endpoint]
+				if ok {
+					errCount++
+					if errCount == successiveFailedTimesIs {
+						session.DeletingKeySuccessiveFailure(reply.GetResponse())
+						loadbalance.SuccessiveFailureCount[i.Endpoint] = 0
 					} else {
-						loadbalance.SuccessiveFailureCount[i.Endpoint] = 1
+
+						loadbalance.SuccessiveFailureCount[i.Endpoint] = errCount
 					}
+				} else {
+					loadbalance.SuccessiveFailureCount[i.Endpoint] = 1
 				}
+			}
 		} else {
 			loadbalance.SuccessiveFailureCount[i.Endpoint] = 0
 		}
