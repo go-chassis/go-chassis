@@ -23,18 +23,27 @@ type TransportHandler struct{}
 func (th *TransportHandler) Name() string {
 	return "transport"
 }
+func errNotNill(err error, cb invocation.ResponseCallBack) {
+	r := &invocation.InvocationResponse{
+		Err: err,
+	}
+	lager.Logger.Errorf(err, "GetClient got Error")
+	cb(r)
+	return
+}
 
 // Handle is to handle transport related things
 func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	c, err := client.GetClient(i.Protocol, i.MicroServiceName)
-	if err != nil {
+	errNotNill(err, cb)
+	/*	if err != nil {
 		r := &invocation.InvocationResponse{
 			Err: err,
 		}
 		lager.Logger.Errorf(err, "GetClient got Error")
 		cb(r)
 		return
-	}
+	}*/
 
 	req := c.NewRequest(i.MicroServiceName, i.SchemaID, i.OperationID, i.Args)
 	r := &invocation.InvocationResponse{}
