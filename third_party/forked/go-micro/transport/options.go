@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/codec"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"golang.org/x/net/context"
 )
 

@@ -1,8 +1,8 @@
 package codec_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/codec"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/examples/helloworld/helloworld"
@@ -44,16 +44,16 @@ func TestProtobuffer_Marshal(t *testing.T) {
 		Name: "peter",
 	}
 
-	codec := codec.NewPBCodec()
+	cc := codec.NewPBCodec()
 
-	protobyte, err := codec.Marshal(req)
+	protobyte, err := cc.Marshal(req)
 	assert.NoError(t, err)
 	if err != nil {
 		t.Errorf("Unexpected Marshal err: %v", err)
 	}
 	typ := reflect.ValueOf(req).Interface()
 
-	err1 := codec.Unmarshal(protobyte, typ.(proto.Message))
+	err1 := cc.Unmarshal(protobyte, typ.(proto.Message))
 	assert.NoError(t, err1)
 	if err1 != nil {
 		t.Errorf("Unexpected Unmarshal err: %v", err1)

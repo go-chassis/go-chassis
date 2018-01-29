@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/codec"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"golang.org/x/net/context"
 )

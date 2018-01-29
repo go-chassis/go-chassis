@@ -8,10 +8,10 @@ import (
 	"sync"
 
 	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/codec"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"golang.org/x/net/context"
 )
 
