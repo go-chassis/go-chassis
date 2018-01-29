@@ -59,8 +59,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		clientOption.WithMethodType(i.MethodType))
 
 	if err != nil {
-		if i.Protocol == common.ProtocolRest {
-			if i.Strategy == loadbalance.StrategySessionStickiness {
+		if i.Protocol == common.ProtocolRest &&i.Strategy == loadbalance.StrategySessionStickiness {
 				var reply *rest.Response
 				//set cookie in the error response so that the next request will go the same instance
 				//if we are not setting the session id in the error response then there is no use of keeping
@@ -99,7 +98,6 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 						loadbalance.SuccessiveFailureCount[i.Endpoint] = 1
 					}
 				}
-			}
 		} else {
 			loadbalance.SuccessiveFailureCount[i.Endpoint] = 0
 		}
