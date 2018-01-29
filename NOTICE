@@ -5,10 +5,26 @@ This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
 ================================================================
+The Apache 2.0 License
+================================================================
+
+The following components are provided under the  Apache 2.0 License  (https://opensource.org/licenses/Apache-2.0). See project link for details.
+
+github.com/micro/go-micro
+github.com/k8s.io/kubernetes/pkg/util/sets
+github.com/cloudfoundry/lager/color
+github.com/apache/thrift/lib/go/thrift                                         
+github.com/matttproud/golang_protobuf_extensions/pbutil                        
+github.com/opentracing-contrib/go-observer                                     
+github.com/prometheus/client_golang/prometheus/promhttp                       
+github.com/prometheus/client_model/go                                         
+github.com/prometheus/common                                                  
+github.com/prometheus/procfs/xfs                                          
+================================================================
 The ISC License
 ================================================================
 
-The following components are provided under the  MIT License  (https://opensource.org/licenses/ISC). See project link for details.
+The following components are provided under the  ISC License  (https://opensource.org/licenses/ISC). See project link for details.
 
 github.com/davecgh/go-spew/spew
 ================================================================
@@ -48,7 +64,7 @@ github.com/golang/snappy
 github.com/golang/protobuf/proto
 github.com/gogo/protobuf/proto
 github.com/fsnotify/fsnotify
-github.com/ServiceComb/auth/third_party/forked/datastream/aws
+github.com/datastream/aws
 
 ================================================================
 Notice for gopkg.in/yaml.v2:
