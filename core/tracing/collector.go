@@ -7,7 +7,7 @@ import (
 
 	"github.com/apache/thrift/lib/go/thrift"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
-	"github.com/openzipkin/zipkin-go-opentracing/_thrift/gen-go/zipkincore"
+	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
 )
 
 // constant for tracing zipkin and pipe collectors
