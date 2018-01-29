@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ServiceComb/go-chassis/core/codec"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"

@@ -27,7 +27,7 @@ func errNotNill(err error, cb invocation.ResponseCallBack) {
 	r := &invocation.InvocationResponse{
 		Err: err,
 	}
-	lager.Logger.Errorf(err, "GetClient got Error")
+	lager.Logger.Error( "GetClient got Error",err)
 	cb(r)
 	return
 }
@@ -35,7 +35,10 @@ func errNotNill(err error, cb invocation.ResponseCallBack) {
 // Handle is to handle transport related things
 func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	c, err := client.GetClient(i.Protocol, i.MicroServiceName)
-	errNotNill(err, cb)
+	if err!=nil{
+		errNotNill(err, cb)
+	}
+
 	/*	if err != nil {
 		r := &invocation.InvocationResponse{
 			Err: err,

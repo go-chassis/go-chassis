@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/ServiceComb/go-chassis/client/highway/pb"
-	"github.com/ServiceComb/go-chassis/core/codec"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/handler"
