@@ -19,7 +19,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	_ "github.com/ServiceComb/go-chassis/transport/tcp"
+	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -12,7 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"github.com/ServiceComb/go-chassis/transport/tcp"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
 

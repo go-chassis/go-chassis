@@ -18,7 +18,7 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	"github.com/ServiceComb/go-chassis/transport/tcp"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
