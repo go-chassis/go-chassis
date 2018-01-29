@@ -1,7 +1,8 @@
 package codec_test
+
 import (
-	 "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/examples/helloworld/helloworld"

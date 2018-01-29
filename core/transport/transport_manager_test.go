@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
@@ -17,6 +16,7 @@ import (
 	securityCommon "github.com/ServiceComb/go-chassis/security/common"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"

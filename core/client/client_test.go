@@ -6,11 +6,11 @@ import (
 
 	"github.com/ServiceComb/go-chassis/client/highway"
 	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )

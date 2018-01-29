@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/ServiceComb/go-chassis/client/highway/pb"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/handler"
@@ -18,6 +17,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/provider"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/core/util/metadata"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"log"
