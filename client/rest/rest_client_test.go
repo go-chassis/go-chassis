@@ -17,7 +17,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"github.com/ServiceComb/go-chassis/transport/tcp"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )

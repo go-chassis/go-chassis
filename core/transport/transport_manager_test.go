@@ -18,7 +18,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	_ "github.com/ServiceComb/go-chassis/transport/tcp"
+	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
 

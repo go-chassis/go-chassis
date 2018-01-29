@@ -11,7 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	_ "github.com/ServiceComb/go-chassis/transport/tcp"
+	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
 

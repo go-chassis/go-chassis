@@ -38,7 +38,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	// tcp package handles transport related things
-	_ "github.com/ServiceComb/go-chassis/transport/tcp"
+	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 )
 
 var goChassis *chassis
