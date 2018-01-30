@@ -48,6 +48,7 @@ github.com/opentracing/opentracing-go
 github.com/openzipkin/zipkin-go-opentracing
 github.com/patrickmn/go-cache
 github.com/spf13/cast
+github.com/uber-go/ratelimit
 
 ================================================================
 The BSD Licenses

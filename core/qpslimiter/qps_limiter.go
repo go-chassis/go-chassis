@@ -1,10 +1,12 @@
 package qpslimiter
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/lager"
 	"strconv"
 	"sync"
+
+	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/third_party/forked/uber-go/ratelimit"
 )
 
 // constant qps default rate
@@ -14,7 +16,7 @@ const (
 
 // QPSLimiterMap qps limiter map struct
 type QPSLimiterMap struct {
-	KeyMap map[string]Limiter
+	KeyMap map[string]ratelimit.Limiter
 	sync.RWMutex
 }
 
@@ -28,7 +30,7 @@ var (
 func GetQPSTrafficLimiter() *QPSLimiterMap {
 	initializeMap := func() {
 		qpsLimiter = &QPSLimiterMap{}
-		qpsLimiter.KeyMap = make(map[string]Limiter)
+		qpsLimiter.KeyMap = make(map[string]ratelimit.Limiter)
 	}
 
 	once.Do(initializeMap)
@@ -67,7 +69,7 @@ func (qpsL *QPSLimiterMap) ProcessDefaultRateRpsTokenReq(key string, qpsRate int
 
 	qpsL.Lock()
 	// Create a new bucket for the new operation
-	r := New(bucketSize)
+	r := ratelimit.New(bucketSize)
 	qpsL.KeyMap[key] = r
 	qpsL.Unlock()
 

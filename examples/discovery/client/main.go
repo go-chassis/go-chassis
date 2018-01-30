@@ -10,7 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/util/metadata"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/ServiceComb/go-chassis/examples/schemas/employ"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"golang.org/x/net/context"
