@@ -211,61 +211,61 @@ licenses.
 
 
 ========================================================================
-For go-micro:
+For third_party/forked/go-micro:
 ========================================================================
 
 See license/LICENSE-go-micro
 
 ========================================================================
-For hystrix-go:
+For third_party/forked/afex/hystrix-go:
 ========================================================================
 
 See license/LICENSE-hystrix-go
 
 ========================================================================
-For benbjohnson-clock:
+For third_party/forked/benbjohnson/clock:
 ========================================================================
 
 See license/LICENSE-benbjohnson-clock
 
 ========================================================================
-For kubernetes:
+For third_party/forked/kubernetes:
 ========================================================================
 
 See license/LICENSE-kubernetes
 
 ========================================================================
-For uber-ratelimiter/rate.go:
+For core/qpslimiter/rate.go:
 ========================================================================
 
 See license/LICENSE-uber-ratelimiter
 
 ========================================================================
-For fasthttp:
+For third_party/forked/valyala/fasthttp:
 ========================================================================
 
 See license/LICENSE-valyala-fasthttp
 
 ========================================================================
-For metadata.go:
+For core/util/metadata/metadata.go:
+========================================================================
+
+See license/LICENSE-go-micro
+
+
+========================================================================
+For server/highway/highway_server.go:
 ========================================================================
 
 See license/LICENSE-go-micro
 
 ========================================================================
-For highway_server.go:
+For core/loadbalance/default.go:
 ========================================================================
 
 See license/LICENSE-go-micro
-
 ========================================================================
-For highway_server.go:
-========================================================================
-
-See license/LICENSE-go-micro
-
-========================================================================
-For prometheusmetrics.go:
+For metrics/prometheusmetrics.go:
 ========================================================================
 
 See license/LICENSE-prometheusmetrics
