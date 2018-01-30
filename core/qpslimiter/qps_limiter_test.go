@@ -1,17 +1,19 @@
 package qpslimiter_test
 
 import (
+	"log"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/qpslimiter"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/ServiceComb/go-chassis/third_party/forked/uber-go/ratelimit"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func initialize() {
@@ -25,7 +27,7 @@ func initialize() {
 func TestProcessQpsTokenReq(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	bucketsize := 100
-	r := qpslimiter.New(bucketsize)
+	r := ratelimit.New(bucketsize)
 	qps := qpslimiter.GetQPSTrafficLimiter()
 	qps.KeyMap["serviceName"] = r
 
