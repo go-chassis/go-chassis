@@ -10,14 +10,14 @@ The Apache 2.0 License
 
 The following components are provided under the  Apache 2.0 License  (https://opensource.org/licenses/Apache-2.0). See project link for details.
 
-
 github.com/apache/thrift/lib/go/thrift                                         
 github.com/matttproud/golang_protobuf_extensions/pbutil                        
 github.com/opentracing-contrib/go-observer                                     
 github.com/prometheus/client_golang/prometheus/promhttp                       
 github.com/prometheus/client_model/go                                         
 github.com/prometheus/common                                                  
-github.com/prometheus/procfs/xfs                                          
+github.com/prometheus/procfs/xfs
+
 ================================================================
 The ISC License
 ================================================================
@@ -25,13 +25,12 @@ The ISC License
 The following components are provided under the  ISC License  (https://opensource.org/licenses/ISC). See project link for details.
 
 github.com/davecgh/go-spew/spew
+
 ================================================================
 The MIT License
 ================================================================
 
 The following components are provided under the  MIT License  (http://www.opensource.org/licenses/mit-license.php). See project link for details.
-
-
 
 github.com/beorn7/perks/quantile
 github.com/cenkalti/backoff
@@ -45,7 +44,6 @@ github.com/opentracing/opentracing-go
 github.com/openzipkin/zipkin-go-opentracing
 github.com/patrickmn/go-cache
 github.com/spf13/cast
-
 
 ================================================================
 The BSD Licenses
@@ -98,10 +96,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-
-
-
-====================================================================================================================
+==========================================
 For go-micro(github.com/micro/go-micro)
 
    Copyright 2015 Asim Aslam.
@@ -117,7 +112,8 @@ For go-micro(github.com/micro/go-micro)
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-==================================================
+
+==========================================
 For kubernetes(github.com/k8s.io/kubernetes/pkg/util/sets)
 
    Copyright 2014 The Kubernetes Authors.
@@ -134,8 +130,8 @@ For kubernetes(github.com/k8s.io/kubernetes/pkg/util/sets)
    See the License for the specific language governing permissions and
    limitations under the License.
 
-===================================================
-for github.com/deathowl/go-metrics-prometheus
+==========================================
+For github.com/deathowl/go-metrics-prometheus
 
    Copyright 2016 Csergő Bálint github.com/deathowl
 
@@ -153,6 +149,7 @@ for github.com/deathowl/go-metrics-prometheus
 
 ==========================================
 For github.com/cloudfoundry/lager
+
   Copyright {yyyy} {name of copyright owner}
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -170,6 +167,7 @@ For github.com/cloudfoundry/lager
 
 ==========================================
 For github.com/benbjohnson/clock
+
 The MIT License (MIT)
 
 Copyright (c) 2014 Ben Johnson
