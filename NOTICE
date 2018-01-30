@@ -164,7 +164,6 @@ For github.com/cloudfoundry/lager
    See the License for the specific language governing permissions and
    limitations under the License.
 
-
 ==========================================
 For github.com/benbjohnson/clock
 
@@ -189,7 +188,6 @@ For github.com/uber-go/ratelimit
 The MIT License (MIT)
 
 Copyright (c) 2016 Uber Technologies, Inc.
-
 
 ==========================================
 For github.com/datastream/aws
