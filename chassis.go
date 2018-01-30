@@ -34,9 +34,10 @@ import (
 	// aes package handles security related plugins
 	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	_ "github.com/ServiceComb/go-chassis/server/highway"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
+	// highway package register the highway server plugin
+	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server/highway"
 	// tcp package handles transport related things
 	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 )
