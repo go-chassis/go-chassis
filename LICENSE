@@ -214,58 +214,70 @@ licenses.
 For third_party/forked/go-micro:
 ========================================================================
 
-See license/LICENSE-go-micro
+See licenses/LICENSE-go-micro
 
 ========================================================================
-For third_party/forked/afex/hystrix-go:
+For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go:
 ========================================================================
 
-See license/LICENSE-hystrix-go
+See licenses/LICENSE-hystrix-go
 
 ========================================================================
-For third_party/forked/benbjohnson/clock:
+For third_party/forked/benbjohnson/clock/clock.go,third_party/forked/benbjohnson/clock/clock_test.go:
 ========================================================================
 
-See license/LICENSE-benbjohnson-clock
+See licenses/LICENSE-benbjohnson-clock
 
 ========================================================================
 For third_party/forked/kubernetes:
 ========================================================================
 
-See license/LICENSE-kubernetes
+See licenses/LICENSE-kubernetes
 
 ========================================================================
-For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go:
+For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go,third_party/forked/benbjohnson/clock/interface.go,third_party/forked/benbjohnson/clock/real.go,third_party/forked/benbjohnson/clock/timers.go:
 ========================================================================
 
-See license/LICENSE-uber-ratelimiter
+See licenses/LICENSE-uber-ratelimiter
 
 ========================================================================
 For third_party/forked/valyala/fasthttp:
 ========================================================================
 
-See license/LICENSE-valyala-fasthttp
+See licenses/LICENSE-valyala-fasthttp
 
 ========================================================================
 For core/util/metadata/metadata.go,core/util/metadata/metadata_test.go:
 ========================================================================
 
-See license/LICENSE-go-micro
+See licenses/LICENSE-go-micro
 
 ========================================================================
 For server/highway/highway_server.go,server/highway/highway_server_test.go:
 ========================================================================
 
-See license/LICENSE-go-micro
+See licenses/LICENSE-go-micro
 
 ========================================================================
-For core/loadbalance/default.go,core/loadbalance/default_test.go::
+For core/loadbalance/default.go,core/loadbalance/default_test.go:
 ========================================================================
 
-See license/LICENSE-go-micro
+See licenses/LICENSE-go-micro
 
 ========================================================================
 For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go:
 ========================================================================
 
-See license/LICENSE-prometheusmetrics
+See licenses/LICENSE-prometheusmetrics
+
+========================================================================
+For vendor/github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager:
+========================================================================
+
+See licenses/LICENSE-cloudfoundry-lager
+
+========================================================================
+For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws:
+========================================================================
+
+See licenses/LICENSE-datastream-aws
