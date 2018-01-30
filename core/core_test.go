@@ -1,18 +1,18 @@
 package core_test
 
 import (
-	//"fmt"
+	"testing"
+
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/config"
 	_ "github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
-	"testing"
 )
 
 func initenv() {

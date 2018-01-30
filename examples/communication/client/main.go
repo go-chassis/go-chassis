@@ -1,14 +1,15 @@
 package main
 
 import (
+	"log"
+
 	"github.com/ServiceComb/go-chassis"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	_ "github.com/ServiceComb/go-chassis/examples/plugin/handler"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"golang.org/x/net/context"
-	"log"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
