@@ -45,15 +45,14 @@ func (s *HelloServer) URLPatterns() []restful.Route {
 <b>Step 2:</b>
 Register your Schema to go-chassis
 ```go
-chassis.RegisterSchema("rest", &HelloServer{},
-		server.WithSchemaID("HelloServer"))
+chassis.RegisterSchema("rest", &HelloServer{},server.WithSchemaID("HelloServer"))
 ```
 
 <b>Step 3:</b>
 Start the Chassis as a Server
 ```go
-	chassis.Init()
-	chassis.Run()
+chassis.Init()
+chassis.Run()
 ```
 
 ## Write a Http Consumer
@@ -67,9 +66,9 @@ chassis.Init()
 <b>Step 2:</b>
 Use Rest Invoker to call the provider
 ```go
-restinvoker := core.NewRestInvoker()
-	req, _ := rest.NewRequest("GET", "cse://"+providerName+"/sayhello")
-	resp1, err := restinvoker.ContextDo(context.TODO(), req)
+restInvoker := core.NewRestInvoker()
+req, _ := rest.NewRequest("GET", "cse://"+providerName+"/sayhello")
+resp1, err := restInvoker.ContextDo(context.TODO(), req)
 ```
 
 # Examples
