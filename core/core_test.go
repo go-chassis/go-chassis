@@ -8,7 +8,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/util/metadata"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"

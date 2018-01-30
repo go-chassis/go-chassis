@@ -2,7 +2,7 @@ package metadata_test
 
 import (
 	context17 "context"
-	"github.com/ServiceComb/go-chassis/core/util/metadata"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 	_ "golang.org/x/net/context"

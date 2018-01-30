@@ -3,16 +3,17 @@ package tcp
 import (
 	"errors"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/client/highway/pb"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/util/metadata"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/ServiceComb/go-chassis/client/highway/pb"
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
+	"github.com/golang/protobuf/proto"
+	"golang.org/x/net/context"
 )
 
 //TODO 1. configurable
