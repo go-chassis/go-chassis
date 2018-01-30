@@ -149,7 +149,7 @@ For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go(github.com/de
    limitations under the License.
 
 ==========================================
-For third_party/forked/cloudfoundry/lager(github.com/cloudfoundry/lager)
+For vendor/github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager(github.com/cloudfoundry/lager)
 
 Copyright (c) 2015-Present CloudFoundry.org Foundation, Inc. All Rights Reserved.
 
@@ -173,14 +173,14 @@ is subject to the terms and conditions of each subcomponent's license,
 as noted in the LICENSE file.
 
 ==========================================
-For third_party/forked/benbjohnson/clock(github.com/benbjohnson/clock)
+For third_party/forked/benbjohnson/clock/clock.go,third_party/forked/benbjohnson/clock/clock_test.go(github.com/benbjohnson/clock)
 
 The MIT License (MIT)
 
 Copyright (c) 2014 Ben Johnson
 
 ==========================================
-For third_party/forked/afex/hystrix-go(github.com/afex/hystrix-go/hystrix)
+For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go(github.com/afex/hystrix-go/hystrix)
 The MIT License (MIT)
 
 Copyright (c) 2013 keith
@@ -192,13 +192,13 @@ The MIT License (MIT)
 Copyright (c) 2015-2016 Aliaksandr Valialkin, VertaMedia
 
 ==========================================
-For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go(github.com/uber-go/ratelimit)
+For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go,third_party/forked/benbjohnson/clock/interface.go,third_party/forked/benbjohnson/clock/real.go,third_party/forked/benbjohnson/clock/timers.go(github.com/uber-go/ratelimit)
 The MIT License (MIT)
 
 Copyright (c) 2016 Uber Technologies, Inc.
 
 ==========================================
-For third_party/forked/datastream/aws(github.com/datastream/aws)
+For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws(github.com/datastream/aws)
 
 Copyright (c) 2014, Xianjie
 All rights reserved.
