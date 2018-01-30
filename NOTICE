@@ -131,7 +131,7 @@ For third_party/forked/kubernetes(github.com/k8s.io/kubernetes/pkg/util/sets)
    limitations under the License.
 
 ==========================================
-For metrics/prometheusmetrics.go(github.com/deathowl/go-metrics-prometheus)
+For metrics/prometheusmetrics.go,metrics/metric_test.go(github.com/deathowl/go-metrics-prometheus)
 
    Copyright 2016 Csergő Bálint github.com/deathowl
 
