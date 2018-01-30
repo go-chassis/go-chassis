@@ -97,7 +97,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ==========================================
-For go-micro(github.com/micro/go-micro)
+For core/util/metadata/metadata.go,server/highway/highway_server.go,core/loadbalance/default.go,third_party/forked/go-micro(github.com/micro/go-micro)
 
    Copyright 2015 Asim Aslam.
 
@@ -114,7 +114,7 @@ For go-micro(github.com/micro/go-micro)
    limitations under the License.
 
 ==========================================
-For kubernetes(github.com/k8s.io/kubernetes/pkg/util/sets)
+For third_party/forked/kubernetes(github.com/k8s.io/kubernetes/pkg/util/sets)
 
    Copyright 2014 The Kubernetes Authors.
 
@@ -131,7 +131,7 @@ For kubernetes(github.com/k8s.io/kubernetes/pkg/util/sets)
    limitations under the License.
 
 ==========================================
-For github.com/deathowl/go-metrics-prometheus
+For metrics/prometheusmetrics.go(github.com/deathowl/go-metrics-prometheus)
 
    Copyright 2016 Csergő Bálint github.com/deathowl
 
@@ -165,32 +165,32 @@ For github.com/cloudfoundry/lager
    limitations under the License.
 
 ==========================================
-For github.com/benbjohnson/clock
+For third_party/forked/benbjohnson/clock(github.com/benbjohnson/clock)
 
 The MIT License (MIT)
 
 Copyright (c) 2014 Ben Johnson
 
 ==========================================
-For github.com/afex/hystrix-go/hystrix
+For third_party/forked/afex/hystrix-go(github.com/afex/hystrix-go/hystrix)
 The MIT License (MIT)
 
 Copyright (c) 2013 keith
 
 ==========================================
-For github.com/valyala/fasthttp/
+For third_party/forked/valyala/fasthttp(github.com/valyala/fasthttp/)
 The MIT License (MIT)
 
 Copyright (c) 2015-2016 Aliaksandr Valialkin, VertaMedia
 
 ==========================================
-For github.com/uber-go/ratelimit
+For core/qpslimiter/rate.go(github.com/uber-go/ratelimit)
 The MIT License (MIT)
 
 Copyright (c) 2016 Uber Technologies, Inc.
 
 ==========================================
-For github.com/datastream/aws
+For third_party/forked/datastream/aws(github.com/datastream/aws)
 
 Copyright (c) 2014, Xianjie
 All rights reserved.
