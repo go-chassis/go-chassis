@@ -235,7 +235,7 @@ For third_party/forked/kubernetes:
 See license/LICENSE-kubernetes
 
 ========================================================================
-For core/qpslimiter/rate.go:
+For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go:
 ========================================================================
 
 See license/LICENSE-uber-ratelimiter
@@ -247,25 +247,25 @@ For third_party/forked/valyala/fasthttp:
 See license/LICENSE-valyala-fasthttp
 
 ========================================================================
-For core/util/metadata/metadata.go:
-========================================================================
-
-See license/LICENSE-go-micro
-
-
-========================================================================
-For server/highway/highway_server.go:
+For core/util/metadata/metadata.go,core/util/metadata/metadata_test.go:
 ========================================================================
 
 See license/LICENSE-go-micro
 
 ========================================================================
-For core/loadbalance/default.go:
+For server/highway/highway_server.go,server/highway/highway_server_test.go:
 ========================================================================
 
 See license/LICENSE-go-micro
+
 ========================================================================
-For metrics/prometheusmetrics.go:
+For core/loadbalance/default.go,core/loadbalance/default_test.go::
+========================================================================
+
+See license/LICENSE-go-micro
+
+========================================================================
+For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go:
 ========================================================================
 
 See license/LICENSE-prometheusmetrics

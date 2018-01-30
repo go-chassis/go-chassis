@@ -97,7 +97,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ==========================================
-For core/util/metadata/metadata.go,server/highway/highway_server.go,core/loadbalance/default.go,third_party/forked/go-micro(github.com/micro/go-micro)
+For core/util/metadata/metadata.go,server/highway/highway_server.go,core/loadbalance/default.go,third_party/forked/go-micro
+core/util/metadata/metadata_test.go,server/highway/highway_server_test.go,core/loadbalance/default_test.go(github.com/micro/go-micro)
 
    Copyright 2015 Asim Aslam.
 
@@ -131,7 +132,7 @@ For third_party/forked/kubernetes(github.com/k8s.io/kubernetes/pkg/util/sets)
    limitations under the License.
 
 ==========================================
-For metrics/prometheusmetrics.go(github.com/deathowl/go-metrics-prometheus)
+For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go(github.com/deathowl/go-metrics-prometheus)
 
    Copyright 2016 Csergő Bálint github.com/deathowl
 
@@ -191,7 +192,7 @@ The MIT License (MIT)
 Copyright (c) 2015-2016 Aliaksandr Valialkin, VertaMedia
 
 ==========================================
-For core/qpslimiter/rate.go(github.com/uber-go/ratelimit)
+For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go(github.com/uber-go/ratelimit)
 The MIT License (MIT)
 
 Copyright (c) 2016 Uber Technologies, Inc.
