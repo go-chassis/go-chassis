@@ -6,7 +6,8 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/uber-go/ratelimit"
+
+	"go.uber.org/ratelimit"
 )
 
 // constant qps default rate

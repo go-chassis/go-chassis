@@ -223,22 +223,10 @@ For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collect
 See licenses/LICENSE-hystrix-go
 
 ========================================================================
-For third_party/forked/benbjohnson/clock/clock.go,third_party/forked/benbjohnson/clock/clock_test.go:
-========================================================================
-
-See licenses/LICENSE-benbjohnson-clock
-
-========================================================================
 For third_party/forked/kubernetes:
 ========================================================================
 
 See licenses/LICENSE-kubernetes
-
-========================================================================
-For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go,third_party/forked/benbjohnson/clock/interface.go,third_party/forked/benbjohnson/clock/real.go,third_party/forked/benbjohnson/clock/timers.go:
-========================================================================
-
-See licenses/LICENSE-uber-ratelimiter
 
 ========================================================================
 For third_party/forked/valyala/fasthttp:

@@ -44,6 +44,7 @@ github.com/opentracing/opentracing-go
 github.com/openzipkin/zipkin-go-opentracing
 github.com/patrickmn/go-cache
 github.com/spf13/cast
+go.uber.org/ratelimit
 
 ================================================================
 The BSD Licenses
@@ -172,12 +173,6 @@ copyright notices and license terms. Your use of these subcomponents
 is subject to the terms and conditions of each subcomponent's license,
 as noted in the LICENSE file.
 
-==========================================
-For third_party/forked/benbjohnson/clock/clock.go,third_party/forked/benbjohnson/clock/clock_test.go(github.com/benbjohnson/clock)
-
-The MIT License (MIT)
-
-Copyright (c) 2014 Ben Johnson
 
 ==========================================
 For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go(github.com/afex/hystrix-go/hystrix)
@@ -190,12 +185,6 @@ For third_party/forked/valyala/fasthttp(github.com/valyala/fasthttp/)
 The MIT License (MIT)
 
 Copyright (c) 2015-2016 Aliaksandr Valialkin, VertaMedia
-
-==========================================
-For core/qpslimiter/rate.go,core/qpslimiter/rate_test.go,third_party/forked/benbjohnson/clock/interface.go,third_party/forked/benbjohnson/clock/real.go,third_party/forked/benbjohnson/clock/timers.go(github.com/uber-go/ratelimit)
-The MIT License (MIT)
-
-Copyright (c) 2016 Uber Technologies, Inc.
 
 ==========================================
 For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws(github.com/datastream/aws)

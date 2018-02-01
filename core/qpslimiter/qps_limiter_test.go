@@ -12,8 +12,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/qpslimiter"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/ServiceComb/go-chassis/third_party/forked/uber-go/ratelimit"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/ratelimit"
 )
 
 func initialize() {
