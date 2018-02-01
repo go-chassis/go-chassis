@@ -10,7 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	secCommon "github.com/ServiceComb/go-chassis/security/common"
-	"github.com/ServiceComb/go-chassis/third_party/forked/kubernetes/pkg/util/sets"
+	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 var errSSLConfigNotExist = errors.New("No SSL config")
