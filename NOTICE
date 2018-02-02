@@ -34,16 +34,23 @@ The MIT License
 The following components are provided under the  MIT License  (http://www.opensource.org/licenses/mit-license.php). See project link for details.
 
 github.com/beorn7/perks/quantile
+github.com/cactus/go-statsd-client
 github.com/cenkalti/backoff
+github.com/DataDog/datadog-go
 github.com/eapache/go-resiliency/breaker
 github.com/eapache/go-xerial-snappy
 github.com/eapache/queue
 github.com/emicklei/go-restful/log
 github.com/emicklei/go-restful-swagger12
 github.com/klauspost/cpuid
+github.com/onsi/ginkgo
+github.com/onsi/gomega
 github.com/opentracing/opentracing-go
 github.com/openzipkin/zipkin-go-opentracing
 github.com/patrickmn/go-cache
+github.com/reactivex/rxgo
+github.com/smartystreets/assertions
+github.com/smartystreets/goconvey
 github.com/spf13/cast
 go.uber.org/ratelimit
 
