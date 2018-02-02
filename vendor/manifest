@@ -489,6 +489,14 @@
 			"branch": "master",
 			"path": "/pkg/util/sets",
 			"notests": true
-		}
+		},
+                {
+                        "importpath": "go.uber.org/ratelimit",
+                        "repository": "https://github.com/uber-go/ratelimit",
+                        "vcs": "git",
+                        "revision": "d15fa2e2a63dd52104bc96d8ea7dc47ce8027de8",
+                        "branch": "HEAD",
+                        "notests": true
+                }
 	]
 }
