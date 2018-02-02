@@ -101,15 +101,12 @@ func (js *jobSchedule) createWorkerSchedulers(addr string, workerNum int, c *hig
 		//create buffered channel which will receive jobs
 		ch = make(chan *job, 1000)
 		lager.Logger.Infof("Starting %d workers for %s", workerNum, addr)
-		js.Lock()
-		js.jobChannel[addr] = &JobInfo{
-			JobChan:     ch,
-			RefreshTime: time.Now(),
-		}
-		js.Unlock()
+
 		for i := 0; i < workerNum; i++ {
 			trClient, err := c.opts.Transport.Dial(host)
 			if err != nil {
+			   //close the channel
+			    close(ch)
 				return err
 			}
 
@@ -121,6 +118,12 @@ func (js *jobSchedule) createWorkerSchedulers(addr string, workerNum int, c *hig
 
 			go worker.run(addr)
 		}
+        js.Lock()
+		js.jobChannel[addr] = &JobInfo{
+			JobChan:     ch,
+			RefreshTime: time.Now(),
+		}
+		js.Unlock()
 	}
 	//workers already exist
 	return nil
