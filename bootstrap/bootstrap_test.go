@@ -6,10 +6,13 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/core/registry"
+	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 var success map[string]bool
@@ -35,6 +38,11 @@ func TestBootstrap(t *testing.T) {
 	initialize()
 	config.Init()
 	archaius.Init()
+	time.Sleep(1 * time.Second)
+	config.GlobalDefinition = &model.GlobalCfg{}
+	config.MicroserviceDefinition = &model.MicroserviceCfg{}
+	config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version = "v2"
+	registry.Enable()
 
 	t.Log("Test bootstrap.go")
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
@@ -50,7 +58,6 @@ func TestBootstrap(t *testing.T) {
 	t.Log("Install Plugins")
 	bootstrap.InstallPlugin(plugin1.Name, plugin1)
 	bootstrap.InstallPlugin(plugin2.Name, plugin2)
-	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = ""
 	bootstrap.Bootstrap()
 

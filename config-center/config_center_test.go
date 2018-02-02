@@ -5,6 +5,8 @@ import (
 	"github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
+	"github.com/ServiceComb/go-chassis/core/registry"
+	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 
 	"github.com/ServiceComb/go-archaius"
 
@@ -18,6 +20,7 @@ func TestInitConfigCenter(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
 	err := config.Init()
+	registry.Enable()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = ""
 	err = configcenter.InitConfigCenter()

@@ -6,6 +6,7 @@ import (
 	"github.com/ServiceComb/cse-collector"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
@@ -17,13 +18,13 @@ import (
 
 func registerCircuitBreakerCollector(r metrics.Registry) error {
 	metricCollector.Registry.Register(metricsink.NewCseCollector)
-	monitorServerURL := config.GlobalDefinition.Cse.Monitor.Client.ServerURI
-	if monitorServerURL == "" {
-		lager.Logger.Warn("empty monitor server endpoint, please provide the monitor server endpoint", nil)
+
+	monitorServerURL, err := getMonitorEndpoint()
+	if err != nil {
 		return nil
 	}
 
-	tlsConfig, tlsError := getTLSForClient()
+	tlsConfig, tlsError := getTLSForClient(monitorServerURL)
 	if tlsError != nil {
 		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed.", Name, common.Consumer)
 		return tlsError
@@ -39,9 +40,8 @@ func registerCircuitBreakerCollector(r metrics.Registry) error {
 	return nil
 }
 
-func getTLSForClient() (*tls.Config, error) {
-	base := config.GlobalDefinition.Cse.Monitor.Client.ServerURI
-	monitorServerURL, err := url.Parse(base)
+func getTLSForClient(monitorURL string) (*tls.Config, error) {
+	monitorServerURL, err := url.Parse(monitorURL)
 	if err != nil {
 		lager.Logger.Error("Error occurred while parsing Monitor Server Uri", err)
 		return nil, err
@@ -80,4 +80,19 @@ func getAuthHeaders() http.Header {
 	headers.Set(ContentType, "application/json")
 
 	return headers
+}
+
+func getMonitorEndpoint() (string, error) {
+	monitorEndpoint := config.GlobalDefinition.Cse.Monitor.Client.ServerURI
+	if monitorEndpoint == "" {
+		monitorURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseMonitoring", "latest")
+		if err != nil {
+			lager.Logger.Warn("empty monitor server endpoint, please provide the monitor server endpoint", err)
+			return "", err
+		}
+
+		monitorEndpoint = monitorURL
+	}
+
+	return monitorEndpoint, nil
 }
