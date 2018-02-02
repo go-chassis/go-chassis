@@ -2,7 +2,6 @@ package core
 
 import (
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"time"
@@ -156,10 +155,7 @@ func getOpts(microservice string, options ...InvocationOption) InvokeOptions {
 		opts.ContentType = common.JSON
 	}
 	if opts.Version == "" {
-		opts.Version = config.GlobalDefinition.Cse.References[microservice].Version
-		if opts.Version == "" {
-			opts.Version = common.DefaultVersion
-		}
+		opts.Version = common.LatestVersion
 	}
 	return opts
 }

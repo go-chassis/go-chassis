@@ -425,18 +425,22 @@ func (r *Servicecenter) fillCacheAndGetInterfaceSchemaContent(microServiceList [
 // FindMicroServiceInstances find micro-service instances
 func (r *Servicecenter) FindMicroServiceInstances(consumerID, appID, microServiceName, version string) ([]*registry.MicroServiceInstance, error) {
 	key := microServiceName + ":" + version + ":" + appID
+
 	value, boo := registry.MicroserviceInstanceCache.Get(key)
 	if !boo || value == nil {
-		//Try remote
 		lager.Logger.Warnf(nil, "%s Get instances from remote, key: %s", consumerID, key)
-		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName, version, config.Stage)
+		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
+			findVersionRule(microServiceName), config.Stage)
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", key, err)
 		}
-		instances := filterInstances(providerInstances)
 
-		registry.MicroserviceInstanceCache.Set(key, instances, 0)
-		return instances, nil
+		filterRestore(providerInstances, microServiceName, appID)
+		value, boo = registry.MicroserviceInstanceCache.Get(key)
+		if !boo || value == nil {
+			lager.Logger.Debugf("Find no microservice instances for %s from cache", key)
+			return nil, nil
+		}
 	}
 	microServiceInstance, ok := value.([]*registry.MicroServiceInstance)
 	if !ok {
