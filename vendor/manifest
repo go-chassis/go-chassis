@@ -113,6 +113,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/DataDog/datadog-go",
+			"repository": "https://github.com/DataDog/datadog-go",
+			"vcs": "git",
+			"revision": "9487d3a9d3be5bf3cf60b86ae810b97926964515",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/davecgh/go-spew",
 			"repository": "https://github.com/davecgh/go-spew",
 			"vcs": "git",
@@ -173,6 +181,14 @@
 			"repository": "https://github.com/go-logfmt/logfmt",
 			"vcs": "git",
 			"revision": "390ab7935ee28ec6b286364bba9b4dd6410cb3d5",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cactus/go-statsd-client",
+			"repository": "https://github.com/cactus/go-statsd-client",
+			"vcs": "git",
+			"revision": "138b925ccdf617776955904ba7759fce64406cec",
 			"branch": "HEAD",
 			"notests": true
 		},
@@ -258,6 +274,22 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/onsi/ginkgo",
+			"repository": "https://github.com/onsi/ginkgo",
+			"vcs": "git",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/onsi/gomega",
+			"repository": "https://github.com/onsi/gomega",
+			"vcs": "git",
+			"revision": "003f63b7f4cff3fc95357005358af2de0f5fe152",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/opentracing-contrib/go-observer",
 			"repository": "https://github.com/opentracing-contrib/go-observer",
 			"vcs": "git",
@@ -338,10 +370,34 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/reactivex/rxgo",
+			"repository": "https://github.com/ReactiveX/RxGo",
+			"vcs": "git",
+			"revision": "23f38f99d1c3fadfb560f5f7ac2fce17b9ebc03d",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/rcrowley/go-metrics",
 			"repository": "https://github.com/rcrowley/go-metrics",
 			"vcs": "git",
 			"revision": "ab2277b1c5d15c3cba104e9cbddbdfc622df5ad8",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/smartystreets/assertions",
+			"repository": "https://github.com/smartystreets/assertions",
+			"vcs": "git",
+			"revision": "0b37b35ec7434b77e77a4bb29b79677cced992ea",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/smartystreets/goconvey",
+			"repository": "https://github.com/smartystreets/goconvey",
+			"vcs": "git",
+			"revision": "9e8dc3f972df6c8fcc0375ef492c24d0bb204857",
 			"branch": "HEAD",
 			"notests": true
 		},
