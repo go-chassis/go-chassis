@@ -424,6 +424,15 @@
 			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
 			"branch": "HEAD",
 			"notests": true
+		},
+		{
+			"importpath": "k8s.io/apimachinery/pkg/util/sets",
+			"repository": "https://github.com/kubernetes/apimachinery",
+			"vcs": "git",
+			"revision": "150d32b09b5966b39cb02d7945f0d1bc7b9f1a19",
+			"branch": "master",
+			"path": "/pkg/util/sets",
+			"notests": true
 		}
 	]
 }

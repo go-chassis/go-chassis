@@ -223,12 +223,6 @@ For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collect
 See licenses/LICENSE-hystrix-go
 
 ========================================================================
-For third_party/forked/kubernetes:
-========================================================================
-
-See licenses/LICENSE-kubernetes
-
-========================================================================
 For third_party/forked/valyala/fasthttp:
 ========================================================================
 
