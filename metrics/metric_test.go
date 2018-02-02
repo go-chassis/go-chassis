@@ -5,15 +5,18 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/core/registry"
+	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	//"net/http"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func initialize() {
-	p := filepath.Join(os.Getenv("GOPATH"), "src", "code.huawei.com", "cse", "go-chassis", "examples", "discovery", "server")
+	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server")
 	os.Setenv("CHASSIS_HOME", p)
 	chassisConf := filepath.Join(p, "conf")
 	os.MkdirAll(chassisConf, 0600)
@@ -30,6 +33,8 @@ func initialize() {
 func TestInitEmptyServerURI(t *testing.T) {
 	//t.Log("Testing metric init function with empty serverURI")
 	initialize()
+	time.Sleep(1 * time.Second)
+	registry.Enable()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	baseURL := config.GlobalDefinition.Cse.Monitor.Client.ServerURI
 	err := Init()
@@ -43,7 +48,7 @@ func TestInitServerURItlsError(t *testing.T) {
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.ServerURI = "https://csemonitor.com"
-	_, tlsError := getTLSForClient()
+	_, tlsError := getTLSForClient(config.GlobalDefinition.Cse.Monitor.Client.ServerURI)
 	err := Init()
 	if tlsError != nil && err == nil {
 		t.Error("Expected failure if failed in GetTlsForClient")
@@ -55,7 +60,7 @@ func TestInitServerURItlsConfig(t *testing.T) {
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.ServerURI = "http://csemonitor.com"
-	tlsConfig, _ := getTLSForClient()
+	tlsConfig, _ := getTLSForClient(config.GlobalDefinition.Cse.Monitor.Client.ServerURI)
 	Init()
 	if tlsConfig != nil {
 		t.Error("Expected tlsConfig to be nil if scheme is http")
@@ -96,7 +101,7 @@ func TestInitGenAuthHeader(t *testing.T) {
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.ServerURI = "http://csemonitor.com"
-	tlsConfig, _ := getTLSForClient()
+	tlsConfig, _ := getTLSForClient(config.GlobalDefinition.Cse.Monitor.Client.ServerURI)
 	Init()
 	if tlsConfig != nil {
 		t.Error("Expected tlsConfig to be nil if scheme is http")

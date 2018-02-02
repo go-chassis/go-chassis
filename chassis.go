@@ -118,8 +118,6 @@ func (c *chassis) initialize() error {
 		return err
 	}
 
-	bootstrap.Bootstrap()
-
 	err = server.Init()
 	if err != nil {
 		return err
@@ -134,6 +132,9 @@ func (c *chassis) initialize() error {
 			return err
 		}
 	}
+
+	bootstrap.Bootstrap()
+
 	err = tracing.Init()
 	if err != nil {
 		return err

@@ -17,6 +17,7 @@ import (
 	"github.com/ServiceComb/go-cc-client/member-discovery"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 
@@ -32,12 +33,13 @@ const (
 
 // InitConfigCenter initialize config center
 func InitConfigCenter() error {
-	if !isConfigCenter() {
+	configCenterURL, err := isConfigCenter()
+	if err != nil {
 		return nil
 	}
 
 	var enableSSL bool
-	tlsConfig, tlsError := getTLSForClient()
+	tlsConfig, tlsError := getTLSForClient(configCenterURL)
 	if tlsError != nil {
 		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed, err:", Name, common.Consumer)
 		return tlsError
@@ -65,7 +67,7 @@ func InitConfigCenter() error {
 		config.GlobalDefinition.Cse.Config.Client.RefreshInterval = 30
 	}
 
-	err := initConfigCenter(config.GlobalDefinition.Cse.Config.Client.ServerURI,
+	err = initConfigCenter(configCenterURL,
 		dimensionInfo, config.GlobalDefinition.Cse.Config.Client.TenantName,
 		enableSSL, tlsConfig)
 	if err != nil {
@@ -77,21 +79,26 @@ func InitConfigCenter() error {
 	return nil
 }
 
-func isConfigCenter() bool {
-	if config.GlobalDefinition.Cse.Config.Client.ServerURI == "" {
-		lager.Logger.Warnf(nil, "empty config center endpoint, please provide the config center endpoint")
-		return false
+func isConfigCenter() (string, error) {
+	configCenterURL := config.GlobalDefinition.Cse.Config.Client.ServerURI
+	if configCenterURL == "" {
+		ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
+		if err != nil {
+			lager.Logger.Errorf(err, "empty config center endpoint, please provide the config center endpoint")
+			return "", err
+		}
+
+		configCenterURL = ccURL
 	}
 
-	return true
+	return configCenterURL, nil
 }
 
-func getTLSForClient() (*tls.Config, error) {
-	base := config.GlobalDefinition.Cse.Config.Client.ServerURI
-	if !strings.Contains(base, "://") {
+func getTLSForClient(configCenterURL string) (*tls.Config, error) {
+	if !strings.Contains(configCenterURL, "://") {
 		return nil, nil
 	}
-	ccURL, err := url.Parse(base)
+	ccURL, err := url.Parse(configCenterURL)
 	if err != nil {
 		lager.Logger.Error("Error occurred while parsing config center Server Uri", err)
 		return nil, err
