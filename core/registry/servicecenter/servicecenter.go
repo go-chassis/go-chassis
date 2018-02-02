@@ -2,12 +2,14 @@ package servicecenter
 
 import (
 	"fmt"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	client "github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 	"gopkg.in/yaml.v2"
+	"strings"
 )
 
 const (
@@ -238,20 +240,22 @@ func (r *Servicecenter) GetMicroServiceInstances(consumerID, providerID string) 
 		lager.Logger.Errorf(err, "GetMicroServiceInstances failed.")
 		return nil, err
 	}
-	instances := filterInstances(providerInstances)
+	instances := filterInstances(providerInstances, "", true)
 	lager.Logger.Debugf("GetMicroServiceInstances success, consumerID/providerID: %s/%s", consumerID, providerID)
 	return instances, nil
 }
 
 // filterInstances filter instances
-func filterInstances(providerInstances []*model.MicroServiceInstance) []*registry.MicroServiceInstance {
+func filterInstances(providerInstances []*model.MicroServiceInstance, version string, isVague bool) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {
 		if ins.Status != model.MSInstanceUP {
 			continue
 		}
 		msi := ToMicroServiceInstance(ins)
-		instances = append(instances, msi)
+		if isVague || ins.Version == version || ins.Version == "" {
+			instances = append(instances, msi)
+		}
 	}
 	return instances
 }
@@ -425,17 +429,21 @@ func (r *Servicecenter) fillCacheAndGetInterfaceSchemaContent(microServiceList [
 // FindMicroServiceInstances find micro-service instances
 func (r *Servicecenter) FindMicroServiceInstances(consumerID, appID, microServiceName, version string) ([]*registry.MicroServiceInstance, error) {
 	key := microServiceName + ":" + version + ":" + appID
+	versionRule, isVague := findVersionRule(version)
+
 	value, boo := registry.MicroserviceInstanceCache.Get(key)
-	if !boo || value == nil {
+	if isVague || !boo || value == nil {
 		//Try remote
 		lager.Logger.Warnf(nil, "%s Get instances from remote, key: %s", consumerID, key)
-		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName, version, config.Stage)
+		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName, versionRule, config.Stage)
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", key, err)
 		}
-		instances := filterInstances(providerInstances)
 
-		registry.MicroserviceInstanceCache.Set(key, instances, 0)
+		instances := filterInstances(providerInstances, version, isVague)
+		if !isVague {
+			registry.MicroserviceInstanceCache.Set(key, instances, 0)
+		}
 		return instances, nil
 	}
 	microServiceInstance, ok := value.([]*registry.MicroServiceInstance)
@@ -443,6 +451,14 @@ func (r *Servicecenter) FindMicroServiceInstances(consumerID, appID, microServic
 		lager.Logger.Errorf(nil, "FindMicroServiceInstances failed, Type asserts failed.consumerIDL: %s", consumerID)
 	}
 	return microServiceInstance, nil
+}
+
+// findVersionRule returns version rules and weather version is vague
+func findVersionRule(version string) (string, bool) {
+	if version == "latest" || version[len(version)-1:] == "+" || strings.Index(version, "-") > 0 {
+		return version, true
+	}
+	return common.AllVersion, false
 }
 
 // GetDependentMicroServiceInstances : 获取指定微服务所依赖的所有实例

@@ -183,12 +183,13 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 	for _, microservice := range rsp.Services {
 		//the local cache key don't need to specify stage
 		key := microservice.ServiceName + ":" + microservice.Version + ":" + microservice.AppID
-		providerInstances, err := c.registryClient.FindMicroServiceInstances(config.SelfServiceID, microservice.AppID, microservice.ServiceName, microservice.Version, config.Stage)
+		providerInstances, err := c.registryClient.FindMicroServiceInstances(config.SelfServiceID, microservice.AppID,
+			microservice.ServiceName, common.AllVersion, config.Stage)
 		if err != nil {
 			lager.Logger.Errorf(err, "GetMicroServiceInstances failed")
 			continue
 		}
-		instances := filterInstances(providerInstances)
+		instances := filterInstances(providerInstances, microservice.Version, false)
 		registry.MicroserviceInstanceCache.Set(key, instances, 0)
 		lager.Logger.Debugf("Cached [%d] Instances of service [%s] in [%s]", len(instances), key, config.Stage)
 	}
