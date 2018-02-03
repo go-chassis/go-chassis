@@ -158,7 +158,7 @@ func getOpts(microservice string, options ...InvocationOption) InvokeOptions {
 	if opts.Version == "" {
 		opts.Version = config.GlobalDefinition.Cse.References[microservice].Version
 		if opts.Version == "" {
-			opts.Version = common.DefaultVersion
+			opts.Version = common.LatestVersion
 		}
 	}
 	return opts

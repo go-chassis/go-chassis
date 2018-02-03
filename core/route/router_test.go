@@ -217,7 +217,7 @@ func TestRoute(t *testing.T) {
 	inv.AppID = ""
 	inv.MicroServiceName = "notexist"
 	err = router.Route(header, nil, inv)
-	assert.Equal(t, common.DefaultVersion, inv.Version)
+	assert.Equal(t, common.LatestVersion, inv.Version)
 
 }
 
