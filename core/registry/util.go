@@ -19,6 +19,7 @@ func GetProtocolMap(eps []string) (map[string]string, string) {
 	for _, ep := range eps {
 		u, err := url.Parse(ep)
 		if err != nil {
+			lager.Logger.Error("Can not parse "+ep, err)
 			continue
 		}
 		proto := u.Scheme
