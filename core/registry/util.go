@@ -6,8 +6,8 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	stringutil "github.com/ServiceComb/go-chassis/core/util/string"
 	"github.com/ServiceComb/go-chassis/util/iputil"
+	"net/url"
 )
 
 const protocolSymbol = "://"
@@ -17,7 +17,12 @@ func GetProtocolMap(eps []string) (map[string]string, string) {
 	m := make(map[string]string)
 	var p string
 	for _, ep := range eps {
-		proto, ipPort := stringutil.SplitToTwo(ep, protocolSymbol)
+		u, err := url.Parse(ep)
+		if err != nil {
+			continue
+		}
+		proto := u.Scheme
+		ipPort := u.Host
 		if proto == "" {
 			m["unknown"] = ipPort
 		} else {
