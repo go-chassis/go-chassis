@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-mkdir latestsc
-cd latestsc
+cd ../..
+mkdir -p apache
+cd apache
 git clone https://github.com/apache/incubator-servicecomb-service-center.git
 cd incubator-servicecomb-service-center
 gvt restore
