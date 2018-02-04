@@ -20,7 +20,7 @@ Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable
  - **Hot-reconfiguraion**: A lot of configuration can be reload in runtime, like loadbalancing, circuit breaker, rate limiting
  
 # Quick Start
-You can see more informations in gitbook https://go.huaweicse.cn/
+You can see more informations in gitbook https://go.huaweicse.com/
 
 ## Write a http service provider
 
