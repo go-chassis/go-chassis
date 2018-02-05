@@ -31,7 +31,7 @@ func Enable() error {
 
 	var strategyName string
 
-	strategyName = config.GlobalDefinition.Cse.Loadbalance.Strategy["name"]
+	strategyName = config.GetLoadBalancing().Strategy["name"]
 
 	if strategyName == "" && archaius.Get("cse.loadbalance.strategy.name") == "" {
 		lager.Logger.Info("Empty strategy configuration, use RoundRobin as default")

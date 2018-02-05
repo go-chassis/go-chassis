@@ -51,7 +51,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
 	strategyRule := make(map[string]string)
 	strategyRule["sessionTimeoutInSeconds"] = "30"
-	config.GlobalDefinition.Cse.Loadbalance.Strategy = strategyRule
+	config.GetLoadBalancing().Strategy = strategyRule
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)

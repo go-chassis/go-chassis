@@ -32,7 +32,6 @@ type PassLagerCfg struct {
 
 //CseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
 type CseStruct struct {
-	Loadbalance LoadBalanceStruct           `yaml:"loadbalance"`
 	Config      ConfigStruct                `yaml:"config"`
 	Service     ServiceStruct               `yaml:"service"`
 	Protocols   map[string]Protocol         `yaml:"protocols"`
@@ -136,22 +135,6 @@ type ConfigAPIVersionStruct struct {
 type ReferencesStruct struct {
 	Version   string `yaml:"version"`
 	Transport string `yaml:"transport"`
-}
-
-// LoadBalanceStruct loadbalancing structure
-type LoadBalanceStruct struct {
-	Strategy     map[string]string `yaml:"strategy"`
-	RetryEnabled bool              `yaml:"retryEnabled"`
-	RetryOnNext  int               `yaml:"retryOnNext"`
-	RetryOnSame  int               `yaml:"retryOnSame"`
-	Backoff      BackoffStrategy   `yaml:"backoff"`
-}
-
-// BackoffStrategy back off strategy
-type BackoffStrategy struct {
-	Kind  string `yaml:"kind"`
-	MinMs uint   `yaml:"minMs"`
-	MaxMs uint   `yaml:"maxMs"`
 }
 
 // Protocol protocol structure

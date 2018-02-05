@@ -20,18 +20,18 @@ func TestSelector(t *testing.T) {
 	LBstr := make(map[string]string)
 
 	LBstr["name"] = "RoundRobin"
-	config.GlobalDefinition.Cse.Loadbalance.Strategy = LBstr
+	config.GetLoadBalancing().Strategy = LBstr
 	loadbalance.Enable()
-	assert.Equal(t, "RoundRobin", config.GlobalDefinition.Cse.Loadbalance.Strategy["name"])
+	assert.Equal(t, "RoundRobin", config.GetLoadBalancing().Strategy["name"])
 
 	LBstr["name"] = ""
-	config.GlobalDefinition.Cse.Loadbalance.Strategy = LBstr
+	config.GetLoadBalancing().Strategy = LBstr
 	loadbalance.Enable()
-	assert.Equal(t, "", config.GlobalDefinition.Cse.Loadbalance.Strategy["name"])
+	assert.Equal(t, "", config.GetLoadBalancing().Strategy["name"])
 
 	LBstr["name"] = "ABC"
-	config.GlobalDefinition.Cse.Loadbalance.Strategy = LBstr
+	config.GetLoadBalancing().Strategy = LBstr
 	loadbalance.Enable()
-	assert.Equal(t, "ABC", config.GlobalDefinition.Cse.Loadbalance.Strategy["name"])
+	assert.Equal(t, "ABC", config.GetLoadBalancing().Strategy["name"])
 
 }

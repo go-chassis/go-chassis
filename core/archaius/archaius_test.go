@@ -9,6 +9,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,7 @@ func check(e error) {
 }
 
 func TestInit2(t *testing.T) {
-	file := []byte(`
+	cbBytes := []byte(`
 cse:
   isolation:
     Consumer:
@@ -46,8 +47,6 @@ cse:
       Server:
         timeoutInMilliseconds: 10
         maxConcurrentRequests: 100
-  loadbalance:
-    serverListFilters: zoneaware
   circuitBreaker:
     Consumer:
       enabled: true
@@ -80,28 +79,52 @@ cse:
     Consumer:
       policy: throwexception
 `)
+	lbBytes := []byte(`
+--- 
+cse: 
+  loadbalance: 
+    TargetService: 
+      backoff: 
+        MaxMs: 400
+        MinMs: 200
+        kind: constant
+      retryEnabled: false
+      retryOnNext: 2
+      retryOnSame: 3
+      serverListFilters: zoneaware
+      strategy: 
+        name: WeightedResponse
+    backoff: 
+      MaxMs: 400
+      MinMs: 200
+      kind: constant
+    retryEnabled: false
+    retryOnNext: 2
+    retryOnSame: 3
+    serverListFilters: zoneaware
+    strategy: 
+      name: WeightedResponse
+
+`)
 	root, _ := fileutil.GetWorkDir()
 	os.Setenv("CHASSIS_HOME", root)
 	t.Log(os.Getenv("CHASSIS_HOME"))
 	t.Log("Test archaius.go")
 	chassisyamlContent := "APPLICATION_ID: CSE\n  \ncse:\n  service:\n    registry:\n      type: servicecenter\n  protocols:\n       highway:\n         listenAddress: 127.0.0.1:8080\n  \nssl:\n  test.consumer.certFile: test.cer\n  test.consumer.keyFile: test.key\n"
 	lageryamlcontent := "logger_level: DEBUG\n \nlogger_file: log.log\n \nlog_format_text: false\n \nenable_rsyslog: true\n \nrsyslog_network:\n \nrsyslog_addr: 127.0.0.1:5151\n"
-	testfilecontent := "NAME1: test1\n \nNAME2: test2"
 
 	confdir := filepath.Join(root, "conf")
 	filename1 := filepath.Join(root, "conf", "chassis.yaml")
-	filename2 := filepath.Join(root, "conf", "circuit_breaker.yaml")
+	circuitBreakerFileName := filepath.Join(root, "conf", "circuit_breaker.yaml")
 	filename3 := filepath.Join(root, "conf", "lager.yaml")
-	filename4 := filepath.Join(root, "conf", "test_addfile.yaml")
-	filename5 := filepath.Join(root, "conf", "chassis.yaml")
+	lbFileName := filepath.Join(root, "conf", "load_balancing.yaml")
 	filename6 := filepath.Join(root, "conf", "microservice.yaml")
 
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	os.Remove(filename1)
-	os.Remove(filename2)
+	os.Remove(circuitBreakerFileName)
 	os.Remove(filename3)
-	os.Remove(filename4)
-	os.Remove(filename5)
+	os.Remove(lbFileName)
 	os.Remove(filename6)
 	os.Remove(confdir)
 	err := os.Mkdir(confdir, 0777)
@@ -111,31 +134,27 @@ cse:
 	check(err1)
 	defer f1.Close()
 	defer os.Remove(filename1)
-	f2, err2 := os.Create(filename2)
+	circuitBreakerFile, err2 := os.Create(circuitBreakerFileName)
 	check(err2)
-	defer f2.Close()
-	defer os.Remove(filename2)
+	defer circuitBreakerFile.Close()
+	defer os.Remove(circuitBreakerFileName)
 	f3, err3 := os.Create(filename3)
 	check(err3)
 	defer f3.Close()
 	defer os.Remove(filename3)
-	f4, err4 := os.Create(filename4)
+	lbFile, err4 := os.Create(lbFileName)
 	check(err4)
-	defer f4.Close()
-	defer os.Remove(filename4)
-	f5, err5 := os.Create(filename5)
-	check(err5)
-	defer f5.Close()
-	defer os.Remove(filename5)
+	defer lbFile.Close()
+	defer os.Remove(lbFileName)
 	f6, err6 := os.Create(filename6)
 	check(err6)
 	defer f6.Close()
 	defer os.Remove(filename6)
 
 	_, err1 = io.WriteString(f1, chassisyamlContent)
-	_, err1 = io.WriteString(f2, string(file))
+	_, err1 = io.WriteString(circuitBreakerFile, string(cbBytes))
 	_, err1 = io.WriteString(f3, lageryamlcontent)
-	_, err1 = io.WriteString(f4, testfilecontent)
+	_, err1 = io.WriteString(lbFile, string(lbBytes))
 
 	t.Log(os.Getenv("CHASSIS_HOME"))
 
@@ -185,23 +204,22 @@ cse:
 	assert.Equal(t, "throwexception", archaius.GetString("cse.fallbackpolicy.Consumer.policy", ""))
 	assert.Equal(t, 50, archaius.GetInt("cse.circuitBreaker.Consumer.Server.errorThresholdPercentage", 0))
 	assert.Equal(t, true, archaius.GetBool("cse.isolation.Consumer.timeout.enabled", false))
+	t.Log("Unmarshall cb")
+	cb := model.HystrixConfigWrapper{}
+	archaius.UnmarshalConfig(&cb)
+	assert.Equal(t, 20, cb.HystrixConfig.FallbackProperties.Consumer.MaxConcurrentRequests)
+	t.Log("Unmarshall lb")
+	lbConfig := model.LBWrapper{}
+	archaius.UnmarshalConfig(&lbConfig)
+	t.Log(lbConfig.Prefix.LBConfig)
 
-	yamltestkey := model.HystrixConfigWrapper{}
-	archaius.UnmarshalConfig(&yamltestkey)
-	assert.Equal(t, 20, yamltestkey.HystrixConfig.FallbackProperties.Consumer.MaxConcurrentRequests)
-
-	err = archaius.AddFile(filename4)
-	if err != nil {
-		t.Error("Failed to add new file into the archaius")
-	}
+	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
+	t.Log(lbConfig.Prefix.LBConfig.AnyService)
+	//assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
+	err = archaius.AddFile(lbFileName)
+	assert.NoError(t, err)
 
 	time.Sleep(1 * time.Second)
-	name1 := archaius.Get("NAME1")
-	name2 := archaius.Get("NAME2")
-
-	if name1 != "test1" && name2 != "test2" {
-		t.Error("Failed to get the added file configuration key values")
-	}
 
 	err = archaius.AddKeyValue("externalSourcetest", "testextsource1")
 	if err != nil {

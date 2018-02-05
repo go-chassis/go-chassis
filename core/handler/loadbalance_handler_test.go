@@ -206,7 +206,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0").Return(mss, nil)
 
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
-	config.GlobalDefinition.Cse.Loadbalance.Strategy = make(map[string]string)
+	config.GetLoadBalancing().Strategy = make(map[string]string)
 	loadbalance.Enable()
 	req, _ := rest.NewRequest("GET", "127.0.0.1")
 	req.SetHeader("Set-Cookie", "sessionid=100")
@@ -264,7 +264,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	registry.RegistryService = testRegistryObj
 	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0").Return(mss, nil)
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
-	config.GlobalDefinition.Cse.Loadbalance.Strategy = make(map[string]string)
+	config.GetLoadBalancing().Strategy = make(map[string]string)
 	loadbalance.Enable()
 	i := &invocation.Invocation{
 		SourceMicroService: "source1",

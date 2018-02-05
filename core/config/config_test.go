@@ -6,6 +6,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
+	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -87,4 +88,42 @@ cse:
 	assert.Equal(t, true, c.HystrixConfig.IsolationProperties.Consumer.TimeoutEnable.Enabled)
 	assert.Equal(t, "throwexception", c.HystrixConfig.FallbackPolicyProperties.Consumer.Policy)
 	assert.Equal(t, 50, c.HystrixConfig.CircuitBreakerProperties.Consumer.AnyService["Server"].ErrorThresholdPercentage)
+}
+
+func TestGetLoadBalancing(t *testing.T) {
+	lbBytes := []byte(`
+cse: 
+  loadbalance: 
+    TargetService: 
+      backoff: 
+        MaxMs: 400
+        MinMs: 200
+        kind: constant
+      retryEnabled: false
+      retryOnNext: 2
+      retryOnSame: 3
+      serverListFilters: zoneaware
+      strategy: 
+        name: WeightedResponse
+    backoff: 
+      MaxMs: 400
+      MinMs: 200
+      kind: constant
+    retryEnabled: false
+    retryOnNext: 2
+    retryOnSame: 3
+    serverListFilters: zoneaware
+    strategy: 
+      name: WeightedResponse
+
+`)
+	lbConfig := &model.LBWrapper{}
+	err := yaml.Unmarshal(lbBytes, lbConfig)
+	assert.NoError(t, err)
+	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.Strategy["name"])
+	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
+	t.Log(lbConfig.Prefix.LBConfig.AnyService)
+	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
+
+	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.Strategy["name"])
 }
