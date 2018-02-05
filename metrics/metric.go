@@ -60,7 +60,9 @@ func GetOrCreateRegistry(name string) metrics.Registry {
 func ReportMetricsToPrometheus(r metrics.Registry) {
 	promConfig := GetPrometheusSinker(r, GetSystemPrometheusRegistry())
 	if archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", false) {
-		promConfig.EnableRunTimeMetrics()
+		once.Do(func() {
+			promConfig.EnableRunTimeMetrics()
+		})
 		lager.Logger.Info("Go Runtime Metrics is not enable")
 	}
 	go promConfig.UpdatePrometheusMetrics()
