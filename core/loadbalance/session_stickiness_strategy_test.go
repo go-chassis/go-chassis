@@ -76,7 +76,7 @@ func TestStickySessionStrategy(t *testing.T) {
 		LBstr := make(map[string]string)
 		LBstr["name"] = "SessionStickiness"
 		LBstr["sessionTimeoutInSeconds"] = "30"
-		config.GlobalDefinition.Cse.Loadbalance.Strategy = LBstr
+		config.GetLoadBalancing().Strategy = LBstr
 		next := strategy(testData, "sticky3")
 
 		for i := 0; i < 100; i++ {

@@ -115,7 +115,7 @@ func TestLatencyStrategy(t *testing.T) {
 		LBstr := make(map[string]string)
 		LBstr["name"] = "WeightedResponse"
 		config.GlobalDefinition = &model.GlobalCfg{}
-		config.GlobalDefinition.Cse.Loadbalance.Strategy = LBstr
+		config.GetLoadBalancing().Strategy = LBstr
 		loadbalance.SetLatency(time.Second, "127.0.0.1:8080", "Server/"+common.ProtocolRest)
 		var tempDur []time.Duration
 		tempDur = append(tempDur, time.Second)

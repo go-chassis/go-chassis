@@ -18,6 +18,7 @@ import (
 // GlobalDefinition is having the information about region, load balancing, service center, config center,
 // protocols, and handlers for the micro service
 var GlobalDefinition *model.GlobalCfg
+var lbConfig *model.LBWrapper
 
 // MicroserviceDefinition is having the info about application id, provider info, description of the service,
 // and description of the instance
@@ -61,6 +62,10 @@ const (
 // parse unmarshal configurations on respective structure
 func parse() error {
 	err := readGlobalConfigFile()
+	if err != nil {
+		return err
+	}
+	err = readLBConfigFile()
 	if err != nil {
 		return err
 	}
@@ -116,6 +121,18 @@ func readGlobalConfigFile() error {
 		return err
 	}
 	GlobalDefinition = &globalDef
+
+	return nil
+}
+
+// readGlobalConfigFile for to unmarshal the global config file(chassis.yaml) information
+func readLBConfigFile() error {
+	lbDef := model.LBWrapper{}
+	err := archaius.UnmarshalConfig(&lbDef)
+	if err != nil {
+		return err
+	}
+	lbConfig = &lbDef
 
 	return nil
 }
@@ -189,6 +206,11 @@ func ReadMicroserviceConfigFromBytes(data []byte) error {
 
 	MicroserviceDefinition = &microserviceDef
 	return nil
+}
+
+//GetLoadBalancing return lb config
+func GetLoadBalancing() *model.LoadBalancing {
+	return lbConfig.Prefix.LBConfig
 }
 
 // Init is initialize the configuration directory, lager, archaius, route rule, and schema
