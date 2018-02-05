@@ -47,3 +47,44 @@ func TestGetWorkDirConfSet(t *testing.T) {
 	os.Setenv("CHASSIS_CONF_DIR", "conf")
 	assert.Equal(t, "conf", filepath.Base(fileutil.GetConfDir()))
 }
+
+func TestGetWorkDirValid(t *testing.T) {
+	_, err := fileutil.GetWorkDir()
+	assert.Nil(t, err)
+}
+
+func TestChassisHomeDir(t *testing.T) {
+	assert.NotEmpty(t, fileutil.ChassisHomeDir())
+}
+
+func TestGetLoadBalancing(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetLoadBalancing())
+}
+
+func TestGetRateLimiting(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetRateLimiting())
+}
+
+func TestGetTLS(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetTLS())
+}
+
+func TestGetMonitoring(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetMonitoring())
+}
+
+func TestGetRouter(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetRouter())
+}
+
+func TestGetMicroserviceDesc(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetMicroserviceDesc())
+}
+
+func TestGetAuth(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetAuth())
+}
+
+func TestGetTracing(t *testing.T) {
+	assert.NotEmpty(t, fileutil.GetTracing())
+}

@@ -24,6 +24,26 @@ func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	chassis.Init()
+	microservice := &registry.MicroService{
+		AppID:       "default",
+		ServiceName: "FtestAppThreeZero",
+		Version:     "2.0.9",
+		Status:      model.MicorserviceUp,
+		Level:       "FRONT",
+		Schemas:     []string{"dsfapp.HelloHuawei"},
+	}
+
+	_, err := registry.RegistryService.RegisterService(microservice)
+	time.Sleep(1 * time.Second)
+	assert.NoError(t, err)
+	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
+	assert.NotNil(t, err)
+}
+
 func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
