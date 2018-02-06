@@ -50,6 +50,17 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	if err != nil {
 		r.Err = err
 		lager.Logger.Errorf(err, "Call got Error")
+		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalance.StrategySessionStickiness {
+			var reply *rest.Response
+			reply = i.Reply.(*rest.Response)
+			errCount := loadbalance.GetSuccessiveFailureCount(i.Endpoint)
+			loadbalance.IncreaseSuccessiveFailureCount(i.Endpoint)
+			if errCount == StrategySuccessiveFailedTimes(i) {
+				session.DeletingKeySuccessiveFailure(reply.GetResponse())
+				loadbalance.ResetSuccessiveFailureCount(i.Endpoint)
+			}
+		}
+
 		cb(r)
 		return
 	}
@@ -71,20 +82,12 @@ func ProcessSpecialProtocol(inv *invocation.Invocation, req *microClient.Request
 	case common.ProtocolRest:
 		if inv.Strategy == loadbalance.StrategySessionStickiness {
 			var reply *rest.Response
-			//set cookie in the error response so that the next request will go the same instance
-			//if we are not setting the session id in the error response then there is no use of keeping
-			//successiveFailedTimes attribute
 			if inv.Reply != nil && inv.Args != nil {
 				reply = inv.Reply.(*rest.Response)
 				req := req.Arg.(*rest.Request)
 				session.CheckForSessionID(inv, StrategySessionTimeout(inv), reply.GetResponse(), req.GetRequest())
 			}
-			errCount := loadbalance.GetSuccessiveFailureCount(inv.Endpoint)
-			loadbalance.IncreaseSuccessiveFailureCount(inv.Endpoint)
-			if errCount == StrategySuccessiveFailedTimes(inv) {
-				session.DeletingKeySuccessiveFailure(reply.GetResponse())
-				loadbalance.ResetSuccessiveFailureCount(inv.Endpoint)
-			}
+
 		}
 	}
 }
