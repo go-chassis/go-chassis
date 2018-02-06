@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func TestDefaultSelector_Init(t *testing.T) {
@@ -58,7 +59,8 @@ func TestDefaultSelector_Init(t *testing.T) {
 	lb := loadbalance.DefaultSelector
 	config.SelfServiceID = sid
 	t.Log(config.SelfServiceID)
-	next, err := lb.Select("Server", common.DefaultVersion, selector.WithConsumerID(sid))
+	time.Sleep(1 * time.Second)
+	next, err := lb.Select("test1", common.LatestVersion, selector.WithConsumerID(sid))
 	assert.NoError(t, err)
 	ins, err := next()
 	t.Log(ins.EndpointsMap)
@@ -76,6 +78,7 @@ func TestDefaultSelector_Init(t *testing.T) {
 		t.Fail()
 	}
 }
+
 func BenchmarkDefaultSelector_Select(b *testing.B) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "client"))

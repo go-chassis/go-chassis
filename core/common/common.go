@@ -71,6 +71,8 @@ const (
 const (
 	DefaultApp     = "default"
 	DefaultVersion = "0.0.1"
+	LatestVersion  = "latest"
+	AllVersion     = "0+"
 )
 
 //constant used

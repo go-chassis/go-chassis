@@ -107,7 +107,7 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 		}
 	}
 	if inv.Version == "" {
-		inv.Version = common.DefaultVersion
+		inv.Version = common.LatestVersion
 	}
 	return nil
 }

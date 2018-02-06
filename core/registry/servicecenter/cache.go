@@ -180,19 +180,75 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		return err
 	}
 	//get Provider's instances
+	serviceStore := map[string]struct{}{}
 	for _, microservice := range rsp.Services {
+		key := strings.Join([]string{microservice.ServiceName, microservice.AppID}, ":")
+		if _, ok := serviceStore[key]; !ok {
+			serviceStore[key] = struct{}{}
+		}
+	}
+
+	for key := range serviceStore {
 		//the local cache key don't need to specify stage
-		key := microservice.ServiceName + ":" + microservice.Version + ":" + microservice.AppID
-		providerInstances, err := c.registryClient.FindMicroServiceInstances(config.SelfServiceID, microservice.AppID, microservice.ServiceName, microservice.Version, config.Stage)
+		service := strings.Split(key, ":")
+		if len(service) != 2 {
+			lager.Logger.Errorf(err, "Invalid servcieStore %s for providers %s", key, config.SelfServiceID)
+			continue
+		}
+
+		providerInstances, err := c.registryClient.FindMicroServiceInstances(config.SelfServiceID, service[1],
+			service[0], findVersionRule(service[0]), config.Stage)
 		if err != nil {
 			lager.Logger.Errorf(err, "GetMicroServiceInstances failed")
 			continue
 		}
-		instances := filterInstances(providerInstances)
-		registry.MicroserviceInstanceCache.Set(key, instances, 0)
-		lager.Logger.Debugf("Cached [%d] Instances of service [%s] in [%s]", len(instances), key, config.Stage)
+
+		filterRestore(providerInstances, service[0], service[1])
 	}
 	return nil
+}
+
+// filterRestore filter and restore instances to cache
+func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName, appID string) {
+	var (
+		latestKey = strings.Join([]string{serviceName, common.LatestVersion, appID}, ":")
+		store     = make(map[string][]*registry.MicroServiceInstance, 0)
+		latest    string
+		index     string
+	)
+
+	for _, ins := range providerInstances {
+		if ins.Status != model.MSInstanceUP {
+			continue
+		}
+
+		key := strings.Join([]string{serviceName, ins.Version, appID}, ":")
+		msi := ToMicroServiceInstance(ins)
+		if _, ok := store[key]; !ok {
+			store[key] = make([]*registry.MicroServiceInstance, 0)
+		}
+		store[key] = append(store[key], msi)
+
+		if ins.Version > latest {
+			latest, index = ins.Version, key
+		}
+	}
+
+	for key, ins := range store {
+		registry.MicroserviceInstanceCache.Set(key, ins, 0)
+		lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(ins), key)
+	}
+
+	registry.MicroserviceInstanceCache.Set(latestKey, store[index], 0)
+	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(store[index]), latestKey)
+}
+
+// findVersionRule returns version rules for microservice
+func findVersionRule(microservice string) string {
+	if ref, ok := config.GlobalDefinition.Cse.References[microservice]; ok {
+		return ref.Version
+	}
+	return common.AllVersion
 }
 
 // initCache initialize cache

@@ -36,8 +36,8 @@ jobs:
         - bash -x scripts/travis/goCycloChecker.sh
     - stage: Unit Test
       script:
-        - docker run -d -p 30100:30100 servicecomb/service-center
         - go get github.com/FiloSottile/gvt
+        - bash -x scripts/travis/start_latest_sc.sh
         - go get github.com/stretchr/testify
         - go get github.com/reactivex/rxgo
         - go get github.com/mattn/goveralls
