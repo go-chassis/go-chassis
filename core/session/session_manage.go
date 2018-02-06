@@ -26,34 +26,22 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 
 	timeValue := time.Duration(autoTimeout) * time.Second
 
-	sessionIDStr := getHeader("Cookie", req)
+	sessionIDStr := string(req.Header.Cookie(common.LBSessionID))
 
-	sessionID := strings.Split(string(sessionIDStr), "=")
 	loadbalance.SessionCache.DeleteExpired()
-	var sessBool = false
-
-	if len(sessionID) >= 2 {
-
-		_, sessBool = loadbalance.SessionCache.Get(sessionID[1])
-	}
-
-	valueSessionID := getCookie("sessionid", resp)
 
 	valueChassisLb := getCookie(common.LBSessionID, resp)
 
-	if string(valueSessionID) != "" {
-		loadbalance.Save(string(valueSessionID), inv.Endpoint, timeValue)
-	} else if string(valueChassisLb) != "" {
+	if string(valueChassisLb) != "" {
 		loadbalance.Save(string(valueChassisLb), inv.Endpoint, timeValue)
-	} else if (sessionID[0] == common.LBSessionID || sessionID[0] == common.SessionID) && sessBool {
-
+	} else if sessionIDStr != "" {
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)
-		c1.SetKey(sessionID[0])
+		c1.SetKey(common.LBSessionID)
 
-		c1.SetValue(sessionID[1])
+		c1.SetValue(sessionIDStr)
 		setCookie(c1, resp)
-		loadbalance.Save(sessionID[1], inv.Endpoint, timeValue)
+		loadbalance.Save(sessionIDStr, inv.Endpoint, timeValue)
 	} else {
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)
@@ -103,11 +91,6 @@ func getCookie(key string, resp *fasthttp.Response) []byte {
 // setCookie set cookie
 func setCookie(cookie *fasthttp.Cookie, resp *fasthttp.Response) {
 	resp.Header.SetCookie(cookie)
-}
-
-// getHeader get header
-func getHeader(key string, req *fasthttp.Request) string {
-	return string(req.Header.Peek(key))
 }
 
 // DeletingKeySuccessiveFailure deleting key successes and failures

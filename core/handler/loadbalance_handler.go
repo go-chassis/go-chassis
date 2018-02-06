@@ -275,13 +275,13 @@ func newLBHandler() Handler {
 
 func getSessionID(i *invocation.Invocation) interface{} {
 	var metadata interface{}
+
 	switch i.Args.(type) {
 	case *rest.Request:
 		req := i.Args.(*rest.Request)
-		value := req.GetHeader("Cookie")
-		cookieKey := strings.Split(value, "=")
-		if value != "" && (cookieKey[0] == common.SessionID || cookieKey[0] == common.LBSessionID) {
-			metadata = cookieKey[1]
+		value := req.GetCookie(common.LBSessionID)
+		if value != "" {
+			metadata = value
 		}
 	case *fasthttp.Request:
 		req := i.Args.(*fasthttp.Request)

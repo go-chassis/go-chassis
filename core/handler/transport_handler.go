@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/ServiceComb/go-chassis/client/rest"
@@ -13,7 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/core/session"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 )
 
 // TransportHandler transport handler
@@ -39,15 +37,6 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		errNotNill(err, cb)
 	}
 
-	/*	if err != nil {
-		r := &invocation.InvocationResponse{
-			Err: err,
-		}
-		lager.Logger.Errorf(err, "GetClient got Error")
-		cb(r)
-		return
-	}*/
-
 	req := c.NewRequest(i.MicroServiceName, i.SchemaID, i.OperationID, i.Args)
 	r := &invocation.InvocationResponse{}
 
@@ -59,48 +48,6 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		clientOption.WithMethodType(i.MethodType))
 
 	if err != nil {
-		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalance.StrategySessionStickiness {
-			var reply *rest.Response
-			//set cookie in the error response so that the next request will go the same instance
-			//if we are not setting the session id in the error response then there is no use of keeping
-			//successiveFailedTimes attribute
-			if i.Reply != nil && req.Arg != nil {
-				reply = i.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				if r != nil {
-					session.CheckForSessionID(i, StrategySessionTimeout(i), reply.GetResponse(), req.GetRequest())
-				}
-			}
-			var statusCode int
-			//process the error string to retrieve the response code
-			actualerrorIs := err.Error()
-			errValues := strings.Split(actualerrorIs, ":")
-			if len(errValues) == 3 {
-				code := strings.Split(errValues[1], " ")
-				statusCode, _ = strconv.Atoi(code[1])
-			}
-
-			// Only in the following cases of errors the successiveFailedTimes count should be increased
-			if statusCode >= 500 || err == fasthttp.ErrConnectionClosed ||
-				err == fasthttp.ErrTimeout || err == fasthttp.ErrNoFreeConns {
-				successiveFailedTimesIs := StrategySuccessiveFailedTimes(i)
-				errCount, ok := loadbalance.SuccessiveFailureCount[i.Endpoint]
-				if ok {
-					errCount++
-					if errCount == successiveFailedTimesIs {
-						session.DeletingKeySuccessiveFailure(reply.GetResponse())
-						loadbalance.SuccessiveFailureCount[i.Endpoint] = 0
-					} else {
-
-						loadbalance.SuccessiveFailureCount[i.Endpoint] = errCount
-					}
-				} else {
-					loadbalance.SuccessiveFailureCount[i.Endpoint] = 1
-				}
-			}
-		} else {
-			loadbalance.SuccessiveFailureCount[i.Endpoint] = 0
-		}
 		r.Err = err
 		lager.Logger.Errorf(err, "Call got Error")
 		cb(r)
@@ -113,23 +60,34 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	}
 
 	r.Result = i.Reply
-	switch i.Protocol {
-	case common.ProtocolRest:
-		if i.Strategy == loadbalance.StrategySessionStickiness {
-			if i.Reply != nil && req.Arg != nil {
-				r := i.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				if r != nil {
-					session.CheckForSessionID(i, StrategySessionTimeout(i), r.GetResponse(), req.GetRequest())
-				}
+	ProcessSpecialProtocol(i, req)
 
-			}
-
-		}
-	}
 	cb(r)
 }
 
+//ProcessSpecialProtocol handles special logic for protocol
+func ProcessSpecialProtocol(inv *invocation.Invocation, req *microClient.Request) {
+	switch inv.Protocol {
+	case common.ProtocolRest:
+		if inv.Strategy == loadbalance.StrategySessionStickiness {
+			var reply *rest.Response
+			//set cookie in the error response so that the next request will go the same instance
+			//if we are not setting the session id in the error response then there is no use of keeping
+			//successiveFailedTimes attribute
+			if inv.Reply != nil && inv.Args != nil {
+				reply = inv.Reply.(*rest.Response)
+				req := req.Arg.(*rest.Request)
+				session.CheckForSessionID(inv, StrategySessionTimeout(inv), reply.GetResponse(), req.GetRequest())
+			}
+			errCount := loadbalance.GetSuccessiveFailureCount(inv.Endpoint)
+			loadbalance.IncreaseSuccessiveFailureCount(inv.Endpoint)
+			if errCount == StrategySuccessiveFailedTimes(inv) {
+				session.DeletingKeySuccessiveFailure(reply.GetResponse())
+				loadbalance.ResetSuccessiveFailureCount(inv.Endpoint)
+			}
+		}
+	}
+}
 func newTransportHandler() Handler {
 	return &TransportHandler{}
 }

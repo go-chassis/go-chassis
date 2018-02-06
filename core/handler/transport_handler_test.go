@@ -29,7 +29,7 @@ func TestTransportHandler_Handle(t *testing.T) {
 	chassis.RegisterSchema("highway", &schemas.HelloServer{}, serverOption.WithSchemaID("HelloServer"))
 	chassis.RegisterSchema("highway", &schemas.EmployServer{}, serverOption.WithSchemaID("EmployServer"), serverOption.WithMicroServiceName("Server"))
 	t.Log("testing transport handler with highway protocol")
-	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "communication/client")
+	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "client")
 	os.Setenv("CHASSIS_HOME", p)
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	var addrHighway = "127.0.0.1:4567"

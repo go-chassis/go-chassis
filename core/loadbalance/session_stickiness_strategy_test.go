@@ -7,9 +7,26 @@ import (
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
+	"github.com/stretchr/testify/assert"
 	"time"
 )
 
+func TestGetSuccessiveFailureCount(t *testing.T) {
+	c := loadbalance.GetSuccessiveFailureCount("127.0.0.1:8080")
+	assert.Equal(t, 0, c)
+	loadbalance.IncreaseSuccessiveFailureCount("127.0.0.1:8080")
+	c = loadbalance.GetSuccessiveFailureCount("127.0.0.1:8080")
+	assert.Equal(t, 1, c)
+	loadbalance.IncreaseSuccessiveFailureCount("127.0.0.1:8080")
+	c = loadbalance.GetSuccessiveFailureCount("127.0.0.1:8080")
+	assert.Equal(t, 2, c)
+	loadbalance.ResetSuccessiveFailureCount("127.0.0.1:8080")
+	c = loadbalance.GetSuccessiveFailureCount("127.0.0.1:8080")
+	assert.Equal(t, 0, c)
+	loadbalance.ResetSuccessiveFailureMap()
+	c = loadbalance.GetSuccessiveFailureCount("127.0.0.1:8080")
+	assert.Equal(t, 0, c)
+}
 func TestSessionStickyStrategies(t *testing.T) {
 	config.Init()
 	testData := []*registry.MicroServiceInstance{
