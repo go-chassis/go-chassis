@@ -23,7 +23,7 @@ mkdir -p $GOPATH/conf/microservice1/schema
 mkdir -p $GOPATH/conf/microservice2/schema
 mkdir -p $GOPATH/conf/microservice3/schema
 #Start the Test
-for d in $(go list ./... | grep -v vendor |  grep -v third_party | grep -v examples | grep -v metrics); do
+for d in $(go list ./... | grep -v vendor |  grep -v third_party | grep -v examples); do
     echo $d
     echo $GOPATH
     cd $GOPATH/src/$d
