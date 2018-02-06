@@ -84,6 +84,11 @@ func (req *Request) GetHeader(key string) string {
 	return string(req.Req.Header.Peek(key))
 }
 
+//GetCookie is a method which gets cookie from a request
+func (req *Request) GetCookie(key string) string {
+	return string(req.Req.Header.Cookie(key))
+}
+
 //SetMethod is a method
 func (req *Request) SetMethod(method string) {
 	req.Req.Header.SetMethodBytes([]byte(method))

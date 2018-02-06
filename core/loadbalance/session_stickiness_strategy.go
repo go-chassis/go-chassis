@@ -11,15 +11,50 @@ import (
 var (
 	// SessionCache session cache variable
 	SessionCache *cache.Cache
-	// SuccessiveFailureCount success and failure count
-	SuccessiveFailureCount map[string]int
+	// successiveFailureCount success and failure count
+	successiveFailureCount      map[string]int
+	successiveFailureCountMutex sync.RWMutex
 )
 
 func init() {
 	SessionCache = initCache()
-	SuccessiveFailureCount = make(map[string]int)
+	successiveFailureCount = make(map[string]int)
 }
 
+//ResetSuccessiveFailureCount reset failure count
+func ResetSuccessiveFailureCount(ep string) {
+	successiveFailureCountMutex.Lock()
+	successiveFailureCount[ep] = 0
+	successiveFailureCountMutex.Unlock()
+}
+
+//ResetSuccessiveFailureMap make map again
+func ResetSuccessiveFailureMap() {
+	successiveFailureCountMutex.Lock()
+	successiveFailureCount = make(map[string]int)
+	successiveFailureCountMutex.Unlock()
+}
+
+//IncreaseSuccessiveFailureCount increase failure count
+func IncreaseSuccessiveFailureCount(ep string) {
+	successiveFailureCountMutex.Lock()
+	c, ok := successiveFailureCount[ep]
+	if ok {
+		successiveFailureCount[ep] = c + 1
+		successiveFailureCountMutex.Unlock()
+		return
+	}
+	successiveFailureCount[ep] = 1
+	successiveFailureCountMutex.Unlock()
+	return
+}
+
+//GetSuccessiveFailureCount get failure count
+func GetSuccessiveFailureCount(ep string) int {
+	successiveFailureCountMutex.RLock()
+	defer successiveFailureCountMutex.RUnlock()
+	return successiveFailureCount[ep]
+}
 func initCache() *cache.Cache {
 	var value *cache.Cache
 
