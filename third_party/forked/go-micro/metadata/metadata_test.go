@@ -1,5 +1,7 @@
 package metadata_test
 
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 import (
 	context17 "context"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"

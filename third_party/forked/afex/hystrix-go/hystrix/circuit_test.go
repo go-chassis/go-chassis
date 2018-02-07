@@ -1,5 +1,7 @@
 package hystrix
 
+// Forked from github.com/afex/hystrix-go/hystrix
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"sync"
 	"sync/atomic"

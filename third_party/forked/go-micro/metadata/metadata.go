@@ -1,3 +1,5 @@
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 // Package metadata is a way of defining message headers
 package metadata
 

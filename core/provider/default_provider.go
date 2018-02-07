@@ -1,5 +1,8 @@
 package provider
 
+// Forked from github.com/golang/go
+// Some parts of this file have been modified to make it functional in this package
+
 import (
 	"errors"
 	"fmt"

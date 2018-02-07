@@ -1,5 +1,7 @@
 package selector
 
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"golang.org/x/net/context"
