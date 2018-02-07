@@ -1,3 +1,7 @@
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 // Package codec is an interface for encoding messages
 package codec
 
@@ -16,29 +20,30 @@ type NewClientCodec func(io.ReadWriteCloser) ClientCodec
 // NewServerCodec takes in a connection/buffer and returns a new server codec
 type NewServerCodec func(io.ReadWriteCloser) ServerCodec
 
-// ClientCodec writes RPC requests and reads RPC responses
-// in the client side of an RPC session.
-// ReadResponseHeader and ReadResponseBody are called in pairs
-// to read requests.
-// WriteRequest writes a request to the connection
-// ReadResponseBody could be called with a nil param to
-// force the body of the response to be read and then discarded.
+// A ClientCodec implements writing of RPC requests and
+// reading of RPC responses for the client side of an RPC session.
+// The client calls WriteRequest to write a request to the connection
+// and calls ReadResponseHeader and ReadResponseBody in pairs
+// to read responses. The client calls Close when finished with the
+// connection. ReadResponseBody may be called with a nil
+// argument to force the body of the response to be read and then
+// discarded.
 type ClientCodec interface {
-	ReadResponseHeader(*Response) error
-	ReadResponseBody(interface{}) error
 	// WriteRequest must be safe for concurrent use by multiple goroutines.
 	// don't return bytes
 	WriteRequest(*Request) error
+	ReadResponseHeader(*Response) error
+	ReadResponseBody(interface{}) error
 	Close() error
 }
 
-// ServerCodec reads RPC requests and writes RPC responses
-// in the server side of an RPC session.
-// ReadRequestHeader and ReadRequestBody are called in pairs
-// to read requests from the connection.
-// WriteResponse writes a response back.
-// ReadRequestBody could be called with a nil param to
-// force the body of the request to be read and discarded.
+// A ServerCodec implements reading of RPC requests and writing of
+// RPC responses for the server side of an RPC session.
+// The server calls ReadRequestHeader and ReadRequestBody in pairs
+// to read requests from the connection, and it calls WriteResponse to
+// write a response back. The server calls Close when finished with the
+// connection. ReadRequestBody may be called with a nil
+// argument to force the body of the request to be read and discarded.
 type ServerCodec interface {
 	ReadRequestHeader(*Request) error
 	ReadRequestBody(interface{}) error
