@@ -106,8 +106,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ==========================================
-For core/util/metadata/metadata.go,server/highway/highway_server.go,core/loadbalance/default.go,third_party/forked/go-micro
-core/util/metadata/metadata_test.go,server/highway/highway_server_test.go,core/loadbalance/default_test.go(github.com/micro/go-micro)
+For client/highway/highway_client.go,core/loadbalance/default.go,third_party/forked/go-micro,
+client/highway/highway_client_test.go,core/loadbalance/default_test.go(Forked from github.com/micro/go-micro)
 
    Copyright 2015 Asim Aslam.
 
@@ -124,7 +124,7 @@ core/util/metadata/metadata_test.go,server/highway/highway_server_test.go,core/l
    limitations under the License.
 
 ==========================================
-For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go(github.com/deathowl/go-metrics-prometheus)
+For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go(Forked from github.com/deathowl/go-metrics-prometheus)
 
    Copyright 2016 Csergő Bálint github.com/deathowl
 
@@ -141,7 +141,7 @@ For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go(github.com/de
    limitations under the License.
 
 ==========================================
-For vendor/github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager(github.com/cloudfoundry/lager)
+For vendor/github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager(Forked from github.com/cloudfoundry/lager)
 
 Copyright (c) 2015-Present CloudFoundry.org Foundation, Inc. All Rights Reserved.
 
@@ -166,24 +166,24 @@ as noted in the LICENSE file.
 
 
 ==========================================
-For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go(github.com/afex/hystrix-go/hystrix)
+For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go(Forked from github.com/afex/hystrix-go/hystrix)
 The MIT License (MIT)
 
 Copyright (c) 2013 keith
 
 ==========================================
-For third_party/forked/valyala/fasthttp(github.com/valyala/fasthttp/)
+For third_party/forked/valyala/fasthttp(Forked from github.com/valyala/fasthttp/)
 The MIT License (MIT)
 
 Copyright (c) 2015-2016 Aliaksandr Valialkin, VertaMedia
 
 ==========================================
-For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws(github.com/datastream/aws)
+For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws(Forked from github.com/datastream/aws)
 
 Copyright (c) 2014, Xianjie
 All rights reserved.
 
 ==========================================
-For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go:
+For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go(Forked from github.com/golang/go)
 
 Copyright 2009 The Go Authors. All rights reserved.

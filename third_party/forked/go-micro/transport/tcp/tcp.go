@@ -1,3 +1,5 @@
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 // Package tcp provides a TCP transport
 package tcp
 

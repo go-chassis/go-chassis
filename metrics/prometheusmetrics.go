@@ -11,6 +11,8 @@
 
 package metrics
 
+// Forked from github.com/deathowl
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"fmt"
 	"os"

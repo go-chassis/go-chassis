@@ -1,3 +1,5 @@
+// Forked from github.com/golang/go
+// Some parts of this file have been modified to make it functional in this package
 package provider_test
 
 import (

@@ -1,5 +1,7 @@
 package highway
 
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"context"
 	"errors"

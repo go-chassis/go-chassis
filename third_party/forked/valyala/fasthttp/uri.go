@@ -1,5 +1,7 @@
 package fasthttp
 
+// Forked from github.com/valyala/fasthttp/
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"bytes"
 	"io"

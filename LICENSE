@@ -229,13 +229,7 @@ For third_party/forked/valyala/fasthttp:
 See licenses/LICENSE-valyala-fasthttp
 
 ========================================================================
-For core/util/metadata/metadata.go,core/util/metadata/metadata_test.go:
-========================================================================
-
-See licenses/LICENSE-go-micro
-
-========================================================================
-For server/highway/highway_server.go,server/highway/highway_server_test.go:
+For client/highway/highway_client.go,client/highway/highway_client_test.go:
 ========================================================================
 
 See licenses/LICENSE-go-micro

@@ -1,5 +1,7 @@
 package tcp
 
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"bufio"
 	"encoding/gob"

@@ -1,5 +1,7 @@
 package selector_test
 
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"

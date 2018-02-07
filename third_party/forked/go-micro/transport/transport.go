@@ -1,5 +1,7 @@
 package transport
 
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 // Socket wrapp codec and net.conn
 type Socket interface {
 	Send(Header []byte, Body []byte, Metadata map[string]string, ID int) error

@@ -11,6 +11,8 @@ limitations under the License.
 */
 package metrics_test
 
+// Forked from github.com/deathowl
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
