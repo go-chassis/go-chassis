@@ -263,3 +263,9 @@ For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws:
 ========================================================================
 
 See licenses/LICENSE-datastream-aws
+
+========================================================================
+For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go:
+========================================================================
+
+See licenses/LICENSE-golang
