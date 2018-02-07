@@ -4,13 +4,6 @@ import (
 	"sync"
 )
 
-// constant for sdk version, name, registration component
-const (
-	SdkVersion               = "0.1"
-	SdkName                  = "Go-Chassis"
-	SdkRegistrationComponent = "SDK"
-)
-
 // variables of micro-service framework, mutex variable
 var (
 	msFramework *Framework
