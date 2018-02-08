@@ -222,16 +222,23 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 			continue
 		}
 
-		key := strings.Join([]string{serviceName, ins.Version, appID}, ":")
+		// keep this for compatibility with old service-center
+		var key string
+		if ins.Version != "" {
+			key = strings.Join([]string{serviceName, ins.Version, appID}, ":")
+			if ins.Version > latest {
+				latest, index = ins.Version, key
+			}
+		} else {
+			key = latestKey
+			index = common.LatestVersion
+		}
+
 		msi := ToMicroServiceInstance(ins)
 		if _, ok := store[key]; !ok {
 			store[key] = make([]*registry.MicroServiceInstance, 0)
 		}
 		store[key] = append(store[key], msi)
-
-		if ins.Version > latest {
-			latest, index = ins.Version, key
-		}
 	}
 
 	for key, ins := range store {
@@ -239,8 +246,10 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 		lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(ins), key)
 	}
 
-	registry.MicroserviceInstanceCache.Set(latestKey, store[index], 0)
-	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(store[index]), latestKey)
+	if index != common.LatestVersion {
+		registry.MicroserviceInstanceCache.Set(latestKey, store[index], 0)
+		lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(store[index]), latestKey)
+	}
 }
 
 // findVersionRule returns version rules for microservice
