@@ -10,6 +10,7 @@ Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable
  - **Dynamic Configuration framework**:  you are able to develop a service which has hot-reconfiguration  feature easily
  - **Pluggable Protocol**: You can custom your own protocol,by default support http and highway(RPC)
  - **Circuit breaker**: Protect your service in runtime or on-demand
+ - **Routing management**: Able to route to different service based on weight and match rule to achieve Canary Release easily
  - **Load balancing**: Add custom strategy and filter
  - **Rate limiting**: Both client side and server side rate limiting
  - **Pluggable Cipher**: Able to custom your own cipher for AKSK and TLS certs
