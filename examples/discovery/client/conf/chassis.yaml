@@ -11,8 +11,6 @@ cse:
       #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
       refeshInterval : 30s
       watch: true
-      api:
-        version: v3
   protocols:
     highway:
       listenAddress: 127.0.0.1:8080
