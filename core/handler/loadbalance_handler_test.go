@@ -16,7 +16,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	mk "github.com/ServiceComb/go-chassis/core/registry/mock"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"os"
@@ -167,7 +166,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	val5 := cast.NewValue("Random", nil)
 	val6 := cast.NewValue(10, nil)
 	val7 := cast.NewValue(2, nil)
-	val8 := cast.NewValue(selector.ZoneAware, nil)
+	val8 := cast.NewValue(loadbalance.ZoneAware, nil)
 	testConfigFactoryObj.On("GetValue", key1).Return(val1)
 	testConfigFactoryObj.On("GetValue", key2).Return(val1)
 	testConfigFactoryObj.On("GetValue", key3).Return(val2)

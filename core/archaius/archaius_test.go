@@ -10,7 +10,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -199,7 +198,7 @@ cse:
 		t.Error("Getting the string of  string cipherPlugin is failed;")
 	}
 	fs := archaius.GetServerListFilters()
-	assert.Contains(t, fs, selector.ZoneAware)
+	assert.Contains(t, fs, loadbalance.ZoneAware)
 	assert.Equal(t, 20, archaius.GetInt("cse.circuitBreaker.Consumer.requestVolumeThreshold", 0))
 	assert.Equal(t, "throwexception", archaius.GetString("cse.fallbackpolicy.Consumer.policy", ""))
 	assert.Equal(t, 50, archaius.GetInt("cse.circuitBreaker.Consumer.Server.errorThresholdPercentage", 0))
