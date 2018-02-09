@@ -12,6 +12,7 @@ var (
 	faultKeyCount             map[string]int
 	initialKeyCount           map[string]int
 	invokedCount              map[string]int
+	percenStore               map[string]int
 	abortNeeded, delayApplied bool
 )
 
@@ -19,6 +20,7 @@ func init() {
 	faultKeyCount = make(map[string]int)
 	initialKeyCount = make(map[string]int)
 	invokedCount = make(map[string]int)
+	percenStore = make(map[string]int)
 }
 
 // constant for default values values of abort and delay percentages
@@ -104,6 +106,11 @@ func ValidateFaultDelay(fault *model.Fault) error {
 //ApplyFaultInjection abort/delay
 func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configuredPercent int, faultType string) error {
 	key := inv.MicroServiceName + "-" + inv.Version + "-" + inv.AppID
+	if oldPercent, ok := percenStore[key]; ok && configuredPercent != oldPercent {
+		resetFaultKeyCount(key)
+	}
+	percenStore[key] = configuredPercent
+
 	count, exist := invokedCount[key]
 	if !exist {
 		count = 1
@@ -122,11 +129,6 @@ func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configu
 	}
 
 	percentage := calculatePercentage(count, configuredPercent)
-
-	if isMutationOccrred(failureCount, percentage) {
-		resetFaultKeyCount(key, percentage-1)
-	}
-
 	if percentage == failureCount && initialCount != 1 {
 		initialKeyCount[key]++
 		incrementKeyCount(key, count+1)
@@ -157,14 +159,11 @@ func calculatePercentage(count, percent int) int {
 	return (count * percent / 100)
 }
 
-//isMutationOccrred confirm whether the configured percent has mutation occured
-func isMutationOccrred(actualCount, expectedCount int) bool {
-	return (actualCount-expectedCount) > 0 || (expectedCount-actualCount) > 1
-}
-
-//resetFaultKeyCount reset the faultKeyCount to expectedCount
-func resetFaultKeyCount(key string, expectedCount int) {
-	faultKeyCount[key] = expectedCount
+//resetFaultKeyCount reset the all count records
+func resetFaultKeyCount(key string) {
+	delete(faultKeyCount, key)
+	delete(initialKeyCount, key)
+	delete(invokedCount, key)
 }
 
 //injectFault apply fault based on the type
