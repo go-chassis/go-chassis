@@ -5,7 +5,7 @@
 			"importpath": "github.com/ServiceComb/auth",
 			"repository": "https://github.com/ServiceComb/auth",
 			"vcs": "git",
-			"revision": "4cc33395dd156fce9cb4d8ae505f9297601d5442",
+			"revision": "87eef7a539f0fab13b07ecc685e8acde1f230e79",
 			"branch": "HEAD",
 			"notests": true,
 			"allfiles": true
@@ -285,7 +285,7 @@
 			"importpath": "github.com/onsi/gomega",
 			"repository": "https://github.com/onsi/gomega",
 			"vcs": "git",
-			"revision": "003f63b7f4cff3fc95357005358af2de0f5fe152",
+			"revision": "334b8f472b3af5d541c5642701c1e29e2126f486",
 			"branch": "HEAD",
 			"notests": true
 		},
