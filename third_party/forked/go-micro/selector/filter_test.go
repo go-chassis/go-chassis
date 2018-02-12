@@ -14,27 +14,6 @@ import (
 	"testing"
 )
 
-func TestFilterEndpoint(t *testing.T) {
-	t.Log("testing filter with specified endpoints")
-	testData := []*registry.MicroServiceInstance{
-		{
-			EndpointsMap: map[string]string{"rest": "127.0.0.1", "q": "highway:10.0.0.3"},
-		},
-		{
-			EndpointsMap: map[string]string{"w": "rest:10.0.0.1", "q": "highway:10.0.0.3"},
-		},
-	}
-	ep := "127.0.0.1"
-	filter := selector.FilterEndpoint(ep)
-	instances := filter(testData)
-
-	assert.Equal(t, 1, len(instances))
-	ins := instances[0]
-	//assert.Equal(t,ep,ins)
-	assert.Contains(t, ins.EndpointsMap, "rest")
-
-}
-
 func TestFilterMD(t *testing.T) {
 	t.Log("testing filter md with specified labels")
 	testData := []*registry.MicroServiceInstance{
