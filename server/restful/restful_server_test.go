@@ -60,9 +60,6 @@ func TestRestStart(t *testing.T) {
 		serverOption.WithSchemaID(schema))
 	assert.NoError(t, err)
 
-	err = s.Init(serverOption.Name("Server1"))
-	assert.NoError(t, err)
-
 	err = s.Start()
 	assert.NoError(t, err)
 
@@ -99,9 +96,6 @@ func TestRestStartFailure(t *testing.T) {
 		serverOption.WithMicroServiceName(msName),
 		serverOption.WithSchemaID(schema))
 	assert.Error(t, err)
-
-	err = s.Init(serverOption.Name("Server2"))
-	assert.NoError(t, err)
 
 	err = s.Start()
 	assert.NoError(t, err)

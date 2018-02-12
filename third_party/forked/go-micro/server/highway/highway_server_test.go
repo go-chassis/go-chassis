@@ -65,9 +65,6 @@ func TestStart(t *testing.T) {
 		serverOption.WithSchemaID(schema))
 	assert.NoError(t, err)
 
-	err = s.Init(serverOption.Name("Server"))
-	assert.NoError(t, err)
-
 	err = s.Start()
 	assert.NoError(t, err)
 	opt := s.Options()
