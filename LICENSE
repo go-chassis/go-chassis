@@ -263,3 +263,9 @@ For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go
 ========================================================================
 
 See licenses/LICENSE-golang
+
+========================================================================
+For util/iputil/ip.go:
+========================================================================
+
+See licenses/LICENSE-musicaur

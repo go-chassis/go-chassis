@@ -187,3 +187,10 @@ All rights reserved.
 For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go(Forked from github.com/golang/go)
 
 Copyright 2009 The Go Authors. All rights reserved.
+
+==========================================
+For util/iputil/ip.go(Forked from github.com/schollz/musicsau)
+
+The MIT License (MIT)
+
+Copyright (c) 2015 Zack
