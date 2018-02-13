@@ -3,21 +3,19 @@ package loadbalance
 import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
-	cache "github.com/patrickmn/go-cache"
+
+	"github.com/ServiceComb/go-chassis/session"
 	"sync"
-	"time"
 )
 
 var (
-	// SessionCache session cache variable
-	SessionCache *cache.Cache
+
 	// successiveFailureCount success and failure count
 	successiveFailureCount      map[string]int
 	successiveFailureCountMutex sync.RWMutex
 )
 
 func init() {
-	SessionCache = initCache()
 	successiveFailureCount = make(map[string]int)
 }
 
@@ -55,12 +53,6 @@ func GetSuccessiveFailureCount(ep string) int {
 	defer successiveFailureCountMutex.RUnlock()
 	return successiveFailureCount[ep]
 }
-func initCache() *cache.Cache {
-	var value *cache.Cache
-
-	value = cache.New(3e+10, time.Second*30)
-	return value
-}
 
 // SessionStickiness is a SessionStickiness strategy algorithm for node selection
 func SessionStickiness(instances []*registry.MicroServiceInstance, metadata interface{}) selector.Next {
@@ -81,7 +73,7 @@ func SessionStickiness(instances []*registry.MicroServiceInstance, metadata inte
 		return strategyRoundRobinClosur
 	}
 
-	instanceAddr, ok := SessionCache.Get(metadata.(string))
+	instanceAddr, ok := session.Get(metadata.(string))
 	if ok {
 		return func() (*registry.MicroServiceInstance, error) {
 			if len(instances) == 0 {

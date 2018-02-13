@@ -6,6 +6,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/session"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/stretchr/testify/assert"
 	"time"
@@ -67,7 +68,7 @@ func TestStickySessionStrategy(t *testing.T) {
 	}
 
 	for name, strategy := range map[string]selector.Strategy{"sessionstickiness": loadbalance.SessionStickiness} {
-		loadbalance.SessionCache.Set("sticky1", "sdhgfa", time.Second*10)
+		session.Save("sticky1", "sdhgfa", time.Second*10)
 		next := strategy(testData, "sticky1")
 
 		for i := 0; i < 100; i++ {

@@ -9,7 +9,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/core/session"
+	"github.com/ServiceComb/go-chassis/session"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 )
