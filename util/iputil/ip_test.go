@@ -35,8 +35,3 @@ func TestDefaultPort4ProtocolHighway(t *testing.T) {
 func TestDefaultPort4ProtocolNone(t *testing.T) {
 	assert.NotEmpty(t, iputil.DefaultPort4Protocol("http"))
 }
-
-func TestDefaultIPv4BindAddress(t *testing.T) {
-	_, err := iputil.DefaultIPv4BindAddress()
-	assert.Nil(t, err)
-}

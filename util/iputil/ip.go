@@ -3,7 +3,6 @@ package iputil
 // Forked from github.com/schollz/musicsaur
 // Some parts of this file have been modified to make it functional in this package
 import (
-	"fmt"
 	"net"
 	"os"
 	"strings"
@@ -54,65 +53,4 @@ func DefaultPort4Protocol(proto string) string {
 	default:
 		return "7000"
 	}
-}
-
-//DefaultIPv4BindAddress is a function which binds IP address for corresponding interface
-func DefaultIPv4BindAddress() (net.IP, error) {
-	intfs, err := net.Interfaces()
-	if err != nil {
-		return nil, fmt.Errorf("Unable to get interfaces: %v", err)
-	}
-	if len(intfs) == 0 {
-		return nil, fmt.Errorf("no interfaces found on host")
-	}
-
-	for _, intf := range intfs {
-		ip, err := getIPFromInterface(&intf)
-		if err != nil {
-			return nil, fmt.Errorf("Unable to get ip from interface %q: %v", intf.Name, err)
-		}
-		if ip != nil {
-			return ip, nil
-		}
-	}
-
-	return nil, fmt.Errorf("no acceptable interface with global unicast address found on host")
-}
-
-func getIPFromInterface(intf *net.Interface) (net.IP, error) {
-	if !isInterfaceUp(intf) || isLoopbackOrPointToPoint(intf) {
-		return nil, nil
-	}
-	addrs, err := intf.Addrs()
-	if err != nil {
-		return nil, err
-	}
-	if len(addrs) == 0 {
-		return nil, nil
-	}
-
-	for _, addr := range addrs {
-		ip, _, err := net.ParseCIDR(addr.String())
-		if err != nil {
-			return nil, fmt.Errorf("Unable to parse CIDR: %s", err)
-		}
-		if ip.To4() != nil && ip.IsGlobalUnicast() {
-			return ip, nil
-		}
-	}
-	return nil, nil
-}
-
-func isInterfaceUp(intf *net.Interface) bool {
-	if intf == nil {
-		return false
-	}
-	if intf.Flags&net.FlagUp != 0 {
-		return true
-	}
-	return false
-}
-
-func isLoopbackOrPointToPoint(intf *net.Interface) bool {
-	return intf.Flags&(net.FlagLoopback|net.FlagPointToPoint) != 0
 }
