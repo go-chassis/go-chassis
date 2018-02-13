@@ -3,42 +3,14 @@ package metrics
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/ServiceComb/cse-collector"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
-	"github.com/rcrowley/go-metrics"
 	"net/http"
 	"net/url"
-	"time"
 )
-
-func registerCircuitBreakerCollector(r metrics.Registry) error {
-	metricCollector.Registry.Register(metricsink.NewCseCollector)
-
-	monitorServerURL, err := getMonitorEndpoint()
-	if err != nil {
-		return nil
-	}
-
-	tlsConfig, tlsError := getTLSForClient(monitorServerURL)
-	if tlsError != nil {
-		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed.", Name, common.Consumer)
-		return tlsError
-	}
-
-	metricsink.InitializeCseCollector(&metricsink.CseCollectorConfig{
-		CseMonitorAddr: monitorServerURL,
-		Header:         getAuthHeaders(),
-		TimeInterval:   time.Second * 2,
-		TLSConfig:      tlsConfig,
-	}, r)
-	lager.Logger.Infof("Started sending metric Data to Monitor Server : %s", monitorServerURL)
-	return nil
-}
 
 func getTLSForClient(monitorURL string) (*tls.Config, error) {
 	monitorServerURL, err := url.Parse(monitorURL)

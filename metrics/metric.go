@@ -7,6 +7,7 @@ import (
 	"github.com/ServiceComb/cse-collector"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
 	"github.com/emicklei/go-restful"
@@ -88,7 +89,7 @@ func reportMetricsToCSEDashboard(r metrics.Registry) error {
 		Header:         getAuthHeaders(),
 		TimeInterval:   time.Second * 2,
 		TLSConfig:      tlsConfig,
-	}, r)
+	}, r, config.GlobalDefinition.AppID, config.SelfVersion, config.SelfServiceName)
 	lager.Logger.Infof("Started sending metric Data to Monitor Server : %s", monitorServerURL)
 	return nil
 }
