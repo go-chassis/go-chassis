@@ -1,5 +1,7 @@
 package iputil
 
+// Forked from github.com/schollz/musicsaur
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"fmt"
 	"net"
