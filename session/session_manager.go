@@ -3,19 +3,42 @@ package session
 import (
 	"errors"
 	"fmt"
-	"math/rand"
-	"strings"
-	"time"
-
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	cache "github.com/patrickmn/go-cache"
+	"math/rand"
+	"strings"
+	"time"
 )
 
 // ErrResponseNil used for to represent the error response, when it is nil
 var ErrResponseNil = errors.New("Can not Set session, resp is nil")
+
+// SessionCache session cache variable
+var SessionCache *cache.Cache
+
+func init() {
+	SessionCache = initCache()
+}
+func initCache() *cache.Cache {
+	var value *cache.Cache
+
+	value = cache.New(3e+10, time.Second*30)
+	return value
+}
+
+//GetSessionFromResp return session id in resp if there is
+func GetSessionFromResp(key string, resp *fasthttp.Response) string {
+	var c []byte
+	resp.Header.VisitAllCookie(func(k, v []byte) {
+		if string(k) == key {
+			c = v
+		}
+	})
+	return string(c)
+}
 
 // CheckForSessionID check session id
 func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fasthttp.Response, req *fasthttp.Request) {
@@ -28,12 +51,12 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 
 	sessionIDStr := string(req.Header.Cookie(common.LBSessionID))
 
-	loadbalance.SessionCache.DeleteExpired()
+	ClearExpired()
 
-	valueChassisLb := getCookie(common.LBSessionID, resp)
-
+	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
+	//if session is in resp, then just save it
 	if string(valueChassisLb) != "" {
-		loadbalance.Save(string(valueChassisLb), inv.Endpoint, timeValue)
+		Save(valueChassisLb, inv.Endpoint, timeValue)
 	} else if sessionIDStr != "" {
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)
@@ -41,7 +64,7 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 
 		c1.SetValue(sessionIDStr)
 		setCookie(c1, resp)
-		loadbalance.Save(sessionIDStr, inv.Endpoint, timeValue)
+		Save(sessionIDStr, inv.Endpoint, timeValue)
 	} else {
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)
@@ -52,7 +75,7 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 		c1.SetValue(sessionIDValue)
 
 		setCookie(c1, resp)
-		loadbalance.Save(sessionIDValue, inv.Endpoint, timeValue)
+		Save(sessionIDValue, inv.Endpoint, timeValue)
 
 	}
 
@@ -77,17 +100,6 @@ func generateCookieSessionID() string {
 
 }
 
-// getCookie get cookie
-func getCookie(key string, resp *fasthttp.Response) []byte {
-	var c []byte
-	resp.Header.VisitAllCookie(func(k, v []byte) {
-		if string(k) == key {
-			c = v
-		}
-	})
-	return c
-}
-
 // setCookie set cookie
 func setCookie(cookie *fasthttp.Cookie, resp *fasthttp.Response) {
 	resp.Header.SetCookie(cookie)
@@ -99,19 +111,12 @@ func DeletingKeySuccessiveFailure(resp *fasthttp.Response) {
 		lager.Logger.Warn("", ErrResponseNil)
 		return
 	}
-	loadbalance.SessionCache.DeleteExpired()
-	valueSessionID := getCookie("sessionid", resp)
-	valueChassisLb := getCookie(common.LBSessionID, resp)
-	if string(valueSessionID) != "" {
-		cookieKey := strings.Split(string(valueSessionID), "=")
-		if len(cookieKey) > 1 {
-			loadbalance.Delete(cookieKey[1])
-		}
-	} else if string(valueChassisLb) != "" {
+	SessionCache.DeleteExpired()
+	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
+	if string(valueChassisLb) != "" {
 		cookieKey := strings.Split(string(valueChassisLb), "=")
-
 		if len(cookieKey) > 1 {
-			loadbalance.Delete(cookieKey[1])
+			Delete(cookieKey[1])
 		}
 	}
 }
