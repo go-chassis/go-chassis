@@ -80,7 +80,12 @@ func (bs *Context) ReadBodyParameter(name string) (string, error) {
 	return bs.req.BodyParameter(name)
 }
 
-//ReadRequest used to read the request
+//ReadRequest return a native net/http request
 func (bs *Context) ReadRequest() *http.Request {
 	return bs.req.Request
+}
+
+//ReadResponseWriter return a native net/http ResponseWriter
+func (bs *Context) ReadResponseWriter() http.ResponseWriter {
+	return bs.resp.ResponseWriter
 }
