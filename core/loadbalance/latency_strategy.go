@@ -122,18 +122,18 @@ func selectWeightedInstance(instances []*registry.MicroServiceInstance, serviceA
 	var instanceAddr string
 	avgLatencyMap, protocol := FindingAvgLatency(serviceAndProtocol.(string))
 
-        var checkValuesExist = true
-        // to check if 10 latency values of every instance is collected or not
-        for k,_:= range avgLatencyMap{
-                LatencyMapRWMutex.RLock()
-                lvalues := len(LatencyMap[k])
-                LatencyMapRWMutex.RUnlock()
-                if lvalues != 10 {
-                        checkValuesExist = false
-                }
-        }
+	var checkValuesExist = true
+	// to check if 10 latency values of every instance is collected or not
+	for k, _ := range avgLatencyMap {
+		LatencyMapRWMutex.RLock()
+		lvalues := len(LatencyMap[k])
+		LatencyMapRWMutex.RUnlock()
+		if lvalues != 10 {
+			checkValuesExist = false
+		}
+	}
 
-        if (checkValuesExist && len(avgLatencyMap)== 0)|| !checkValuesExist{
+	if (checkValuesExist && len(avgLatencyMap) == 0) || !checkValuesExist {
 		return func() (*registry.MicroServiceInstance, error) {
 			if len(instances) == 0 {
 				return nil, selector.ErrNoneAvailable
