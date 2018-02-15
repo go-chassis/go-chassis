@@ -14,6 +14,7 @@ func main() {
 	chassis.RegisterSchema("highway", &schemas.EmployServer{}, serverOption.WithSchemaID("EmployServer"), serverOption.WithMicroServiceName("Server"))
 	chassis.RegisterSchema("rest", &schemas.RestFulHello{})
 	chassis.RegisterSchema("rest", &schemas.RestFulMessage{})
+	chassis.RegisterSchema("rest", &schemas.RestFulUpload{})
 	//start all server you register in server/schemas.
 	if err := chassis.Init(); err != nil {
 		lager.Logger.Error("Init failed.", err)
