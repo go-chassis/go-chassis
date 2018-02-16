@@ -52,12 +52,16 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 	sessionIDStr := string(req.Header.Cookie(common.LBSessionID))
 
 	ClearExpired()
+	var sessBool bool
+	if sessionIDStr != "" {
+		_, sessBool = SessionCache.Get(sessionIDStr)
+	}
 
 	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
 	//if session is in resp, then just save it
 	if string(valueChassisLb) != "" {
 		Save(valueChassisLb, inv.Endpoint, timeValue)
-	} else if sessionIDStr != "" {
+	} else if sessionIDStr != "" && sessBool {
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)
 		c1.SetKey(common.LBSessionID)
@@ -119,4 +123,19 @@ func DeletingKeySuccessiveFailure(resp *fasthttp.Response) {
 			Delete(cookieKey[1])
 		}
 	}
+}
+
+// GetSessionCookie getting session cookie
+func GetSessionCookie(resp *fasthttp.Response) string {
+	if resp == nil {
+		lager.Logger.Warn("", ErrResponseNil)
+		return ""
+	}
+
+	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
+	if string(valueChassisLb) != "" {
+		return string(valueChassisLb)
+	}
+
+	return ""
 }
