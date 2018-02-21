@@ -15,6 +15,12 @@ func GetEndpointFromServiceCenter(appID, microService, version string) (string, 
 		endPoint string
 	)
 
+	if registry.RegistryService == nil {
+		err := errors.New("RegistryService is not initialized")
+		lager.Logger.Error("GetEndpointFromServiceCenter cannot proceed", err)
+		return "", err
+	}
+
 	instances, err := registry.RegistryService.FindMicroServiceInstances(config.SelfServiceID, appID, microService, version)
 	if err != nil {
 		lager.Logger.Errorf(err, "Get service instance failed, for key: %s:%s:%s",
