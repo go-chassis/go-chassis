@@ -63,6 +63,11 @@ func (req *Request) SetBody(body []byte) {
 	req.Req.SetBody(body)
 }
 
+//SetCookie set key value in request cookie
+func (req *Request) SetCookie(k, v string) {
+	req.Req.Header.SetCookie(k, v)
+}
+
 //GetURI is a method
 func (req *Request) GetURI() string {
 	return string(req.Req.RequestURI())

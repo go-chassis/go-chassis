@@ -4,14 +4,14 @@ import (
 	"time"
 )
 
-// Save for setting the service id, address, timeout
-func Save(sid string, addr string, timeOut time.Duration) {
-	SessionCache.Set(sid, addr, timeOut)
+// Save for setting the session uuid, endpoint, timeout
+func Save(sid string, ep string, timeOut time.Duration) {
+	SessionCache.Set(sid, ep, timeOut)
 }
 
-// Get return session id based on session key
-func Get(k string) (sid interface{}, ok bool) {
-	sid, ok = SessionCache.Get(k)
+// Get return endpoint based on session uuid
+func Get(sid string) (ep interface{}, ok bool) {
+	ep, ok = SessionCache.Get(sid)
 	return
 }
 
@@ -20,7 +20,7 @@ func ClearExpired() {
 	SessionCache.DeleteExpired()
 }
 
-// Delete for deleting the sid
-func Delete(key string) {
-	SessionCache.Delete(key)
+// Delete delete the session uuid
+func Delete(sid string) {
+	SessionCache.Delete(sid)
 }
