@@ -19,10 +19,11 @@ func init() {
 	successiveFailureCount = make(map[string]int)
 }
 
-//ResetSuccessiveFailureCount reset failure count
-func ResetSuccessiveFailureCount(ep string) {
+//DeleteSuccessiveFailureCount deleting cookie from failure count map
+func DeleteSuccessiveFailureCount(cookieValue string) {
 	successiveFailureCountMutex.Lock()
-	successiveFailureCount[ep] = 0
+	//	successiveFailureCount[ep] = 0
+	delete(successiveFailureCount, cookieValue)
 	successiveFailureCountMutex.Unlock()
 }
 
@@ -34,24 +35,24 @@ func ResetSuccessiveFailureMap() {
 }
 
 //IncreaseSuccessiveFailureCount increase failure count
-func IncreaseSuccessiveFailureCount(ep string) {
+func IncreaseSuccessiveFailureCount(cookieValue string) {
 	successiveFailureCountMutex.Lock()
-	c, ok := successiveFailureCount[ep]
+	c, ok := successiveFailureCount[cookieValue]
 	if ok {
-		successiveFailureCount[ep] = c + 1
+		successiveFailureCount[cookieValue] = c + 1
 		successiveFailureCountMutex.Unlock()
 		return
 	}
-	successiveFailureCount[ep] = 1
+	successiveFailureCount[cookieValue] = 1
 	successiveFailureCountMutex.Unlock()
 	return
 }
 
 //GetSuccessiveFailureCount get failure count
-func GetSuccessiveFailureCount(ep string) int {
+func GetSuccessiveFailureCount(cookieValue string) int {
 	successiveFailureCountMutex.RLock()
 	defer successiveFailureCountMutex.RUnlock()
-	return successiveFailureCount[ep]
+	return successiveFailureCount[cookieValue]
 }
 
 // SessionStickiness is a SessionStickiness strategy algorithm for node selection
