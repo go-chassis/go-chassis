@@ -29,11 +29,11 @@ func initCache() *cache.Cache {
 	return value
 }
 
-//GetSessionFromResp return session id in resp if there is
-func GetSessionFromResp(key string, resp *fasthttp.Response) string {
+//GetSessionFromResp return session uuid in resp if there is
+func GetSessionFromResp(cookieKey string, resp *fasthttp.Response) string {
 	var c []byte
 	resp.Header.VisitAllCookie(func(k, v []byte) {
-		if string(k) == key {
+		if string(k) == cookieKey {
 			c = v
 		}
 	})
