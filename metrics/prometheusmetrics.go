@@ -27,7 +27,7 @@ import (
 
 // DefaultPrometheusSinker variable for default prometheus configurations
 var DefaultPrometheusSinker *PrometheusSinker
-var once sync.Once
+var onceInit sync.Once
 
 // PrometheusSinker is the struct for prometheus configuration parameters
 type PrometheusSinker struct {
@@ -40,7 +40,7 @@ type PrometheusSinker struct {
 
 // GetPrometheusSinker get prometheus configurations
 func GetPrometheusSinker(mr metrics.Registry, pr *prometheus.Registry) *PrometheusSinker {
-	once.Do(func() {
+	onceInit.Do(func() {
 		DefaultPrometheusSinker = NewPrometheusProvider(mr, pr, time.Second)
 	})
 	return DefaultPrometheusSinker
