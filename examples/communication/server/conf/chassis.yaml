@@ -1,14 +1,12 @@
 ---
 cse:
   service:
-      registry:
-        type: servicecenter
+    registry:
+      disabled: true
   protocols:
     highway:
       listenAddress: 127.0.0.1:9901
-      transport: tcp #optional 指定加载那个传输层
   handler:
     chain:
       Provider:
-        default: bizkeeper-fake,loadbalance-fake
-        custom: bizkeeper-fake,loadbalance-fake
+        default:
