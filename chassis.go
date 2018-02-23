@@ -203,9 +203,11 @@ func Run() {
 	if err != nil {
 		lager.Logger.Error("run chassis fail:", err)
 	}
-	//Register instance after Server started
-	if err := registry.DoRegister(); err != nil {
-		lager.Logger.Error("register instance fail:", err)
+	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+		//Register instance after Server started
+		if err := registry.DoRegister(); err != nil {
+			lager.Logger.Error("register instance fail:", err)
+		}
 	}
 	//Graceful shutdown
 	c := make(chan os.Signal)
@@ -224,9 +226,12 @@ func Run() {
 		}
 		lager.Logger.Info(name + " server stop success")
 	}
-	if err = server.UnRegistrySelfInstances(); err != nil {
-		lager.Logger.Errorf(err, "servers failed to unregister")
+	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+		if err = server.UnRegistrySelfInstances(); err != nil {
+			lager.Logger.Errorf(err, "servers failed to unregister")
+		}
 	}
+
 }
 
 //Init prepare the chassis framework runtime

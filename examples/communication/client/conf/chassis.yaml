@@ -1,7 +1,9 @@
 ---
-#微服务的公共属性
-APPLICATION_ID: CSE
-#RegisterType: zookeeper/servicecenter
-register_type: servicecenter #optional
 cse:
-  protocols:
+  service:
+    registry:
+      disabled: true
+  handler:
+    chain:
+      Consumer:
+        default: transport

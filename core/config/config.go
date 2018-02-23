@@ -50,7 +50,7 @@ var SelfMetadata map[string]string
 var SelfVersion string
 
 // ErrNoName is used to represent the service name missing error
-var ErrNoName = errors.New("Service name is missing")
+var ErrNoName = errors.New("Microservice name is missing in description file")
 
 // constant environment keys service center, config center, monitor server addresses
 const (
@@ -198,7 +198,7 @@ func ReadMicroserviceConfigFromBytes(data []byte) error {
 		return err
 	}
 	if microserviceDef.ServiceDescription.Name == "" {
-		return errors.New("Microservice name is missing in description file")
+		return ErrNoName
 	}
 	if microserviceDef.ServiceDescription.Version == "" {
 		microserviceDef.ServiceDescription.Version = common.DefaultVersion

@@ -180,7 +180,6 @@ func DoRegister() error {
 		}
 	}
 	if isAutoRegister {
-
 		if err := RegisterMicroserviceInstances(); err != nil {
 			return err
 		}
