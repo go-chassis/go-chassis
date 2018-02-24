@@ -179,7 +179,7 @@ func loadAkskAuth() error {
 		plainSk = res
 	}
 
-	err = auth.UseAKSKAuth(c.AccessKey, plainSk, c.Project)
+	err = auth.UseShaAKSKAuth(c.AccessKey, plainSk, c.Project)
 	if err != nil {
 		return err
 	}
