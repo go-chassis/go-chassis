@@ -1,15 +1,10 @@
 package metrics
 
 import (
-	"time"
-
 	"errors"
-	"github.com/ServiceComb/cse-collector"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
+
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
+
 	"github.com/emicklei/go-restful"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -31,8 +26,8 @@ const (
 	Metrics = "PrometheusMetrics"
 )
 
-var metricRegistries map[string]metrics.Registry = make(map[string]metrics.Registry)
-var prometheusRegistry *prometheus.Registry = prometheus.NewRegistry()
+var metricRegistries = make(map[string]metrics.Registry)
+var prometheusRegistry = prometheus.NewRegistry()
 var l sync.RWMutex
 
 //GetSystemRegistry return metrics registry which go chassis use
@@ -57,61 +52,21 @@ func GetOrCreateRegistry(name string) metrics.Registry {
 	return r
 }
 
-//ReportMetricsToPrometheus report metrics to prometheus registry, you can use GetSystemPrometheusRegistry to get prometheus registry. by default chassis will report system metrics to prometheus
-func ReportMetricsToPrometheus(r metrics.Registry) {
-	promConfig := GetPrometheusSinker(r, GetSystemPrometheusRegistry())
-	if archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", false) {
-		once.Do(func() {
-			promConfig.EnableRunTimeMetrics()
-		})
-		lager.Logger.Info("Go Runtime Metrics is not enable")
-	}
-	go promConfig.UpdatePrometheusMetrics()
-}
-
-//metricCollector use go-metrics to send metrics to cse dashboard
-func reportMetricsToCSEDashboard(r metrics.Registry) error {
-	metricCollector.Registry.Register(metricsink.NewCseCollector)
-
-	monitorServerURL, err := getMonitorEndpoint()
-	if err != nil {
-		return nil
-	}
-
-	tlsConfig, tlsError := getTLSForClient(monitorServerURL)
-	if tlsError != nil {
-		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed.", Name, common.Consumer)
-		return tlsError
-	}
-
-	metricsink.InitializeCseCollector(&metricsink.CseCollectorConfig{
-		CseMonitorAddr: monitorServerURL,
-		Header:         getAuthHeaders(),
-		TimeInterval:   time.Second * 2,
-		TLSConfig:      tlsConfig,
-	}, r, config.GlobalDefinition.AppID, config.SelfVersion, config.SelfServiceName)
-	lager.Logger.Infof("Started sending metric Data to Monitor Server : %s", monitorServerURL)
-	return nil
-}
-
-//TODO ReportMetricsToOpenTSDB use go-metrics reporter to send metrics to opentsdb
-
-// ReportMetricsToOpenTSDB use go-metrics reporter to send metrics to opentsdb
-func ReportMetricsToOpenTSDB(r metrics.Registry) {}
-
 // MetricsHandleFunc is a restful handler which can expose metrics in http server
 func MetricsHandleFunc(req *restful.Request, rep *restful.Response) {
 	reg := DefaultPrometheusSinker.PromRegistry.(*prometheus.Registry)
 	promhttp.HandlerFor(reg, promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
 }
 
-//Init prepare the metrics functions
+//Init prepare the metrics registry and report metrics to other systems
 func Init() error {
 	metricRegistries[defaultName] = metrics.DefaultRegistry
-	if err := reportMetricsToCSEDashboard(GetSystemRegistry()); err != nil {
-		lager.Logger.Error(errMonitoringFail.Error(), err)
-		return errMonitoringFail
+	for k, report := range reporterPlugins {
+		lager.Logger.Info("report metrics to " + k)
+		if err := report(GetSystemRegistry()); err != nil {
+			lager.Logger.Warn(err.Error(), err)
+			return err
+		}
 	}
-	ReportMetricsToPrometheus(GetSystemRegistry())
 	return nil
 }

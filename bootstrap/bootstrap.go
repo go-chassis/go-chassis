@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/metrics"
 )
@@ -49,9 +48,6 @@ func init() {
 	InstallPlugin("EE", BootstrapFunc(func() error {
 		return nil
 	}))
-
-	InstallPlugin("config_center",
-		BootstrapFunc(configcenter.InitConfigCenter))
 
 	InstallPlugin("metric", BootstrapFunc(metrics.Init))
 }

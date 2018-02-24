@@ -21,6 +21,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 
+	"github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 )
 
@@ -231,4 +232,8 @@ func enbledAutoDiscovery() bool {
 	}
 
 	return false
+}
+func init() {
+	bootstrap.InstallPlugin("config_center",
+		bootstrap.BootstrapFunc(InitConfigCenter))
 }
