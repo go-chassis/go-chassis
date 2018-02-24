@@ -1,7 +1,5 @@
 package iputil
 
-// Forked from github.com/schollz/musicsaur
-// Some parts of this file have been modified to make it functional in this package
 import (
 	"net"
 	"os"
@@ -15,16 +13,19 @@ func Localhost() string { return "127.0.0.1" }
 
 //GetLocalIP 获得本机IP
 func GetLocalIP() string {
-	addrs, err := net.InterfaceAddrs()
+	addresses, err := net.InterfaceAddrs()
 	if err != nil {
 		return ""
 	}
-	for _, address := range addrs {
-		// check the address type and if it is not a loopback the display it
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
-			}
+	for _, address := range addresses {
+		// Parse IP
+		var ip net.IP
+		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
+			return ""
+		}
+		// Check if Isloopback
+		if ip != nil && !ip.IsLoopback() {
+			return ip.String()
 		}
 	}
 	return ""
