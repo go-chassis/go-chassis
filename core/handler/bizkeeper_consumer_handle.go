@@ -29,12 +29,7 @@ func NewHystrixCmd(sourceName, protype, servicename, schemaID, OperationID strin
 	if servicename != "" {
 		cmd = strings.Join([]string{cmd, servicename}, ".")
 	}
-	if schemaID != "" {
-		cmd = strings.Join([]string{cmd, schemaID}, ".")
-	}
-	if OperationID != "" {
-		cmd = strings.Join([]string{cmd, OperationID}, ".")
-	}
+
 	return cmd
 
 }
