@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/config"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rcrowley/go-metrics"
 )

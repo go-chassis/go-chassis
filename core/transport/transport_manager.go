@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/ServiceComb/go-chassis/core/lager"
+
 	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 )
 

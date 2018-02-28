@@ -1,14 +1,14 @@
 package common
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
 
-	"crypto/tls"
-	"crypto/x509"
-	"encoding/pem"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/util/string"
 	"github.com/ServiceComb/go-chassis/security"

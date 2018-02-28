@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"strings"
+
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"strings"
 )
 
 // constant for bizkeeper-consumer

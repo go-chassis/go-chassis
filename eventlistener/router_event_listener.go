@@ -2,12 +2,14 @@ package eventlistener
 
 import (
 	"encoding/json"
-	"github.com/ServiceComb/go-archaius/core"
+	"strings"
+
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/route"
-	"strings"
+
+	"github.com/ServiceComb/go-archaius/core"
 )
 
 // constants for dark launch key and prefix

@@ -2,15 +2,17 @@ package handler
 
 import (
 	"errors"
+	"net/http"
+	"strings"
+
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/fault"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"net/http"
-	"strings"
 )
 
 // constant for fault handler name

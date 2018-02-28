@@ -2,8 +2,9 @@ package provider
 
 import (
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/lager"
 	"log"
+
+	"github.com/ServiceComb/go-chassis/core/lager"
 )
 
 // plugin name and schemas map

@@ -2,8 +2,10 @@ package file
 
 import (
 	"fmt"
+
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+
 	"github.com/ServiceComb/go-sc-client/model"
 )
 

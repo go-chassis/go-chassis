@@ -11,10 +11,11 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 	"github.com/ServiceComb/go-chassis/core/transport"
+	"github.com/ServiceComb/go-chassis/util/iputil"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	"github.com/ServiceComb/go-chassis/util/iputil"
 )
 
 //NewFunc returns a server

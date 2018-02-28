@@ -3,10 +3,11 @@ package endpoint
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"strings"
 )
 
 // GetEndpointFromServiceCenter is used to get the endpoint based on appID, microservice and version

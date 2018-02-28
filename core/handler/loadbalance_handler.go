@@ -11,6 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/cenkalti/backoff"

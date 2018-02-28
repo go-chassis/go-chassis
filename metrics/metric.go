@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/ServiceComb/go-chassis/core/lager"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rcrowley/go-metrics"
-	"sync"
 )
 
 var errMonitoringFail = errors.New("Con not report metrics to CSE monitoring service")

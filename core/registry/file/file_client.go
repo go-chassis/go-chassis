@@ -3,13 +3,15 @@ package file
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
-	"github.com/ServiceComb/go-sc-client/model"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/util/fileutil"
+
+	"github.com/ServiceComb/go-sc-client/model"
 )
 
 const (

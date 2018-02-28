@@ -3,14 +3,16 @@ package session
 import (
 	"errors"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	cache "github.com/patrickmn/go-cache"
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/ServiceComb/go-chassis/core/lager"
+
+	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	cache "github.com/patrickmn/go-cache"
 )
 
 // ErrResponseNil used for to represent the error response, when it is nil

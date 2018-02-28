@@ -1,12 +1,13 @@
 package loadbalance
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
-	"fmt"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 

@@ -1,9 +1,11 @@
 package archaius
 
 import (
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-chassis/core/lager"
 	"os"
+
+	"github.com/ServiceComb/go-chassis/core/lager"
+
+	"github.com/ServiceComb/go-archaius/core"
 )
 
 // PathExist to check the existence of the file path

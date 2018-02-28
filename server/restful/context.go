@@ -2,8 +2,9 @@ package restful
 
 import (
 	"context"
-	"github.com/emicklei/go-restful"
 	"net/http"
+
+	"github.com/emicklei/go-restful"
 )
 
 //Context is a struct which has both request and response objects
