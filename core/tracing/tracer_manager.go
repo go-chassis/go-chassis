@@ -8,6 +8,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/util/iputil"
+
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 )

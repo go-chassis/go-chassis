@@ -13,6 +13,7 @@ import (
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/ServiceComb/go-chassis/util/iputil"
+
 	"github.com/emicklei/go-restful"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"

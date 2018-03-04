@@ -3,13 +3,14 @@ package metrics
 import (
 	"crypto/tls"
 	"fmt"
+	"net/http"
+	"net/url"
+
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-	"net/http"
-	"net/url"
 )
 
 func getTLSForClient(monitorURL string) (*tls.Config, error) {

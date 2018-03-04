@@ -1,12 +1,14 @@
 package loadbalance
 
 import (
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/ServiceComb/go-chassis/core/registry"
+
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 // ByDuration is for calculating the duration

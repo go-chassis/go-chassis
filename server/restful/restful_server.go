@@ -17,6 +17,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/metrics"
+
 	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"

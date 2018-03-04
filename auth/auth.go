@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ServiceComb/auth"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
@@ -18,6 +17,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/goplugin"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/security"
+
+	"github.com/ServiceComb/auth"
 	yaml "gopkg.in/yaml.v2"
 )
 

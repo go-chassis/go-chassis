@@ -1,8 +1,9 @@
 package eventlistener
 
 import (
-	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-chassis/core/archaius"
+
+	"github.com/ServiceComb/go-archaius/core"
 )
 
 //RegisterKeys registers a config key to the archaius

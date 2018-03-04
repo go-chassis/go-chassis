@@ -2,9 +2,11 @@ package servicecenter
 
 import (
 	"fmt"
+
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+
 	client "github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 	"gopkg.in/yaml.v2"

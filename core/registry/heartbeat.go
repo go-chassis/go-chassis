@@ -2,14 +2,16 @@ package registry
 
 import (
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	client "github.com/ServiceComb/go-sc-client"
-	"github.com/ServiceComb/go-sc-client/model"
-	pb "github.com/ServiceComb/go-sc-client/model"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/lager"
+
+	client "github.com/ServiceComb/go-sc-client"
+	"github.com/ServiceComb/go-sc-client/model"
+	pb "github.com/ServiceComb/go-sc-client/model"
 )
 
 // DefaultRetryTime default retry time

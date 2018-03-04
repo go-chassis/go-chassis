@@ -1,12 +1,13 @@
 package registry
 
 import (
+	"os"
+
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/metadata"
 	"github.com/ServiceComb/go-sc-client/model"
-	"os"
 )
 
 // microServiceDependencies micro-service dependencies

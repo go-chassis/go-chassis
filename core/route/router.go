@@ -2,13 +2,14 @@ package router
 
 import (
 	"errors"
+	"regexp"
+	"strconv"
+	"sync"
+
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"regexp"
-	"strconv"
-	"sync"
 )
 
 var dests map[string][]*config.RouteRule

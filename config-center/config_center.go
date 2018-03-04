@@ -8,21 +8,20 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ServiceComb/go-archaius"
-	// go-archaius package is imported for to initialize the config-center configurations
-	_ "github.com/ServiceComb/go-archaius"
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/configcenter-source"
-	"github.com/ServiceComb/go-cc-client"
-	"github.com/ServiceComb/go-cc-client/member-discovery"
+	"github.com/ServiceComb/go-chassis/bootstrap"
+	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 
-	"github.com/ServiceComb/go-chassis/bootstrap"
-	"github.com/ServiceComb/go-chassis/core/archaius"
+	// go-archaius package is imported for to initialize the config-center configurations
+	"github.com/ServiceComb/go-archaius"
+	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-archaius/sources/configcenter-source"
+	"github.com/ServiceComb/go-cc-client"
+	"github.com/ServiceComb/go-cc-client/member-discovery"
 )
 
 const (

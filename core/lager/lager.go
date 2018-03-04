@@ -1,13 +1,15 @@
 package lager
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/paas-lager"
-	"github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ServiceComb/go-chassis/core/common"
+
+	"github.com/ServiceComb/paas-lager"
+	"github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager"
 )
 
 // constant values for logrotate parameters

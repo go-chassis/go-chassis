@@ -3,9 +3,10 @@ package fault
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/invocation"
-	"time"
 )
 
 var (

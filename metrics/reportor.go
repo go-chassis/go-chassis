@@ -2,15 +2,17 @@ package metrics
 
 import (
 	"errors"
-	"github.com/ServiceComb/cse-collector"
+	"sync"
+	"time"
+
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
+
+	"github.com/ServiceComb/cse-collector"
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
 	"github.com/rcrowley/go-metrics"
-	"sync"
-	"time"
 )
 
 //Reporter receive a go-metrics registry and sink it to monitoring system

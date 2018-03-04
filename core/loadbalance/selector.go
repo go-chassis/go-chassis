@@ -5,6 +5,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 

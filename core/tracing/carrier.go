@@ -2,6 +2,7 @@ package tracing
 
 import (
 	"github.com/ServiceComb/go-chassis/client/rest"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 )
 

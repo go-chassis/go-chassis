@@ -1,14 +1,16 @@
 package core
 
 import (
+	"sync"
+
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"golang.org/x/net/context"
-	"sync"
 )
 
 // RPCInvoker is rpc invoker

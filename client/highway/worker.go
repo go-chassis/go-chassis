@@ -9,6 +9,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/client/highway/pb"
 	"github.com/ServiceComb/go-chassis/core/lager"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"

@@ -2,12 +2,12 @@ package handler
 
 import (
 	"errors"
-
 	"fmt"
+	"strings"
+
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"strings"
 )
 
 var errEmptyChain = errors.New("Chain can not be empty")

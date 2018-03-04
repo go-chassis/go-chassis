@@ -2,6 +2,7 @@ package mock
 
 import (
 	"github.com/ServiceComb/go-chassis/core/registry"
+
 	"github.com/ServiceComb/go-sc-client/model"
 	"github.com/stretchr/testify/mock"
 )

@@ -18,7 +18,6 @@ package lager
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/common"
 	"io"
 	"os"
 	"path/filepath"
@@ -26,6 +25,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 var pathReplacer *strings.Replacer

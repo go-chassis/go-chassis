@@ -1,12 +1,14 @@
 package eventlistener
 
 import (
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 	"regexp"
 	"strings"
+
+	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/lager"
+
+	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 
 // constants for consumer isolation, circuit breaker, fallback keys

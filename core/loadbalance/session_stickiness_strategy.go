@@ -1,11 +1,12 @@
 package loadbalance
 
 import (
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
-
-	"github.com/ServiceComb/go-chassis/session"
 	"sync"
+
+	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/session"
+
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 var (

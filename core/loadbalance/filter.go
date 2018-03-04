@@ -3,6 +3,7 @@ package loadbalance
 import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/registry"
+
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 

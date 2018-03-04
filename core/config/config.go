@@ -12,6 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/util/fileutil"
+
 	"gopkg.in/yaml.v2"
 )
 
