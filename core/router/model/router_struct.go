@@ -1,4 +1,4 @@
-package config
+package model
 
 // RouterConfig is the struct having info about route rule destinations, source templates
 type RouterConfig struct {

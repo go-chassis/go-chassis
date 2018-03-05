@@ -22,6 +22,10 @@ mkdir -p /tmp/conf
 mkdir -p $GOPATH/conf/microservice1/schema
 mkdir -p $GOPATH/conf/microservice2/schema
 mkdir -p $GOPATH/conf/microservice3/schema
+
+# For router test
+mkdir -p $GOPATH/test/router/manager/conf
+
 #Start the Test
 for d in $(go list ./... | grep -v vendor |  grep -v third_party | grep -v examples); do
     echo $d

@@ -7,14 +7,14 @@ import (
 	"sync"
 
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/core/router/model"
 )
 
-var dests map[string][]*config.RouteRule
+var dests map[string][]*model.RouteRule
 
-var templates map[string]*config.Match
+var templates map[string]*model.Match
 
 var lock sync.RWMutex
 
@@ -46,38 +46,25 @@ func (sm *SafeMap) set(key string, value int) {
 	sm.Unlock()
 }
 
-// Init sets route rule, and templates
-func Init(nr map[string][]*config.RouteRule, t map[string]*config.Match) {
-	SetRouteRule(nr)
-	SetTemplates(t)
-}
-
-// SetRouteRule set route rule
-func SetRouteRule(nr map[string][]*config.RouteRule) {
+// SetRouteRuleByKey set route rule by key
+func SetRouteRuleByKey(k string, r []*model.RouteRule) {
 	lock.Lock()
-	dests = nr
+	dests[k] = r
 	lock.Unlock()
 }
 
-// GetRouteRule get route rule
-func GetRouteRule() map[string][]*config.RouteRule {
-	lock.RLock()
-	defer lock.RUnlock()
-	return dests
-}
-
-// SetTemplates set templates
-func SetTemplates(t map[string]*config.Match) {
+// DeleteRouteRuleByKey set route rule by key
+func DeleteRouteRuleByKey(k string) {
 	lock.Lock()
-	templates = t
+	delete(dests, k)
 	lock.Unlock()
 }
 
-// GetTemplates get templates
-func GetTemplates() map[string]*config.Match {
+// GetRouteRuleByKey get route rule by key
+func GetRouteRuleByKey(k string) []*model.RouteRule {
 	lock.RLock()
 	defer lock.RUnlock()
-	return templates
+	return dests[k]
 }
 
 // Route route the APIs
@@ -94,7 +81,7 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 		}
 	}
 	if inv.Version == "" && len(rules) != 0 {
-		return errors.New("There is no matched route rule! Please make sure your request is valid")
+		return errors.New("no matched route rule")
 	}
 	//Finally, must set app and version for a destination,
 	//because sc need those, But user don't need to care, if they don't want(means don't need to write any route rule configs)
@@ -114,7 +101,7 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 }
 
 // FitRate fit rate
-func FitRate(tags []*config.RouteTag, dest string) (tag *config.RouteTag, err error) {
+func FitRate(tags []*model.RouteTag, dest string) (tag *model.RouteTag, err error) {
 	if tags[0].Weight == 100 || len(tags) == 1 {
 		tag = tags[0]
 		return tag, nil
@@ -158,7 +145,7 @@ func FitRate(tags []*config.RouteTag, dest string) (tag *config.RouteTag, err er
 }
 
 // Match check the route rule
-func Match(match config.Match, headers map[string]string, source *registry.SourceInfo) bool {
+func Match(match model.Match, headers map[string]string, source *registry.SourceInfo) bool {
 	//validate template first
 	if refer := match.Refer; refer != "" {
 		return SourceMatch(templates[refer], headers, source)
@@ -172,7 +159,7 @@ func Match(match config.Match, headers map[string]string, source *registry.Sourc
 }
 
 // SourceMatch check the source route
-func SourceMatch(match *config.Match, headers map[string]string, source *registry.SourceInfo) bool {
+func SourceMatch(match *model.Match, headers map[string]string, source *registry.SourceInfo) bool {
 	//source not match
 	if match.Source != "" && match.Source != source.Name {
 		return false
@@ -264,13 +251,13 @@ func isMatch(headers map[string]string, k string, v map[string]string) bool {
 }
 
 // SortRules sort route rules
-func SortRules(name string) []*config.RouteRule {
+func SortRules(name string) []*model.RouteRule {
 	slice := dests[name]
 	return QuickSort(0, len(slice)-1, slice)
 }
 
 // QuickSort for sorting the routes it will follow quicksort technique
-func QuickSort(left int, right int, rules []*config.RouteRule) (s []*config.RouteRule) {
+func QuickSort(left int, right int, rules []*model.RouteRule) (s []*model.RouteRule) {
 	s = rules
 	if left >= right {
 		return
@@ -279,7 +266,7 @@ func QuickSort(left int, right int, rules []*config.RouteRule) (s []*config.Rout
 	i := left
 	j := right
 	base := s[left]
-	var tmp *config.RouteRule
+	var tmp *model.RouteRule
 	for i != j {
 		for s[j].Precedence <= base.Precedence && i < j {
 			j--
@@ -301,4 +288,9 @@ func QuickSort(left int, right int, rules []*config.RouteRule) (s []*config.Rout
 	QuickSort(i+1, right, s)
 
 	return
+}
+
+func init() {
+	dests = make(map[string][]*model.RouteRule)
+	templates = make(map[string]*model.Match)
 }
