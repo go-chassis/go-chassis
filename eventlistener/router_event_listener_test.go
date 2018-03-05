@@ -1,65 +1,56 @@
 package eventlistener_test
 
 import (
+	"testing"
+	"time"
+
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-archaius/sources/external-source"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/route"
+	"github.com/ServiceComb/go-chassis/core/router"
+	"github.com/ServiceComb/go-chassis/core/router/adaptors/cse"
 	"github.com/ServiceComb/go-chassis/eventlistener"
+
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-var darkLaunch = []byte(`
-{
-  "policyType": "RATE",
-  "ruleItems": [
-    {
-      "groupName": "s1",
-      "groupCondition": "version=0.3",
-      "policyCondition": "30"
-    },
-    {
-      "groupName": "s2",
-      "groupCondition": "version=0.4",
-      "policyCondition": "70"
-    }
-  ]
-}`)
+const (
+	svcDarkLaunch       = "svcDarkLaunch"
+	svcDarkLaunchConfig = `{"policyType":"RATE","ruleItems":[{"groupName":"s0"},{"groupName":"s1"}]}`
+)
 
-var darkLaunch1 = []byte(`
-{
-  "policyType": "RULE",
-  "ruleItems": [
-    {
-      "groupName": "s1",
-      "groupCondition": "version=0.3",
-      "policyCondition": "test!=30"
-    },
-    {
-      "groupName": "s2",
-      "groupCondition": "version=0.4",
-      "policyCondition": "t>3"
-    }
-  ]
-}`)
+func TestDarkLaunchEventListenerEvent(t *testing.T) {
+	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
+	c, err := archaius.NewConfig(make([]string, 0), make([]string, 0))
+	if err != nil {
+		t.Error(err)
+	}
+	archaius.DefaultConf = c
+	c.ConfigFactory.AddSource(externalconfigsource.NewExternalConfigurationSource())
 
-func TestDarkLaunchEventListener_Event(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	archaius.Init()
-	eventlistener.Init()
-	eventListen := &eventlistener.DarkLaunchEventListener{}
-	e := &core.Event{EventType: "CREATE", Key: eventlistener.DarkLaunchPrefix + "service", Value: string(darkLaunch)}
-	eventListen.Event(e)
-	assert.Equal(t, router.GetRouteRule()["service"][0].Routes[0].Weight, 30)
+	err = router.Init()
+	assert.NoError(t, err)
 
-	e = &core.Event{EventType: "UPDATE", Key: eventlistener.DarkLaunchPrefix + "service1", Value: string(darkLaunch1)}
-	eventListen.Event(e)
-	t.Log(router.GetRouteRule())
-	assert.Equal(t, router.GetRouteRule()["service1"][1].Match.HTTPHeaders["t"]["greater"], "3")
-	assert.Equal(t, router.GetRouteRule()["service1"][0].Match.HTTPHeaders["test"]["noEqu"], "30")
+	e := &core.Event{
+		EventSource: cse.RouteDarkLaunchGovernSourceName,
+		EventType:   core.Create,
+		Key:         svcDarkLaunch,
+		Value:       svcDarkLaunchConfig,
+	}
 
-	e2 := &core.Event{EventType: "DELETE", Key: eventlistener.DarkLaunchPrefix + "service", Value: ""}
-	eventListen.Event(e2)
-	assert.Equal(t, len(router.GetRouteRule()), 1)
+	t.Log("Before event, there should be no router config")
+	assert.Nil(t, router.GetRouteRuleByKey(svcDarkLaunch))
+
+	t.Log("After event, there should exists router config")
+	archaius.AddKeyValue(eventlistener.DarkLaunchPrefix+svcDarkLaunch, svcDarkLaunchConfig)
+	l := &eventlistener.DarkLaunchEventListener{}
+	l.Event(e)
+	time.Sleep(100 * time.Millisecond)
+	r := router.GetRouteRuleByKey(svcDarkLaunch)
+	assert.NotNil(t, r)
+	if r == nil {
+		t.FailNow()
+	}
+	assert.Equal(t, 2, len(r[0].Routes))
 }

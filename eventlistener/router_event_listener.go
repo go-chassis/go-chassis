@@ -1,15 +1,11 @@
 package eventlistener
 
 import (
-	"encoding/json"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/route"
-
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/core/router/adaptors/cse"
 )
 
 // constants for dark launch key and prefix
@@ -23,31 +19,14 @@ const (
 type DarkLaunchEventListener struct{}
 
 //Event is method used for dark launch event listening
-func (e *DarkLaunchEventListener) Event(event *core.Event) {
-	rules := router.GetRouteRule()
-	if rules == nil {
-		rules = map[string][]*config.RouteRule{}
+func (d *DarkLaunchEventListener) Event(event *core.Event) {
+	lager.Logger.Debugf("Get darkLaunch event, key: %s, type: %s", event.Key, event.EventType)
+	s := strings.Replace(event.Key, DarkLaunchPrefix, "", 1)
+	newEvent := &core.Event{
+		EventSource: cse.RouteDarkLaunchGovernSourceName,
+		EventType:   event.EventType,
+		Key:         s,
+		Value:       event.Value,
 	}
-	rule := &config.DarkLaunchRule{}
-	serviceName := strings.Replace(event.Key, DarkLaunchPrefix, "", 1)
-
-	switch event.EventType {
-	case common.Update:
-		if err := json.Unmarshal([]byte(event.Value.(string)), rule); err != nil {
-			lager.Logger.Error("can not update route rule", err)
-		}
-		lager.Logger.Info("Route rule '" + serviceName + "' is updated to " + event.Value.(string))
-		rules[serviceName] = config.TranslateRules(rule)
-	case common.Create:
-		if err := json.Unmarshal([]byte(event.Value.(string)), rule); err != nil {
-			lager.Logger.Error("can not create route rule", err)
-		}
-		lager.Logger.Info("Route rule '" + serviceName + "' is created. Value=" + event.Value.(string))
-		rules[serviceName] = config.TranslateRules(rule)
-	case common.Delete:
-		// delete route rule whose destination is the tail of event.key
-		delete(rules, serviceName)
-		lager.Logger.Info("Route rule '" + serviceName + "' is removed!")
-	}
-	router.SetRouteRule(rules)
+	cse.NewRouteDarkLaunchGovernSource().Callback(newEvent)
 }

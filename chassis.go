@@ -27,7 +27,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/core/registry/file"
 	// servicecenter package handles service center api calls
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-	"github.com/ServiceComb/go-chassis/core/route"
+	"github.com/ServiceComb/go-chassis/core/router"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/core/tracing"
 	"github.com/ServiceComb/go-chassis/eventlistener"
@@ -108,8 +108,6 @@ func (c *chassis) initialize() error {
 		lager.Logger.Error("Failed to initialize conf,", err)
 		return err
 	}
-	router.Init(config.GetRouterConfig().Destinations, config.GetRouterConfig().SourceTemplates)
-
 	auth.Init()
 
 	err = c.initHandler()
@@ -134,6 +132,12 @@ func (c *chassis) initialize() error {
 	}
 
 	bootstrap.Bootstrap()
+	// router needs get configs from config-center when init
+	// so it must init after bootstrap
+	err = router.Init()
+	if err != nil {
+		return err
+	}
 
 	err = tracing.Init()
 	if err != nil {

@@ -234,10 +234,7 @@ func Init() error {
 		return err
 	}
 	lager.Logger.Infof("archaius init success")
-	err = InitRouter()
-	if err != nil {
-		lager.Logger.Warn("Route Rules init failed: ", err)
-	}
+
 	var schemaError error
 
 	//Upload schemas using environment variable SCHEMA_ROOT
