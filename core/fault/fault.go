@@ -11,6 +11,15 @@ type InjectFault func(model.Fault, *invocation.Invocation) error
 // FaultInjectors fault injectors
 var FaultInjectors = make(map[string]InjectFault)
 
+//FaultError fault injection error
+type FaultError struct {
+	Message string
+}
+
+func (e FaultError) Error() string {
+	return e.Message
+}
+
 // InstallFaultInjectionPlugin install fault injection plugin
 func InstallFaultInjectionPlugin(name string, f InjectFault) {
 	FaultInjectors[name] = f

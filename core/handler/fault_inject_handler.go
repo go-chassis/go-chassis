@@ -80,7 +80,7 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 			r.Status = http.StatusBadRequest
 		}
 
-		r.Err = err
+		r.Err = fault.FaultError{Message: err.Error()}
 		cb(r)
 		return
 	}
