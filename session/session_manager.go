@@ -11,8 +11,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	cache "github.com/patrickmn/go-cache"
+	"github.com/valyala/fasthttp"
 )
 
 // ErrResponseNil used for to represent the error response, when it is nil

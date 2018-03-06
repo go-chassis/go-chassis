@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	"github.com/valyala/fasthttp"
 )
 
 //Client is a struct

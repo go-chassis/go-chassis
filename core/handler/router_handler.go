@@ -23,7 +23,12 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 	var h map[string]string
 	if i.Protocol == "rest" {
 		req, _ := i.Args.(*rest.Request)
-		h = req.GetRequest().Header.HeaderMap()
+		//h = req.GetRequest().Header.HeaderMap()
+		h = map[string]string{}
+		req.GetRequest().Header.VisitAll(func(key, value []byte) {
+			h[string(key)] = string(value)
+		})
+
 	} else {
 		ctx, _ := metadata.FromContext(i.Ctx)
 		h = map[string]string(ctx)

@@ -12,7 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	"github.com/valyala/fasthttp"
 )
 
 // constant for fault handler name
