@@ -104,9 +104,9 @@ func (r *restfulServer) Register(schema interface{}, options ...microServer.Regi
 	for _, o := range options {
 		o(&opts)
 	}
-	if opts.MicroServiceName == "" {
-		opts.MicroServiceName = config.SelfServiceName
-	}
+
+	opts = setMicroServiceName(opts)
+
 	r.microServiceName = opts.MicroServiceName
 	routes, err := GetRoutes(schema)
 	if err != nil {
@@ -179,6 +179,14 @@ func (r *restfulServer) Register(schema interface{}, options ...microServer.Regi
 		}
 	}
 	return reflect.TypeOf(schema).String(), nil
+}
+
+func setMicroServiceName(opts microServer.RegisterOptions) microServer.RegisterOptions {
+	if opts.MicroServiceName == "" {
+		opts.MicroServiceName = config.SelfServiceName
+	}
+
+	return opts
 }
 
 func (r *restfulServer) Start() error {

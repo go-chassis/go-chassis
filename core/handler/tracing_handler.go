@@ -26,10 +26,13 @@ type TracingProviderHandler struct{}
 // Handle is to handle the provider tracing related things
 func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	tracer := t.getTracer(i)
-	var wireContext opentracing.SpanContext
-	var err error
-	var interfaceName = "unknown"
-	var carrier interface{}
+
+	var (
+		wireContext   opentracing.SpanContext
+		err           error
+		interfaceName = "unknown"
+		carrier       interface{}
+	)
 
 	// extract span context
 	switch i.Protocol {
@@ -73,6 +76,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		opentracing.TextMap,
 		carrier,
 	)
+
 	switch err {
 	case nil:
 	case opentracing.ErrSpanContextNotFound:
@@ -141,17 +145,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	opts := make([]opentracing.StartSpanOption, 0)
 
 	interfaceName := "unknown"
-	switch i.Protocol {
-	case common.ProtocolRest:
-		// set url path to span name
-		if u, e := url.Parse(i.URLPathFormat); e != nil {
-			lager.Logger.Error("parse request url failed.", e)
-		} else {
-			interfaceName = u.Path
-		}
-	default:
-		interfaceName = i.OperationID
-	}
+	interfaceName = setInterfaceName(interfaceName, i)
 
 	operationName := genOperaitonName(i.MicroServiceName, interfaceName)
 	if parentSpan := opentracing.SpanFromContext(i.Ctx); parentSpan != nil {
@@ -234,6 +228,22 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	default:
 	}
 	span.Finish()
+}
+
+func setInterfaceName(interfaceName string, i *invocation.Invocation) string {
+	switch i.Protocol {
+	case common.ProtocolRest:
+		// set url path to span name
+		if u, e := url.Parse(i.URLPathFormat); e != nil {
+			lager.Logger.Error("parse request url failed.", e)
+		} else {
+			interfaceName = u.Path
+		}
+	default:
+		interfaceName = i.OperationID
+	}
+
+	return interfaceName
 }
 
 // Name returns tracing-consumer string
