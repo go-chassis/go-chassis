@@ -145,7 +145,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	opts := make([]opentracing.StartSpanOption, 0)
 
 	interfaceName := "unknown"
-	interfaceName = checkProtocolAndSetinterfaceName(interfaceName, i)
+	interfaceName = setInterfaceName(interfaceName, i)
 
 	operationName := genOperaitonName(i.MicroServiceName, interfaceName)
 	if parentSpan := opentracing.SpanFromContext(i.Ctx); parentSpan != nil {
@@ -230,7 +230,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	span.Finish()
 }
 
-func checkProtocolAndSetinterfaceName(interfaceName string, i *invocation.Invocation) string {
+func setInterfaceName(interfaceName string, i *invocation.Invocation) string {
 	switch i.Protocol {
 	case common.ProtocolRest:
 		// set url path to span name
