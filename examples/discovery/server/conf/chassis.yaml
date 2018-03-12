@@ -2,7 +2,6 @@
 region:
   name: us-east
   availableZone: us-east-1
-#APPLICATION_ID: CSE optional
 cse:
   loadbalance:
     strategyName: RoundRobin

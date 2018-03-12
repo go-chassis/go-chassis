@@ -22,7 +22,7 @@ func GetEndpointFromServiceCenter(appID, microService, version string) (string, 
 		return "", err
 	}
 
-	instances, err := registry.RegistryService.FindMicroServiceInstances(config.SelfServiceID, appID, microService, version)
+	instances, err := registry.RegistryService.FindMicroServiceInstances(config.SelfServiceID, appID, microService, version, "")
 	if err != nil {
 		lager.Logger.Errorf(err, "Get service instance failed, for key: %s:%s:%s",
 			appID, microService, version)

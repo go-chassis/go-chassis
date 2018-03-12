@@ -55,7 +55,7 @@ func (r *defaultSelector) Select(serviceName, version string, opts ...selector.S
 		sopts.AppID = config.GlobalDefinition.AppID
 	}
 
-	instances, err := r.opts.Registry.FindMicroServiceInstances(sopts.ConsumerID, sopts.AppID, serviceName, version)
+	instances, err := r.opts.Registry.FindMicroServiceInstances(sopts.ConsumerID, sopts.AppID, serviceName, version, "")
 	if err != nil {
 		lbErr := selector.LBError{err.Error()}
 		lager.Logger.Errorf(lbErr, "Lb err")

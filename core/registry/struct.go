@@ -29,11 +29,9 @@ type MicroServiceInstance struct {
 	DefaultProtocol string
 	DefaultEndpoint string
 	Status          string
-	Environment     string
 	EndpointsMap    map[string]string
 	Metadata        map[string]string
 	DataCenterInfo  *DataCenterInfo
-	Stage           string
 }
 
 // MicroServiceDependency is for to represent dependencies of micro-service

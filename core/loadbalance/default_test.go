@@ -31,12 +31,10 @@ func TestDefaultSelector_Init(t *testing.T) {
 			HostName:     "test1",
 			Status:       "UP",
 			EndpointsMap: map[string]string{"rest": "127.0.0.1", "highway": "10.0.0.3:8080"},
-			Environment:  "production",
 		},
 		{
 			HostName:     "test2",
 			Status:       "UP",
-			Environment:  "production",
 			EndpointsMap: map[string]string{"highway": "10.0.0.3:8080"},
 		},
 	}
@@ -100,12 +98,10 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 			HostName:     "test1",
 			Status:       "UP",
 			EndpointsMap: map[string]string{"highway": "10.0.0.4:1234"},
-			Environment:  common.EnvValueProd,
 		},
 		{
 			HostName:     "test2",
 			Status:       "UP",
-			Environment:  common.EnvValueProd,
 			EndpointsMap: map[string]string{"highway": "10.0.0.3:1234"},
 		},
 	}

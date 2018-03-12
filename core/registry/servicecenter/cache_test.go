@@ -1,7 +1,6 @@
 package servicecenter_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
@@ -38,13 +37,12 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		InstanceID:   "event1",
 		HostName:     "event_test",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
 	sid, instanceID, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
 	assert.Equal(t, "event1", instanceID)
 	time.Sleep(time.Second * 1)
-	instances, err := registry.RegistryService.FindMicroServiceInstances(sid, "default", "Server", "0.1")
+	instances, err := registry.RegistryService.FindMicroServiceInstances(sid, "default", "Server", "0.1", "")
 	assert.NotZero(t, len(instances))
 	assert.NoError(t, err)
 	var ok = false

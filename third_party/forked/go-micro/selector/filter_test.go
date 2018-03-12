@@ -3,14 +3,9 @@ package selector_test
 // Forked from github.com/micro/go-micro
 // Some parts of this file have been modified to make it functional in this package
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
 	"testing"
 )
 

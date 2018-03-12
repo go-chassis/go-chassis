@@ -6,7 +6,6 @@ import (
 	"github.com/ServiceComb/go-archaius/core/cast"
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	chassisModel "github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/handler"
@@ -202,7 +201,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 
 	testRegistryObj := new(mk.RegistryMock)
 	registry.RegistryService = testRegistryObj
-	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0").Return(mss, nil)
+	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
@@ -261,7 +260,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 
 	testRegistryObj := new(mk.RegistryMock)
 	registry.RegistryService = testRegistryObj
-	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0").Return(mss, nil)
+	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
 	loadbalance.Enable()
@@ -311,12 +310,10 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			HostName:     "test1",
 			Status:       "UP",
 			EndpointsMap: map[string]string{"highway": "10.0.0.4:1234"},
-			Environment:  common.EnvValueProd,
 		},
 		{
 			HostName:     "test2",
 			Status:       "UP",
-			Environment:  common.EnvValueProd,
 			EndpointsMap: map[string]string{"highway": "10.0.0.3:1234"},
 		},
 	}

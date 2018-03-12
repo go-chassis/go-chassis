@@ -16,12 +16,11 @@ const (
 	Env = "ServiceComb_ENV"
 
 	EnvNodeIP     = "HOSTING_SERVER_IP"
-	EnvInstance   = "instance_description.environment"
 	EnvSchemaRoot = "SCHEMA_ROOT"
 	EnvProjectID  = "CSE_PROJECT_ID"
 )
 
-// constant for environment stage
+// constant for microservice environment
 const (
 	EnvValueDev  = "development"
 	EnvValueProd = "production"

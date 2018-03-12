@@ -1,7 +1,6 @@
 package registry_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
@@ -36,7 +35,6 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
 
 	sid, insID, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -73,7 +71,6 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)

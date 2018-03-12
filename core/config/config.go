@@ -31,9 +31,6 @@ var PassLagerDefinition *model.PassLagerCfg
 //HystricConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystricConfig *model.HystrixConfigWrapper
 
-// Stage gives the information of environment stage
-var Stage string
-
 // NodeIP gives the information of node ip
 var NodeIP string
 
@@ -84,6 +81,7 @@ func parse() error {
 	populateConfigCenterAddress()
 	populateServiceRegistryAddress()
 	populateMonitorServerAddress()
+	populateServiceEnvironment()
 	return nil
 }
 
@@ -111,6 +109,13 @@ func populateMonitorServerAddress() {
 	monitorServerAddrFromEnv := archaius.GetString(CseMonitorServer, "")
 	if monitorServerAddrFromEnv != "" {
 		GlobalDefinition.Cse.Monitor.Client.ServerURI = monitorServerAddrFromEnv
+	}
+}
+
+// populateServiceEnvironment populate service environment
+func populateServiceEnvironment() {
+	if e := archaius.GetString(common.Env, ""); e != "" {
+		MicroserviceDefinition.ServiceDescription.Environment = e
 	}
 }
 
@@ -255,8 +260,6 @@ func Init() error {
 		return msError
 	}
 
-	// set environment
-	Stage = archaius.GetString(common.Env, archaius.GetString(common.EnvInstance, common.EnvValueProd))
 	NodeIP = archaius.GetString(common.EnvNodeIP, "")
 	err = parse()
 	if err != nil {

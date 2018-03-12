@@ -44,8 +44,8 @@ func (m *RegistryMock) AddDependencies(request *registry.MicroServiceDependency)
 }
 
 // GetMicroServiceID get micro-service id
-func (m *RegistryMock) GetMicroServiceID(appID, microServiceName, version string) (string, error) {
-	args := m.Called(appID, microServiceName, version)
+func (m *RegistryMock) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
+	args := m.Called(appID, microServiceName, version, env)
 	return args.String(0), args.Error(1)
 }
 
@@ -90,8 +90,8 @@ func (m *RegistryMock) GetSchemaContentByServiceName(svcName, version, appID, en
 }
 
 //FindMicroServiceInstances find micro-service instances
-func (m *RegistryMock) FindMicroServiceInstances(consumerID, appID, microServiceName, version string) ([]*registry.MicroServiceInstance, error) {
-	args := m.Called(consumerID, appID, microServiceName, version)
+func (m *RegistryMock) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
+	args := m.Called(consumerID, appID, microServiceName, version, env)
 	return args.Get(0).([]*registry.MicroServiceInstance), args.Error(1)
 }
 
