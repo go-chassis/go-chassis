@@ -29,6 +29,8 @@ const (
 	//Name is a variable of type string which indicates the protocol being used
 	Name              = "rest"
 	DefaultMetricPath = "metrics"
+	MimeFile          = "application/octet-stream"
+	MimeMult          = "multipart/form-data"
 )
 
 func init() {
@@ -50,8 +52,8 @@ func newRestfulServer(opts ...microServer.Option) microServer.Server {
 	options := newOptions(opts...)
 	ws := new(restful.WebService)
 	ws.Path("/").Doc("root path").
-		Consumes(restful.MIME_XML, restful.MIME_JSON).
-		Produces(restful.MIME_JSON, restful.MIME_XML) // you can specify this per route as well
+		Consumes(restful.MIME_XML, restful.MIME_JSON, MimeFile, MimeMult).
+		Produces(restful.MIME_JSON, restful.MIME_XML, MimeFile, MimeMult) // you can specify this per route as well
 
 	if archaius.GetBool("cse.metrics.enable", false) {
 
