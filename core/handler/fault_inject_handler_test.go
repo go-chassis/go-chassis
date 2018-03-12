@@ -54,8 +54,8 @@ cse:
     retryOnSame: 3
     backoff:
       kind: constant
-      MinMs: 200
-      MaxMs: 400
+      minMs: 200
+      maxMs: 400
   service:
     registry:
       #disabled: false           optional:禁用注册发现选项，默认开始注册发现

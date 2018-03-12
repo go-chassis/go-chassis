@@ -34,8 +34,8 @@ type LoadBalancingSpec struct {
 
 // SessionStickinessRule loadbalancing structure
 type SessionStickinessRule struct {
-	sessionTimeoutInSeconds int `yaml:"sessionTimeoutInSeconds"`
-	successiveFailedTimes   int `yaml:"successiveFailedTimes"`
+	SessionTimeoutInSeconds int `yaml:"sessionTimeoutInSeconds"`
+	SuccessiveFailedTimes   int `yaml:"successiveFailedTimes"`
 }
 
 // BackoffStrategy back off strategy
