@@ -84,18 +84,18 @@ cse:
   loadbalance: 
     TargetService: 
       backoff: 
-        MaxMs: 400
-        MinMs: 200
+        maxMs: 400
+        minMs: 200
         kind: constant
       retryEnabled: false
       retryOnNext: 2
       retryOnSame: 3
       serverListFilters: zoneaware
       strategy: 
-        name: WeightedResponse
+        name: WeightedResponseForTargetService
     backoff: 
-      MaxMs: 400
-      MinMs: 200
+      maxMs: 400
+      minMs: 200
       kind: constant
     retryEnabled: false
     retryOnNext: 2
@@ -207,6 +207,8 @@ cse:
 	cb := model.HystrixConfigWrapper{}
 	archaius.UnmarshalConfig(&cb)
 	assert.Equal(t, 20, cb.HystrixConfig.FallbackProperties.Consumer.MaxConcurrentRequests)
+	assert.Equal(t, 1000, cb.HystrixConfig.IsolationProperties.Consumer.AnyService["Server"].TimeoutInMilliseconds)
+	assert.NotEqual(t, 22, cb.HystrixConfig.IsolationProperties.Consumer.AnyService["Server"].TimeoutInMilliseconds)
 	t.Log("Unmarshall lb")
 	lbConfig := model.LBWrapper{}
 	archaius.UnmarshalConfig(&lbConfig)
@@ -214,7 +216,7 @@ cse:
 
 	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
 	t.Log(lbConfig.Prefix.LBConfig.AnyService)
-	//assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
+	assert.Equal(t, "WeightedResponseForTargetService", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
 	err = archaius.AddFile(lbFileName)
 	assert.NoError(t, err)
 

@@ -96,8 +96,8 @@ cse:
   loadbalance: 
     TargetService: 
       backoff: 
-        MaxMs: 400
-        MinMs: 200
+        maxMs: 400
+        minMs: 200
         kind: constant
       retryEnabled: false
       retryOnNext: 2
@@ -106,8 +106,8 @@ cse:
       strategy: 
         name: WeightedResponse
     backoff: 
-      MaxMs: 400
-      MinMs: 200
+      maxMs: 400
+      minMs: 200
       kind: constant
     retryEnabled: false
     retryOnNext: 2

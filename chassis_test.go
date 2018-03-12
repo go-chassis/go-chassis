@@ -49,14 +49,13 @@ cse:
   loadbalance:
     strategy:
       name: RoundRobin
-      sessionTimeoutInSeconds: 30
     retryEnabled: false
     retryOnNext: 2
     retryOnSame: 3
     backoff:
       kind: constant
-      MinMs: 200
-      MaxMs: 400
+      minMs: 200
+      maxMs: 400
   service:
     registry:
       type: servicecenter

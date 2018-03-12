@@ -11,7 +11,7 @@ import (
 const (
 	//LbStrategyNameKey & LbStrategyTimeoutKey are variables of type string
 	LbStrategyNameKey    = "cse.loadbalance.strategy.name"
-	LbStrategyTimeoutKey = "cse.loadbalance.strategy.sessionTimeoutInSeconds"
+	LbStrategyTimeoutKey = "cse.loadbalance.SessionStickinessRule.sessionTimeoutInSeconds"
 	Update               = "update"
 	Delete               = "delete"
 )
