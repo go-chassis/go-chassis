@@ -1,0 +1,4 @@
+service_description:
+  name: FileUploadServer
+properties:
+  allowCrossApp: true
