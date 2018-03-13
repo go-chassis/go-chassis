@@ -6,9 +6,10 @@ import (
 	"github.com/ServiceComb/go-sc-client/model"
 )
 
-// ToMicroService assign model micro-service parameters to the registry micro-service
+// ToMicroService assign sc micro-service to go chassis micro-service
 func ToMicroService(scs *model.MicroService) *registry.MicroService {
 	cs := &registry.MicroService{}
+	cs.ServiceID = scs.ServiceID
 	cs.ServiceName = scs.ServiceName
 	cs.Version = scs.Version
 	cs.AppID = scs.AppID
@@ -25,9 +26,10 @@ func ToMicroService(scs *model.MicroService) *registry.MicroService {
 	return cs
 }
 
-// ToSCService assign registry micro-service parameters to the model micro-service
+// ToSCService assign go chassis micro-service to the sc micro-service
 func ToSCService(cs *registry.MicroService) *model.MicroService {
 	scs := &model.MicroService{}
+	scs.ServiceID = cs.ServiceID
 	scs.ServiceName = cs.ServiceName
 	scs.Version = cs.Version
 	scs.AppID = cs.AppID
