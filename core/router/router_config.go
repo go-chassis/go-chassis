@@ -53,8 +53,30 @@ func refresh() error {
 		}
 		d[k] = rules
 	}
-	dests = d
+
+	if validateRule(d) {
+		dests = d
+	}
 	return nil
+}
+
+// validateRule validate the route rules of each service
+func validateRule(rules map[string][]*model.RouteRule) bool {
+	for name, rule := range rules {
+		allWeight := 0
+		for _, route := range rule {
+			for _, routeTag := range route.Routes {
+				allWeight += routeTag.Weight
+			}
+
+		}
+
+		if allWeight > 100 {
+			lager.Logger.Warnf(nil, "route rule for [%s] is not valid: ruleTag weight is over 100%", name)
+			return false
+		}
+	}
+	return true
 }
 
 // get router config from router config file

@@ -1,7 +1,6 @@
 package router
 
 import (
-	"errors"
 	"regexp"
 	"strconv"
 	"sync"
@@ -67,21 +66,35 @@ func GetRouteRuleByKey(k string) []*model.RouteRule {
 	return dests[k]
 }
 
+// GetRouteRule get route rule
+func GetRouteRule() map[string][]*model.RouteRule {
+	lock.RLock()
+	defer lock.RUnlock()
+	return dests
+}
+
+// SetRouteRule set route rule
+func SetRouteRule(rule map[string][]*model.RouteRule) {
+	lock.RLock()
+	defer lock.RUnlock()
+	dests = rule
+}
+
 // Route route the APIs
 func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.Invocation) error {
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {
 		if Match(rule.Match, header, si) {
 			tag, _ := FitRate(rule.Routes, inv.MicroServiceName)
-			inv.Version = tag.Tags[common.BuildinTagVersion]
-			if tag.Tags[common.BuildinTagApp] != "" {
-				inv.AppID = tag.Tags[common.BuildinTagApp]
+			if tag != nil {
+
+				inv.Version = tag.Tags[common.BuildinTagVersion]
+				if tag.Tags[common.BuildinTagApp] != "" {
+					inv.AppID = tag.Tags[common.BuildinTagApp]
+				}
 			}
 			break
 		}
-	}
-	if inv.Version == "" && len(rules) != 0 {
-		return errors.New("no matched route rule")
 	}
 	//Finally, must set app and version for a destination,
 	//because sc need those, But user don't need to care, if they don't want(means don't need to write any route rule configs)
@@ -102,7 +115,7 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 
 // FitRate fit rate
 func FitRate(tags []*model.RouteTag, dest string) (tag *model.RouteTag, err error) {
-	if tags[0].Weight == 100 || len(tags) == 1 {
+	if tags[0].Weight == 100 {
 		tag = tags[0]
 		return tag, nil
 	}
@@ -136,10 +149,6 @@ func FitRate(tags []*model.RouteTag, dest string) (tag *model.RouteTag, err erro
 			invokeCount.set(key, percent+1)
 			break
 		}
-	}
-	// weight is not set, then tag can not be filtered out.
-	if tag == nil && len(tags) > 0 {
-		tag = tags[0]
 	}
 	return tag, nil
 }

@@ -173,7 +173,7 @@ func TestRoute(t *testing.T) {
 	header["test"] = "test"
 	si.Name = "reviews.default.svc.cluster.local"
 	err = Route(header, si, inv)
-	assert.Error(t, err, "")
+	assert.Nil(t, err, "")
 
 	inv.Version = ""
 	inv.AppID = ""

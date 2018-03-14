@@ -160,6 +160,10 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 		metadata = i.MicroServiceName + "/" + i.Protocol
 	}
 
+	if i.Version == "" {
+		i.Version = common.LatestVersion
+	}
+
 	next, err := loadbalance.DefaultSelector.Select(
 		i.MicroServiceName, i.Version,
 		selector.WithStrategy(strategyFun),
