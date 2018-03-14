@@ -128,7 +128,7 @@ func (c *CacheManager) MakeSchemaIndex() error {
 	}
 
 	for _, ms := range microServiceList {
-		serviceID, err := c.registryClient.GetMicroServiceID(ms.AppID, ms.ServiceName, ms.Version)
+		serviceID, err := c.registryClient.GetMicroServiceID(ms.AppID, ms.ServiceName, ms.Version, ms.Environment)
 		if err != nil {
 			continue
 		}
@@ -191,7 +191,6 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 	}
 
 	for key := range serviceStore {
-		//the local cache key don't need to specify stage
 		service := strings.Split(key, ":")
 		if len(service) != 2 {
 			lager.Logger.Errorf(err, "Invalid servcieStore %s for providers %s", key, config.SelfServiceID)
@@ -199,7 +198,7 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		}
 
 		providerInstances, err := c.registryClient.FindMicroServiceInstances(config.SelfServiceID, service[1],
-			service[0], findVersionRule(service[0]), config.Stage)
+			service[0], findVersionRule(service[0]))
 		if err != nil {
 			lager.Logger.Errorf(err, "GetMicroServiceInstances failed")
 			continue

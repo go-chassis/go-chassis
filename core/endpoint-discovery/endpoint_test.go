@@ -2,7 +2,6 @@ package endpoint_test
 
 import (
 	"github.com/ServiceComb/go-chassis"
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
@@ -60,7 +59,6 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8088"},
 		HostName:     "default",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -86,7 +84,6 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080?sslEnabled=true"},
 		HostName:     "default",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -112,7 +109,6 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8089?sslEnabled=false"},
 		HostName:     "default",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)

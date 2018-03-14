@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/ServiceComb/go-chassis/client/rest"
+	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/router"
@@ -18,6 +20,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 	for k, v := range i.Metadata {
 		tags[k] = v.(string)
 	}
+	tags[common.BuildinTagApp] = config.GlobalDefinition.AppID
 
 	var h map[string]string
 	if i.Protocol == "rest" {

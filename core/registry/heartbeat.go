@@ -165,7 +165,6 @@ func reRegisterSelfMSI(sid string) error {
 		lager.Logger.Errorf(err, "Get HostName failed, hostname:%s", hostname)
 		return err
 	}
-	stage := config.Stage
 	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
 	if InstanceEndpoints != nil {
 		eps = InstanceEndpoints
@@ -174,7 +173,6 @@ func reRegisterSelfMSI(sid string) error {
 		EndpointsMap: eps,
 		HostName:     hostname,
 		Status:       model.MSInstanceUP,
-		Environment:  stage,
 	}
 	instanceID, err := RegistryService.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {

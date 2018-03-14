@@ -33,6 +33,7 @@ func ToSCService(cs *registry.MicroService) *model.MicroService {
 	scs.ServiceName = cs.ServiceName
 	scs.Version = cs.Version
 	scs.AppID = cs.AppID
+	scs.Environment = cs.Environment
 	scs.Properties = cs.Metadata
 	scs.Schemas = cs.Schemas
 	scs.Level = cs.Level
@@ -74,7 +75,6 @@ func ToSCInstance(msi *registry.MicroServiceInstance) *model.MicroServiceInstanc
 	si.Properties = msi.Metadata
 	si.HostName = msi.HostName
 	si.Status = msi.Status
-	si.Environment = msi.Environment
 	if msi.DataCenterInfo != nil {
 		si.DataCenterInfo = &model.DataCenterInfo{}
 		si.DataCenterInfo.Name = msi.DataCenterInfo.Name

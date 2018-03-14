@@ -3,7 +3,6 @@ package servicecenter
 import (
 	"fmt"
 
-	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 
@@ -28,7 +27,7 @@ type Servicecenter struct {
 func (r *Servicecenter) RegisterService(ms *registry.MicroService) (string, error) {
 	serviceKey := registry.Microservice2ServiceKeyStr(ms)
 	microservice := ToSCService(ms)
-	sid, err := r.registryClient.GetMicroServiceID(microservice.AppID, microservice.ServiceName, microservice.Version)
+	sid, err := r.registryClient.GetMicroServiceID(microservice.AppID, microservice.ServiceName, microservice.Version, microservice.Environment)
 	if err != nil {
 		lager.Logger.Warnf(err, "Get microservice [%s] failed", serviceKey)
 	}
@@ -87,7 +86,7 @@ func (r *Servicecenter) RegisterServiceInstance(sid string, cIns *registry.Micro
 func (r *Servicecenter) RegisterServiceAndInstance(cMicroService *registry.MicroService, cInstance *registry.MicroServiceInstance) (string, string, error) {
 	microService := ToSCService(cMicroService)
 	instance := ToSCInstance(cInstance)
-	microServiceID, err := r.GetMicroServiceID(microService.AppID, microService.ServiceName, microService.Version)
+	microServiceID, err := r.GetMicroServiceID(microService.AppID, microService.ServiceName, microService.Version, microService.Environment)
 	if microServiceID == "" {
 		microServiceID, err = r.registryClient.RegisterService(microService)
 		if err != nil {
@@ -182,8 +181,8 @@ func (r *Servicecenter) GetSchema(microServiceID, schemaName string) ([]byte, er
 }
 
 // GetMicroServiceID : 获取指定微服务的MicroServiceID
-func (r *Servicecenter) GetMicroServiceID(appID, microServiceName, version string) (string, error) {
-	microServiceID, err := r.registryClient.GetMicroServiceID(appID, microServiceName, version)
+func (r *Servicecenter) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
+	microServiceID, err := r.registryClient.GetMicroServiceID(appID, microServiceName, version, env)
 	if err != nil {
 		lager.Logger.Errorf(err, "GetMicroServiceID failed")
 		return "", err
@@ -298,7 +297,7 @@ func (r *Servicecenter) GetSchemaContentByInterface(interfaceName string) (schem
 
 // GetSchemaContentByServiceName get schema content by service name
 func (r *Servicecenter) GetSchemaContentByServiceName(svcName, version, appID, env string) (schemas []*registry.SchemaContent) {
-	serviceID, err := r.registryClient.GetMicroServiceID(appID, svcName, version)
+	serviceID, err := r.registryClient.GetMicroServiceID(appID, svcName, version, env)
 	if err != nil {
 		return schemas
 	}
@@ -382,7 +381,7 @@ func (r *Servicecenter) fillSchemaInterfaceIndexCache(ms []*model.MicroService, 
 func (r *Servicecenter) fillCacheAndGetInterfaceSchemaContent(microServiceList []*model.MicroService, interfaceName string) (schemaContent registry.SchemaContent) {
 
 	for _, ms := range microServiceList {
-		serviceID, err := r.registryClient.GetMicroServiceID(ms.AppID, ms.ServiceName, ms.Version)
+		serviceID, err := r.registryClient.GetMicroServiceID(ms.AppID, ms.ServiceName, ms.Version, ms.Environment)
 		if err != nil {
 			continue
 		}
@@ -425,14 +424,14 @@ func (r *Servicecenter) fillCacheAndGetInterfaceSchemaContent(microServiceList [
 }
 
 // FindMicroServiceInstances find micro-service instances
-func (r *Servicecenter) FindMicroServiceInstances(consumerID, appID, microServiceName, version string) ([]*registry.MicroServiceInstance, error) {
+func (r *Servicecenter) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
 	key := microServiceName + ":" + version + ":" + appID
 
 	value, boo := registry.MicroserviceInstanceCache.Get(key)
 	if !boo || value == nil {
 		lager.Logger.Warnf(nil, "%s Get instances from remote, key: %s", consumerID, key)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
-			findVersionRule(microServiceName), config.Stage)
+			findVersionRule(microServiceName))
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", key, err)
 		}
@@ -452,9 +451,9 @@ func (r *Servicecenter) FindMicroServiceInstances(consumerID, appID, microServic
 }
 
 // GetDependentMicroServiceInstances : 获取指定微服务所依赖的所有实例
-func (r *Servicecenter) GetDependentMicroServiceInstances(appID, consumerMicroServiceName, version string) ([]*model.MicroServiceInstance, error) {
+func (r *Servicecenter) GetDependentMicroServiceInstances(appID, consumerMicroServiceName, version, env string) ([]*model.MicroServiceInstance, error) {
 	var instancesAll []*model.MicroServiceInstance
-	microServiceConsumerID, err := r.GetMicroServiceID(appID, consumerMicroServiceName, version)
+	microServiceConsumerID, err := r.GetMicroServiceID(appID, consumerMicroServiceName, version, env)
 	if err != nil {
 		lager.Logger.Errorf(err, "GetMicroServiceID failed.")
 		return nil, err
@@ -465,7 +464,7 @@ func (r *Servicecenter) GetDependentMicroServiceInstances(appID, consumerMicroSe
 		return nil, err
 	}
 	for _, provider := range providers.Services {
-		microServiceProviderID, err := r.GetMicroServiceID(provider.AppID, provider.ServiceName, provider.Version)
+		microServiceProviderID, err := r.GetMicroServiceID(provider.AppID, provider.ServiceName, provider.Version, env)
 		if err != nil {
 			lager.Logger.Errorf(err, "GetMicroServiceID failed.")
 			return nil, err

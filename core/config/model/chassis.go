@@ -173,25 +173,20 @@ type RegistryAPIVersionStruct struct {
 
 // MicroserviceCfg microservice.yaml 配置项
 type MicroserviceCfg struct {
-	AppID               string           `yaml:"APPLICATION_ID"`
-	Provider            string           `yaml:"Provider"`
-	ServiceDescription  MicServiceStruct `yaml:"service_description"`
-	InstanceDescription MicServiceStruct `yaml:"instance_description"`
-	Cse                 MicCseStruct     `yaml:"cse"`
+	AppID              string           `yaml:"APPLICATION_ID"`
+	Provider           string           `yaml:"Provider"`
+	ServiceDescription MicServiceStruct `yaml:"service_description"`
+	Cse                MicCseStruct     `yaml:"cse"`
 }
 
 // MicServiceStruct ServiceStruct 设置微服务的私有属性
 type MicServiceStruct struct {
 	Name               string            `yaml:"name"`
 	Version            string            `yaml:"version"`
+	Environment        string            `yaml:"environment"`
 	Level              string            `yaml:"level"`
 	Properties         map[string]string `yaml:"properties"`
 	InstanceProperties map[string]string `yaml:"instance_properties"`
-}
-
-// InstanceDesc is the struct for instance description
-type InstanceDesc struct {
-	Env string `yaml:"environment"`
 }
 
 // MicCseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等

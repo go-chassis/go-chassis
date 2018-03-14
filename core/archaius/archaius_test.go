@@ -183,10 +183,6 @@ cse:
 	configsForDI := archaius.GetConfigsByDI("darklaunch@default#0.0.1")
 	assert.NotEqual(t, configsForDI, nil)
 
-	Stage := archaius.GetString(common.Env, "test")
-	if Stage != "test" {
-		t.Error("set stage is failed")
-	}
 	chassishome := archaius.Get("CHASSIS_HOME")
 	if chassishome != root {
 		t.Error("Get config by key is failed")

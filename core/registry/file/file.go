@@ -52,7 +52,7 @@ func (f *File) AddDependencies(request *registry.MicroServiceDependency) error {
 }
 
 // GetMicroServiceID get micro-service id
-func (f *File) GetMicroServiceID(appID, microServiceName, version string) (string, error) {
+func (f *File) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
 	return "helloService", nil
 }
 
@@ -139,7 +139,7 @@ func (f *File) GetSchemaContentByServiceName(svcName, version, appID, env string
 }
 
 // FindMicroServiceInstances find micro-service instances
-func (f *File) FindMicroServiceInstances(consumerID, appID, microServiceName, version string) ([]*registry.MicroServiceInstance, error) {
+func (f *File) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
 	providerInstances, err := f.registryClient.FindMicroServiceInstances(microServiceName)
 	if err != nil {
 		return nil, fmt.Errorf("FindMicroServiceInstances failed, err: %s", err)

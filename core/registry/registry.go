@@ -50,11 +50,13 @@ type Registry interface {
 	RegisterServiceAndInstance(microService *MicroService, instance *MicroServiceInstance) (string, string, error)
 	Heartbeat(microServiceID, microServiceInstanceID string) (bool, error)
 	AddDependencies(dep *MicroServiceDependency) error
-	GetMicroServiceID(appID, microServiceName, version string) (string, error)
+	GetMicroServiceID(appID, microServiceName, version, env string) (string, error)
 	GetAllMicroServices() ([]*MicroService, error)
 	GetMicroService(microServiceID string) (*MicroService, error)
 	GetMicroServiceInstances(consumerID, providerID string) ([]*MicroServiceInstance, error)
-	FindMicroServiceInstances(consumerID, appID, microServiceName, version string) ([]*MicroServiceInstance, error)
+	// TODO give usage rules of env
+	// FindMicroServiceInstances find instances of a service specified by appID, microServiceName, version and env
+	FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*MicroServiceInstance, error)
 	UnregisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error
 	UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error
 	UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error

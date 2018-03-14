@@ -1,7 +1,6 @@
 package servicecenter_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
@@ -28,7 +27,7 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	registry.Enable()
 	registry.DoRegister()
 	t.Log("获取依赖的实例")
-	instances, err := registry.RegistryService.FindMicroServiceInstances(sid, "CSE", "DSFtestAppThree", "2.0.3")
+	instances, err := registry.RegistryService.FindMicroServiceInstances(sid, "CSE", "DSFtestAppThree", "2.0.3", "")
 	assert.NoError(t, err)
 	assert.NotZero(t, len(instances))
 
@@ -53,7 +52,6 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registry) {
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
 	sid, insID, err := scc.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
@@ -97,7 +95,7 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registry) {
 }
 
 func testGetMicroServiceID(t *testing.T, appID, microServiceName, version string, scc registry.Registry) string {
-	sid, err := scc.GetMicroServiceID(appID, microServiceName, version)
+	sid, err := scc.GetMicroServiceID(appID, microServiceName, version, "")
 	assert.Nil(t, err)
 	//sCenter := servicecenter.Servicecenter{}
 	//instances, err := sCenter.GetDependentMicroServiceInstances(appID, microServiceName, version)

@@ -1,6 +1,4 @@
 ---
-#APPLICATION_ID: CSE optional
-
 cse:
   service:
     registry:

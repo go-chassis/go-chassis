@@ -5,6 +5,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -18,16 +19,15 @@ const (
 func TestInit(t *testing.T) {
 	t.Log("Testing Chassis Init function")
 
-	path := "root/conf/chassis.yaml"
+	d := filepath.Join("root", "conf")
+	path := filepath.Join(d, fileutil.Global)
 	var _, err = os.Stat(path)
 
 	// create file if not exists
 	if os.IsNotExist(err) {
-		err := os.MkdirAll("root", 777)
+		err = os.MkdirAll(d, 777)
 		assert.NoError(t, err)
-		err = os.MkdirAll("root/conf", 777)
-		assert.NoError(t, err)
-		file, err := os.Create("root/conf/chassis.yaml")
+		file, err := os.Create(path)
 		assert.NoError(t, err)
 		defer file.Close()
 	}
@@ -130,12 +130,6 @@ service_description:
 	assert.NoError(t, err)
 
 	chassis.RegisterSchema("rest", "str")
-
-	err = os.Remove(path)
-	assert.NoError(t, err)
-
-	err = os.RemoveAll("root")
-	assert.NoError(t, err)
 }
 func TestInitError(t *testing.T) {
 	t.Log("Testing chassis Init function for errors")
