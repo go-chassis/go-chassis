@@ -66,7 +66,7 @@ func parse() error {
 	if err != nil {
 		return err
 	}
-	err = readLBConfigFile()
+	err = ReadLBFromArchaius()
 	if err != nil {
 		return err
 	}
@@ -126,8 +126,10 @@ func readGlobalConfigFile() error {
 	return nil
 }
 
-// readGlobalConfigFile for to unmarshal the global config file(chassis.yaml) information
-func readLBConfigFile() error {
+// ReadLBFromArchaius for to unmarshal the global config file(chassis.yaml) information
+func ReadLBFromArchaius() error {
+	lbMutex.Lock()
+	defer lbMutex.Unlock()
 	lbDef := model.LBWrapper{}
 	err := archaius.UnmarshalConfig(&lbDef)
 	if err != nil {

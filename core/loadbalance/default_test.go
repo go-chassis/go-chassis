@@ -85,6 +85,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	registry.Enable()
+	registry.DoRegister()
 	loadbalance.Enable()
 	testData1 := []*registry.MicroService{
 		{
@@ -112,9 +113,10 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[0])
 	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[1])
 	lb := loadbalance.DefaultSelector
+	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		lb.Select("test2", "0.1")
+		lb.Select("test2", "1.0", selector.WithConsumerID(config.SelfServiceID))
 	}
 
 }

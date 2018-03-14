@@ -11,6 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 	"github.com/ServiceComb/go-chassis/session"
 
+	"github.com/ServiceComb/go-chassis/core/config"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 )
@@ -57,15 +58,14 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 			if i.Reply != nil && req.Arg != nil {
 				reply = i.Reply.(*rest.Response)
 				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(i, StrategySessionTimeout(i), reply.GetResponse(), req.GetRequest())
+				session.CheckForSessionID(i, config.GetSessionTimeout(i.SourceMicroService, i.MicroServiceName), reply.GetResponse(), req.GetRequest())
 			}
 
 			cookie := session.GetSessionCookie(reply.GetResponse())
 			if cookie != "" {
 				loadbalance.IncreaseSuccessiveFailureCount(cookie)
 				errCount := loadbalance.GetSuccessiveFailureCount(cookie)
-				//loadbalance.IncreaseSuccessiveFailureCount(i.Endpoint)
-				if errCount == StrategySuccessiveFailedTimes(i) {
+				if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
 					session.DeletingKeySuccessiveFailure(reply.GetResponse())
 					loadbalance.DeleteSuccessiveFailureCount(cookie)
 				}
@@ -96,7 +96,7 @@ func ProcessSpecialProtocol(inv *invocation.Invocation, req *microClient.Request
 			if inv.Reply != nil && inv.Args != nil {
 				reply = inv.Reply.(*rest.Response)
 				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(inv, StrategySessionTimeout(inv), reply.GetResponse(), req.GetRequest())
+				session.CheckForSessionID(inv, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
 			}
 
 		}

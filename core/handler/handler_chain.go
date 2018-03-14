@@ -44,7 +44,6 @@ func (c *Chain) Next(i *invocation.Invocation, f invocation.ResponseCallBack) {
 
 // Reset for to reset the handler index
 func (c *Chain) Reset() {
-	lager.Logger.Debugf("reset chain")
 	c.HandlerIndex = 0
 }
 
