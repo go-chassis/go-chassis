@@ -21,6 +21,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 const CallTimes = 15
@@ -300,7 +301,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",
-			AppID:       "CSE",
+			AppID:       "default",
 			Level:       "FRONT",
 			Version:     "1.0",
 			Status:      "UP",
@@ -320,17 +321,22 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			EndpointsMap: map[string]string{"highway": "10.0.0.3:1234"},
 		},
 	}
-	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[0])
+	sid, _, _ := registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[0])
 	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[1])
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})
 	c.AddHandler(&handler1{})
+	config.SelfServiceID = sid
 	iv := &invocation.Invocation{
 		MicroServiceName: "test2",
 		Version:          "1.0",
 		Protocol:         "highway",
 		Strategy:         loadbalance.StrategyRoundRobin,
+		SourceServiceID:  config.SelfServiceID,
 	}
+
+	b.Log(config.SelfServiceID)
+	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		c.Next(iv, func(r *invocation.InvocationResponse) error {

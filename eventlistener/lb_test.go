@@ -19,7 +19,8 @@ func TestLbEvent(t *testing.T) {
 	lbEventListener := &eventlistener.LoadbalanceEventListener{}
 	e := &core.Event{EventType: "UPDATE", Key: "cse.loadbalance.strategy.name", Value: "SessionStickiness"}
 	lbEventListener.Event(e)
-
+	//assert.Equal(t,loadbalance.StrategySessionStickiness,archaius.GetString("cse.loadbalance.strategy.name",""))
+	//assert.Equal(t,loadbalance.StrategySessionStickiness,config.GetStrategyName("",""))
 	e2 := &core.Event{EventType: "DELETE", Key: "cse.loadbalance.strategy.name", Value: "RoundRobin"}
 	lbEventListener.Event(e2)
 
