@@ -37,8 +37,11 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 		lager.Logger.Error("value is not type []*RouteRule", nil)
 		return
 	}
-	SetRouteRuleByKey(e.Key, routeRules)
-	lager.Logger.Infof("Update [%s] route rule success", e.Key)
+
+	if validateRule(map[string][]*model.RouteRule{e.Key: routeRules}) {
+		SetRouteRuleByKey(e.Key, routeRules)
+		lager.Logger.Infof("Update [%s] route rule success", e.Key)
+	}
 }
 
 // routeFileSource keeps the route rule in router file,
