@@ -1,35 +1,25 @@
-package tcp
+package highway
 
 // Forked from github.com/micro/go-micro
 // Some parts of this file have been modified to make it functional in this package
 import (
-	"errors"
-	"fmt"
-	"net/url"
-	"runtime"
-	"sync"
-
 	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"sync"
 
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"golang.org/x/net/context"
 )
 
 const (
 	//Name is a variable of type string
-	Name = "highway"
+	Name                  = "highway"
+	DefaultConnectTimeOut = 60
+	DefaultSendTimeOut    = 300
 )
 
-var requestID int
-
 //初始状态时未连接的
-
-//Go SDK 没有老版本问题 默认本地和对端都是支持新的编码方式的
-var localSupportLogin = true
-
 type highwayClient struct {
 	once     sync.Once
 	opts     microClient.Options
@@ -40,6 +30,7 @@ func (c *highwayClient) Init(opts ...microClient.Option) error {
 	for _, o := range opts {
 		o(&c.opts)
 	}
+
 	return nil
 }
 
@@ -56,12 +47,7 @@ func (c *highwayClient) NewRequest(service, schemaID, operationID string, arg in
 		Arg:              arg,
 	}
 
-	//计算请求Id
-	i.ID = requestID
-	requestID++
-	if requestID >= ((1 << 31) - 2) {
-		requestID = 0
-	}
+	i.ID = int(GenerateMsgID())
 	return i
 }
 
@@ -101,51 +87,35 @@ func (c *highwayClient) Options() microClient.Options {
 }
 
 func (c *highwayClient) Call(ctx context.Context, addr string, req *microClient.Request, rsp interface{}, opts ...microClient.CallOption) error {
-	address := "highway://" + addr
-	u, err := url.Parse(address)
-	if err != nil {
-		lager.Logger.Errorf(err, "highway get host failed")
-		return err
-	}
-
-	//check worker number in configuration
-	workerNum := config.GlobalDefinition.Cse.Protocols["highway"].WorkerNumber
-	if workerNum == 0 {
-		workerNum = runtime.NumCPU() * 4
-	}
-
-	//check for the existence of workers if not exist create workers
-	err = jobSchdlr.createWorkerSchedulers(addr, workerNum, c, u.Host)
+	connParams := &ConnParams{}
+	connParams.TlsConfig = c.opts.TLSConfig
+	connParams.Addr = addr
+	connParams.Timeout = DefaultConnectTimeOut
+	baseClient, err := CachedClients.GetClient(connParams)
 	if err != nil {
 		return err
 	}
-
-	errCh := make(chan error)
-	j := &job{
-		req:  req,
-		resp: rsp,
-		err:  errCh,
-		ctx:  ctx,
+	tmpRsp := &HighwayRespond{0, Ok, "", 0, rsp, nil}
+	highwayReq := &HighwayRequest{}
+	highwayReq.MsgID = uint64(req.ID)
+	highwayReq.MethodName = req.Method
+	highwayReq.Schema = req.Struct
+	highwayReq.Arg = req.Arg
+	highwayReq.SvcName = req.MicroServiceName
+	//Current only twoway
+	highwayReq.TwoWay = true
+	var ok bool
+	highwayReq.Attachments, ok = metadata.FromContext(ctx)
+	if !ok {
+		highwayReq.Attachments = make(map[string]string)
 	}
-
-	//schedule the job to workers
-	scheduleErr := jobSchdlr.scheduleJob(addr, j)
-	if scheduleErr != nil {
-		return scheduleErr
-	}
-	select {
-	case err := <-errCh:
+	err = baseClient.Send(highwayReq, tmpRsp, DefaultSendTimeOut)
+	if err != nil {
 		return err
-	case <-ctx.Done():
-		err = ctx.Err()
-		e := fmt.Sprintf("request timeout: %v", ctx.Err())
-		return errors.New(e)
 	}
 
-	//return nil
+	return nil
 }
-
-//TODO send(requestHeader)
 
 func init() {
 	client.InstallPlugin(Name, NewHighwayClient)
