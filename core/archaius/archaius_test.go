@@ -90,7 +90,9 @@ cse:
       strategy: 
         name: WeightedResponse
     targetService: 
-      backoff: 
+      backoff:
+        maxMs: 500
+        minMs: 200
         kind: constant
       retryEnabled: false
       strategy: 
@@ -215,8 +217,9 @@ cse:
 
 	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
 	t.Log(lbConfig.Prefix.LBConfig.AnyService)
-	//	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
-	//assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["targetService"].Strategy["name"])
+	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
+	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["targetService"].Strategy["name"])
+	assert.Equal(t, 500, int(lbConfig.Prefix.LBConfig.AnyService["targetService"].Backoff.MaxMs))
 	err = archaius.AddFile(lbFileName)
 	assert.NoError(t, err)
 
