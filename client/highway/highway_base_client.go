@@ -21,9 +21,9 @@ type HighwayBaseClient struct {
 	mtx           sync.Mutex
 	mapMutex      sync.Mutex
 	msgWaitRspMap map[uint64]*InvocationContext
-	highwayConns []*HighwayClientConnection
-	closed       bool
-	connParams   *ConnParams
+	highwayConns  []*HighwayClientConnection
+	closed        bool
+	connParams    *ConnParams
 }
 
 var CachedClients *ClientMgr
