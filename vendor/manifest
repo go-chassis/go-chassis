@@ -11,15 +11,6 @@
 			"allfiles": true
 		},
 		{
-			"importpath": "github.com/ServiceComb/cse-collector",
-			"repository": "https://github.com/ServiceComb/cse-collector",
-			"vcs": "git",
-			"revision": "3f542578688363462de67bd3b1d9f81573a0f8ad",
-			"branch": "HEAD",
-			"notests": true,
-			"allfiles": true
-		},
-		{
 			"importpath": "github.com/ServiceComb/go-archaius",
 			"repository": "https://github.com/ServiceComb/go-archaius",
 			"vcs": "git",
@@ -490,13 +481,13 @@
 			"path": "/pkg/util/sets",
 			"notests": true
 		},
-                {
-                        "importpath": "go.uber.org/ratelimit",
-                        "repository": "https://github.com/uber-go/ratelimit",
-                        "vcs": "git",
-                        "revision": "d15fa2e2a63dd52104bc96d8ea7dc47ce8027de8",
-                        "branch": "HEAD",
-                        "notests": true
-                }
+		{
+			"importpath": "go.uber.org/ratelimit",
+			"repository": "https://github.com/uber-go/ratelimit",
+			"vcs": "git",
+			"revision": "d15fa2e2a63dd52104bc96d8ea7dc47ce8027de8",
+			"branch": "HEAD",
+			"notests": true
+		}
 	]
 }
