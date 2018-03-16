@@ -45,7 +45,7 @@ func TestInit(t *testing.T) {
 
 	config.GlobalDefinition.Cse.Protocols = m
 	t.Log("get client func after installing its plugin")
-	client.InstallPlugin("fake", tcp.NewHighwayClient)
+	client.InstallPlugin("fake", highway.NewHighwayClient)
 	f, err := client.GetClientNewFunc("fake")
 	assert.NotNil(t, f)
 	assert.NoError(t, err)
