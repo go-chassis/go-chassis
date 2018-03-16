@@ -29,6 +29,8 @@ const (
 	backoffJittered    = "jittered"
 	backoffConstant    = "constant"
 	backoffZero        = "zero"
+	//DefaultBackoffKind is zero
+	DefaultBackoffKind = backoffZero
 )
 
 var lbMutex = sync.RWMutex{}
@@ -55,13 +57,15 @@ func GetServerListFilters() (filters []string) {
 // GetStrategyName get strategy name
 func GetStrategyName(source, service string) string {
 	lbMutex.RLock()
-	global := GetLoadBalancing().Strategy["name"]
-	if global == "" {
-		global = DefaultStrategy
+	r := GetLoadBalancing().AnyService[service].Strategy["name"]
+	if r == "" {
+		r = GetLoadBalancing().Strategy["name"]
+		if r == "" {
+			r = DefaultStrategy
+		}
 	}
-	ms := archaius.GetString(genMsKey(lbPrefix, source, service, propertyStrategyName), global)
 	lbMutex.RUnlock()
-	return ms
+	return r
 }
 
 // GetSessionTimeout return session timeout
@@ -116,19 +120,24 @@ func GetRetryOnSame(source, service string) int {
 }
 
 func backoffKind(source, service string) string {
-	global := archaius.GetString(genKey(lbPrefix, propertyBackoffKind), backoffZero)
-	ms := archaius.GetString(genMsKey(lbPrefix, source, service, propertyBackoffKind), global)
-	return ms
+	r := GetLoadBalancing().AnyService[service].Backoff.Kind
+	if r == "" {
+		r = GetLoadBalancing().Backoff.Kind
+		if r == "" {
+			r = DefaultBackoffKind
+		}
+	}
+	return r
 }
 
 func backoffMinMs(source, service string) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertyBackoffMinMs), 0)
+	global := GetLoadBalancing().Backoff.MinMs
 	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertyBackoffMinMs), global)
 	return ms
 }
 
 func backoffMaxMs(source, service string) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertyBackoffMaxMs), 0)
+	global := GetLoadBalancing().Backoff.MaxMs
 	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertyBackoffMaxMs), global)
 	return ms
 }
