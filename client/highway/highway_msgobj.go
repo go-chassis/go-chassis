@@ -158,7 +158,7 @@ func (msgObj *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *buf
 	var body []byte
 	frHead.HeaderLen = uint32(len(header))
 	if rsp.Result != nil {
-		body, err := proto.Marshal(rsp.Result.(proto.Message))
+		body, err = proto.Marshal(rsp.Result.(proto.Message))
 		if err != nil {
 			return
 		}
