@@ -19,7 +19,7 @@ const (
 	DefaultSendTimeOut    = 300
 )
 
-//初始状态时未连接的
+//higway client
 type highwayClient struct {
 	once     sync.Once
 	opts     microClient.Options

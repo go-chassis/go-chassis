@@ -15,6 +15,7 @@ import (
 	"sync"
 )
 
+//number const
 const (
 	FrameHeadLen = 23
 	MagicLen     = 7
@@ -26,11 +27,11 @@ const (
 	ServerError = 505
 )
 
-//Go SDK 没有老版本问题 默认本地和对端都是支持新的编码方式的
 var localSupportLogin = true
 var gCurMSGID uint64 = 0
 var msgIDMtx sync.Mutex = sync.Mutex{}
 
+//generate message ID
 func GenerateMsgID() uint64 {
 	msgIDMtx.Lock()
 	defer msgIDMtx.Unlock()
@@ -38,6 +39,7 @@ func GenerateMsgID() uint64 {
 	return gCurMSGID
 }
 
+//Highway request
 type HighwayRequest struct {
 	MsgID       uint64
 	MsgType     int
@@ -49,6 +51,7 @@ type HighwayRequest struct {
 	Attachments map[string]string
 }
 
+//Highway respond
 type HighwayRespond struct {
 	MsgID       uint64
 	Status      int
@@ -62,52 +65,53 @@ var magID = "CSE.TCP"
 
 var magicID = [MagicLen]byte{0x43, 0x53, 0x45, 0x2E, 0x54, 0x43, 0x50}
 
-type HighwayFrameHead struct {
+type highwayFrameHead struct {
 	Magic     [MagicLen]byte
 	MsgID     uint64
 	TotalLen  uint32
 	HeaderLen uint32
 }
 
-func (this *HighwayFrameHead) Serialize() []byte {
+func (frHead *highwayFrameHead) serialize() []byte {
 	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.BigEndian, this.Magic)
-	binary.Write(buf, binary.BigEndian, this.MsgID)
-	binary.Write(buf, binary.BigEndian, this.TotalLen)
-	binary.Write(buf, binary.BigEndian, this.HeaderLen)
+	binary.Write(buf, binary.BigEndian, frHead.Magic)
+	binary.Write(buf, binary.BigEndian, frHead.MsgID)
+	binary.Write(buf, binary.BigEndian, frHead.TotalLen)
+	binary.Write(buf, binary.BigEndian, frHead.HeaderLen)
 	return buf.Bytes()
 }
 
-func (this *HighwayFrameHead) Deserialize(buf []byte) error {
+func (frHead *highwayFrameHead) deserialize(buf []byte) error {
 	if len(buf) < FrameHeadLen {
 		return errors.New("Too few bytes")
 	}
 	rdBuf := bytes.NewBuffer(buf)
-	binary.Read(rdBuf, binary.BigEndian, &this.Magic)
-	if !strings.EqualFold(magID, stringutil.Bytes2str(this.Magic[0:])) {
+	binary.Read(rdBuf, binary.BigEndian, &frHead.Magic)
+	if !strings.EqualFold(magID, stringutil.Bytes2str(frHead.Magic[0:])) {
 		return errors.New("Invalid magicID")
 	}
-	binary.Read(rdBuf, binary.BigEndian, &this.MsgID)
-	binary.Read(rdBuf, binary.BigEndian, &this.TotalLen)
-	binary.Read(rdBuf, binary.BigEndian, &this.HeaderLen)
+	binary.Read(rdBuf, binary.BigEndian, &frHead.MsgID)
+	binary.Read(rdBuf, binary.BigEndian, &frHead.TotalLen)
+	binary.Read(rdBuf, binary.BigEndian, &frHead.HeaderLen)
 	return nil
 }
 
-func NewHeadFrame(msgID uint64) *HighwayFrameHead {
-	return &HighwayFrameHead{magicID, msgID, 0, 0}
+func newHeadFrame(msgID uint64) *highwayFrameHead {
+	return &highwayFrameHead{magicID, msgID, 0, 0}
 }
 
+//Highway Protocal
 type HighWayProtocalObject struct {
-	FrHead  HighwayFrameHead
+	FrHead  highwayFrameHead
 	payLoad []byte
 }
-
-func (this *HighWayProtocalObject) ProtocalName() string {
+//ProtocalName
+func (msgObj *HighWayProtocalObject) ProtocalName() string {
 	return "Highway"
 }
-
-func (this *HighWayProtocalObject) SerializeReq(req *HighwayRequest, wBuf *bufio.Writer) {
-	frHead := NewHeadFrame(uint64(req.MsgID))
+//Serialize request
+func (msgObj *HighWayProtocalObject) SerializeReq(req *HighwayRequest, wBuf *bufio.Writer) {
+	frHead := newHeadFrame(uint64(req.MsgID))
 	//flags:Indicates whether compression , temporarily not to use
 	reqHeader := highway.RequestHeader{
 		MsgType:          highway.MsgTypeRequest,
@@ -129,13 +133,13 @@ func (this *HighWayProtocalObject) SerializeReq(req *HighwayRequest, wBuf *bufio
 		return
 	}
 	frHead.TotalLen = frHead.HeaderLen + uint32(len(body))
-	wBuf.Write(frHead.Serialize())
+	wBuf.Write(frHead.serialize())
 	wBuf.Write(header)
 	wBuf.Write(body)
 }
-
-func (this *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *bufio.Writer) {
-	frHead := NewHeadFrame(uint64(rsp.MsgID))
+//Serialize frame
+func (msgObj *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *bufio.Writer) {
+	frHead := newHeadFrame(uint64(rsp.MsgID))
 	//todo parse meta
 	//flags:Indicates whether compression , temporarily not to use
 	respHeader := &highway.ResponseHeader{}
@@ -160,14 +164,14 @@ func (this *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *bufio
 		frHead.TotalLen = frHead.HeaderLen
 	}
 
-	wBuf.Write(frHead.Serialize())
+	wBuf.Write(frHead.serialize())
 	wBuf.Write(header)
 	if body != nil {
 		wBuf.Write(body)
 	}
 }
-
-func (this *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
+//Deserialize frame
+func (msgObj *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 	var err error
 	var count int
 	//Parse frame head
@@ -182,17 +186,17 @@ func (this *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 		count += tmpsize
 	}
 
-	this.FrHead = HighwayFrameHead{}
-	err = this.FrHead.Deserialize(buf)
+	msgObj.FrHead = highwayFrameHead{}
+	err = msgObj.FrHead.deserialize(buf)
 	if err != nil {
 		lager.Logger.Errorf(err, "Frame head error.")
 		return err
 	}
-	this.payLoad = make([]byte, this.FrHead.TotalLen)
+	msgObj.payLoad = make([]byte, msgObj.FrHead.TotalLen)
 
 	count = 0
-	for count < int(this.FrHead.TotalLen) {
-		tmpsize, rdErr := rdBuf.Read(this.payLoad[count:])
+	for count < int(msgObj.FrHead.TotalLen) {
+		tmpsize, rdErr := rdBuf.Read(msgObj.payLoad[count:])
 		if rdErr != nil {
 			lager.Logger.Errorf(rdErr, "Read frame body  failed")
 			return rdErr
@@ -202,13 +206,13 @@ func (this *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 
 	return nil
 }
-
-func (this *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
+//Deserialize rsp
+func (msgObj *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
 	var err error
-	rsp.MsgID = this.FrHead.MsgID
+	rsp.MsgID = msgObj.FrHead.MsgID
 	respHeader := &highway.ResponseHeader{}
 	//Head
-	err = proto.Unmarshal(this.payLoad[0:this.FrHead.HeaderLen], respHeader)
+	err = proto.Unmarshal(msgObj.payLoad[0:msgObj.FrHead.HeaderLen], respHeader)
 	if err != nil {
 		lager.Logger.Errorf(err, "Unmarshal response header failed")
 		return err
@@ -218,8 +222,8 @@ func (this *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
 	rsp.Attachments = respHeader.Context
 
 	//Body
-	if this.FrHead.HeaderLen != this.FrHead.TotalLen {
-		err = proto.Unmarshal(this.payLoad[this.FrHead.HeaderLen:], (rsp.Result).(proto.Message))
+	if msgObj.FrHead.HeaderLen != msgObj.FrHead.TotalLen {
+		err = proto.Unmarshal(msgObj.payLoad[msgObj.FrHead.HeaderLen:], (rsp.Result).(proto.Message))
 		if err != nil {
 			lager.Logger.Errorf(err, "Unmarshal response body  failed")
 			rsp.Err = err.Error()
@@ -228,13 +232,13 @@ func (this *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
 	}
 	return nil
 }
-
-func (this *HighWayProtocalObject) DeSerializeReq(req *HighwayRequest) error {
+//Deserialize req
+func (msgObj *HighWayProtocalObject) DeSerializeReq(req *HighwayRequest) error {
 	var err error
-	req.MsgID = this.FrHead.MsgID
+	req.MsgID = msgObj.FrHead.MsgID
 	reqHeader := &highway.RequestHeader{}
 
-	err = proto.Unmarshal(this.payLoad[0:this.FrHead.HeaderLen], reqHeader)
+	err = proto.Unmarshal(msgObj.payLoad[0:msgObj.FrHead.HeaderLen], reqHeader)
 	if err != nil {
 		lager.Logger.Errorf(err, "Unmarshal request header failed")
 		return err
@@ -260,14 +264,14 @@ func (this *HighWayProtocalObject) DeSerializeReq(req *HighwayRequest) error {
 			argv := reflect.New(op.Args()[1].Elem())
 			req.Arg = argv.Interface()
 			//Body
-			err = proto.Unmarshal(this.payLoad[this.FrHead.HeaderLen:], (req.Arg).(proto.Message))
+			err = proto.Unmarshal(msgObj.payLoad[msgObj.FrHead.HeaderLen:], (req.Arg).(proto.Message))
 			if err != nil {
 				lager.Logger.Errorf(err, "Unmarshal request body  failed")
 				return err
 			}
 		}
 	} else {
-		err = proto.Unmarshal(this.payLoad[this.FrHead.HeaderLen:], (req.Arg).(proto.Message))
+		err = proto.Unmarshal(msgObj.payLoad[msgObj.FrHead.HeaderLen:], (req.Arg).(proto.Message))
 		if err != nil {
 			lager.Logger.Errorf(err, "Unmarshal hello request body  failed")
 			return err
@@ -276,47 +280,9 @@ func (this *HighWayProtocalObject) DeSerializeReq(req *HighwayRequest) error {
 	return nil
 }
 
-func (this *HighWayProtocalObject) GenerateHelloReq(wBuf *bufio.Writer) error {
-	return this.marshalLogin(wBuf)
-}
-
-func (this *HighWayProtocalObject) MarshalLoginRsp(msgID uint64, wBuf *bufio.Writer) error {
-	frHead := NewHeadFrame(msgID)
-	reqHeader := &highway.ResponseHeader{
-		Flags:      int32(0),
-		StatusCode: Ok,
-		Reason:     "",
-		Context:    nil,
-	}
-	header, err := proto.Marshal(reqHeader)
-	if err != nil {
-		lager.Logger.Errorf(err, "Marshal highway login header failed")
-		return err
-	}
-
-	frHead.HeaderLen = uint32(len(header))
-
-	loginRspBody := &highway.LoginResponse{
-		Protocol:            "highway",
-		ZipName:             "z",
-		UseProtobufMapCodec: true,
-	}
-
-	body, err := proto.Marshal(loginRspBody)
-	if err != nil {
-		lager.Logger.Errorf(err, "Marshal highway login body failed")
-		return err
-	}
-	frHead.TotalLen = uint32(len(body)) + frHead.HeaderLen
-	wBuf.Write(frHead.Serialize())
-	wBuf.Write(header)
-	wBuf.Write(body)
-	return nil
-}
-
-func (this *HighWayProtocalObject) marshalLogin(wBuf *bufio.Writer) error {
-	//reuse mem
-	frHead := NewHeadFrame(GenerateMsgID())
+//Serialize hello req
+func (msgObj *HighWayProtocalObject) SerializeHelloReq(wBuf *bufio.Writer) error {
+	frHead := newHeadFrame(GenerateMsgID())
 	reqHeader := highway.RequestHeader{
 		MsgType:          highway.MsgTypeLogin,
 		Flags:            int32(0),
@@ -343,9 +309,44 @@ func (this *HighWayProtocalObject) marshalLogin(wBuf *bufio.Writer) error {
 		return err
 	}
 	frHead.TotalLen = uint32(len(body)) + frHead.HeaderLen
-	wBuf.Write(frHead.Serialize())
+	wBuf.Write(frHead.serialize())
 	wBuf.Write(header)
 	wBuf.Write(body)
 
+	return nil
+}
+
+//Serialize hello req
+func (msgObj *HighWayProtocalObject) SerializelLoginRsp(msgID uint64, wBuf *bufio.Writer) error {
+	frHead := newHeadFrame(msgID)
+	reqHeader := &highway.ResponseHeader{
+		Flags:      int32(0),
+		StatusCode: Ok,
+		Reason:     "",
+		Context:    nil,
+	}
+	header, err := proto.Marshal(reqHeader)
+	if err != nil {
+		lager.Logger.Errorf(err, "Marshal highway login header failed")
+		return err
+	}
+
+	frHead.HeaderLen = uint32(len(header))
+
+	loginRspBody := &highway.LoginResponse{
+		Protocol:            "highway",
+		ZipName:             "z",
+		UseProtobufMapCodec: true,
+	}
+
+	body, err := proto.Marshal(loginRspBody)
+	if err != nil {
+		lager.Logger.Errorf(err, "Marshal highway login body failed")
+		return err
+	}
+	frHead.TotalLen = uint32(len(body)) + frHead.HeaderLen
+	wBuf.Write(frHead.serialize())
+	wBuf.Write(header)
+	wBuf.Write(body)
 	return nil
 }

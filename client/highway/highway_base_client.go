@@ -9,13 +9,14 @@ import (
 	"time"
 )
 
+//Highway connect parmas
 type ConnParams struct {
 	Addr      string
 	TlsConfig *tls.Config
 	Timeout   time.Duration
 	ConnNum   int
 }
-
+//Highway base client
 type HighwayBaseClient struct {
 	addr          string
 	mtx           sync.Mutex
@@ -26,57 +27,60 @@ type HighwayBaseClient struct {
 	connParams    *ConnParams
 }
 
+//Client cache
 var CachedClients *ClientMgr
 
 func init() {
-	CachedClients = NewClientMgr()
+	CachedClients = newClientMgr()
 }
-
+//Highway context
 type InvocationContext struct {
 	Req  *HighwayRequest
 	Rsp  *HighwayRespond
 	Wait *chan int
 }
 
+//Notify done.
 func (this *InvocationContext) Done() {
 	*this.Wait <- 1
 }
-
+//Client manage
 type ClientMgr struct {
 	mapMutex sync.Mutex
 	clients  map[string]*HighwayBaseClient
 }
 
-func NewClientMgr() *ClientMgr {
+func newClientMgr() *ClientMgr {
 	tmp := new(ClientMgr)
 	tmp.clients = make(map[string]*HighwayBaseClient)
 	return tmp
 }
 
-func (this *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, error) {
-	this.mapMutex.Lock()
-	defer this.mapMutex.Unlock()
-	if tmp, ok := this.clients[connParmas.Addr]; ok {
+//Obtain  client
+func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, error) {
+	mgr.mapMutex.Lock()
+	defer mgr.mapMutex.Unlock()
+	if tmp, ok := mgr.clients[connParmas.Addr]; ok {
 		if !tmp.Closed() {
 			lager.Logger.Info("GetClient from cached addr:" + connParmas.Addr)
 			return tmp, nil
 		} else {
-			delete(this.clients, connParmas.Addr)
+			delete(mgr.clients, connParmas.Addr)
 		}
 	}
 
 	lager.Logger.Info("GetClient from new open addr:" + connParmas.Addr)
-	tmp := NewHighwayBaseClient(connParmas)
+	tmp := newHighwayBaseClient(connParmas)
 	err := tmp.Open()
 	if err != nil {
 		return nil, err
 	} else {
-		this.clients[connParmas.Addr] = tmp
+		mgr.clients[connParmas.Addr] = tmp
 		return tmp, nil
 	}
 }
 
-func NewHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
+func newHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
 	tmp := &HighwayBaseClient{}
 	tmp.addr = connParmas.Addr
 	tmp.closed = true
@@ -84,140 +88,142 @@ func NewHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
 	tmp.msgWaitRspMap = make(map[uint64]*InvocationContext)
 	return tmp
 }
-
-func (this *HighwayBaseClient) GetAddr() string {
-	return this.addr
+//Obtain the address
+func (baseClient *HighwayBaseClient) GetAddr() string {
+	return baseClient.addr
 }
 
-func (this *HighwayBaseClient) makeConnection() (*HighwayClientConnection, error) {
+func (baseClient *HighwayBaseClient) makeConnection() (*HighwayClientConnection, error) {
 	var baseConn net.Conn
 	var errDial error
 
-	if this.connParams.TlsConfig != nil {
-		dialer := &net.Dialer{Timeout: this.connParams.Timeout * time.Second}
-		baseConn, errDial = tls.DialWithDialer(dialer, "tcp", this.addr, this.connParams.TlsConfig)
+	if baseClient.connParams.TlsConfig != nil {
+		dialer := &net.Dialer{Timeout: baseClient.connParams.Timeout * time.Second}
+		baseConn, errDial = tls.DialWithDialer(dialer, "tcp", baseClient.addr, baseClient.connParams.TlsConfig)
 	} else {
-		baseConn, errDial = net.DialTimeout("tcp", this.addr, this.connParams.Timeout*time.Second)
+		baseConn, errDial = net.DialTimeout("tcp", baseClient.addr, baseClient.connParams.Timeout*time.Second)
 	}
 	if errDial != nil {
-		lager.Logger.Error("the addr: "+this.addr, errDial)
+		lager.Logger.Error("the addr: " + baseClient.addr, errDial)
 		return nil, errDial
 	}
-	higwayConn := NewHighwayClientConnection(baseConn, this)
+	higwayConn := NewHighwayClientConnection(baseConn, baseClient)
 	err := higwayConn.Open()
 	if err != nil {
-		lager.Logger.Error("higwayConn open: "+this.addr, errDial)
+		lager.Logger.Error("higwayConn open: " + baseClient.addr, errDial)
 		return nil, err
 	}
 
 	return higwayConn, nil
 }
 
-func (this *HighwayBaseClient) initConns() error {
-	if this.connParams.ConnNum == 0 {
-		this.connParams.ConnNum = 4
+func (baseClient *HighwayBaseClient) initConns() error {
+	if baseClient.connParams.ConnNum == 0 {
+		baseClient.connParams.ConnNum = 4
 	}
 
-	this.highwayConns = make([]*HighwayClientConnection, this.connParams.ConnNum)
-	for i := 0; i < this.connParams.ConnNum; i++ {
-		higwayConn, err := this.makeConnection()
+	baseClient.highwayConns = make([]*HighwayClientConnection, baseClient.connParams.ConnNum)
+	for i := 0; i < baseClient.connParams.ConnNum; i++ {
+		higwayConn, err := baseClient.makeConnection()
 		if err != nil {
 			return err
 		}
-		this.highwayConns[i] = higwayConn
+		baseClient.highwayConns[i] = higwayConn
 	}
 	return nil
 }
-
-func (this *HighwayBaseClient) Open() error {
-	this.mtx.Lock()
-	defer this.mtx.Unlock()
-	err := this.initConns()
+//open  client
+func (baseClient *HighwayBaseClient) Open() error {
+	baseClient.mtx.Lock()
+	defer baseClient.mtx.Unlock()
+	err := baseClient.initConns()
 	if err != nil {
-		this.clearConns()
+		baseClient.clearConns()
 		return err
 	}
-	this.closed = false
+	baseClient.closed = false
 	return nil
 }
 
-func (this *HighwayBaseClient) Close() {
-	this.mtx.Lock()
-	defer this.mtx.Unlock()
-	this.close()
+//close client
+func (baseClient *HighwayBaseClient) Close() {
+	baseClient.mtx.Lock()
+	defer baseClient.mtx.Unlock()
+	baseClient.close()
 }
 
-func (this *HighwayBaseClient) close() {
-	if this.closed {
+//close client, no mutex
+func (baseClient *HighwayBaseClient) close() {
+	if baseClient.closed {
 		return
 	}
-	this.mapMutex.Lock()
-	for _, v := range this.msgWaitRspMap {
+	baseClient.mapMutex.Lock()
+	for _, v := range baseClient.msgWaitRspMap {
 		v.Done()
 	}
-	this.msgWaitRspMap = make(map[uint64]*InvocationContext)
-	this.mapMutex.Unlock()
-	this.clearConns()
-	this.closed = true
+	baseClient.msgWaitRspMap = make(map[uint64]*InvocationContext)
+	baseClient.mapMutex.Unlock()
+	baseClient.clearConns()
+	baseClient.closed = true
 }
 
-func (this *HighwayBaseClient) clearConns() {
-	for i := 0; i < this.connParams.ConnNum; i++ {
-		conn := this.highwayConns[i]
+func (baseClient *HighwayBaseClient) clearConns() {
+	for i := 0; i < baseClient.connParams.ConnNum; i++ {
+		conn := baseClient.highwayConns[i]
 		if conn != nil {
 			conn.Close()
-			this.highwayConns[i] = nil
+			baseClient.highwayConns[i] = nil
 		}
 	}
 }
 
-func (this *HighwayBaseClient) AddWaitMsg(msgID uint64, result *InvocationContext) {
-	this.mapMutex.Lock()
-	if this.msgWaitRspMap != nil {
-		this.msgWaitRspMap[msgID] = result
+func (baseClient *HighwayBaseClient) AddWaitMsg(msgID uint64, result *InvocationContext) {
+	baseClient.mapMutex.Lock()
+	if baseClient.msgWaitRspMap != nil {
+		baseClient.msgWaitRspMap[msgID] = result
 	}
-	this.mapMutex.Unlock()
+	baseClient.mapMutex.Unlock()
 }
 
-func (this *HighwayBaseClient) RemoveWaitMsg(msgID uint64) {
-	this.mapMutex.Lock()
-	if this.msgWaitRspMap != nil {
-		delete(this.msgWaitRspMap, msgID)
+func (baseClient *HighwayBaseClient) RemoveWaitMsg(msgID uint64) {
+	baseClient.mapMutex.Lock()
+	if baseClient.msgWaitRspMap != nil {
+		delete(baseClient.msgWaitRspMap, msgID)
 	}
-	this.mapMutex.Unlock()
+	baseClient.mapMutex.Unlock()
 }
 
-func (this *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespond, timeout time.Duration) error {
-	if this.closed {
-		this.mtx.Lock()
-		if this.closed {
-			this.mtx.Unlock()
+func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespond, timeout time.Duration) error {
+	if baseClient.closed {
+		baseClient.mtx.Lock()
+		if baseClient.closed {
+			baseClient.mtx.Unlock()
 			return errors.New("Client is closed.")
 		}
-		this.mtx.Unlock()
+		baseClient.mtx.Unlock()
 	}
 
 	msgID := req.MsgID
-	idx := msgID % uint64(this.connParams.ConnNum)
-	highwayConn := this.highwayConns[idx]
+	idx := msgID % uint64(baseClient.connParams.ConnNum)
+	highwayConn := baseClient.highwayConns[idx]
 	if highwayConn == nil || highwayConn.Closed() {
-		this.mtx.Lock()
-		highwayConn = this.highwayConns[idx]
+		baseClient.mtx.Lock()
+		highwayConn = baseClient.highwayConns[idx]
 		if highwayConn == nil || highwayConn.Closed() {
-			highwayConnTmp, err := this.makeConnection()
+			highwayConnTmp, err := baseClient.makeConnection()
 			if err != nil {
-				this.mtx.Unlock()
+				baseClient.mtx.Unlock()
 				return err
 			}
 			highwayConn = highwayConnTmp
-			this.highwayConns[idx] = highwayConn
+			baseClient.highwayConns[idx] = highwayConn
 		}
-		this.mtx.Unlock()
+		baseClient.mtx.Unlock()
 	}
 	if req.TwoWay {
 		wait := make(chan int)
 		ctx := &InvocationContext{req, rsp, &wait}
-		this.AddWaitMsg(msgID, ctx)
+		baseClient.AddWaitMsg(msgID, ctx)
 
 		err := highwayConn.AsyncSendMsg(ctx)
 		if err != nil {
@@ -234,7 +240,7 @@ func (this *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespond, ti
 			bTimeout = true
 		}
 
-		this.RemoveWaitMsg(msgID)
+		baseClient.RemoveWaitMsg(msgID)
 		close(wait)
 		if bTimeout {
 			rsp.Err = "Client send timeout"
@@ -253,16 +259,16 @@ func (this *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespond, ti
 	return nil
 }
 
-func (this *HighwayBaseClient) GetWaitMsg(msgID uint64) *InvocationContext {
-	this.mapMutex.Lock()
-	defer this.mapMutex.Unlock()
+func (baseClient *HighwayBaseClient) GetWaitMsg(msgID uint64) *InvocationContext {
+	baseClient.mapMutex.Lock()
+	defer baseClient.mapMutex.Unlock()
 
-	if _, ok := this.msgWaitRspMap[msgID]; ok {
-		return this.msgWaitRspMap[msgID]
+	if _, ok := baseClient.msgWaitRspMap[msgID]; ok {
+		return baseClient.msgWaitRspMap[msgID]
 	}
 	return nil
 }
 
-func (this *HighwayBaseClient) Closed() bool {
-	return this.closed
+func (baseClient *HighwayBaseClient) Closed() bool {
+	return baseClient.closed
 }
