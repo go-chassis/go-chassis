@@ -14,43 +14,43 @@ import (
 	"net"
 	"sync"
 )
-
+//ConnectionMgr conn manage
 type ConnectionMgr struct {
 	conns map[string]*HighwayConnection
 	count int
 	sync.RWMutex
 }
 
-func NewConnectMgr() *ConnectionMgr {
+func newConnectMgr() *ConnectionMgr {
 	tmp := new(ConnectionMgr)
 	tmp.count = 0
 	tmp.conns = make(map[string]*HighwayConnection)
 	return tmp
 }
 
-func (this *ConnectionMgr) CreateConn(baseConn net.Conn, handlerChain string) *HighwayConnection {
-	this.Lock()
-	defer this.Unlock()
-	conn := NewHighwayConnection(baseConn, handlerChain, this)
-	this.conns[conn.GetRemoteAddr()] = conn
-	this.count++
+func (connMgr *ConnectionMgr) CreateConn(baseConn net.Conn, handlerChain string) *HighwayConnection {
+	connMgr.Lock()
+	defer connMgr.Unlock()
+	conn := newHighwayConnection(baseConn, handlerChain, connMgr)
+	connMgr.conns[conn.GetRemoteAddr()] = conn
+	connMgr.count++
 	return conn
 }
 
-func (this *ConnectionMgr) DeleteConn(addr string) {
-	this.Lock()
-	defer this.Unlock()
-	delete(this.conns, addr)
-	this.count--
+func (connMgr *ConnectionMgr) DeleteConn(addr string) {
+	connMgr.Lock()
+	defer connMgr.Unlock()
+	delete(connMgr.conns, addr)
+	connMgr.count--
 }
-
-func (this *ConnectionMgr) DeactiveAllConn() {
-	for _, conn := range this.conns {
+//DeactiveAllConn close all conn
+func (connMgr *ConnectionMgr) DeactiveAllConn() {
+	for _, conn := range connMgr.conns {
 		conn.Close()
 	}
 }
 
-//Highway connection
+//HighwayConnection Highway connection
 type HighwayConnection struct {
 	remoteAddr   string
 	handlerChain string
@@ -60,17 +60,17 @@ type HighwayConnection struct {
 	connMgr      *ConnectionMgr
 }
 
-//Create service connection
-func NewHighwayConnection(conn net.Conn, handlerChain string, connMgr *ConnectionMgr) *HighwayConnection {
+//newHighwayConnection Create service connection
+func newHighwayConnection(conn net.Conn, handlerChain string, connMgr *ConnectionMgr) *HighwayConnection {
 	return &HighwayConnection{(conn.(*net.TCPConn)).RemoteAddr().String(), handlerChain, conn, &sync.Mutex{}, false, connMgr}
 }
 
-//open service connection
+//Open open service connection
 func (this *HighwayConnection) Open() {
 	go this.msgRecvLoop()
 }
 
-//Get remote addr
+//GetRemoteAddr Get remote addr
 func (this *HighwayConnection) GetRemoteAddr() string {
 	return this.remoteAddr
 }
@@ -87,7 +87,7 @@ func (svrConn *HighwayConnection) Close() {
 	svrConn.baseConn.Close()
 }
 
-//handshake
+//Hello handshake
 func (svrConn *HighwayConnection) Hello() error {
 	var err error
 	rdBuf := bufio.NewReaderSize(svrConn.baseConn, highwayclient.DefaultReadBufferSize)

@@ -15,7 +15,7 @@ const (
 	DefaultWriteBufferSize = 1024
 )
 
-//Highway client connection
+//HighwayClientConnection Highway client connection
 type HighwayClientConnection struct {
 	remoteAddr string
 	baseConn   net.Conn
@@ -24,7 +24,7 @@ type HighwayClientConnection struct {
 	closed     bool
 }
 
-//creat Highway client connection
+//NewHighwayClientConnection creat Highway client connection
 func NewHighwayClientConnection(conn net.Conn, client *HighwayBaseClient) *HighwayClientConnection {
 	tmp := new(HighwayClientConnection)
 	//conn.SetKeepAlive(true)
@@ -34,7 +34,7 @@ func NewHighwayClientConnection(conn net.Conn, client *HighwayBaseClient) *Highw
 	return tmp
 }
 
-//Init Highway client connection
+//Open Init Highway client connection
 func (this *HighwayClientConnection) Open() error {
 	err := this.Hello()
 	if err != nil {
@@ -45,7 +45,7 @@ func (this *HighwayClientConnection) Open() error {
 	return nil
 }
 
-//Highway handshake
+//Hello Highway handshake
 func (hwClientConn *HighwayClientConnection) Hello() error {
 	wBuf := bufio.NewWriterSize(hwClientConn.baseConn, DefaultWriteBufferSize)
 	protoObj := &HighWayProtocalObject{}
@@ -103,7 +103,7 @@ func (hwClientConn *HighwayClientConnection) processMsg(protoObj *HighWayProtoca
 	}
 }
 
-//Highway send message
+//AsyncSendMsg Highway send message
 func (hwClientConn *HighwayClientConnection) AsyncSendMsg(ctx *InvocationContext) error {
 	wBuf := bufio.NewWriterSize(hwClientConn.baseConn, DefaultWriteBufferSize)
 	protoObj := &HighWayProtocalObject{}
@@ -116,7 +116,7 @@ func (hwClientConn *HighwayClientConnection) AsyncSendMsg(ctx *InvocationContext
 	return err
 }
 
-//Highway post message,	 Respond  is  needless
+//PostMsg Highway post message,	 Respond  is  needless
 func (hwClientConn *HighwayClientConnection) PostMsg(req *HighwayRequest) error {
 
 	wBuf := bufio.NewWriterSize(hwClientConn.baseConn, DefaultWriteBufferSize)
@@ -153,7 +153,7 @@ func (this *HighwayClientConnection) SyncSendMsg(req *client.Request, rsp *clien
 }
 */
 
-//Highway connection status
+//Closed Highway connection status
 func (hwClientConn *HighwayClientConnection) Closed() bool {
 	return hwClientConn.closed
 }

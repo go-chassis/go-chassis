@@ -125,7 +125,7 @@ func (s *highwayServer) Stop() error {
 
 func newHighwayServer(opts ...microServer.Option) microServer.Server {
 	return &highwayServer{
-		connMgr: NewConnectMgr(),
+		connMgr: newConnectMgr(),
 		opts:    newOptions(opts...),
 	}
 }
