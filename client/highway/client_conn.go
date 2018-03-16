@@ -8,11 +8,13 @@ import (
 	"net"
 	"sync"
 )
+
 // constant for buffer size
 const (
 	DefaultReadBufferSize  = 0
 	DefaultWriteBufferSize = 1024
 )
+
 //Highway client connection
 type HighwayClientConnection struct {
 	remoteAddr string

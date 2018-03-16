@@ -105,10 +105,12 @@ type HighWayProtocalObject struct {
 	FrHead  highwayFrameHead
 	payLoad []byte
 }
+
 //ProtocalName
 func (msgObj *HighWayProtocalObject) ProtocalName() string {
 	return "Highway"
 }
+
 //Serialize request
 func (msgObj *HighWayProtocalObject) SerializeReq(req *HighwayRequest, wBuf *bufio.Writer) {
 	frHead := newHeadFrame(uint64(req.MsgID))
@@ -137,6 +139,7 @@ func (msgObj *HighWayProtocalObject) SerializeReq(req *HighwayRequest, wBuf *buf
 	wBuf.Write(header)
 	wBuf.Write(body)
 }
+
 //Serialize frame
 func (msgObj *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *bufio.Writer) {
 	frHead := newHeadFrame(uint64(rsp.MsgID))
@@ -170,6 +173,7 @@ func (msgObj *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *buf
 		wBuf.Write(body)
 	}
 }
+
 //Deserialize frame
 func (msgObj *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 	var err error
@@ -206,6 +210,7 @@ func (msgObj *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error
 
 	return nil
 }
+
 //Deserialize rsp
 func (msgObj *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
 	var err error
@@ -232,6 +237,7 @@ func (msgObj *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
 	}
 	return nil
 }
+
 //Deserialize req
 func (msgObj *HighWayProtocalObject) DeSerializeReq(req *HighwayRequest) error {
 	var err error

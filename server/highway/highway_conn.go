@@ -49,6 +49,7 @@ func (this *ConnectionMgr) DeactiveAllConn() {
 		conn.Close()
 	}
 }
+
 //Highway connection
 type HighwayConnection struct {
 	remoteAddr   string
@@ -58,18 +59,22 @@ type HighwayConnection struct {
 	closed       bool
 	connMgr      *ConnectionMgr
 }
+
 //Create service connection
 func NewHighwayConnection(conn net.Conn, handlerChain string, connMgr *ConnectionMgr) *HighwayConnection {
 	return &HighwayConnection{(conn.(*net.TCPConn)).RemoteAddr().String(), handlerChain, conn, &sync.Mutex{}, false, connMgr}
 }
+
 //open service connection
 func (this *HighwayConnection) Open() {
 	go this.msgRecvLoop()
 }
+
 //Get remote addr
 func (this *HighwayConnection) GetRemoteAddr() string {
 	return this.remoteAddr
 }
+
 //Close connection
 func (svrConn *HighwayConnection) Close() {
 	svrConn.mtx.Lock()
@@ -81,6 +86,7 @@ func (svrConn *HighwayConnection) Close() {
 	svrConn.closed = true
 	svrConn.baseConn.Close()
 }
+
 //handshake
 func (svrConn *HighwayConnection) Hello() error {
 	var err error

@@ -16,6 +16,7 @@ type ConnParams struct {
 	Timeout   time.Duration
 	ConnNum   int
 }
+
 //Highway base client
 type HighwayBaseClient struct {
 	addr          string
@@ -33,6 +34,7 @@ var CachedClients *ClientMgr
 func init() {
 	CachedClients = newClientMgr()
 }
+
 //Highway context
 type InvocationContext struct {
 	Req  *HighwayRequest
@@ -44,6 +46,7 @@ type InvocationContext struct {
 func (this *InvocationContext) Done() {
 	*this.Wait <- 1
 }
+
 //Client manage
 type ClientMgr struct {
 	mapMutex sync.Mutex
@@ -88,6 +91,7 @@ func newHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
 	tmp.msgWaitRspMap = make(map[uint64]*InvocationContext)
 	return tmp
 }
+
 //Obtain the address
 func (baseClient *HighwayBaseClient) GetAddr() string {
 	return baseClient.addr
@@ -104,13 +108,13 @@ func (baseClient *HighwayBaseClient) makeConnection() (*HighwayClientConnection,
 		baseConn, errDial = net.DialTimeout("tcp", baseClient.addr, baseClient.connParams.Timeout*time.Second)
 	}
 	if errDial != nil {
-		lager.Logger.Error("the addr: " + baseClient.addr, errDial)
+		lager.Logger.Error("the addr: "+baseClient.addr, errDial)
 		return nil, errDial
 	}
 	higwayConn := NewHighwayClientConnection(baseConn, baseClient)
 	err := higwayConn.Open()
 	if err != nil {
-		lager.Logger.Error("higwayConn open: " + baseClient.addr, errDial)
+		lager.Logger.Error("higwayConn open: "+baseClient.addr, errDial)
 		return nil, err
 	}
 
@@ -132,6 +136,7 @@ func (baseClient *HighwayBaseClient) initConns() error {
 	}
 	return nil
 }
+
 //open  client
 func (baseClient *HighwayBaseClient) Open() error {
 	baseClient.mtx.Lock()
