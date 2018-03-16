@@ -89,7 +89,7 @@ func (c *highwayClient) Options() microClient.Options {
 
 func (c *highwayClient) Call(ctx context.Context, addr string, req *microClient.Request, rsp interface{}, opts ...microClient.CallOption) error {
 	connParams := &ConnParams{}
-	connParams.TlsConfig = c.opts.TLSConfig
+	connParams.TLSConfig = c.opts.TLSConfig
 	connParams.Addr = addr
 	connParams.Timeout = DefaultConnectTimeOut
 	baseClient, err := CachedClients.GetClient(connParams)
