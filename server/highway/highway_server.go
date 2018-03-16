@@ -113,7 +113,7 @@ func (s *highwayServer) AcceptLoop(l net.Listener) {
 				lager.Logger.Info("Sleep three second")
 			}
 		}
-		highwayConn := s.connMgr.CreateConn(conn, s.opts.ChainName)
+		highwayConn := s.connMgr.createConn(conn, s.opts.ChainName)
 		highwayConn.Open()
 	}
 }

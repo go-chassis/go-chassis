@@ -14,6 +14,7 @@ import (
 	"net"
 	"sync"
 )
+
 //ConnectionMgr conn manage
 type ConnectionMgr struct {
 	conns map[string]*HighwayConnection
@@ -28,7 +29,7 @@ func newConnectMgr() *ConnectionMgr {
 	return tmp
 }
 
-func (connMgr *ConnectionMgr) CreateConn(baseConn net.Conn, handlerChain string) *HighwayConnection {
+func (connMgr *ConnectionMgr) createConn(baseConn net.Conn, handlerChain string) *HighwayConnection {
 	connMgr.Lock()
 	defer connMgr.Unlock()
 	conn := newHighwayConnection(baseConn, handlerChain, connMgr)
@@ -37,12 +38,13 @@ func (connMgr *ConnectionMgr) CreateConn(baseConn net.Conn, handlerChain string)
 	return conn
 }
 
-func (connMgr *ConnectionMgr) DeleteConn(addr string) {
+func (connMgr *ConnectionMgr) deleteConn(addr string) {
 	connMgr.Lock()
 	defer connMgr.Unlock()
 	delete(connMgr.conns, addr)
 	connMgr.count--
 }
+
 //DeactiveAllConn close all conn
 func (connMgr *ConnectionMgr) DeactiveAllConn() {
 	for _, conn := range connMgr.conns {
@@ -66,13 +68,13 @@ func newHighwayConnection(conn net.Conn, handlerChain string, connMgr *Connectio
 }
 
 //Open open service connection
-func (this *HighwayConnection) Open() {
-	go this.msgRecvLoop()
+func (svrConn *HighwayConnection) Open() {
+	go svrConn.msgRecvLoop()
 }
 
 //GetRemoteAddr Get remote addr
-func (this *HighwayConnection) GetRemoteAddr() string {
-	return this.remoteAddr
+func (svrConn *HighwayConnection) GetRemoteAddr() string {
+	return svrConn.remoteAddr
 }
 
 //Close connection
@@ -82,7 +84,7 @@ func (svrConn *HighwayConnection) Close() {
 	if svrConn.closed {
 		return
 	}
-	svrConn.connMgr.DeleteConn(svrConn.remoteAddr)
+	svrConn.connMgr.deleteConn(svrConn.remoteAddr)
 	svrConn.closed = true
 	svrConn.baseConn.Close()
 }
@@ -137,10 +139,10 @@ func (svrConn *HighwayConnection) msgRecvLoop() {
 }
 
 //send error msg
-func (this *HighwayConnection) writeError(req *highwayclient.HighwayRequest, err error) {
+func (svrConn *HighwayConnection) writeError(req *highwayclient.HighwayRequest, err error) {
 	if req.TwoWay {
 		protoObj := &highwayclient.HighWayProtocalObject{}
-		wBuf := bufio.NewWriterSize(this.baseConn, highwayclient.DefaultWriteBufferSize)
+		wBuf := bufio.NewWriterSize(svrConn.baseConn, highwayclient.DefaultWriteBufferSize)
 		rsp := &highwayclient.HighwayRespond{}
 		rsp.Result = nil
 		rsp.MsgID = req.MsgID
@@ -149,7 +151,7 @@ func (this *HighwayConnection) writeError(req *highwayclient.HighwayRequest, err
 		protoObj.SerializeRsp(rsp, wBuf)
 		errSnd := wBuf.Flush()
 		if errSnd != nil {
-			this.Close()
+			svrConn.Close()
 			lager.Logger.Errorf(errSnd, "writeError failed.")
 		}
 	}

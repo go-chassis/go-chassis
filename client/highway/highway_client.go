@@ -12,6 +12,7 @@ import (
 	"golang.org/x/net/context"
 )
 
+//const timeout
 const (
 	//Name is a variable of type string
 	Name                  = "highway"

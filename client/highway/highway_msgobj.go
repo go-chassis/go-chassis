@@ -28,8 +28,8 @@ const (
 )
 
 var localSupportLogin = true
-var gCurMSGID uint64 = 0
-var msgIDMtx sync.Mutex = sync.Mutex{}
+var gCurMSGID uint64
+var msgIDMtx sync.Mutex
 
 //GenerateMsgID generate message ID
 func GenerateMsgID() uint64 {

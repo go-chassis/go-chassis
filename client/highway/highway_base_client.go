@@ -12,7 +12,7 @@ import (
 //ConnParams highway connect parmas
 type ConnParams struct {
 	Addr      string
-	TlsConfig *tls.Config
+	TLSConfig *tls.Config
 	Timeout   time.Duration
 	ConnNum   int
 }
@@ -43,8 +43,8 @@ type InvocationContext struct {
 }
 
 //Done Notify done.
-func (this *InvocationContext) Done() {
-	*this.Wait <- 1
+func (ctx *InvocationContext) Done() {
+	*ctx.Wait <- 1
 }
 
 //ClientMgr client manage
@@ -59,7 +59,7 @@ func newClientMgr() *ClientMgr {
 	return tmp
 }
 
-//Obtain  client
+//GetClient Obtain  client
 func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, error) {
 	mgr.mapMutex.Lock()
 	defer mgr.mapMutex.Unlock()
@@ -67,9 +67,8 @@ func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, err
 		if !tmp.Closed() {
 			lager.Logger.Info("GetClient from cached addr:" + connParmas.Addr)
 			return tmp, nil
-		} else {
-			delete(mgr.clients, connParmas.Addr)
 		}
+		delete(mgr.clients, connParmas.Addr)
 	}
 
 	lager.Logger.Info("GetClient from new open addr:" + connParmas.Addr)
@@ -77,10 +76,10 @@ func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, err
 	err := tmp.Open()
 	if err != nil {
 		return nil, err
-	} else {
-		mgr.clients[connParmas.Addr] = tmp
-		return tmp, nil
 	}
+	mgr.clients[connParmas.Addr] = tmp
+	return tmp, nil
+
 }
 
 func newHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
@@ -92,7 +91,7 @@ func newHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
 	return tmp
 }
 
-//Obtain the address
+//GetAddr Obtain the address
 func (baseClient *HighwayBaseClient) GetAddr() string {
 	return baseClient.addr
 }
@@ -101,9 +100,9 @@ func (baseClient *HighwayBaseClient) makeConnection() (*HighwayClientConnection,
 	var baseConn net.Conn
 	var errDial error
 
-	if baseClient.connParams.TlsConfig != nil {
+	if baseClient.connParams.TLSConfig != nil {
 		dialer := &net.Dialer{Timeout: baseClient.connParams.Timeout * time.Second}
-		baseConn, errDial = tls.DialWithDialer(dialer, "tcp", baseClient.addr, baseClient.connParams.TlsConfig)
+		baseConn, errDial = tls.DialWithDialer(dialer, "tcp", baseClient.addr, baseClient.connParams.TLSConfig)
 	} else {
 		baseConn, errDial = net.DialTimeout("tcp", baseClient.addr, baseClient.connParams.Timeout*time.Second)
 	}
@@ -181,6 +180,7 @@ func (baseClient *HighwayBaseClient) clearConns() {
 		}
 	}
 }
+
 //AddWaitMsg add wait msg
 func (baseClient *HighwayBaseClient) AddWaitMsg(msgID uint64, result *InvocationContext) {
 	baseClient.mapMutex.Lock()
@@ -198,13 +198,14 @@ func (baseClient *HighwayBaseClient) RemoveWaitMsg(msgID uint64) {
 	}
 	baseClient.mapMutex.Unlock()
 }
+
 //Send send msg
 func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespond, timeout time.Duration) error {
 	if baseClient.closed {
 		baseClient.mtx.Lock()
 		if baseClient.closed {
 			baseClient.mtx.Unlock()
-			return errors.New("Client is closed.")
+			return errors.New("client is closed")
 		}
 		baseClient.mtx.Unlock()
 	}
@@ -238,7 +239,7 @@ func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespo
 			return err
 		}
 
-		var bTimeout bool = false
+		var bTimeout bool
 		select {
 		case <-wait:
 			bTimeout = false
@@ -251,8 +252,6 @@ func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespo
 		if bTimeout {
 			rsp.Err = "Client send timeout"
 			return errors.New("Client send timeout")
-		} else {
-			return nil
 		}
 	} else {
 		// Respond of postMsg  is  needless
@@ -264,6 +263,7 @@ func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespo
 	}
 	return nil
 }
+
 //GetWaitMsg get wait message
 func (baseClient *HighwayBaseClient) GetWaitMsg(msgID uint64) *InvocationContext {
 	baseClient.mapMutex.Lock()
@@ -274,6 +274,7 @@ func (baseClient *HighwayBaseClient) GetWaitMsg(msgID uint64) *InvocationContext
 	}
 	return nil
 }
+
 //Closed  client status
 func (baseClient *HighwayBaseClient) Closed() bool {
 	return baseClient.closed

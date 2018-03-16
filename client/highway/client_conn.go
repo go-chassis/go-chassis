@@ -35,13 +35,13 @@ func NewHighwayClientConnection(conn net.Conn, client *HighwayBaseClient) *Highw
 }
 
 //Open Init Highway client connection
-func (this *HighwayClientConnection) Open() error {
-	err := this.Hello()
+func (hwClientConn *HighwayClientConnection) Open() error {
+	err := hwClientConn.Hello()
 	if err != nil {
-		this.Close()
+		hwClientConn.Close()
 		return err
 	}
-	go this.msgRecvLoop()
+	go hwClientConn.msgRecvLoop()
 	return nil
 }
 
