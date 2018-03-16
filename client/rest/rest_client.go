@@ -13,7 +13,7 @@ import (
 
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	"github.com/valyala/fasthttp"
 	"golang.org/x/net/context"
 )
 

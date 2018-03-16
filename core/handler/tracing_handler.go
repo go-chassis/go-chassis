@@ -10,14 +10,14 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/tracing"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/ServiceComb/go-chassis/util/iputil"
 
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/emicklei/go-restful"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
+	"github.com/valyala/fasthttp"
 )
 
 // TracingProviderHandler tracing provider handler

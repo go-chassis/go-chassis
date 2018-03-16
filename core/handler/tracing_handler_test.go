@@ -15,7 +15,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/tracing"
-	//"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/ServiceComb/go-chassis/util/iputil"
 	"github.com/apache/thrift/lib/go/thrift"
 	//"github.com/emicklei/go-restful"

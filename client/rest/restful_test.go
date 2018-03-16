@@ -2,9 +2,10 @@ package rest_test
 
 import (
 	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/valyala/fasthttp"
 )
 
 var req *rest.Request

@@ -4,8 +4,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/session"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/stretchr/testify/assert"
+	"github.com/valyala/fasthttp"
 	"testing"
 	"time"
 )
