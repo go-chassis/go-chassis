@@ -1,9 +1,8 @@
 package eventlistener
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/core/archaius"
 )
 
 //RegisterKeys registers a config key to the archaius
@@ -20,8 +19,7 @@ func Init() {
 
 	RegisterKeys(qpsEventListener, QPSLimitKey)
 	RegisterKeys(circuitBreakerEventListener, ConsumerFallbackKey, ConsumerFallbackPolicyKey, ConsumerIsolationKey, ConsumerCircuitbreakerKey)
-	RegisterKeys(lbEventListener, LbStrategyNameKey)
-	RegisterKeys(lbEventListener, LbStrategyTimeoutKey)
+	RegisterKeys(lbEventListener, LoadBalanceKey)
 	RegisterKeys(&DarkLaunchEventListener{}, DarkLaunchKey)
 
 }

@@ -10,11 +10,10 @@ import (
 
 // constants for loadbalance strategy name, and timeout
 const (
-	//LbStrategyNameKey & LbStrategyTimeoutKey are variables of type string
-	LbStrategyNameKey    = "cse.loadbalance.strategy.name"
-	LbStrategyTimeoutKey = "cse.loadbalance.SessionStickinessRule.sessionTimeoutInSeconds"
-	Update               = "update"
-	Delete               = "delete"
+	//LoadBalanceKey is variable of type string that matches load balancing events
+	LoadBalanceKey = "^cse\\.loadbalance\\."
+	Update         = "update"
+	Delete         = "delete"
 )
 
 //LoadbalanceEventListener is a struct
