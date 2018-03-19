@@ -162,7 +162,8 @@ func (svrConn *HighwayConnection) hanleFrame(protoObj *highwayclient.HighWayProt
 	req := &highwayclient.HighwayRequest{}
 	err = protoObj.DeSerializeReq(req)
 	if err != nil {
-		lager.Logger.Errorf(err, "DeSerializeReq failed.")
+		lager.Logger.Errorf(err, "DeSerializeReq failed")
+		svrConn.writeError(req, err)
 		return err
 	}
 
