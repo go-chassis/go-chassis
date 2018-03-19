@@ -17,7 +17,6 @@ import (
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
@@ -41,9 +40,6 @@ func TestNewRestClient_Call(t *testing.T) {
 	msName := "Server"
 	schema := "schema2"
 
-	trServer := tcp.NewTransport()
-	trClient := tcp.NewTransport()
-
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
@@ -56,7 +52,6 @@ func TestNewRestClient_Call(t *testing.T) {
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
 		serverOption.Address(addrRest),
 		serverOption.ChainName("default"))
 	_, err = s.Register(&schemas.RestFulHello{},
@@ -67,7 +62,6 @@ func TestNewRestClient_Call(t *testing.T) {
 	assert.NoError(t, err)
 
 	c := rest.NewRestClient(
-		microClient.Transport(trClient),
 		microClient.ContentType("application/protobuf"))
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
@@ -113,9 +107,6 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	msName := "Server1"
 	schema := "schema2"
 
-	trServer := tcp.NewTransport()
-	trClient := tcp.NewTransport()
-
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
@@ -125,7 +116,6 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
 		serverOption.Address("127.0.0.1:8040"),
 		serverOption.ChainName("default"))
 	_, err = s.Register(&schemas.RestFulHello{},
@@ -136,7 +126,6 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	assert.NoError(t, err)
 
 	c := rest.NewRestClient(
-		microClient.Transport(trClient),
 		microClient.ContentType("application/protobuf"))
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
@@ -173,9 +162,6 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	msName := "Server2"
 	schema := "schema2"
 
-	trServer := tcp.NewTransport()
-	trClient := tcp.NewTransport()
-
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
@@ -185,7 +171,6 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
 		serverOption.Address("127.0.0.1:8092"),
 		serverOption.ChainName("default"))
 	_, err = s.Register(&schemas.RestFulHello{},
@@ -197,7 +182,6 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	fail := make(map[string]bool)
 	fail["something"] = false
 	c := rest.NewRestClient(
-		microClient.Transport(trClient),
 		microClient.WithFailure(fail),
 		microClient.PoolSize(3))
 	c.Init(microClient.ContentType("application/json"))

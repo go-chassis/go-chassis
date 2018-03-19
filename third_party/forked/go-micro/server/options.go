@@ -7,15 +7,11 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/provider"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"golang.org/x/net/context"
 )
 
 type Options struct {
-	Codecs    map[string]codec.Codec
-	Transport transport.Transport
-	Metadata  map[string]string
+	Metadata map[string]string
 	//protocol
 	Name      string
 	Address   string
@@ -40,13 +36,6 @@ type RegisterOption func(*RegisterOptions)
 var DefaultOptions = Options{
 	ChainName: "default",
 	Metadata:  map[string]string{},
-}
-
-//WithCodecs set Codecs
-func WithCodecs(c map[string]codec.Codec) Option {
-	return func(o *Options) {
-		o.Codecs = c
-	}
 }
 
 // Server name
@@ -81,20 +70,6 @@ func Address(a string) Option {
 func Advertise(a string) Option {
 	return func(o *Options) {
 		o.Advertise = a
-	}
-}
-
-//// Registry used for discovery
-//func Registry(r api.Register) Option {
-//	return func(o *Options) {
-//		o.Registry = r
-//	}
-//}
-
-// Transport mechanism for communication e.g http, rabbitmq, etc
-func Transport(t transport.Transport) Option {
-	return func(o *Options) {
-		o.Transport = t
 	}
 }
 

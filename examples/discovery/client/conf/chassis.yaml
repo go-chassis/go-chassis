@@ -13,8 +13,6 @@ cse:
     highway:
       listenAddress: 127.0.0.1:8080
       advertiseAddress: 127.0.0.1:8080
-      transport: tcp #optional 指定加载那个传输层
-      workerNumber: 10
     rest:
       listenAddress: 127.0.0.1:8081
       advertiseAddress: 127.0.0.1:8081

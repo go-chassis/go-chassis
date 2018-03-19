@@ -1,7 +1,6 @@
 package server_test
 
 import (
-	"crypto/tls"
 	"errors"
 	"os"
 	"testing"
@@ -14,84 +13,22 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/registry/mock"
 	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/core/transport"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestWithOptions(t *testing.T) {
 	t.Log("setting various parameter to Server Option ")
-	var cmap map[string]codec.Codec = make(map[string]codec.Codec)
-	var val codec.Codec
 
 	var o *serverOption.Options = new(serverOption.Options)
 	o.ID = "1"
 	o.ChainName = "fakechain"
 
-	cmap["firstcodec"] = val
-
-	var t1 microTransport.Transport
-
 	var p provider.Provider
 
 	var md = make(map[string]string)
 	md["abc"] = "abc"
-
-	var t2 = time.Second
-
-	var t3 = new(tls.Config)
-
-	c1 := serverOption.WithCodecs(cmap)
-	c1(o)
-	assert.Equal(t, cmap, o.Codecs)
-
-	c1 = serverOption.Name("abc")
-	c1(o)
-	assert.Equal(t, "abc", o.Name)
-
-	c1 = serverOption.ID("id")
-	c1(o)
-	assert.Equal(t, "id", o.ID)
-
-	c1 = serverOption.Version("version")
-	c1(o)
-	assert.Equal(t, "version", o.Version)
-
-	c1 = serverOption.Address("address")
-	c1(o)
-	assert.Equal(t, "address", o.Address)
-
-	c1 = serverOption.Advertise("advertise")
-	c1(o)
-	assert.Equal(t, "advertise", o.Advertise)
-
-	c1 = serverOption.ChainName("chainname")
-	c1(o)
-	assert.Equal(t, "chainname", o.ChainName)
-
-	c1 = serverOption.Transport(t1)
-	c1(o)
-	assert.Equal(t, t1, o.Transport)
-
-	c1 = serverOption.Provider(p)
-	c1(o)
-	assert.Equal(t, p, o.Provider)
-
-	c1 = serverOption.Metadata(md)
-	c1(o)
-	assert.Equal(t, md, o.Metadata)
-
-	c1 = serverOption.TLSConfig(t3)
-	c1(o)
-	assert.Equal(t, t3, o.TLSConfig)
-
-	c1 = serverOption.RegisterTTL(t2)
-	c1(o)
-	assert.Equal(t, t2, o.RegisterTTL)
 
 	t.Log("setting various parameter to server register Option")
 	var rego *serverOption.RegisterOptions = new(serverOption.RegisterOptions)
@@ -213,14 +150,6 @@ func TestSrcMgrErr(t *testing.T) {
 		return s
 	}
 	server.InstallPlugin("protocol",f)*/
-
-	a := func(...microTransport.Option) microTransport.Transport {
-		var tp microTransport.Transport
-		//tp :=tcp.NewTransport()
-		return tp
-	}
-
-	transport.InstallPlugin("abc", a)
 
 	testRegistryObj := new(mock.RegistryMock)
 	registry.RegistryService = testRegistryObj

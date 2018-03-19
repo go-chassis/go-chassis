@@ -37,7 +37,6 @@ cse:
     highway:
       listenAddress: 127.0.0.1:8082
       advertiseAddress: 127.0.0.1:8082
-      transport: tcp #optional 指定加载那个传输层
     rest:
       listenAddress: 127.0.0.1:8083
       advertiseAddress: 127.0.0.1:8083

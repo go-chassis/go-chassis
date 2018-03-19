@@ -79,12 +79,10 @@ cse:
     highway:
       listenAddress: 127.0.0.1:8080
       advertiseAddress: 127.0.0.1:8080
-      transport: tcp #optional 指定加载那个传输层
       workerNumber: 10
     rest:
       listenAddress: 127.0.0.1:8888
       advertiseAddress: 127.0.0.1:8888
-      transport: tcp #optional 指定加载那个传输层
       workerNumber: 10
       failure: http_500,http_502 # Defines what is considered an unsuccessful attempt of communication with a server.
   handler:
