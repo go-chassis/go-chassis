@@ -6,20 +6,12 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
-	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 	"golang.org/x/net/context"
 )
 
 type Options struct {
 	// Used to select codec
 	ContentType string
-
-	// Plugged interfaces
-	Codecs map[string]codec.Codec
-	//TODO
-	ClientCodecs map[string]codec.NewClientCodec
-	Transport    microTransport.Transport
 
 	// Connection Pool
 	PoolSize int
@@ -73,7 +65,6 @@ func newOptions(options ...Option) Options {
 		CallOptions: CallOptions{
 			Retries:        DefaultRetries,
 			RequestTimeout: DefaultRequestTimeout,
-			DialTimeout:    microTransport.DefaultDialTimeout,
 		},
 		PoolSize: DefaultPoolSize,
 		PoolTTL:  DefaultPoolTTL,
@@ -92,13 +83,6 @@ func ContentType(ct string) Option {
 	}
 }
 
-//WithCodecs set Codecs
-func WithCodecs(c map[string]codec.Codec) Option {
-	return func(o *Options) {
-		o.Codecs = c
-	}
-}
-
 // PoolSize sets the connection pool size
 func PoolSize(d int) Option {
 	return func(o *Options) {
@@ -110,13 +94,6 @@ func PoolSize(d int) Option {
 func PoolTTL(d time.Duration) Option {
 	return func(o *Options) {
 		o.PoolTTL = d
-	}
-}
-
-// Transport to use for communication e.g http, rabbitmq, etc
-func Transport(t microTransport.Transport) Option {
-	return func(o *Options) {
-		o.Transport = t
 	}
 }
 

@@ -9,7 +9,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/provider"
 	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"net"
 	"time"
@@ -39,7 +38,6 @@ func (s *highwayServer) Init(opts ...microServer.Option) error {
 	for _, o := range opts {
 		o(&s.opts)
 	}
-	lager.Logger.Debugf("server init,transport:%s", s.opts.Transport.String())
 	s.Unlock()
 
 	return nil
@@ -130,9 +128,6 @@ func newHighwayServer(opts ...microServer.Option) microServer.Server {
 func newOptions(opt ...microServer.Option) microServer.Options {
 	opts := microServer.Options{
 		Metadata: map[string]string{},
-	}
-	if opts.Codecs == nil {
-		opts.Codecs = codec.GetCodecMap()
 	}
 	for _, o := range opt {
 		o(&opts)

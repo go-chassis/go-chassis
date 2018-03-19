@@ -12,7 +12,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -39,7 +38,6 @@ func TestRestStart(t *testing.T) {
 	msName := "Server1"
 	schema := "schema1"
 
-	trServer := tcp.NewTransport()
 	//trClient := tcp.NewTransport()
 
 	defaultChain := make(map[string]string)
@@ -51,7 +49,6 @@ func TestRestStart(t *testing.T) {
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
 		serverOption.Address(addrHighway),
 		serverOption.ChainName("default"))
 
@@ -76,7 +73,6 @@ func TestRestStartFailure(t *testing.T) {
 	msName := "Server2"
 	schema := "schema2"
 
-	trServer := tcp.NewTransport()
 	//trClient := tcp.NewTransport()
 
 	defaultChain := make(map[string]string)
@@ -88,7 +84,6 @@ func TestRestStartFailure(t *testing.T) {
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
 		serverOption.Address(addrHighway),
 		serverOption.ChainName("default"))
 

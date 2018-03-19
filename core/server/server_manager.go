@@ -10,12 +10,9 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-	"github.com/ServiceComb/go-chassis/core/transport"
 	"github.com/ServiceComb/go-chassis/util/iputil"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 )
 
 //NewFunc returns a server
@@ -137,17 +134,6 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 
-	var tr microTransport.Transport
-	if p.Transport == "" {
-		p.Transport = common.TransportTCP
-	}
-	trF, err := transport.GetTransportFunc(p.Transport)
-	if err != nil {
-		return err
-	}
-	//TODO delete this line, Only use Server to accept TLS
-	tr = trF(microTransport.TLSConfig(tlsConfig))
-
 	if p.Listen == "" {
 		if p.Advertise != "" {
 			p.Listen = p.Advertise
@@ -166,8 +152,6 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 	var s microServer.Server
 	s = f(
 		microServer.Address(p.Listen),
-		microServer.Transport(tr),
-		microServer.WithCodecs(codec.GetCodecMap()),
 		microServer.ChainName(chainName),
 		microServer.TLSConfig(tlsConfig))
 	servers[name] = s

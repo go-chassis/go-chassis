@@ -10,8 +10,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
-	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -57,16 +55,11 @@ func TestInit(t *testing.T) {
 func TestOptions(t *testing.T) {
 	t.Log("sets various parameter to option")
 	tduration := time.Second * 2
-	c := make(map[string]codec.Codec)
-	c["fake"] = codec.NewJSONCodec()
-
-	cp := clientOption.WithCodecs(c)
 
 	var cstruct *clientOption.Options = new(clientOption.Options)
 	var copstruct *clientOption.CallOptions = new(clientOption.CallOptions)
 
 	cstruct.ContentType = "fakectype"
-	cp(cstruct)
 	assert.Equal(t, cstruct.ContentType, "fakectype")
 
 	psize := clientOption.PoolSize(2)

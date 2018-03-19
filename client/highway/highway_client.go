@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"golang.org/x/net/context"
 )
@@ -59,9 +58,6 @@ func NewHighwayClient(options ...microClient.Option) microClient.Client {
 		o(&opts)
 	}
 
-	if opts.Codecs == nil {
-		opts.Codecs = codec.GetCodecMap()
-	}
 	if len(opts.ContentType) == 0 {
 		//TODO take effect of that option
 		opts.ContentType = "application/protobuf"
