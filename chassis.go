@@ -37,7 +37,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	// highway package register the highway server plugin
-	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server/highway"
+	_ "github.com/ServiceComb/go-chassis/server/highway"
 	// tcp package handles transport related things
 	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 )
