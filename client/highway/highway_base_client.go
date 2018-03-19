@@ -253,6 +253,9 @@ func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespo
 			rsp.Err = "Client send timeout"
 			return errors.New("Client send timeout")
 		}
+		if ctx.Rsp.Status != Ok {
+			return errors.New(ctx.Rsp.Err)
+		}
 	} else {
 		// Respond of postMsg  is  needless
 		err := highwayConn.PostMsg(req)
