@@ -35,7 +35,6 @@ import (
 	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	// highway package register the highway server plugin
 	_ "github.com/ServiceComb/go-chassis/server/highway"
 	// tcp package handles transport related things
@@ -61,7 +60,7 @@ type chassis struct {
 type Schema struct {
 	protocol string
 	schema   interface{}
-	opts     []serverOption.RegisterOption
+	opts     []server.RegisterOption
 }
 
 func (c *chassis) initChains(chainType string) error {
@@ -148,7 +147,7 @@ func (c *chassis) initialize() error {
 	return nil
 }
 
-func (c *chassis) registerSchema(protocol string, structPtr interface{}, opts ...serverOption.RegisterOption) {
+func (c *chassis) registerSchema(protocol string, structPtr interface{}, opts ...server.RegisterOption) {
 	schema := &Schema{
 		protocol: protocol,
 		schema:   structPtr,
@@ -186,7 +185,7 @@ func (c *chassis) start() error {
 
 //RegisterSchema Register a API service to specific protocol
 //You must register API first before Call Init
-func RegisterSchema(protocol string, structPtr interface{}, opts ...serverOption.RegisterOption) {
+func RegisterSchema(protocol string, structPtr interface{}, opts ...server.RegisterOption) {
 	goChassis.registerSchema(protocol, structPtr, opts...)
 }
 

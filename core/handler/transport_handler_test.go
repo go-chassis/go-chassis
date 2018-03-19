@@ -16,14 +16,13 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
 
 func TestTransportHandler_Handle(t *testing.T) {
-	chassis.RegisterSchema("highway", &schemas.HelloServer{}, serverOption.WithSchemaID("HelloServer"))
-	chassis.RegisterSchema("highway", &schemas.EmployServer{}, serverOption.WithSchemaID("EmployServer"), serverOption.WithMicroServiceName("Server"))
+	chassis.RegisterSchema("highway", &schemas.HelloServer{}, server.WithSchemaID("HelloServer"))
+	chassis.RegisterSchema("highway", &schemas.EmployServer{}, server.WithSchemaID("EmployServer"))
 	t.Log("testing transport handler with highway protocol")
 	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "client")
 	os.Setenv("CHASSIS_HOME", p)
@@ -34,12 +33,12 @@ func TestTransportHandler_Handle(t *testing.T) {
 	config.Init()
 	f, err := server.GetServerFunc("highway")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Address(addrHighway),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   addrHighway,
+		ChainName: "default",
+	})
 	_, err = s.Register(&schemas.HelloServer{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 
 	assert.NoError(t, err)
 	err = s.Start()

@@ -18,7 +18,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/metrics"
 
-	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
 	"golang.org/x/net/context"
@@ -40,14 +39,13 @@ type restfulServer struct {
 	microServiceName string
 	container        *restful.Container
 	ws               *restful.WebService
-	opts             microServer.Options
+	opts             server.Options
 	mux              sync.RWMutex
 	exit             chan chan error
 	server           *http.Server
 }
 
-func newRestfulServer(opts ...microServer.Option) microServer.Server {
-	options := newOptions(opts...)
+func newRestfulServer(opts server.Options) server.Server {
 	ws := new(restful.WebService)
 	ws.Path("/").Doc("root path").
 		Consumes(restful.MIME_XML, restful.MIME_JSON).
@@ -63,51 +61,21 @@ func newRestfulServer(opts ...microServer.Option) microServer.Server {
 		ws.Route(ws.GET(metricPath).To(metrics.MetricsHandleFunc))
 	}
 	return &restfulServer{
-		opts:      options,
+		opts:      opts,
 		container: restful.NewContainer(),
 		ws:        ws,
 	}
 }
-func newOptions(opt ...microServer.Option) microServer.Options {
-	opts := microServer.Options{
-		Metadata: map[string]string{},
-	}
 
-	for _, o := range opt {
-		o(&opts)
-	}
-	return opts
-}
-
-func (r *restfulServer) Init(opts ...microServer.Option) error {
-	r.mux.Lock()
-	defer r.mux.Unlock()
-	for _, opt := range opts {
-		opt(&r.opts)
-	}
-	lager.Logger.Info("Rest server init success")
-	return nil
-}
-
-func (r *restfulServer) Options() microServer.Options {
-	r.mux.RLock()
-	defer r.mux.RUnlock()
-	opts := r.opts
-	return opts
-}
-
-func (r *restfulServer) Register(schema interface{}, options ...microServer.RegisterOption) (string, error) {
+func (r *restfulServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
 	lager.Logger.Info("register rest server")
-	opts := microServer.RegisterOptions{}
+	opts := server.RegisterOptions{}
 	r.mux.Lock()
 	defer r.mux.Unlock()
 	for _, o := range options {
 		o(&opts)
 	}
 
-	opts = setMicroServiceName(opts)
-
-	r.microServiceName = opts.MicroServiceName
 	routes, err := GetRoutes(schema)
 	if err != nil {
 		return "", err
@@ -138,7 +106,7 @@ func (r *restfulServer) Register(schema interface{}, options ...microServer.Regi
 			}
 			//todo: use it for hystric
 			inv := invocation.Invocation{
-				MicroServiceName:   r.microServiceName,
+				MicroServiceName:   config.SelfServiceName,
 				SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
 				Args:               req,
 				Protocol:           common.ProtocolRest,
@@ -181,16 +149,8 @@ func (r *restfulServer) Register(schema interface{}, options ...microServer.Regi
 	return reflect.TypeOf(schema).String(), nil
 }
 
-func setMicroServiceName(opts microServer.RegisterOptions) microServer.RegisterOptions {
-	if opts.MicroServiceName == "" {
-		opts.MicroServiceName = config.SelfServiceName
-	}
-
-	return opts
-}
-
 func (r *restfulServer) Start() error {
-	config := r.Options()
+	config := r.opts
 	r.mux.Lock()
 	r.opts.Address = config.Address
 	r.mux.Unlock()

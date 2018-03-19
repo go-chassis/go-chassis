@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/ServiceComb/go-chassis"
-	tcpClient "github.com/ServiceComb/go-chassis/client/highway"
+	"github.com/ServiceComb/go-chassis/client/highway"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
@@ -17,7 +17,6 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
@@ -48,26 +47,24 @@ func TestStart(t *testing.T) {
 
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
-
+	config.SelfServiceName = msName
 	f, err := server.GetServerFunc("highway")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Address(addrHighway),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   addrHighway,
+		ChainName: "default",
+	})
 
 	_, err = s.Register(&schemas.HelloServer{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 
 	err = s.Start()
 	assert.NoError(t, err)
-	opt := s.Options()
-	assert.NotEmpty(t, opt)
 
 	name := s.String()
 	log.Println("server protocol name:", name)
-	c := tcpClient.NewHighwayClient(
+	c := highway.NewHighwayClient(
 		clientOption.ContentType("application/protobuf"))
 
 	if err != nil {
@@ -99,7 +96,7 @@ func TestStart(t *testing.T) {
 	var ms = new(model.MicroserviceCfg)
 	ms.Provider = "provider"
 	config.MicroserviceDefinition = ms
-	_, err = s.Register(&schemas.HelloServer{}, serverOption.WithMicroServiceName(msName))
+	_, err = s.Register(&schemas.HelloServer{})
 	assert.NoError(t, err)
 
 	err = s.Stop()

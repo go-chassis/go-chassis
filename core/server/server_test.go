@@ -9,45 +9,29 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/provider"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/registry/mock"
 	"github.com/ServiceComb/go-chassis/core/server"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestWithOptions(t *testing.T) {
 	t.Log("setting various parameter to Server Option ")
 
-	var o *serverOption.Options = new(serverOption.Options)
-	o.ID = "1"
+	var o = new(server.Options)
 	o.ChainName = "fakechain"
-
-	var p provider.Provider
 
 	var md = make(map[string]string)
 	md["abc"] = "abc"
 
 	t.Log("setting various parameter to server register Option")
-	var rego *serverOption.RegisterOptions = new(serverOption.RegisterOptions)
+	var rego *server.RegisterOptions = new(server.RegisterOptions)
 
-	c2 := serverOption.WithMicroServiceName("ms")
-	c2(rego)
-	assert.Equal(t, "ms", rego.MicroServiceName)
-
-	c2 = serverOption.WithSchemaID("schemaid")
+	c2 := server.WithSchemaID("schemaid")
 	c2(rego)
 	assert.Equal(t, "schemaid", rego.SchemaID)
 
-	c2 = serverOption.WithGrpcRegister("grpcreg")
-	c2(rego)
-	assert.Equal(t, "grpcreg", rego.GrpcRegister)
-
-	c2 = serverOption.WithServiceProvider(p)
-	c2(rego)
-	assert.Equal(t, p, rego.Provider)
 }
 
 const MockError = "movk error"
