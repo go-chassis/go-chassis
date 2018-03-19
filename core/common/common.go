@@ -94,3 +94,8 @@ const (
 	DefaultDomainName = "default"
 	DefaultProvider   = "default"
 )
+
+// const default config for config-center
+const (
+	DefaultRefreshMode = 1
+)

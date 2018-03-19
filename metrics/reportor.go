@@ -3,15 +3,9 @@ package metrics
 import (
 	"errors"
 	"sync"
-	"time"
 
 	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
-
-	"github.com/ServiceComb/cse-collector"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
 	"github.com/rcrowley/go-metrics"
 )
 
@@ -48,35 +42,8 @@ func ReportMetricsToPrometheus(r metrics.Registry) error {
 	return nil
 }
 
-//metricCollector use go-metrics to send metrics to cse dashboard
-func reportMetricsToCSEDashboard(r metrics.Registry) error {
-	metricCollector.Registry.Register(metricsink.NewCseCollector)
-
-	monitorServerURL, err := getMonitorEndpoint()
-	if err != nil {
-		lager.Logger.Warn("Get Monitoring URL failed, CSE monitoring function disabled", err)
-		return nil
-	}
-
-	tlsConfig, tlsError := getTLSForClient(monitorServerURL)
-	if tlsError != nil {
-		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed.", Name, common.Consumer)
-		return tlsError
-	}
-
-	metricsink.InitializeCseCollector(&metricsink.CseCollectorConfig{
-		CseMonitorAddr: monitorServerURL,
-		Header:         getAuthHeaders(),
-		TimeInterval:   time.Second * 2,
-		TLSConfig:      tlsConfig,
-	}, r, config.GlobalDefinition.AppID, config.SelfVersion, config.SelfServiceName)
-	lager.Logger.Infof("Started sending metric Data to Monitor Server : %s", monitorServerURL)
-	return nil
-}
-
 //TODO ReportMetricsToOpenTSDB use go-metrics reporter to send metrics to opentsdb
 
 func init() {
 	InstallReporter("Prometheus", ReportMetricsToPrometheus)
-	InstallReporter("CSE Monitoring", reportMetricsToCSEDashboard)
 }
