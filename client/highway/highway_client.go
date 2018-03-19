@@ -1,6 +1,5 @@
 package highway
 
-
 import (
 	"github.com/ServiceComb/go-chassis/core/client"
 	"sync"
