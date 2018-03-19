@@ -16,12 +16,7 @@ var errMonitoringFail = errors.New("Con not report metrics to CSE monitoring ser
 
 // constants for header parameters
 const (
-	//HeaderUserName is a variable of type string
-	HeaderUserName   = "x-user-name"
-	HeaderDomainName = "x-domain-name"
-	ContentType      = "Content-Type"
-	Name             = "monitor"
-	defaultName      = "default_metric_registry"
+	defaultName = "default_metric_registry"
 	// Metrics is the constant string
 	Metrics = "PrometheusMetrics"
 )

@@ -18,7 +18,6 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
@@ -44,9 +43,6 @@ func TestStart(t *testing.T) {
 	msName := "Server1"
 	schema := "schema2"
 
-	trServer := tcp.NewTransport()
-	trClient := tcp.NewTransport()
-
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
@@ -56,7 +52,6 @@ func TestStart(t *testing.T) {
 	f, err := server.GetServerFunc("highway")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
 		serverOption.Address(addrHighway),
 		serverOption.ChainName("default"))
 
@@ -73,7 +68,6 @@ func TestStart(t *testing.T) {
 	name := s.String()
 	log.Println("server protocol name:", name)
 	c := tcpClient.NewHighwayClient(
-		clientOption.Transport(trClient),
 		clientOption.ContentType("application/protobuf"))
 
 	if err != nil {
@@ -102,7 +96,7 @@ func TestStart(t *testing.T) {
 	log.Println("error is:", err)
 	assert.Error(t, err)
 
-	var ms *model.MicroserviceCfg = new(model.MicroserviceCfg)
+	var ms = new(model.MicroserviceCfg)
 	ms.Provider = "provider"
 	config.MicroserviceDefinition = ms
 	_, err = s.Register(&schemas.HelloServer{}, serverOption.WithMicroServiceName(msName))

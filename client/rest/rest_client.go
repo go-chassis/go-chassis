@@ -12,7 +12,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/loadbalance"
 
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"golang.org/x/net/context"
 )
@@ -43,10 +42,6 @@ func NewRestClient(options ...microClient.Option) microClient.Client {
 	opts := microClient.Options{}
 	for _, o := range options {
 		o(&opts)
-	}
-
-	if opts.Codecs == nil {
-		opts.Codecs = codec.GetCodecMap()
 	}
 
 	if len(opts.ContentType) == 0 {

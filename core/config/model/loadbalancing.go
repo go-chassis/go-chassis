@@ -41,6 +41,6 @@ type SessionStickinessRule struct {
 // BackoffStrategy back off strategy
 type BackoffStrategy struct {
 	Kind  string `yaml:"kind"`
-	MinMs uint   `yaml:"minMs"`
-	MaxMs uint   `yaml:"maxMs"`
+	MinMs int    `yaml:"minMs"`
+	MaxMs int    `yaml:"maxMs"`
 }

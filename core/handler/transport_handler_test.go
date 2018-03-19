@@ -17,13 +17,9 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
-
-var tr transport.Transport = tcp.NewTransport()
 
 func TestTransportHandler_Handle(t *testing.T) {
 	chassis.RegisterSchema("highway", &schemas.HelloServer{}, serverOption.WithSchemaID("HelloServer"))
@@ -36,11 +32,9 @@ func TestTransportHandler_Handle(t *testing.T) {
 	msName := "Server"
 	schema := "schema2"
 	config.Init()
-	trServer := tcp.NewTransport()
 	f, err := server.GetServerFunc("highway")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
 		serverOption.Address(addrHighway),
 		serverOption.ChainName("default"))
 	_, err = s.Register(&schemas.HelloServer{},
@@ -96,12 +90,6 @@ func TestTransportHandler_HandleRest(t *testing.T) {
 		"rest": {Listen: "0.0.0.0:2678", Advertise: "0.0.0.0:8888", WorkerNumber: 1},
 	}
 
-	l, err := tr.Listen("127.0.0.1:9992")
-	if err != nil {
-		t.Errorf("Unexpected listen err: %v", err)
-	}
-	defer l.Close()
-
 	/*fn := func(sock transport.Socket) {
 		defer sock.Close()
 
@@ -151,12 +139,9 @@ func TestTransportHandler_HandleRest(t *testing.T) {
 		log.Println("chain start")
 		log.Println(r.Result)
 		log.Println(r.Err)
-		//assert.Empty(t, r.Err)
-		//assert.NoError(t, r.Err)
 		assert.Equal(t, nil, r.Result)
 		err2 = r.Err
 		return r.Err
 	})
-	l.Close()
 
 }

@@ -10,10 +10,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-	"github.com/ServiceComb/go-chassis/core/transport"
 
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
 )
 
 var clients = make(map[string]map[string]microClient.Client)
@@ -43,15 +41,6 @@ func CreateClient(protocol, service string) (microClient.Client, error) {
 			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 	p := GetProtocolSpec(protocol)
-	var tr microTransport.Transport
-	if p.Transport == "" {
-		p.Transport = common.TransportTCP
-	}
-	trF, err := transport.GetTransportFunc(p.Transport)
-	if err != nil {
-		return nil, err
-	}
-	tr = trF(microTransport.TLSConfig(tlsConfig))
 
 	poolSize := microClient.DefaultPoolSize
 
@@ -65,7 +54,6 @@ func CreateClient(protocol, service string) (microClient.Client, error) {
 	}
 
 	c := f(
-		microClient.Transport(tr),
 		microClient.ContentType("application/json"),
 		microClient.TLSConfig(tlsConfig),
 		microClient.WithConnectionPoolSize(poolSize),

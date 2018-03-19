@@ -160,15 +160,13 @@ func getUniqueIDForDimInfo() string {
 }
 
 func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bool, tlsConfig *tls.Config) error {
-	var err error
 
-	if (config.GlobalDefinition.Cse.Config.Client.RefreshMode != 0) &&
-		(config.GlobalDefinition.Cse.Config.Client.RefreshMode != 1) {
+	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
+	if refreshMode != 0 && refreshMode != 1 {
 		err := errors.New(client.RefreshModeError)
 		lager.Logger.Error(client.RefreshModeError, err)
 		return err
 	}
-
 	memDiscovery := memberdiscovery.NewConfiCenterInit(tlsConfig, tenantName, enableSSL)
 
 	configCenters := strings.Split(ccEndpoint, ",")
@@ -188,11 +186,11 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 		}
 	}
 
-	configCenterSource := configcentersource.NewConfigCenterSource(memDiscovery,
-		dimensionInfo, tlsConfig, tenantName, config.GlobalDefinition.Cse.Config.Client.RefreshMode,
+	configCenterSource := configcentersource.NewConfigCenterSource(
+		memDiscovery, dimensionInfo, tlsConfig, tenantName, refreshMode,
 		config.GlobalDefinition.Cse.Config.Client.RefreshInterval, enableSSL)
 
-	err = archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
+	err := archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
 	if err != nil {
 		lager.Logger.Error("failed to do add source operation!!", err)
 		return err
