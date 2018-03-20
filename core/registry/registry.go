@@ -67,6 +67,7 @@ type Registry interface {
 	GetMicroServicesByInterface(interfaceName string) (microservices []*MicroService)
 	GetSchemaContentByInterface(interfaceName string) SchemaContent
 	GetSchemaContentByServiceName(svcName, version, appID, env string) []*SchemaContent
+	Health() error
 }
 
 // enableRegistry enable registry
@@ -155,7 +156,8 @@ func Enable() error {
 		TLSConfig(tlsConfig),
 		Version(config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version))
 	if err := RegisterMicroservice(); err != nil {
-		return err
+		lager.Logger.Warnf(nil, "start backoff for register microservice")
+		startBackOff(RegisterMicroservice)
 	}
 	go HBService.Start()
 	RegistryService.AutoSync()
@@ -183,7 +185,8 @@ func DoRegister() error {
 	}
 	if isAutoRegister {
 		if err := RegisterMicroserviceInstances(); err != nil {
-			return err
+			lager.Logger.Warnf(nil, "start backoff for register microservice instances background")
+			go startBackOff(RegisterMicroserviceInstances)
 		}
 	}
 	return nil

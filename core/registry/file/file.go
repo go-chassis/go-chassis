@@ -21,6 +21,11 @@ type File struct {
 	opts           Options
 }
 
+// Health check the registry
+func (f *File) Health() error {
+	return nil
+}
+
 // Close close the file
 func (f *File) Close() error {
 	return nil

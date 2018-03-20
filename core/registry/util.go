@@ -4,10 +4,13 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/util/iputil"
+
+	"github.com/cenkalti/backoff"
 )
 
 const protocolSymbol = "://"
@@ -94,4 +97,26 @@ func MakeEndpointMap(m map[string]model.Protocol) map[string]string {
 //Microservice2ServiceKeyStr prepares a microservice key
 func Microservice2ServiceKeyStr(m *MicroService) string {
 	return strings.Join([]string{m.ServiceName, m.Version, m.AppID}, ":")
+}
+
+const (
+	initialInterval = 5 * time.Second
+	maxInterval     = 3 * time.Minute
+)
+
+func startBackOff(operation func() error) {
+	backOff := &backoff.ExponentialBackOff{
+		InitialInterval:     initialInterval,
+		MaxInterval:         maxInterval,
+		RandomizationFactor: backoff.DefaultRandomizationFactor,
+		Multiplier:          backoff.DefaultMultiplier,
+		Clock:               backoff.SystemClock,
+	}
+	for {
+		lager.Logger.Infof("start backoff with initial interval %v", initialInterval)
+		err := backoff.Retry(operation, backOff)
+		if err == nil {
+			return
+		}
+	}
 }

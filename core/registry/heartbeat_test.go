@@ -47,12 +47,13 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 	assert.NoError(t, err)
 
 }
+
 func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	config.Init()
-	var ins = make(map[string]string)
+	var ins = map[string]string{"type": "test"}
 	config.MicroserviceDefinition.ServiceDescription.InstanceProperties = ins
 	t.Log(os.Getenv("CHASSIS_HOME"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
