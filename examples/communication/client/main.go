@@ -6,17 +6,17 @@ import (
 	"github.com/ServiceComb/go-chassis"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"golang.org/x/net/context"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
 	// just init client
-	chassis.RegisterSchema("highway", &schemas.HelloServer{}, serverOption.WithSchemaID("HelloService"))
+	chassis.RegisterSchema("highway", &schemas.HelloServer{}, server.WithSchemaID("HelloService"))
 	if err := chassis.Init(); err != nil {
 		lager.Logger.Error("Init failed.", err)
 		return

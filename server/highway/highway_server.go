@@ -9,7 +9,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/provider"
 	"github.com/ServiceComb/go-chassis/core/server"
-	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"net"
 	"time"
 )
@@ -29,33 +28,15 @@ var remoteLogin = true
 
 type highwayServer struct {
 	connMgr *ConnectionMgr
-	opts    microServer.Options
+	opts    server.Options
 	sync.RWMutex
 }
 
-func (s *highwayServer) Init(opts ...microServer.Option) error {
-	s.Lock()
-	for _, o := range opts {
-		o(&s.opts)
-	}
-	s.Unlock()
-
-	return nil
-}
-func (s *highwayServer) Options() microServer.Options {
-	s.RLock()
-	opts := s.opts
-	s.RUnlock()
-	return opts
-}
-func (s *highwayServer) Register(schema interface{}, options ...microServer.RegisterOption) (string, error) {
-	opts := microServer.RegisterOptions{}
+func (s *highwayServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
+	opts := server.RegisterOptions{}
 	var pn string
 	for _, o := range options {
 		o(&opts)
-	}
-	if opts.MicroServiceName == "" {
-		opts.MicroServiceName = config.SelfServiceName
 	}
 	mc := config.MicroserviceDefinition
 	if mc == nil {
@@ -71,17 +52,17 @@ func (s *highwayServer) Register(schema interface{}, options ...microServer.Regi
 		}
 
 	}
-	provider.RegisterProvider(pn, opts.MicroServiceName)
+	provider.RegisterProvider(pn, config.SelfServiceName)
 	if opts.SchemaID != "" {
-		err := provider.RegisterSchemaWithName(opts.MicroServiceName, opts.SchemaID, schema)
+		err := provider.RegisterSchemaWithName(config.SelfServiceName, opts.SchemaID, schema)
 		return opts.SchemaID, err
 	}
-	schemaID, err := provider.RegisterSchema(opts.MicroServiceName, schema)
+	schemaID, err := provider.RegisterSchema(config.SelfServiceName, schema)
 	return schemaID, err
 }
 
 func (s *highwayServer) Start() error {
-	opts := s.Options()
+	opts := s.opts
 	//TODO lot of options
 	var listener net.Listener
 	var lisErr error
@@ -119,21 +100,11 @@ func (s *highwayServer) Stop() error {
 	return nil
 }
 
-func newHighwayServer(opts ...microServer.Option) microServer.Server {
+func newHighwayServer(opts server.Options) server.Server {
 	return &highwayServer{
 		connMgr: newConnectMgr(),
-		opts:    newOptions(opts...),
+		opts:    opts,
 	}
-}
-func newOptions(opt ...microServer.Option) microServer.Options {
-	opts := microServer.Options{
-		Metadata: map[string]string{},
-	}
-	for _, o := range opt {
-		o(&opts)
-	}
-
-	return opts
 }
 func (s *highwayServer) String() string {
 	return Name

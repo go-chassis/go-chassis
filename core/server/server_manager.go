@@ -11,15 +11,13 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 	"github.com/ServiceComb/go-chassis/util/iputil"
-
-	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 )
 
 //NewFunc returns a server
-type NewFunc func(...microServer.Option) microServer.Server
+type NewFunc func(Options) Server
 
 var serverPlugins = make(map[string]NewFunc)
-var servers = make(map[string]microServer.Server)
+var servers = make(map[string]Server)
 
 //InstallPlugin For developer
 func InstallPlugin(protocol string, newFunc NewFunc) {
@@ -37,7 +35,7 @@ func GetServerFunc(protocol string) (NewFunc, error) {
 }
 
 //GetServer return the server based on protocol
-func GetServer(protocol string) (microServer.Server, error) {
+func GetServer(protocol string) (Server, error) {
 	s, ok := servers[protocol]
 	if !ok {
 		return nil, fmt.Errorf("[%s] server isn't running ", protocol)
@@ -46,7 +44,7 @@ func GetServer(protocol string) (microServer.Server, error) {
 }
 
 //GetServers returns the map of servers
-func GetServers() map[string]microServer.Server {
+func GetServers() map[string]Server {
 	return servers
 }
 
@@ -149,11 +147,13 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 		}
 	}
 
-	var s microServer.Server
-	s = f(
-		microServer.Address(p.Listen),
-		microServer.ChainName(chainName),
-		microServer.TLSConfig(tlsConfig))
+	var s Server
+	o := Options{
+		Address:   p.Listen,
+		ChainName: chainName,
+		TLSConfig: tlsConfig,
+	}
+	s = f(o)
 	servers[name] = s
 	return nil
 }

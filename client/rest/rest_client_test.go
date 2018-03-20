@@ -16,7 +16,6 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
@@ -37,7 +36,7 @@ func initEnv() {
 
 func TestNewRestClient_Call(t *testing.T) {
 	initEnv()
-	msName := "Server"
+	config.SelfServiceName = "Server"
 	schema := "schema2"
 
 	defaultChain := make(map[string]string)
@@ -52,11 +51,12 @@ func TestNewRestClient_Call(t *testing.T) {
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Address(addrRest),
-		serverOption.ChainName("default"))
+		server.Options{
+			Address:   addrRest,
+			ChainName: "default",
+		})
 	_, err = s.Register(&schemas.RestFulHello{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 	err = s.Start()
 	assert.NoError(t, err)
@@ -104,7 +104,7 @@ func TestNewRestClient_Call(t *testing.T) {
 func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	t.Log("Testing NewRestClient function for parse duration failed scenario")
 	initEnv()
-	msName := "Server1"
+	config.SelfServiceName = "Server1"
 	schema := "schema2"
 
 	defaultChain := make(map[string]string)
@@ -115,12 +115,12 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Address("127.0.0.1:8040"),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   "127.0.0.1:8040",
+		ChainName: "default",
+	})
 	_, err = s.Register(&schemas.RestFulHello{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 	err = s.Start()
 	assert.NoError(t, err)
@@ -159,7 +159,7 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	t.Log("Testing NewRestClient call function for error scenarios")
 	initEnv()
-	msName := "Server2"
+	config.SelfServiceName = "Server2"
 	schema := "schema2"
 
 	defaultChain := make(map[string]string)
@@ -170,12 +170,12 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Address("127.0.0.1:8092"),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   "127.0.0.1:8092",
+		ChainName: "default",
+	})
 	_, err = s.Register(&schemas.RestFulHello{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 	err = s.Start()
 	assert.NoError(t, err)

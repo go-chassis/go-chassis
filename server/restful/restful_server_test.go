@@ -11,7 +11,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,7 +34,6 @@ func initEnv() {
 func TestRestStart(t *testing.T) {
 	t.Log("Testing restful server start function")
 	initEnv()
-	msName := "Server1"
 	schema := "schema1"
 
 	//trClient := tcp.NewTransport()
@@ -48,13 +46,13 @@ func TestRestStart(t *testing.T) {
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Address(addrHighway),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   addrHighway,
+		ChainName: "default",
+	})
 
 	_, err = s.Register(&schemas.RestFulHello{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 
 	err = s.Start()
@@ -70,7 +68,6 @@ func TestRestStart(t *testing.T) {
 func TestRestStartFailure(t *testing.T) {
 	t.Log("Testing restful server for start function failure")
 	initEnv()
-	msName := "Server2"
 	schema := "schema2"
 
 	//trClient := tcp.NewTransport()
@@ -83,13 +80,13 @@ func TestRestStartFailure(t *testing.T) {
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Address(addrHighway),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   addrHighway,
+		ChainName: "default",
+	})
 
 	_, err = s.Register(&schemas.HelloServer{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.Error(t, err)
 
 	err = s.Start()
