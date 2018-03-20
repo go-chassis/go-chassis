@@ -8,7 +8,9 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
+	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"net/http"
 )
 
 // constant for bizkeeper-consumer
@@ -85,6 +87,12 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, cb invocation.Respo
 					resp.Err = hystrix.FallbackNullError{Message: "return null"}
 				} else {
 					resp.Err = hystrix.CircuitError{Message: i.MicroServiceName + " is isolated because of error: " + err.Error()}
+					switch i.Reply.(type) {
+					case *rest.Response:
+						resp := i.Reply.(*rest.Response)
+						resp.SetStatusCode(http.StatusRequestTimeout)
+					}
+
 				}
 				cb(resp)
 				return nil //没有返回错误的必要
