@@ -1,7 +1,7 @@
-# Go-chassis
-[![Build Status](https://travis-ci.org/ServiceComb/go-chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/go-chassis)  [![Coverage Status](https://coveralls.io/repos/github/ServiceComb/go-chassis/badge.svg)](https://coveralls.io/github/ServiceComb/go-chassis)
-Go-Chassis is a Software Development Kit(SDK) for rapid development of microservices in GoLang,
- providing service-discovery,  fault-tolerance, circuit breaker, load balancing, monitoring, hot-reconfiguration features
+# Go-Chassis  
+[![Build Status](https://travis-ci.org/ServiceComb/go-chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/go-chassis)  [![Coverage Status](https://coveralls.io/repos/github/ServiceComb/go-chassis/badge.svg)](https://coveralls.io/github/ServiceComb/go-chassis) [![Go Report Card](https://goreportcard.com/badge/github.com/ServiceComb/go-chassis)](https://goreportcard.com/report/github.com/ServiceComb/go-chassis) [![GoDoc](https://godoc.org/github.com/ServiceComb/go-chassis?status.svg)](https://godoc.org/github.com/ServiceComb/go-chassis) [![HitCount](http://hits.dwyl.io/ServiceComb/go-chassis.svg)](http://hits.dwyl.io/ServiceComb/go-chassis)      
+
+Go-Chassis is a Software Development Kit(SDK) for rapid development of microservices in GoLang, providing service-discovery,  fault-tolerance, circuit breaker, load balancing, monitoring, hot-reconfiguration features
  
 Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable RPC framework, and did some enhancements.
 
