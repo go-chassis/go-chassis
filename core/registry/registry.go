@@ -156,7 +156,7 @@ func Enable() error {
 		TLSConfig(tlsConfig),
 		Version(config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version))
 	if err := RegisterMicroservice(); err != nil {
-		lager.Logger.Warnf(nil, "start backoff for register microservice")
+		lager.Logger.Errorf(err, "start backoff for register microservice")
 		startBackOff(RegisterMicroservice)
 	}
 	go HBService.Start()
@@ -185,7 +185,7 @@ func DoRegister() error {
 	}
 	if isAutoRegister {
 		if err := RegisterMicroserviceInstances(); err != nil {
-			lager.Logger.Warnf(nil, "start backoff for register microservice instances background")
+			lager.Logger.Errorf(err, "start backoff for register microservice instances background")
 			go startBackOff(RegisterMicroserviceInstances)
 		}
 	}
