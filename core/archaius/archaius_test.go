@@ -225,17 +225,27 @@ cse:
 
 	time.Sleep(1 * time.Second)
 
-	err = archaius.AddKeyValue("externalSourcetest", "testextsource1")
+	err = archaius.AddKeyValue("memorySourcetestKeyCheck", "testmemsource1")
 	if err != nil {
-		t.Error("Failed to Add Key and value in Externalconfig source")
+		t.Error("Failed to Add Key and value in Memoryconfig source")
 	}
 
-	configvalue := archaius.Get("externalSourcetest")
-	if configvalue != "testextsource1" {
-		t.Error("externalconfigsource key value is mismatched")
+	err = archaius.DeleteKeyValue("memorySourcetestKeyCheck", "testmemsource1")
+	if err != nil {
+		t.Error("Failed to Delete Key and value in Memoryconfig source")
 	}
 
-	if archaius.Exist("externalSourcetest") != true || archaius.Exist("notexistingkey") != false {
+	err = archaius.AddKeyValue("memorySourcetest", "testmemsource1")
+	if err != nil {
+		t.Error("Failed to Add Key and value in memoryconfig source")
+	}
+
+	configvalue := archaius.Get("memorySourcetest")
+	if configvalue != "testmemsource1" {
+		t.Error("memoryconfigsource key value is mismatched")
+	}
+
+	if archaius.Exist("memorySourcetest") != true || archaius.Exist("notexistingkey") != false {
 		t.Error("Failed to get the exist status of the keys")
 	}
 

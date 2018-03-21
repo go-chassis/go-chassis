@@ -14,7 +14,7 @@
 			"importpath": "github.com/ServiceComb/go-archaius",
 			"repository": "https://github.com/ServiceComb/go-archaius",
 			"vcs": "git",
-			"revision": "66ab8495bf196b4926903e94977c58856d26eafc",
+			"revision": "0f7be1cd6795cb3988a90283170c58e3f1b855dc",
 			"branch": "HEAD",
 			"notests": true,
 			"allfiles": true

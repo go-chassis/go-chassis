@@ -3,8 +3,8 @@ package archaius
 import (
 	"github.com/ServiceComb/go-archaius"
 	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/external-source"
 	"github.com/ServiceComb/go-archaius/sources/file-source"
+	"github.com/ServiceComb/go-archaius/sources/memory-source"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/util/fileutil"
 )
@@ -192,5 +192,10 @@ func AddFile(file string) error {
 
 // AddKeyValue is for to add the configuration key, value pairs into the configfactory at run time
 func AddKeyValue(key string, value interface{}) error {
-	return externalconfigsource.NewExternalConfigurationSource().AddKeyValue(key, value)
+	return memoryconfigsource.NewMemoryConfigurationSource().AddKeyValue(key, value)
+}
+
+// DeleteKeyValue is for to delete the configuration key, value pairs into the configfactory at run time
+func DeleteKeyValue(key string, value interface{}) error {
+	return memoryconfigsource.NewMemoryConfigurationSource().DeleteKeyValue(key, value)
 }
