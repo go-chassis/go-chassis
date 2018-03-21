@@ -12,8 +12,6 @@ import (
 const (
 	//LoadBalanceKey is variable of type string that matches load balancing events
 	LoadBalanceKey = "^cse\\.loadbalance\\."
-	Update         = "update"
-	Delete         = "delete"
 )
 
 //LoadbalanceEventListener is a struct
@@ -29,7 +27,7 @@ func (e *LoadbalanceEventListener) Event(event *core.Event) {
 	}
 	if event.Key == "cse.loadbalance.strategy.name" {
 		switch event.EventType {
-		case Update:
+		case core.Update:
 			strategyName := event.Value
 			strategy, err := loadbalance.GetStrategyPlugin(strategyName.(string))
 			if err != nil {
@@ -39,7 +37,7 @@ func (e *LoadbalanceEventListener) Event(event *core.Event) {
 				o := loadbalance.DefaultSelector.Options()
 				o.Strategy = strategy
 			}
-		case Delete:
+		case core.Delete:
 			strategyName := "RoundRobin"
 			strategy, err := loadbalance.GetStrategyPlugin(strategyName)
 			if err != nil {

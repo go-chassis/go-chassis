@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/external-source"
+	"github.com/ServiceComb/go-archaius/sources/memory-source"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/router"
@@ -27,7 +27,7 @@ func TestDarkLaunchEventListenerEvent(t *testing.T) {
 		t.Error(err)
 	}
 	archaius.DefaultConf = c
-	c.ConfigFactory.AddSource(externalconfigsource.NewExternalConfigurationSource())
+	c.ConfigFactory.AddSource(memoryconfigsource.NewMemoryConfigurationSource())
 
 	err = router.Init()
 	assert.NoError(t, err)
