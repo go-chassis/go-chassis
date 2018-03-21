@@ -12,6 +12,11 @@ type RegistryMock struct {
 	mock.Mock
 }
 
+// Health check the registry
+func (m *RegistryMock) Health() error {
+	return nil
+}
+
 // Close to close the registry mock
 func (m *RegistryMock) Close() error {
 	return nil

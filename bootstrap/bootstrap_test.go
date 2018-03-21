@@ -6,7 +6,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -42,7 +41,6 @@ func TestBootstrap(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.MicroserviceDefinition = &model.MicroserviceCfg{}
 	config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version = "v2"
-	registry.Enable()
 
 	t.Log("Test bootstrap.go")
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
