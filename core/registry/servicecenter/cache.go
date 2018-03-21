@@ -14,6 +14,7 @@ import (
 	client "github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 	cache "github.com/patrickmn/go-cache"
+	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 // constant values for default expiration time, and refresh interval
@@ -181,15 +182,8 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		lager.Logger.Errorf(err, "get Providers failed, sid = %s", config.SelfServiceID)
 		return err
 	}
-	//get Provider's instances
-	serviceStore := map[string]struct{}{}
-	for _, microservice := range rsp.Services {
-		key := strings.Join([]string{microservice.ServiceName, microservice.AppID}, ":")
-		if _, ok := serviceStore[key]; !ok {
-			serviceStore[key] = struct{}{}
-		}
-	}
 
+	serviceStore := c.getServiceStore(rsp.Services)
 	for key := range serviceStore {
 		service := strings.Split(key, ":")
 		if len(service) != 2 {
@@ -207,6 +201,45 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		filterRestore(providerInstances, service[0], service[1])
 	}
 	return nil
+}
+
+// getServiceStore returns service sets
+func (c *CacheManager) getServiceStore(exist []*model.MicroService) sets.String {
+	//get Provider's instances
+	serviceStore := sets.NewString()
+	for _, microservice := range exist {
+		key := strings.Join([]string{microservice.ServiceName, microservice.AppID}, ":")
+		if !serviceStore.Has(key) {
+			serviceStore.Insert(key)
+		}
+	}
+
+	if archaius.GetBool("cse.service.registry.autoClearCache", false) {
+		c.autoClearCache(serviceStore)
+	}
+	return serviceStore
+}
+
+// autoClearCache clear cache for non exist service
+func (c *CacheManager) autoClearCache(exist sets.String) {
+	old := registry.MicroserviceInstanceCache.Items()
+	delsets := sets.NewString()
+
+	for key := range old {
+		ins := strings.Split(key, ":")
+		if len(ins) != 3 {
+			continue
+		}
+
+		skey := strings.Join([]string{ins[0], ins[2]}, ":")
+		if !exist.Has(skey) {
+			delsets.Insert(key)
+		}
+	}
+
+	for insKey := range delsets {
+		registry.MicroserviceInstanceCache.Delete(insKey)
+	}
 }
 
 // filterRestore filter and restore instances to cache

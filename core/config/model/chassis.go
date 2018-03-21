@@ -156,6 +156,7 @@ type RegistryStruct struct {
 	Disable         bool                     `yaml:"disabled"`
 	Type            string                   `yaml:"type"`
 	Scope           string                   `yaml:"scope"`
+	AutoClearCache  bool                     `yaml:"autoClearCache"`
 	AutoDiscovery   bool                     `yaml:"autodiscovery"`
 	AutoIPIndex     bool                     `yaml:"autoIPIndex"`
 	Address         string                   `yaml:"address"`
