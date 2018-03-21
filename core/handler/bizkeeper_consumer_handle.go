@@ -91,6 +91,8 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, cb invocation.Respo
 					case *rest.Response:
 						resp := i.Reply.(*rest.Response)
 						resp.SetStatusCode(http.StatusRequestTimeout)
+						//make sure body is empty
+						resp.GetResponse().ResetBody()
 					}
 
 				}
