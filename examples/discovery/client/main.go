@@ -115,7 +115,7 @@ func callRest(invoker *core.RestInvoker) {
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
 	if err != nil {
-		lager.Logger.Errorf(err, "call request fail")
+		lager.Logger.Errorf(err, "call request fail (%s) (%d) ", string(resp1.ReadBody()), resp1.GetStatusCode())
 		return
 	}
 	log.Printf("Rest Server sayhello[Get] %s", string(resp1.ReadBody()))
