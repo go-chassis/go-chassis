@@ -32,13 +32,13 @@ func NewRestInvoker(opt ...Option) *RestInvoker {
 
 // ContextDo is for requesting the API
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options ...InvocationOption) (*rest.Response, error) {
-	opts := getOpts(string(req.GetRequest().Host()), options...)
+	opts := getOpts(req.GetRequest().Host, options...)
 	opts.Protocol = common.ProtocolRest
 	if len(opts.Filters) == 0 {
 		opts.Filters = ri.opts.Filters
 	}
-	if string(req.GetRequest().URI().Scheme()) != "cse" {
-		return nil, fmt.Errorf("Scheme invalid: %s, only support cse://", req.GetRequest().URI().Scheme())
+	if string(req.GetRequest().URL.Scheme) != "cse" {
+		return nil, fmt.Errorf("Scheme invalid: %s, only support cse://", req.GetRequest().URL.Scheme)
 	}
 	if req.GetHeader("Content-Type") == "" {
 		req.SetHeader("Content-Type", "application/json")
@@ -50,11 +50,11 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 	inv := invocation.CreateInvocation()
 	wrapInvocationWithOpts(inv, opts)
 	inv.AppID = config.GlobalDefinition.AppID
-	inv.MicroServiceName = string(req.GetRequest().Host())
+	inv.MicroServiceName = req.GetRequest().Host
 	inv.Args = newReq
 	inv.Reply = resp
 	inv.Ctx = ctx
-	inv.URLPathFormat = req.Req.URI().String()
+	inv.URLPathFormat = req.Req.URL.Path
 	inv.MethodType = req.GetMethod()
 	c, err := handler.GetChain(common.Consumer, ri.opts.ChainName)
 	if err != nil {

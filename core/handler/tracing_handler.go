@@ -10,14 +10,14 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/tracing"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/ServiceComb/go-chassis/util/iputil"
 
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/emicklei/go-restful"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
+	"github.com/valyala/fasthttp"
 )
 
 // TracingProviderHandler tracing provider handler
@@ -45,7 +45,11 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 			carrier = (opentracing.HTTPHeadersCarrier)(req.Request.Header)
 		case *fasthttp.Request:
 			req := i.Args.(*fasthttp.Request)
-			carrier = &tracing.FasthttpHeaderCarrier{&req.Header}
+			headerMap := make(map[string]string)
+			req.Header.VisitAll(func(key, value []byte) {
+				headerMap[string(key)] = string(value)
+			})
+			carrier = &tracing.HeaderCarrier{Header: headerMap}
 		default:
 			lager.Logger.Error("rest consumer call arg is neither *restful.Request|*fasthttp.Request type.", nil)
 			err = errors.New("Type invalid")

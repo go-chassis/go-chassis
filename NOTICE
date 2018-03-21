@@ -52,6 +52,7 @@ github.com/reactivex/rxgo
 github.com/smartystreets/assertions
 github.com/smartystreets/goconvey
 github.com/spf13/cast
+github.com/valyala/fasthttp
 go.uber.org/ratelimit
 
 ================================================================
@@ -170,12 +171,6 @@ For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collect
 The MIT License (MIT)
 
 Copyright (c) 2013 keith
-
-==========================================
-For third_party/forked/valyala/fasthttp(Forked from github.com/valyala/fasthttp/)
-The MIT License (MIT)
-
-Copyright (c) 2015-2016 Aliaksandr Valialkin, VertaMedia
 
 ==========================================
 For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws(Forked from github.com/datastream/aws)

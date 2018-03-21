@@ -1,10 +1,11 @@
 package rest_test
 
 import (
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
+
+	"github.com/ServiceComb/go-chassis/client/rest"
+	"github.com/stretchr/testify/assert"
 )
 
 var req *rest.Request
@@ -35,20 +36,19 @@ func TestNewRestRequest(t *testing.T) {
 	assert.Empty(t, body)
 
 	header := resp.GetHeader()
-	assert.NotEmpty(t, header)
+	assert.Empty(t, header)
 
 	_ = resp.GetStatusCode()
 
-	var c1 *fasthttp.Cookie
-	c1 = new(fasthttp.Cookie)
-	c1.SetKey("test")
+	c1 := new(http.Cookie)
+	c1.Name = "test"
 
 	sessionIDValue := "abcdefg"
-	c1.SetValue(sessionIDValue)
+	c1.Value = sessionIDValue
 
 	resp.SetCookie(c1)
 	val := resp.GetCookie("test")
-	assert.Equal(t, c1.Cookie(), val)
+	assert.Equal(t, c1.Value, string(val))
 
 	req, err = rest.NewRequest("GET", "cse://hello")
 	assert.NoError(t, err)

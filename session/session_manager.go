@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	cache "github.com/patrickmn/go-cache"
 )
 
@@ -31,18 +31,17 @@ func initCache() *cache.Cache {
 }
 
 //GetSessionFromResp return session uuid in resp if there is
-func GetSessionFromResp(cookieKey string, resp *fasthttp.Response) string {
-	var c []byte
-	resp.Header.VisitAllCookie(func(k, v []byte) {
-		if string(k) == cookieKey {
-			c = v
+func GetSessionFromResp(cookieKey string, resp *http.Response) string {
+	for _, c := range resp.Cookies() {
+		if c.Name == cookieKey {
+			return c.Value
 		}
-	})
-	return string(c)
+	}
+	return ""
 }
 
 // CheckForSessionID check session id
-func CheckForSessionID(ep string, autoTimeout int, resp *fasthttp.Response, req *fasthttp.Request) {
+func CheckForSessionID(ep string, autoTimeout int, resp *http.Response, req *http.Request) {
 	if resp == nil {
 		lager.Logger.Warn("", ErrResponseNil)
 		return
@@ -50,7 +49,13 @@ func CheckForSessionID(ep string, autoTimeout int, resp *fasthttp.Response, req 
 
 	timeValue := time.Duration(autoTimeout) * time.Second
 
-	sessionIDStr := string(req.Header.Cookie(common.LBSessionID))
+	var sessionIDStr string
+
+	if c, err := req.Cookie(common.LBSessionID); err == http.ErrNoCookie {
+		sessionIDStr = ""
+	} else {
+		sessionIDStr = c.Value
+	}
 
 	ClearExpired()
 	var sessBool bool
@@ -63,22 +68,16 @@ func CheckForSessionID(ep string, autoTimeout int, resp *fasthttp.Response, req 
 	if string(valueChassisLb) != "" {
 		Save(valueChassisLb, ep, timeValue)
 	} else if sessionIDStr != "" && sessBool {
-		var c1 *fasthttp.Cookie
-		c1 = new(fasthttp.Cookie)
-		c1.SetKey(common.LBSessionID)
-
-		c1.SetValue(sessionIDStr)
+		c1 := new(http.Cookie)
+		c1.Name = common.LBSessionID
+		c1.Value = sessionIDStr
 		setCookie(c1, resp)
 		Save(sessionIDStr, ep, timeValue)
 	} else {
-		var c1 *fasthttp.Cookie
-		c1 = new(fasthttp.Cookie)
-		c1.SetKey(common.LBSessionID)
-
+		c1 := new(http.Cookie)
+		c1.Name = common.LBSessionID
 		sessionIDValue := generateCookieSessionID()
-
-		c1.SetValue(sessionIDValue)
-
+		c1.Value = sessionIDValue
 		setCookie(c1, resp)
 		Save(sessionIDValue, ep, timeValue)
 
@@ -106,12 +105,12 @@ func generateCookieSessionID() string {
 }
 
 // setCookie set cookie
-func setCookie(cookie *fasthttp.Cookie, resp *fasthttp.Response) {
-	resp.Header.SetCookie(cookie)
+func setCookie(cookie *http.Cookie, resp *http.Response) {
+	resp.Header.Add("Set-Cookie", cookie.String())
 }
 
 // DeletingKeySuccessiveFailure deleting key successes and failures
-func DeletingKeySuccessiveFailure(resp *fasthttp.Response) {
+func DeletingKeySuccessiveFailure(resp *http.Response) {
 	if resp == nil {
 		lager.Logger.Warn("", ErrResponseNil)
 		return
@@ -127,7 +126,7 @@ func DeletingKeySuccessiveFailure(resp *fasthttp.Response) {
 }
 
 // GetSessionCookie getting session cookie
-func GetSessionCookie(resp *fasthttp.Response) string {
+func GetSessionCookie(resp *http.Response) string {
 	if resp == nil {
 		lager.Logger.Warn("", ErrResponseNil)
 		return ""
