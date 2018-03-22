@@ -4,7 +4,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/client"
 	"sync"
 
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"golang.org/x/net/context"
 )
@@ -20,55 +19,19 @@ const (
 //higway client
 type highwayClient struct {
 	once     sync.Once
-	opts     microClient.Options
+	opts     client.Options
 	reqMutex sync.Mutex // protects following
 }
 
-func (c *highwayClient) Init(opts ...microClient.Option) error {
-	for _, o := range opts {
-		o(&c.opts)
-	}
-
-	return nil
-}
-
-func (c *highwayClient) NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...microClient.RequestOption) *microClient.Request {
-	var opts microClient.RequestOptions
-
-	for _, o := range reqOpts {
-		o(&opts)
-	}
-	i := &microClient.Request{
-		MicroServiceName: service,
-		Struct:           schemaID,
-		Method:           operationID,
-		Arg:              arg,
-	}
-
-	i.ID = int(GenerateMsgID())
-	return i
-}
-
 //NewHighwayClient is a function
-func NewHighwayClient(options ...microClient.Option) microClient.Client {
-	opts := microClient.Options{
-		PoolTTL: microClient.DefaultPoolTTL,
-	}
-	for _, o := range options {
-		o(&opts)
-	}
-
-	if len(opts.ContentType) == 0 {
-		//TODO take effect of that option
-		opts.ContentType = "application/protobuf"
-	}
+func NewHighwayClient(options client.Options) client.ProtocolClient {
 
 	rc := &highwayClient{
 		once: sync.Once{},
-		opts: opts,
+		opts: options,
 	}
 
-	c := microClient.Client(rc)
+	c := client.ProtocolClient(rc)
 
 	return c
 }
@@ -77,11 +40,8 @@ func (c *highwayClient) String() string {
 	return "highway_client"
 }
 
-func (c *highwayClient) Options() microClient.Options {
-	return c.opts
-}
-
-func (c *highwayClient) Call(ctx context.Context, addr string, req *microClient.Request, rsp interface{}, opts ...microClient.CallOption) error {
+func (c *highwayClient) Call(ctx context.Context, addr string, req *client.Request, rsp interface{}) error {
+	req.ID = int(GenerateMsgID())
 	connParams := &ConnParams{}
 	connParams.TLSConfig = c.opts.TLSConfig
 	connParams.Addr = addr
@@ -93,8 +53,8 @@ func (c *highwayClient) Call(ctx context.Context, addr string, req *microClient.
 	tmpRsp := &HighwayRespond{0, Ok, "", 0, rsp, nil}
 	highwayReq := &HighwayRequest{}
 	highwayReq.MsgID = uint64(req.ID)
-	highwayReq.MethodName = req.Method
-	highwayReq.Schema = req.Struct
+	highwayReq.MethodName = req.Operation
+	highwayReq.Schema = req.Schema
 	highwayReq.Arg = req.Arg
 	highwayReq.SvcName = req.MicroServiceName
 	//Current only twoway

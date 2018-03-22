@@ -10,13 +10,14 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 )
 
-var clients = make(map[string]map[string]microClient.Client)
+var clients = make(map[string]map[string]ProtocolClient)
 var pl sync.RWMutex
 var sl sync.RWMutex
+
+//DefaultPoolSize is 500
+const DefaultPoolSize = 50
 
 // GetProtocolSpec is to get protocol specifications
 func GetProtocolSpec(p string) model.Protocol {
@@ -24,7 +25,7 @@ func GetProtocolSpec(p string) model.Protocol {
 }
 
 // CreateClient is for to create client based on protocol and the service name
-func CreateClient(protocol, service string) (microClient.Client, error) {
+func CreateClient(protocol, service string) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
 		err = fmt.Errorf("don not Support [%s] client", protocol)
@@ -42,7 +43,7 @@ func CreateClient(protocol, service string) (microClient.Client, error) {
 	}
 	p := GetProtocolSpec(protocol)
 
-	poolSize := microClient.DefaultPoolSize
+	poolSize := DefaultPoolSize
 
 	failureList := strings.Split(p.Failure, ",")
 	failureMap := make(map[string]bool)
@@ -53,28 +54,25 @@ func CreateClient(protocol, service string) (microClient.Client, error) {
 		failureMap[v] = true
 	}
 
-	c := f(
-		microClient.ContentType("application/json"),
-		microClient.TLSConfig(tlsConfig),
-		microClient.WithConnectionPoolSize(poolSize),
-		microClient.WithFailure(failureMap))
+	c := f(Options{
+		TLSConfig: tlsConfig,
+		PoolSize:  poolSize,
+		Failure:   failureMap,
+	})
 
-	if err = c.Init(); err != nil {
-		return nil, err
-	}
 	return c, nil
 }
 
 // GetClient is to get the client based on protocol and service name
-func GetClient(protocol, service string) (microClient.Client, error) {
-	var c microClient.Client
+func GetClient(protocol, service string) (ProtocolClient, error) {
+	var c ProtocolClient
 	var err error
 	pl.RLock()
 	clientMap, ok := clients[protocol]
 	pl.RUnlock()
 	if !ok {
 		lager.Logger.Info("Create client map for " + protocol)
-		clientMap = make(map[string]microClient.Client)
+		clientMap = make(map[string]ProtocolClient)
 		pl.Lock()
 		clients[protocol] = clientMap
 		pl.Unlock()

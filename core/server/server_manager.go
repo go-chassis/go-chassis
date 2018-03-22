@@ -13,11 +13,11 @@ import (
 	"github.com/ServiceComb/go-chassis/util/iputil"
 )
 
-//NewFunc returns a server
-type NewFunc func(Options) Server
+//NewFunc returns a ProtocolServer
+type NewFunc func(Options) ProtocolServer
 
 var serverPlugins = make(map[string]NewFunc)
-var servers = make(map[string]Server)
+var servers = make(map[string]ProtocolServer)
 
 //InstallPlugin For developer
 func InstallPlugin(protocol string, newFunc NewFunc) {
@@ -35,7 +35,7 @@ func GetServerFunc(protocol string) (NewFunc, error) {
 }
 
 //GetServer return the server based on protocol
-func GetServer(protocol string) (Server, error) {
+func GetServer(protocol string) (ProtocolServer, error) {
 	s, ok := servers[protocol]
 	if !ok {
 		return nil, fmt.Errorf("[%s] server isn't running ", protocol)
@@ -44,7 +44,7 @@ func GetServer(protocol string) (Server, error) {
 }
 
 //GetServers returns the map of servers
-func GetServers() map[string]Server {
+func GetServers() map[string]ProtocolServer {
 	return servers
 }
 
@@ -147,7 +147,7 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 		}
 	}
 
-	var s Server
+	var s ProtocolServer
 	o := Options{
 		Address:   p.Listen,
 		ChainName: chainName,

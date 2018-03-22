@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/ServiceComb/go-chassis/client/rest"
+	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
@@ -15,7 +16,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
@@ -61,27 +61,24 @@ func TestNewRestClient_Call(t *testing.T) {
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(
-		microClient.ContentType("application/protobuf"))
+	c := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
 
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server/instances")
-	req := &microClient.Request{
+	req := &client.Request{
 		ID:               1,
 		MicroServiceName: "Server",
-		Struct:           "",
-		Method:           "instances",
+		Schema:           "",
+		Operation:        "instances",
 		Arg:              arg,
 		Metadata:         nil,
 	}
 
 	name := c.String()
 	log.Println("protocol name:", name)
-	options := c.Options()
-	log.Println("options are :", options)
 	err = c.Call(context.TODO(), addrRest, req, reply)
 	if err != nil {
 		assert.Error(t, err)
@@ -125,27 +122,24 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(
-		microClient.ContentType("application/protobuf"))
+	c := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
 
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server1/instances")
-	req := &microClient.Request{
+	req := &client.Request{
 		ID:               1,
 		MicroServiceName: "Server1",
-		Struct:           "",
-		Method:           "instances",
+		Schema:           "",
+		Operation:        "instances",
 		Arg:              arg,
 		Metadata:         nil,
 	}
 
 	name := c.String()
 	log.Println("protocol name:", name)
-	options := c.Options()
-	log.Println("options are :", options)
 	err = c.Call(context.TODO(), "127.0.0.1:8040", req, reply)
 	log.Println("hellp reply", reply)
 	if err != nil {
@@ -181,30 +175,26 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	assert.NoError(t, err)
 	fail := make(map[string]bool)
 	fail["something"] = false
-	c := rest.NewRestClient(
-		microClient.WithFailure(fail),
-		microClient.PoolSize(3))
-	c.Init(microClient.ContentType("application/json"))
+	c := rest.NewRestClient(client.Options{
+		Failure:  fail,
+		PoolSize: 3,
+	})
 	reply := rest.NewResponse()
-	req := &microClient.Request{
+	req := &client.Request{
 		ID:               1,
 		MicroServiceName: "Server2",
-		Struct:           "",
-		Method:           "instances",
+		Operation:        "instances",
 		Arg:              "",
 		Metadata:         nil,
 	}
 
 	name := c.String()
 	log.Println("protocol name:", name)
-	options := c.Options()
-	log.Println("options are :", options)
-	err = c.Call(context.TODO(), "127.0.0.1:8092", req, reply, microClient.WithContentType("application/protobuf"))
+	err = c.Call(context.TODO(), "127.0.0.1:8092", req, reply)
 	log.Println("hellp reply", reply)
 	assert.Error(t, err)
 }
 func TestNewRequest(t *testing.T) {
-	var cl *rest.Client = new(rest.Client)
-	i := cl.NewRequest("service", "schemaid", "operationID", "arg")
-	assert.Equal(t, i.Method, "operationID")
+	i := client.NewRequest("service", "schemaid", "operationID", "arg")
+	assert.Equal(t, i.Operation, "operationID")
 }

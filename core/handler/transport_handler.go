@@ -12,8 +12,6 @@ import (
 	"github.com/ServiceComb/go-chassis/session"
 
 	"github.com/ServiceComb/go-chassis/core/config"
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 )
 
 // TransportHandler transport handler
@@ -39,15 +37,12 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		errNotNill(err, cb)
 	}
 
-	req := c.NewRequest(i.MicroServiceName, i.SchemaID, i.OperationID, i.Args)
+	req := client.NewRequest(i.MicroServiceName, i.SchemaID, i.OperationID, i.Args)
 	r := &invocation.InvocationResponse{}
 
 	//taking the time elapsed to check for latency aware strategy
 	timeBefore := time.Now()
-	err = c.Call(i.Ctx, i.Endpoint, req, i.Reply,
-		clientOption.WithContentType(i.ContentType),
-		clientOption.WithUrlPath(i.URLPathFormat),
-		clientOption.WithMethodType(i.MethodType))
+	err = c.Call(i.Ctx, i.Endpoint, req, i.Reply)
 
 	if err != nil {
 		r.Err = err
@@ -88,7 +83,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 }
 
 //ProcessSpecialProtocol handles special logic for protocol
-func ProcessSpecialProtocol(inv *invocation.Invocation, req *microClient.Request) {
+func ProcessSpecialProtocol(inv *invocation.Invocation, req *client.Request) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
 		if inv.Strategy == loadbalance.StrategySessionStickiness {
