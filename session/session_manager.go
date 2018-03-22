@@ -11,8 +11,10 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
+	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	cache "github.com/patrickmn/go-cache"
+	"golang.org/x/net/context"
 )
 
 // ErrResponseNil used for to represent the error response, when it is nil
@@ -23,12 +25,49 @@ var SessionCache *cache.Cache
 
 func init() {
 	SessionCache = initCache()
+	cookieMap = make(map[string]string)
 }
 func initCache() *cache.Cache {
 	var value *cache.Cache
 
 	value = cache.New(3e+10, time.Second*30)
 	return value
+}
+
+var cookieMap map[string]string
+
+func GetCookie(key string) string {
+	return cookieMap[key]
+}
+
+func SetCookie(key, value string) {
+	cookieMap[key] = value
+}
+
+func GetContextMetadata(ctx context.Context, key string) string {
+	md, ok := metadata.FromContext(ctx)
+	if ok {
+		for k, v := range md {
+			if k == key {
+				return v
+			}
+		}
+	}
+	return ""
+}
+
+func SetContextMetadata(ctx context.Context, key string, value string) context.Context {
+	md, ok := metadata.FromContext(ctx)
+	if !ok {
+		md = make(map[string]string)
+	}
+
+	if md[key] == value {
+		return ctx
+	}
+
+	md[key] = value
+	return metadata.NewContext(ctx, md)
 }
 
 //GetSessionFromResp return session uuid in resp if there is
@@ -40,6 +79,32 @@ func GetSessionFromResp(cookieKey string, resp *fasthttp.Response) string {
 		}
 	})
 	return string(c)
+}
+
+// CheckForSessionIDHighway check session id
+func CheckForSessionIDHighway(inv *invocation.Invocation, autoTimeout int) {
+
+	timeValue := time.Duration(autoTimeout) * time.Second
+
+	sessionIDStr := GetContextMetadata(inv.Ctx, common.LBSessionID)
+
+	ClearExpired()
+	var sessBool bool
+	if sessionIDStr != "" {
+		_, sessBool = SessionCache.Get(sessionIDStr)
+	}
+
+	if sessionIDStr != "" && sessBool {
+		SetCookie(common.LBSessionID, sessionIDStr)
+		Save(sessionIDStr, inv.Endpoint, timeValue)
+	} else {
+		sessionIDValue := generateCookieSessionID()
+
+		SetCookie(common.LBSessionID, sessionIDValue)
+		Save(sessionIDValue, inv.Endpoint, timeValue)
+		inv.Ctx = SetContextMetadata(inv.Ctx, common.LBSessionID, sessionIDValue)
+	}
+
 }
 
 // CheckForSessionID check session id
@@ -113,11 +178,14 @@ func setCookie(cookie *fasthttp.Cookie, resp *fasthttp.Response) {
 
 // DeletingKeySuccessiveFailure deleting key successes and failures
 func DeletingKeySuccessiveFailure(resp *fasthttp.Response) {
+	SessionCache.DeleteExpired()
 	if resp == nil {
-		lager.Logger.Warn("", ErrResponseNil)
+		cookie := GetCookie(common.LBSessionID)
+		if cookie != "" {
+			Delete(cookie)
+		}
 		return
 	}
-	SessionCache.DeleteExpired()
 	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
 	if string(valueChassisLb) != "" {
 		cookieKey := strings.Split(string(valueChassisLb), "=")
@@ -128,7 +196,11 @@ func DeletingKeySuccessiveFailure(resp *fasthttp.Response) {
 }
 
 // GetSessionCookie getting session cookie
-func GetSessionCookie(resp *fasthttp.Response) string {
+func GetSessionCookie(ctx context.Context, resp *fasthttp.Response) string {
+	if ctx != nil {
+		return GetContextMetadata(ctx, common.LBSessionID)
+	}
+
 	if resp == nil {
 		lager.Logger.Warn("", ErrResponseNil)
 		return ""

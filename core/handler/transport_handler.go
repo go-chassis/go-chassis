@@ -47,24 +47,9 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	if err != nil {
 		r.Err = err
 		lager.Logger.Errorf(err, "Call got Error")
-		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalance.StrategySessionStickiness {
-			var reply *rest.Response
-			reply = i.Reply.(*rest.Response)
-			if i.Reply != nil && req.Arg != nil {
-				reply = i.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(i, config.GetSessionTimeout(i.SourceMicroService, i.MicroServiceName), reply.GetResponse(), req.GetRequest())
-			}
-
-			cookie := session.GetSessionCookie(reply.GetResponse())
-			if cookie != "" {
-				loadbalance.IncreaseSuccessiveFailureCount(cookie)
-				errCount := loadbalance.GetSuccessiveFailureCount(cookie)
-				if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
-					session.DeletingKeySuccessiveFailure(reply.GetResponse())
-					loadbalance.DeleteSuccessiveFailureCount(cookie)
-				}
-			}
+		if i.Strategy == loadbalance.StrategySessionStickiness {
+			ProcessSpecialProtocol(i, req)
+			ProcessSuccessiveFailure(i, req)
 		}
 
 		cb(r)
@@ -76,8 +61,11 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		loadbalance.SetLatency(timeAfter, i.Endpoint, req.MicroServiceName+"/"+i.Protocol)
 	}
 
+	if i.Strategy == loadbalance.StrategySessionStickiness {
+		ProcessSpecialProtocol(i, req)
+	}
+
 	r.Result = i.Reply
-	ProcessSpecialProtocol(i, req)
 
 	cb(r)
 }
@@ -86,14 +74,44 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 func ProcessSpecialProtocol(inv *invocation.Invocation, req *client.Request) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
-		if inv.Strategy == loadbalance.StrategySessionStickiness {
-			var reply *rest.Response
-			if inv.Reply != nil && inv.Args != nil {
-				reply = inv.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(inv, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
-			}
+		var reply *rest.Response
+		if inv.Reply != nil && inv.Args != nil {
+			reply = inv.Reply.(*rest.Response)
+			req := req.Arg.(*rest.Request)
+			session.CheckForSessionID(inv, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
+		}
 
+	case common.ProtocolHighway:
+		session.CheckForSessionIDHighway(inv, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
+	}
+}
+func ProcessSuccessiveFailure(i *invocation.Invocation, req *microClient.Request) {
+	var cookie string
+	var reply *rest.Response
+
+	switch i.Protocol {
+	case common.ProtocolRest:
+		if i.Reply != nil && req.Arg != nil {
+			reply = i.Reply.(*rest.Response)
+		}
+		cookie = session.GetSessionCookie(nil, reply.GetResponse())
+		if cookie != "" {
+			loadbalance.IncreaseSuccessiveFailureCount(cookie)
+			errCount := loadbalance.GetSuccessiveFailureCount(cookie)
+			if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
+				session.DeletingKeySuccessiveFailure(reply.GetResponse())
+				loadbalance.DeleteSuccessiveFailureCount(cookie)
+			}
+		}
+	case common.ProtocolHighway:
+		cookie = session.GetSessionCookie(i.Ctx, nil)
+		if cookie != "" {
+			loadbalance.IncreaseSuccessiveFailureCount(cookie)
+			errCount := loadbalance.GetSuccessiveFailureCount(cookie)
+			if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
+				session.DeletingKeySuccessiveFailure(nil)
+				loadbalance.DeleteSuccessiveFailureCount(cookie)
+			}
 		}
 	}
 }
