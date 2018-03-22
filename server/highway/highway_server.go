@@ -100,7 +100,7 @@ func (s *highwayServer) Stop() error {
 	return nil
 }
 
-func newHighwayServer(opts server.Options) server.Server {
+func newHighwayServer(opts server.Options) server.ProtocolServer {
 	return &highwayServer{
 		connMgr: newConnectMgr(),
 		opts:    opts,

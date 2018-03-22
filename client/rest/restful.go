@@ -3,14 +3,14 @@ package rest
 import (
 	"sync"
 
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 )
 
 //Client is a struct
 type Client struct {
 	c    *fasthttp.Client
-	opts clientOption.Options
+	opts client.Options
 	mu   sync.Mutex // protects following
 }
 

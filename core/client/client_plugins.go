@@ -3,12 +3,10 @@ package client
 import (
 	"fmt"
 	"log"
-
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
 )
 
 // ClientNewFunc is function for the client
-type ClientNewFunc func(...microClient.Option) microClient.Client
+type ClientNewFunc func(Options) ProtocolClient
 
 var rpcClientPlugins = make(map[string]ClientNewFunc)
 

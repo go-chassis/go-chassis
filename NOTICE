@@ -106,7 +106,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ==========================================
-For client/highway/highway_client.go,core/loadbalance/default.go,third_party/forked/go-micro,
+For core/loadbalance/default.go,third_party/forked/go-micro,
 client/highway/highway_client_test.go,core/loadbalance/default_test.go(Forked from github.com/micro/go-micro)
 
    Copyright 2015 Asim Aslam.
@@ -184,6 +184,6 @@ Copyright (c) 2014, Xianjie
 All rights reserved.
 
 ==========================================
-For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go(Forked from github.com/golang/go)
+For core/provider/default_provider.go(Forked from github.com/golang/go)
 
 Copyright 2009 The Go Authors. All rights reserved.

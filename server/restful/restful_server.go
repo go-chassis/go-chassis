@@ -47,7 +47,7 @@ type restfulServer struct {
 	server           *http.Server
 }
 
-func newRestfulServer(opts server.Options) server.Server {
+func newRestfulServer(opts server.Options) server.ProtocolServer {
 	ws := new(restful.WebService)
 	ws.Path("/").Doc("root path").
 		Consumes(restful.MIME_XML, restful.MIME_JSON, MimeFile, MimeMult).
