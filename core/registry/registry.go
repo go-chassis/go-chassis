@@ -11,6 +11,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
+	"log"
 )
 
 // constant values for registry parameters
@@ -88,6 +89,7 @@ func enableRegistry(opts ...Option) {
 // InstallPlugin install plugin
 func InstallPlugin(name string, f func(opts ...Option) Registry) {
 	registryFunc[name] = f
+	log.Println("Installed registry plugin: %s.", name)
 }
 
 // Enable create RegistryService

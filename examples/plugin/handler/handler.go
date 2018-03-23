@@ -5,11 +5,11 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 )
 
-// constants of bizkeeper fake and loadbalance fake
+// constants of bizkeeper fake and loadbalancer fake
 const (
 	//BIZKEEPERFAKE & LOADBALANCEFAKE are variables of type string
 	BIZKEEPERFAKE   = "bizkeeper-fake"
-	LOADBALANCEFAKE = "loadbalance-fake"
+	LOADBALANCEFAKE = "loadbalancer-fake"
 )
 
 // BizkeeperFakeHandler fake handler for bizkeeper

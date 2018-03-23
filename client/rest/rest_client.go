@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"golang.org/x/net/context"
@@ -32,7 +32,7 @@ var HTTPFailureTypeMap = map[string]bool{
 
 func init() {
 	client.InstallPlugin(Name, NewRestClient)
-	loadbalance.LatencyMap = make(map[string][]time.Duration)
+	loadbalancer.LatencyMap = make(map[string][]time.Duration)
 }
 
 //NewRestClient is a function

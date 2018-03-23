@@ -10,7 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -82,7 +82,7 @@ cse:
 	lbBytes := []byte(`
 --- 
 cse: 
-  loadbalance: 
+  loadbalancer: 
     TargetService: 
       backoff: 
         kind: constant
@@ -199,7 +199,7 @@ cse:
 	}
 	config.ReadLBFromArchaius()
 	fs := config.GetServerListFilters()
-	assert.Contains(t, fs, loadbalance.ZoneAware)
+	assert.Contains(t, fs, loadbalancer.ZoneAware)
 	assert.Equal(t, 20, archaius.GetInt("cse.circuitBreaker.Consumer.requestVolumeThreshold", 0))
 	assert.Equal(t, "throwexception", archaius.GetString("cse.fallbackpolicy.Consumer.policy", ""))
 	assert.Equal(t, 50, archaius.GetInt("cse.circuitBreaker.Consumer.Server.errorThresholdPercentage", 0))
@@ -215,7 +215,7 @@ cse:
 	archaius.UnmarshalConfig(&lbConfig)
 	t.Log(lbConfig.Prefix.LBConfig)
 
-	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
+	assert.Equal(t, loadbalancer.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
 	t.Log(lbConfig.Prefix.LBConfig.AnyService)
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["target_Service"].Strategy["name"])

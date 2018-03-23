@@ -6,14 +6,14 @@ import (
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 )
 
 // Options is a struct to stores information about chain name, filters, and their invocation options
 type Options struct {
 	// chain for client
 	ChainName         string
-	Filters           []selector.Filter
+	Filters           []loadbalancer.Filter
 	InvocationOptions InvokeOptions
 }
 
@@ -32,10 +32,10 @@ type InvokeOptions struct {
 	Protocol string
 	// end to end，Directly call
 	ContentType string
-	//loadbalance stratery
-	//StrategyFunc loadbalance.Strategy
+	//loadbalancer stratery
+	//StrategyFunc loadbalancer.Strategy
 	StrategyFunc string
-	Filters      []selector.Filter
+	Filters      []loadbalancer.Filter
 	URLPath      string
 	MethodType   string
 	AppID        string
@@ -58,7 +58,7 @@ func ChainName(name string) Option {
 }
 
 // Filters is request option
-func Filters(f []selector.Filter) Option {
+func Filters(f []loadbalancer.Filter) Option {
 	return func(o *Options) {
 		o.Filters = f
 	}
@@ -120,7 +120,7 @@ func WithContentType(ct string) InvocationOption {
 }
 
 //Request Options
-/*func WithStrategy(s loadbalance.Strategy) InvocationOption {
+/*func WithStrategy(s loadbalancer.Strategy) InvocationOption {
 	return func(o *InvokeOptions) {
 		o.StrategyFunc = s
 	}
@@ -134,7 +134,7 @@ func WithStrategy(s string) InvocationOption {
 }
 
 // WithFilters is a request option
-func WithFilters(f ...selector.Filter) InvocationOption {
+func WithFilters(f ...loadbalancer.Filter) InvocationOption {
 	return func(o *InvokeOptions) {
 		o.Filters = append(o.Filters, f...)
 	}

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
@@ -43,7 +42,7 @@ func GetSessionFromResp(cookieKey string, resp *fasthttp.Response) string {
 }
 
 // CheckForSessionID check session id
-func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fasthttp.Response, req *fasthttp.Request) {
+func CheckForSessionID(ep string, autoTimeout int, resp *fasthttp.Response, req *fasthttp.Request) {
 	if resp == nil {
 		lager.Logger.Warn("", ErrResponseNil)
 		return
@@ -62,7 +61,7 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
 	//if session is in resp, then just save it
 	if string(valueChassisLb) != "" {
-		Save(valueChassisLb, inv.Endpoint, timeValue)
+		Save(valueChassisLb, ep, timeValue)
 	} else if sessionIDStr != "" && sessBool {
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)
@@ -70,7 +69,7 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 
 		c1.SetValue(sessionIDStr)
 		setCookie(c1, resp)
-		Save(sessionIDStr, inv.Endpoint, timeValue)
+		Save(sessionIDStr, ep, timeValue)
 	} else {
 		var c1 *fasthttp.Cookie
 		c1 = new(fasthttp.Cookie)
@@ -81,7 +80,7 @@ func CheckForSessionID(inv *invocation.Invocation, autoTimeout int, resp *fastht
 		c1.SetValue(sessionIDValue)
 
 		setCookie(c1, resp)
-		Save(sessionIDValue, inv.Endpoint, timeValue)
+		Save(sessionIDValue, ep, timeValue)
 
 	}
 

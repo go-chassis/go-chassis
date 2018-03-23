@@ -5,7 +5,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/config"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 )
 
 // constant values for consumer and provider
@@ -27,7 +27,7 @@ type ResponseCallBack func(*InvocationResponse) error
 //Invocation is the basic struct that used in go sdk to make client and transport layer transparent .
 //developer should implements a client which is able to  encode from invocation to there own request
 type Invocation struct {
-	//service's ip and port, it is decided in load balance
+	//service's ip and port, it is decided in load balancer
 	Endpoint string
 	//specify rest,highway
 	Protocol string
@@ -37,6 +37,7 @@ type Invocation struct {
 	SourceMicroService string
 	MicroServiceName   string
 	Version            string
+	AppID              string
 	//correspond struct
 	SchemaID string
 	//correspond struct func
@@ -49,23 +50,10 @@ type Invocation struct {
 	//just in local memory
 	Metadata    map[string]interface{}
 	ContentType string
-	//loadbalance stratery
-	//Strategy loadbalance.Strategy
+	//loadbalancer stratery
+	//Strategy loadbalancer.Strategy
 	Strategy string
-	Filters  []selector.Filter
-	AppID    string
-}
-
-// WithContext invocation with context
-func (i *Invocation) WithContext(ctx context.Context) *Invocation {
-	if ctx == nil {
-		panic("nil context")
-	}
-	i2 := new(Invocation)
-	*i2 = *i
-	i2.Ctx = ctx
-	return i2
-
+	Filters  []loadbalancer.Filter
 }
 
 // CreateInvocation create invocation

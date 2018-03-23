@@ -8,7 +8,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/session"
 
 	"github.com/ServiceComb/go-chassis/core/config"
@@ -47,22 +47,22 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	if err != nil {
 		r.Err = err
 		lager.Logger.Errorf(err, "Call got Error")
-		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalance.StrategySessionStickiness {
+		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalancer.StrategySessionStickiness {
 			var reply *rest.Response
 			reply = i.Reply.(*rest.Response)
 			if i.Reply != nil && req.Arg != nil {
 				reply = i.Reply.(*rest.Response)
 				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(i, config.GetSessionTimeout(i.SourceMicroService, i.MicroServiceName), reply.GetResponse(), req.GetRequest())
+				session.CheckForSessionID(i.Endpoint, config.GetSessionTimeout(i.SourceMicroService, i.MicroServiceName), reply.GetResponse(), req.GetRequest())
 			}
 
 			cookie := session.GetSessionCookie(reply.GetResponse())
 			if cookie != "" {
-				loadbalance.IncreaseSuccessiveFailureCount(cookie)
-				errCount := loadbalance.GetSuccessiveFailureCount(cookie)
+				loadbalancer.IncreaseSuccessiveFailureCount(cookie)
+				errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
 				if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
 					session.DeletingKeySuccessiveFailure(reply.GetResponse())
-					loadbalance.DeleteSuccessiveFailureCount(cookie)
+					loadbalancer.DeleteSuccessiveFailureCount(cookie)
 				}
 			}
 		}
@@ -71,9 +71,9 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		return
 	}
 
-	if i.Strategy == loadbalance.StrategyLatency {
+	if i.Strategy == loadbalancer.StrategyLatency {
 		timeAfter := time.Since(timeBefore)
-		loadbalance.SetLatency(timeAfter, i.Endpoint, req.MicroServiceName+"/"+i.Protocol)
+		loadbalancer.SetLatency(timeAfter, i.Endpoint, req.MicroServiceName+"/"+i.Protocol)
 	}
 
 	r.Result = i.Reply
@@ -86,12 +86,12 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 func ProcessSpecialProtocol(inv *invocation.Invocation, req *client.Request) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
-		if inv.Strategy == loadbalance.StrategySessionStickiness {
+		if inv.Strategy == loadbalancer.StrategySessionStickiness {
 			var reply *rest.Response
 			if inv.Reply != nil && inv.Args != nil {
 				reply = inv.Reply.(*rest.Response)
 				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(inv, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
+				session.CheckForSessionID(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
 			}
 
 		}

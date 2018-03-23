@@ -1,13 +1,14 @@
-package loadbalance_test
+package loadbalancer_test
 
+// Forked from github.com/micro/go-micro
+// Some parts of this file have been modified to make it functional in this package
 import (
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -15,7 +16,33 @@ import (
 	"time"
 )
 
-func TestDefaultSelector_Init(t *testing.T) {
+func TestEnable(t *testing.T) {
+	p := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "client"))
+	t.Log(os.Getenv("CHASSIS_HOME"))
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	config.Init()
+
+	LBstr := make(map[string]string)
+
+	LBstr["name"] = "RoundRobin"
+	config.GetLoadBalancing().Strategy = LBstr
+	loadbalancer.Enable()
+	assert.Equal(t, "RoundRobin", config.GetLoadBalancing().Strategy["name"])
+
+	LBstr["name"] = ""
+	config.GetLoadBalancing().Strategy = LBstr
+	loadbalancer.Enable()
+	assert.Equal(t, "", config.GetLoadBalancing().Strategy["name"])
+
+	LBstr["name"] = "ABC"
+	config.GetLoadBalancing().Strategy = LBstr
+	loadbalancer.Enable()
+	assert.Equal(t, "ABC", config.GetLoadBalancing().Strategy["name"])
+
+}
+
+func TestBuildStrategy(t *testing.T) {
 	t.Log("testing default selector")
 	testData1 := []*registry.MicroService{
 		{
@@ -51,26 +78,25 @@ func TestDefaultSelector_Init(t *testing.T) {
 
 	_, _, err = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[1])
 	assert.NoError(t, err)
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	registry.Enable()
 	registry.DoRegister()
-	lb := loadbalance.DefaultSelector
 	config.SelfServiceID = sid
 	t.Log(config.SelfServiceID)
 	time.Sleep(1 * time.Second)
-	next, err := lb.Select("test1", common.LatestVersion, selector.WithConsumerID(sid))
+	s, err := loadbalancer.BuildStrategy(sid, "test1", "", common.LatestVersion, "", "", nil, nil, nil)
 	assert.NoError(t, err)
-	ins, err := next()
+	ins, err := s.Pick()
 	t.Log(ins.EndpointsMap)
 	assert.NoError(t, err)
-	ins, err = next()
+	ins, err = s.Pick()
 	assert.NoError(t, err)
 	t.Log(ins.EndpointsMap)
-	next, err = lb.Select("fakeServer", "0.1", selector.WithAppID("fake"), selector.WithConsumerID(sid))
+	s, err = loadbalancer.BuildStrategy(sid, "fake", "", "0.1", "", "", nil, nil, nil)
 	assert.Error(t, err)
 	t.Log(err)
 	switch err.(type) {
-	case selector.LBError:
+	case loadbalancer.LBError:
 	default:
 		t.Log("Should return lb err")
 		t.Fail()
@@ -84,7 +110,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	config.Init()
 	registry.Enable()
 	registry.DoRegister()
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",
@@ -108,11 +134,10 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	}
 	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[0])
 	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[1])
-	lb := loadbalance.DefaultSelector
 	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		lb.Select("test2", "1.0", selector.WithConsumerID(config.SelfServiceID))
+		_, _ = loadbalancer.BuildStrategy(config.SelfServiceID, "test2", "", "1.0", "", "", nil, nil, nil)
 	}
 
 }

@@ -11,9 +11,10 @@ import (
 	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	mk "github.com/ServiceComb/go-chassis/core/registry/mock"
+	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -31,7 +32,7 @@ type handler1 struct {
 }
 
 func (th *handler1) Name() string {
-	return "loadbalance"
+	return "loadbalancer"
 }
 
 func (th *handler1) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
@@ -166,7 +167,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	val5 := cast.NewValue("Random", nil)
 	val6 := cast.NewValue(10, nil)
 	val7 := cast.NewValue(2, nil)
-	val8 := cast.NewValue(loadbalance.ZoneAware, nil)
+	val8 := cast.NewValue(loadbalancer.ZoneAware, nil)
 	testConfigFactoryObj.On("GetValue", key1).Return(val1)
 	testConfigFactoryObj.On("GetValue", key2).Return(val1)
 	testConfigFactoryObj.On("GetValue", key3).Return(val2)
@@ -206,7 +207,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	req, _ := rest.NewRequest("GET", "127.0.0.1")
 	req.SetHeader("Set-Cookie", "sessionid=100")
 	i := &invocation.Invocation{
@@ -216,7 +217,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 		OperationID:        "SayHello",
 		Args:               req,
 		Version:            "1.0",
-		Strategy:           loadbalance.StrategyRoundRobin,
+		Strategy:           loadbalancer.StrategyRoundRobin,
 		AppID:              "appID",
 		SourceServiceID:    config.SelfServiceID,
 		//Filters:
@@ -230,7 +231,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 
 	var lbh *handler.LBHandler = new(handler.LBHandler)
 	str := lbh.Name()
-	assert.Equal(t, "loadbalance", str)
+	assert.Equal(t, "loadbalancer", str)
 	t.Log(i.Protocol)
 	t.Log(i.Endpoint)
 }
@@ -264,7 +265,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	i := &invocation.Invocation{
 		SourceMicroService: "source1",
 		MicroServiceName:   "service1",
@@ -272,7 +273,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 		OperationID:        "SayHello",
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 		Version:            "1.0",
-		Strategy:           loadbalance.StrategyRoundRobin,
+		Strategy:           loadbalancer.StrategyRoundRobin,
 		AppID:              "appID",
 		SourceServiceID:    "selfServiceID",
 		//Filters:
@@ -284,7 +285,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 
 	var lbh *handler.LBHandler = new(handler.LBHandler)
 	str := lbh.Name()
-	assert.Equal(t, "loadbalance", str)
+	assert.Equal(t, "loadbalancer", str)
 	t.Log(i.Protocol)
 	t.Log(i.Endpoint)
 }
@@ -296,7 +297,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	config.Init()
 	registry.Enable()
 	registry.DoRegister()
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",
@@ -328,7 +329,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 		MicroServiceName: "test2",
 		Version:          "1.0",
 		Protocol:         "highway",
-		Strategy:         loadbalance.StrategyRoundRobin,
+		Strategy:         loadbalancer.StrategyRoundRobin,
 		SourceServiceID:  config.SelfServiceID,
 	}
 
