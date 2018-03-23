@@ -1,25 +1,14 @@
 package invocation_test
 
 import (
-	"testing"
-	/*"log"
-	"errors"*/
 	"github.com/ServiceComb/go-chassis/core/invocation"
-	/*"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"os"
-	"path/filepath"
-	"github.com/stretchr/testify/assert"*/
-	"context"
+	"testing"
 )
 
 func TestChain(t *testing.T) {
-	var ctx = context.Background()
-	var inv *invocation.Invocation = new(invocation.Invocation)
+	var inv = new(invocation.Invocation)
 	inv.AppID = "1"
 	inv.Endpoint = "1.2.3.4"
-	inv.WithContext(ctx)
 }
 
 /*

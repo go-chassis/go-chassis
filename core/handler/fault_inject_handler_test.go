@@ -45,7 +45,7 @@ cse:
         enabled: true
         limit:
           Server.HelloServer: 10
-  loadbalance:
+  loadbalancer:
     strategy:
       name: RoundRobin
       sessionTimeoutInSeconds: 30
@@ -88,7 +88,7 @@ cse:
   handler:
     chain:
     #  Consumer:
-    #    default: bizkeeper-consumer, loadbalance,ratelimiter-consumer
+    #    default: bizkeeper-consumer, loadbalancer,ratelimiter-consumer
   references:    #optional：配置客户端依赖的微服务信息，协议信息
     ServerChassis:
       version: 0.1

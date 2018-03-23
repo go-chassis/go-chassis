@@ -1,12 +1,10 @@
-package loadbalance
+package loadbalancer
 
 import (
 	"sync"
 
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/session"
-
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 var (
@@ -56,50 +54,52 @@ func GetSuccessiveFailureCount(cookieValue string) int {
 	return successiveFailureCount[cookieValue]
 }
 
-// SessionStickiness is a SessionStickiness strategy algorithm for node selection
-func SessionStickiness(instances []*registry.MicroServiceInstance, metadata interface{}) selector.Next {
-	var mtx sync.Mutex
-	strategyRoundRobinClosur := func() (*registry.MicroServiceInstance, error) {
-		if len(instances) == 0 {
-			return nil, selector.ErrNoneAvailable
-		}
+//SessionStickinessStrategy is strategy
+type SessionStickinessStrategy struct {
+	instances []*registry.MicroServiceInstance
+	mtx       sync.Mutex
+	sessionID string
+}
 
-		mtx.Lock()
-		node := instances[i%len(instances)]
-		i++
-		mtx.Unlock()
+func newSessionStickinessStrategy() Strategy {
+	return &SessionStickinessStrategy{}
+}
 
-		return node, nil
-	}
-	if metadata == nil {
-		return strategyRoundRobinClosur
-	}
+// ReceiveData receive data
+func (r *SessionStickinessStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string) {
+	r.instances = instances
+	r.sessionID = sessionID
+}
 
-	instanceAddr, ok := session.Get(metadata.(string))
+// Pick return instance
+func (r *SessionStickinessStrategy) Pick() (*registry.MicroServiceInstance, error) {
+	instanceAddr, ok := session.Get(r.sessionID)
 	if ok {
-		return func() (*registry.MicroServiceInstance, error) {
-			if len(instances) == 0 {
-				return nil, selector.ErrNoneAvailable
-			}
-
-			for _, node := range instances {
-				mtx.Lock()
-				if instanceAddr == node.EndpointsMap["rest"] {
-					return node, nil
-				}
-
-				mtx.Unlock()
-			}
-			// if micro service instance goes down then related entry in endpoint map will be deleted,
-			//so instead of sending nil, a new instance can be selected using roundrobin
-			//
-			mtx.Lock()
-			nodes := instances[i%len(instances)]
-			i++
-			mtx.Unlock()
-			return nodes, nil
+		if len(r.instances) == 0 {
+			return nil, ErrNoneAvailableInstance
 		}
+
+		for _, instance := range r.instances {
+			if instanceAddr == instance.EndpointsMap["rest"] {
+				return instance, nil
+			}
+		}
+		// if micro service instance goes down then related entry in endpoint map will be deleted,
+		//so instead of sending nil, a new instance can be selected using round robin
+		return r.pick()
+	}
+	return r.pick()
+
+}
+func (r *SessionStickinessStrategy) pick() (*registry.MicroServiceInstance, error) {
+	if len(r.instances) == 0 {
+		return nil, ErrNoneAvailableInstance
 	}
 
-	return strategyRoundRobinClosur
+	r.mtx.Lock()
+	instance := r.instances[i%len(r.instances)]
+	i++
+	r.mtx.Unlock()
+
+	return instance, nil
 }

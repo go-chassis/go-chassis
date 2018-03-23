@@ -1,7 +1,6 @@
 package session_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/session"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
@@ -30,5 +29,5 @@ func TestSessionStorage(t *testing.T) {
 	session.DeletingKeySuccessiveFailure(resp)
 	cookieValue = session.GetSessionFromResp("abc", resp)
 	assert.Equal(t, "", cookieValue)
-	session.CheckForSessionID(new(invocation.Invocation), 1, resp, new(fasthttp.Request))
+	session.CheckForSessionID("", 1, resp, new(fasthttp.Request))
 }

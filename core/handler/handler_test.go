@@ -77,14 +77,14 @@ func TestGetChain(t *testing.T) {
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 	handler.RegisterHandler(BIZKEEPERFAKE, createBizkeeperFakeHandler)
-	handler.RegisterHandler("loadbalance-fake", createBizkeeperFakeHandler)
+	handler.RegisterHandler("loadbalancer-fake", createBizkeeperFakeHandler)
 	handler.CreateChains(common.Provider, config.GlobalDefinition.Cse.Handler.Chain.Provider)
 	handler.CreateChains(common.Consumer, config.GlobalDefinition.Cse.Handler.Chain.Consumer)
 	c, err := handler.GetChain(common.Consumer, "custom")
@@ -127,11 +127,11 @@ func BenchmarkPool_GetChain(b *testing.B) {
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.Init()
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 

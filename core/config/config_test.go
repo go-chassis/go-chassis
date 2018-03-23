@@ -6,7 +6,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -93,7 +93,7 @@ cse:
 func TestGetLoadBalancing(t *testing.T) {
 	lbBytes := []byte(`
 cse: 
-  loadbalance: 
+  loadbalancer: 
     TargetService: 
       backoff: 
         maxMs: 400
@@ -121,7 +121,7 @@ cse:
 	err := yaml.Unmarshal(lbBytes, lbConfig)
 	assert.NoError(t, err)
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.Strategy["name"])
-	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
+	assert.Equal(t, loadbalancer.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
 	t.Log(lbConfig.Prefix.LBConfig.AnyService)
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
 

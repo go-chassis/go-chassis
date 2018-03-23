@@ -9,10 +9,9 @@ import (
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 
 	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/cenkalti/backoff"
 )
@@ -23,38 +22,38 @@ type LBHandler struct{}
 func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.ResponseCallBack) (string, error) {
 	var metadata interface{}
 	strategy := i.Strategy
-	var strategyFun selector.Strategy
+	var strategyFun func() loadbalancer.Strategy
 	var err error
 	if strategy == "" {
 		strategyName := config.GetStrategyName(i.SourceMicroService, i.MicroServiceName)
 		i.Strategy = strategyName
-		strategyFun, err = loadbalance.GetStrategyPlugin(strategyName)
+		strategyFun, err = loadbalancer.GetStrategyPlugin(strategyName)
 		if err != nil {
-			lager.Logger.Errorf(err, selector.LBError{
+			lager.Logger.Errorf(err, loadbalancer.LBError{
 				Message: "Get strategy [" + strategyName + "] failed."}.Error())
 		}
 	} else {
-		strategyFun, err = loadbalance.GetStrategyPlugin(strategy)
+		strategyFun, err = loadbalancer.GetStrategyPlugin(strategy)
 		if err != nil {
-			lager.Logger.Errorf(err, selector.LBError{
+			lager.Logger.Errorf(err, loadbalancer.LBError{
 				Message: "Get strategy [" + strategy + "] failed."}.Error())
 		}
 	}
 	//append filters in config
 	filters := config.GetServerListFilters()
 	for _, fName := range filters {
-		f := loadbalance.Filters[fName]
+		f := loadbalancer.Filters[fName]
 		if f != nil {
 			i.Filters = append(i.Filters, f)
 			continue
 		}
 	}
-
-	if i.Strategy == loadbalance.StrategySessionStickiness {
-		metadata = getSessionID(i)
+	var sessionID string
+	if i.Strategy == loadbalancer.StrategySessionStickiness {
+		sessionID = getSessionID(i)
 	}
 
-	if i.Strategy == loadbalance.StrategyLatency {
+	if i.Strategy == loadbalancer.StrategyLatency {
 		metadata = i.MicroServiceName + "/" + i.Protocol
 	}
 
@@ -62,21 +61,16 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 		i.Version = common.LatestVersion
 	}
 
-	next, err := loadbalance.DefaultSelector.Select(
-		i.MicroServiceName, i.Version,
-		selector.WithStrategy(strategyFun),
-		selector.WithFilter(i.Filters),
-		selector.WithAppID(i.AppID),
-		selector.WithConsumerID(i.SourceServiceID),
-		selector.WithMetadata(metadata))
+	s, err := loadbalancer.BuildStrategy(i.SourceServiceID,
+		i.MicroServiceName, i.AppID, i.Version, i.Protocol, sessionID, i.Filters, strategyFun(), metadata)
 	if err != nil {
 		writeErr(err, cb)
 		return "", err
 	}
 
-	ins, err := next()
+	ins, err := s.Pick()
 	if err != nil {
-		lbErr := selector.LBError{Message: err.Error()}
+		lbErr := loadbalancer.LBError{Message: err.Error()}
 		writeErr(lbErr, cb)
 		return "", lbErr
 	}
@@ -94,7 +88,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 	ep, ok := ins.EndpointsMap[i.Protocol]
 	if !ok {
 		errStr := "No available instance support [" + i.Protocol + "] protocol, msName: " + i.MicroServiceName
-		lbErr := selector.LBError{Message: errStr}
+		lbErr := loadbalancer.LBError{Message: errStr}
 		lager.Logger.Errorf(nil, lbErr.Error())
 		writeErr(lbErr, cb)
 		return "", lbErr
@@ -167,16 +161,16 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb 
 	}
 }
 
-// Name returns loadbalance string
+// Name returns loadbalancer string
 func (lb *LBHandler) Name() string {
-	return "loadbalance"
+	return "loadbalancer"
 }
 
 func newLBHandler() Handler {
 	return &LBHandler{}
 }
 
-func getSessionID(i *invocation.Invocation) interface{} {
+func getSessionID(i *invocation.Invocation) string {
 	var metadata interface{}
 
 	switch i.Args.(type) {
@@ -195,7 +189,7 @@ func getSessionID(i *invocation.Invocation) interface{} {
 		}
 	}
 
-	return metadata
+	return metadata.(string)
 }
 
 func genKey(s ...string) string {

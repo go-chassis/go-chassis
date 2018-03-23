@@ -21,7 +21,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	// file package for file based registration
 	_ "github.com/ServiceComb/go-chassis/core/registry/file"
@@ -124,7 +124,7 @@ func (c *chassis) initialize() error {
 		if err != nil {
 			return err
 		}
-		if err := loadbalance.Enable(); err != nil {
+		if err := loadbalancer.Enable(); err != nil {
 			return err
 		}
 	}

@@ -1,10 +1,8 @@
-package loadbalance
+package loadbalancer
 
 import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/registry"
-
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 // constant string for zoneaware
@@ -13,10 +11,10 @@ const (
 )
 
 // Filters is a map of string and array of *registry.MicroServiceInstance
-var Filters map[string]func([]*registry.MicroServiceInstance) []*registry.MicroServiceInstance = make(map[string]func([]*registry.MicroServiceInstance) []*registry.MicroServiceInstance)
+var Filters = make(map[string]Filter)
 
 // InstallFilter install filter
-func InstallFilter(name string, f selector.Filter) {
+func InstallFilter(name string, f Filter) {
 	Filters[name] = f
 }
 
@@ -25,7 +23,7 @@ func init() {
 }
 
 //FilterAvailableZoneAffinity is a region and zone based Select Filter which will Do the selection of instance in the same region and zone, if not Do the selection of instance in any zone in same region , if not Do the selection of instance in any zone of any region
-func FilterAvailableZoneAffinity(old []*registry.MicroServiceInstance) []*registry.MicroServiceInstance {
+func FilterAvailableZoneAffinity(old []*registry.MicroServiceInstance, c []*Criteria) []*registry.MicroServiceInstance {
 	var instances []*registry.MicroServiceInstance
 	if config.GlobalDefinition.DataCenter == nil {
 		return old
@@ -74,6 +72,20 @@ func getAvailableInstancesInSameRegion(providerInstances []*registry.MicroServic
 		}
 
 		instances = append(instances, ins)
+	}
+
+	return instances
+}
+
+// FilterByMetadata filter instances based meta data
+func FilterByMetadata(old []*registry.MicroServiceInstance, c []*Criteria) []*registry.MicroServiceInstance {
+	var instances []*registry.MicroServiceInstance
+
+	for _, ins := range old {
+		if ins.Metadata == nil {
+			continue
+		}
+		//TODO read tags in router.yaml and filter instances based on properties and tags
 	}
 
 	return instances

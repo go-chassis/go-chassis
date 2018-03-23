@@ -12,7 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	_ "github.com/ServiceComb/go-chassis/core/loadbalance"
+	_ "github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	_ "github.com/ServiceComb/go-chassis/server/restful"

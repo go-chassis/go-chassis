@@ -1,4 +1,4 @@
-package loadbalance
+package loadbalancer
 
 import (
 	"sort"
@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/registry"
-
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
 )
 
 // ByDuration is for calculating the duration
@@ -54,11 +52,6 @@ func SetLatency(duration time.Duration, addr, microServiceNameAndProtocol string
 		}
 		LatencyMapRWMutex.Unlock()
 	}
-}
-
-// WeightedResponse is a strategy plugin,interface must be a service/protocol string
-func WeightedResponse(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) selector.Next {
-	return selectWeightedInstance(instances, serviceAndProtocol)
 }
 
 // SortingLatencyDuration sorting the average latencies recored for each instance
@@ -119,57 +112,71 @@ func FindingAvgLatency(metadata string) (avgMap map[string]time.Duration, protoc
 	return avgMap, protocol
 }
 
-// selectWeightedInstance select instance based on protocol and less latency
-func selectWeightedInstance(instances []*registry.MicroServiceInstance, serviceAndProtocol interface{}) selector.Next {
-	var instanceAddr string
-	avgLatencyMap, protocol := FindingAvgLatency(serviceAndProtocol.(string))
+// WeightedResponseStrategy is a strategy plugin
+type WeightedResponseStrategy struct {
+	instances        []*registry.MicroServiceInstance
+	mtx              sync.Mutex
+	protocol         string
+	instanceAddr     string
+	checkValuesExist bool
+	avgLatencyMap    map[string]time.Duration
+}
 
-	var checkValuesExist = true
+func newWeightedResponseStrategy() Strategy {
+	return &WeightedResponseStrategy{}
+}
+
+// ReceiveData receive data
+func (r *WeightedResponseStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string) {
+	r.instances = instances
+	serviceAndProtocol := serviceName + "/" + protocol
+	r.avgLatencyMap, r.protocol = FindingAvgLatency(serviceAndProtocol)
+
+	r.checkValuesExist = true
 	// to check if 10 latency values of every instance is collected or not
-	for k := range avgLatencyMap {
+	for k := range r.avgLatencyMap {
 		LatencyMapRWMutex.RLock()
 		lvalues := len(LatencyMap[k])
 		LatencyMapRWMutex.RUnlock()
 		if lvalues != 10 {
-			checkValuesExist = false
+			r.checkValuesExist = false
 		}
 	}
+	r.instanceAddr = SortingLatencyDuration(serviceAndProtocol, r.avgLatencyMap)
+}
 
-	if (checkValuesExist && len(avgLatencyMap) == 0) || !checkValuesExist {
-		return func() (*registry.MicroServiceInstance, error) {
-			if len(instances) == 0 {
-				return nil, selector.ErrNoneAvailable
-			}
-
-			//if no instances are selected round robin will be done
-			weightedRespMutex.Lock()
-			node := instances[i%len(instances)]
-			i++
-			weightedRespMutex.Unlock()
-			return node, nil
-		}
-	}
-	instanceAddr = SortingLatencyDuration(serviceAndProtocol.(string), avgLatencyMap)
-
-	return func() (*registry.MicroServiceInstance, error) {
-		if len(instances) == 0 {
-			return nil, selector.ErrNoneAvailable
-		}
-
-		for _, node := range instances {
-			weightedRespMutex.Lock()
-			if instanceAddr == node.EndpointsMap[protocol] {
-				weightedRespMutex.Unlock()
-				return node, nil
-			}
-			weightedRespMutex.Unlock()
+// Pick return instance
+func (r *WeightedResponseStrategy) Pick() (*registry.MicroServiceInstance, error) {
+	if (r.checkValuesExist && len(r.avgLatencyMap) == 0) || !r.checkValuesExist {
+		if len(r.instances) == 0 {
+			return nil, ErrNoneAvailableInstance
 		}
 
 		//if no instances are selected round robin will be done
 		weightedRespMutex.Lock()
-		node := instances[i%len(instances)]
+		node := r.instances[i%len(r.instances)]
 		i++
 		weightedRespMutex.Unlock()
 		return node, nil
 	}
+	if len(r.instances) == 0 {
+		return nil, ErrNoneAvailableInstance
+	}
+
+	for _, node := range r.instances {
+		weightedRespMutex.Lock()
+		if r.instanceAddr == node.EndpointsMap[r.protocol] {
+			weightedRespMutex.Unlock()
+			return node, nil
+		}
+		weightedRespMutex.Unlock()
+	}
+
+	//if no instances are selected round robin will be done
+	weightedRespMutex.Lock()
+	node := r.instances[i%len(r.instances)]
+	i++
+	weightedRespMutex.Unlock()
+	return node, nil
+
 }
