@@ -1,16 +1,17 @@
 package archaius_test
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestGetSpecificKey(t *testing.T) {
-	cmd := handler.NewHystrixCmd("vmall", common.Consumer, "Carts", "cartService", "get")
+	cmd := strings.Join([]string{common.Consumer, "Carts"}, ".")
 	key := archaius.GetHystrixSpecificKey(archaius.NamespaceIsolation, cmd, archaius.PropertyTimeoutInMilliseconds)
-	assert.Equal(t, "cse.isolation.vmall.Consumer.Carts."+archaius.PropertyTimeoutInMilliseconds, key)
+	assert.Equal(t, "cse.isolation.Consumer.Carts."+archaius.PropertyTimeoutInMilliseconds, key)
 
 }

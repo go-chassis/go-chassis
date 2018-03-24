@@ -578,12 +578,6 @@ func (r *Servicecenter) Close() error {
 	return nil
 }
 
-// Health check the service center registry
-func (r *Servicecenter) Health() error {
-	_, err := r.registryClient.Health()
-	return err
-}
-
 // auto sync
 func newServicecenterRegistry(opts ...registry.Option) registry.Registry {
 	var options registry.Options
