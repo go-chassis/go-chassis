@@ -52,7 +52,15 @@ func TestNewRestRequest(t *testing.T) {
 
 	req, err = rest.NewRequest("GET", "cse://hello")
 	assert.NoError(t, err)
-	_ = req.Copy()
+
+	testHeaderKey := "hello"
+	testHeaderValue := "ServiceComb"
+	req.Req.Header.Add(testHeaderKey, testHeaderValue)
+	req.Req.AddCookie(c1)
+	newRequest := req.Copy()
+	assert.Equal(t, newRequest.Req.Header.Get(testHeaderKey), testHeaderValue)
+	assert.Equal(t, newRequest.GetCookie(c1.Name), c1.Value)
+
 	req.Close()
 	resp.Close()
 }

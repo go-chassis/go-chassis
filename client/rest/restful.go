@@ -59,12 +59,20 @@ func (req *Request) SetURI(url string) {
 }
 
 //Copy is method
-//TODO Confirm it's necessary or not
 func (req *Request) Copy() *Request {
 	newReq, err := http.NewRequest(req.Req.Method, req.Req.URL.String(), req.Req.Body)
 	if err != nil {
 		return nil
 	}
+	//Copy headers
+	for key := range req.Req.Header {
+		newReq.Header.Add(key, req.Req.Header.Get(key))
+	}
+	//Copy cookies
+	for _, c := range req.Req.Cookies() {
+		newReq.AddCookie(c)
+	}
+
 	return &Request{Req: newReq}
 }
 
