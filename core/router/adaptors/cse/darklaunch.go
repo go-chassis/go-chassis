@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
+	"errors"
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/lager"
@@ -127,7 +128,11 @@ func getRouterConfigFromDarkLaunch() (*model.RouterConfig, error) {
 	rule := &model.DarkLaunchRule{}
 	for k, v := range configMap {
 		// todo bug fix
-		if err := json.Unmarshal([]byte(v.(string)), rule); err != nil {
+		value, ok := v.(string)
+		if !ok {
+			return routeRules, errors.New("route rule is not a json string format please check the configuration in config center")
+		}
+		if err := json.Unmarshal([]byte(value), rule); err != nil {
 			return routeRules, err
 		}
 		key := strings.Replace(k, DarkLaunchPrefix, "", 1)
