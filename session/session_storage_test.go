@@ -1,12 +1,13 @@
 package session_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/session"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 	"time"
+
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/session"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSessionStorage(t *testing.T) {
@@ -21,13 +22,15 @@ func TestSessionStorage(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	cookieValue := session.GetSessionCookie(nil)
 	assert.Equal(t, "", cookieValue)
-	var resp *fasthttp.Response
-	resp = new(fasthttp.Response)
+
+	resp := &http.Response{
+		Header: http.Header{},
+	}
 	cookieValue = session.GetSessionCookie(resp)
 	assert.Equal(t, "", cookieValue)
 	session.DeletingKeySuccessiveFailure(nil)
 	session.DeletingKeySuccessiveFailure(resp)
 	cookieValue = session.GetSessionFromResp("abc", resp)
 	assert.Equal(t, "", cookieValue)
-	session.CheckForSessionID("", 1, resp, new(fasthttp.Request))
+	session.CheckForSessionID("", 1, resp, new(http.Request))
 }

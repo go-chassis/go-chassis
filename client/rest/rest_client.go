@@ -10,7 +10,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"golang.org/x/net/context"
 )
 
@@ -19,6 +18,14 @@ const (
 	Name = "rest"
 	// FailureTypePrefix is a constant of type string
 	FailureTypePrefix = "http_"
+	//DefaultTimoutBySecond defines the default timeout for http connections
+	DefaultTimoutBySecond = 60
+	//DefaultMaxConnsPerHost defines the maximum number of concurrent connections
+	DefaultMaxConnsPerHost = 512
+	//SchemaHTTP represents the http schema
+	SchemaHTTP = "http"
+	//SchemaHTTPS represents the https schema
+	SchemaHTTPS = "https"
 )
 
 //HTTPFailureTypeMap is a variable of type map
@@ -51,21 +58,23 @@ func NewRestClient(opts client.Options) client.ProtocolClient {
 		opts.Failure = tmpFailureMap
 	}
 
-	poolSize := fasthttp.DefaultMaxConnsPerHost
+	poolSize := DefaultMaxConnsPerHost
 	if opts.PoolSize != 0 {
 		poolSize = opts.PoolSize
 	}
 
+	tp := &http.Transport{}
+	if opts.TLSConfig != nil {
+		tp.TLSClientConfig = opts.TLSConfig
+	}
+	// There differences between MaxIdleConnsPerHost and MaxConnsPerHost
+	// See https://github.com/golang/go/issues/13957
+	tp.MaxIdleConnsPerHost = poolSize
 	rc := &Client{
 		opts: opts,
-		c: &fasthttp.Client{
-			Name:            "restinvoker",
-			MaxConnsPerHost: poolSize,
+		c: &http.Client{
+			Transport: tp,
 		},
-	}
-
-	if opts.TLSConfig != nil {
-		rc.c.TLSConfig = opts.TLSConfig
 	}
 
 	return rc
@@ -108,15 +117,15 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	if c.opts.TLSConfig != nil {
-		reqSend.Req.URI().SetScheme("https")
+		reqSend.Req.URL.Scheme = SchemaHTTPS
 	} else {
-		reqSend.Req.URI().SetScheme("http")
+		reqSend.Req.URL.Scheme = SchemaHTTP
 	}
 
-	reqSend.Req.SetHost(addr)
+	reqSend.Req.URL.Host = addr
 
 	//increase the max connection per host to prevent error "no free connection available" error while sending more requests.
-	c.c.MaxConnsPerHost = 512 * 20
+	c.c.Transport.(*http.Transport).MaxIdleConnsPerHost = 512 * 20
 
 	errChan := make(chan error, 1)
 	go func() { errChan <- c.Do(reqSend, resp) }()

@@ -2,8 +2,6 @@ package tracing
 
 import (
 	"github.com/ServiceComb/go-chassis/client/rest"
-
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 )
 
 const (
@@ -24,13 +22,13 @@ func (r RestClientHeaderWriter) Set(key, val string) {
 	restReq.SetHeader(key, val)
 }
 
-// FasthttpHeaderCarrier fast http heaer carrier
-type FasthttpHeaderCarrier struct {
-	*fasthttp.RequestHeader
+// HeaderCarrier http heaer carrier
+type HeaderCarrier struct {
+	Header map[string]string
 }
 
 // ForeachKey to check the headers of zipkin
-func (f *FasthttpHeaderCarrier) ForeachKey(handler func(key, val string) error) error {
+func (f *HeaderCarrier) ForeachKey(handler func(key, val string) error) error {
 	for k, v := range f.header2TextMap() {
 		if err := handler(k, v); err != nil {
 			return err
@@ -39,11 +37,11 @@ func (f *FasthttpHeaderCarrier) ForeachKey(handler func(key, val string) error) 
 	return nil
 }
 
-func (f *FasthttpHeaderCarrier) header2TextMap() map[string]string {
+func (f *HeaderCarrier) header2TextMap() map[string]string {
 	m := make(map[string]string)
 	for _, s := range []string{zipkinTraceID, zipkinSpanID, zipkinParentSpanID, zipkinSampled, zipkinFlags} {
-		if v := f.Peek(s); len(v) != 0 {
-			m[s] = string(v)
+		if _, ok := f.Header[s]; ok {
+			m[s] = f.Header[s]
 		}
 	}
 	return m

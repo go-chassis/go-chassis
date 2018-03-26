@@ -22,10 +22,12 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 	}
 	tags[common.BuildinTagApp] = config.GlobalDefinition.AppID
 
-	var h map[string]string
+	h := make(map[string]string)
 	if i.Protocol == "rest" {
 		req, _ := i.Args.(*rest.Request)
-		h = req.GetRequest().Header.HeaderMap()
+		for k := range req.GetRequest().Header {
+			h[k] = req.Req.Header.Get(k)
+		}
 	} else {
 		ctx, _ := metadata.FromContext(i.Ctx)
 		h = map[string]string(ctx)
