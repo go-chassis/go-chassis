@@ -28,8 +28,8 @@ var MicroserviceDefinition *model.MicroserviceCfg
 // PassLagerDefinition is having the information about loging
 var PassLagerDefinition *model.PassLagerCfg
 
-//HystricConfig is having info about isolation, circuit breaker, fallback properities of the micro service
-var HystricConfig *model.HystrixConfigWrapper
+//HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
+var HystrixConfig *model.HystrixConfigWrapper
 
 // NodeIP gives the information of node ip
 var NodeIP string
@@ -68,7 +68,7 @@ func parse() error {
 		return err
 	}
 
-	err = readHystrixConfigFile()
+	err = ReadHystrixFromArchaius()
 	if err != nil {
 		return err
 	}
@@ -161,15 +161,16 @@ func readPassLagerConfigFile(lagerFile string) error {
 	return nil
 }
 
-// readHystrixConfigFile is unmarshal hystrix configuration file(circuit_breaker.yaml)
-func readHystrixConfigFile() error {
+// ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
+func ReadHystrixFromArchaius() error {
+	cbMutex.RLock()
+	defer cbMutex.RUnlock()
 	hystrixCnf := model.HystrixConfigWrapper{}
 	err := archaius.UnmarshalConfig(&hystrixCnf)
 	if err != nil {
 		return err
 	}
-	HystricConfig = &hystrixCnf
-
+	HystrixConfig = &hystrixCnf
 	return nil
 }
 
@@ -219,6 +220,11 @@ func ReadMicroserviceConfigFromBytes(data []byte) error {
 //GetLoadBalancing return lb config
 func GetLoadBalancing() *model.LoadBalancing {
 	return lbConfig.Prefix.LBConfig
+}
+
+//GetHystrixConfig return cb config
+func GetHystrixConfig() *model.HystrixConfig {
+	return HystrixConfig.HystrixConfig
 }
 
 // Init is initialize the configuration directory, lager, archaius, route rule, and schema

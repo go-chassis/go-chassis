@@ -1,7 +1,11 @@
 package archaius_test
 
 import (
+	"io"
+	"os"
+	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-chassis/core/archaius"
@@ -13,10 +17,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 type EListener struct{}
@@ -80,7 +80,7 @@ cse:
       policy: throwexception
 `)
 	lbBytes := []byte(`
---- 
+---
 cse: 
   loadbalancer: 
     TargetService: 

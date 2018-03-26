@@ -125,7 +125,7 @@ func (s *HeartbeatService) RetryRegister(sid string) error {
 	for {
 		time.Sleep(DefaultRetryTime)
 		lager.Logger.Infof("Try to re-register self")
-		err := RegistryService.Health()
+		_, err := RegistryService.GetAllMicroServices()
 		if err != nil {
 			lager.Logger.Errorf(err, "RegistryService is not healthy")
 			continue

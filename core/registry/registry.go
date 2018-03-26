@@ -68,7 +68,6 @@ type Registry interface {
 	GetMicroServicesByInterface(interfaceName string) (microservices []*MicroService)
 	GetSchemaContentByInterface(interfaceName string) SchemaContent
 	GetSchemaContentByServiceName(svcName, version, appID, env string) []*SchemaContent
-	Health() error
 }
 
 // enableRegistry enable registry

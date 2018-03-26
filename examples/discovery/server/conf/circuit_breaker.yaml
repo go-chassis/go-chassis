@@ -1,24 +1,40 @@
 ---
 cse:
   isolation:
+    Consumer:
+      timeout:
+        enabled: true
+      timeoutInMilliseconds: 10
+      maxConcurrentRequests: 100
+      Server:
+        timeoutInMilliseconds: 1000
+        maxConcurrentRequests: 100
     Provider:
       timeout:
         enabled: false
-      timeoutInMilliseconds: 1000
-      maxConcurrentRequests: 100
+      timeoutInMilliseconds: 20
+      maxConcurrentRequests: 200
   circuitBreaker:
-    Provider:
-      enabled: false
+    Consumer:
+      enabled: true
       forceOpen: false
-      forceClosed: false
+      forceClose: false
       sleepWindowInMilliseconds: 10000
       requestVolumeThreshold: 20
-      errorThresholdPercentage: 10
-  #容错处理函数，目前暂时按照开源的方式来不进行区分处理，统一调用fallback函数
+      errorThresholdPercentage: 50
+      Server:
+        enabled: true
+        forceOpen: true
+        forceClose: false
+        sleepWindowInMilliseconds: 10000
+        requestVolumeThreshold: 20
+        errorThresholdPercentage: 50
   fallback:
-    Provider:
-      enabled: true
+    Consumer:
+      enabled: false
       maxConcurrentRequests: 20
   fallbackpolicy:
-    Provider:
+    Consumer:
       policy: throwexception
+      Server:
+        policy: throwexception

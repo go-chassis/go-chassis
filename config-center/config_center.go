@@ -206,9 +206,22 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 	}
 
 	memberdiscovery.MemberDiscoveryService = memDiscovery
-
 	archaius.DefaultConf.ConfigFactory.RegisterListener(eventHandler, "a*")
+
+	if err := refreshGlobalConfig(); err != nil {
+		lager.Logger.Error("failed to refresh global config for lb and cb", err)
+		return err
+	}
+
 	return nil
+}
+
+func refreshGlobalConfig() error {
+	err := config.ReadHystrixFromArchaius()
+	if err != nil {
+		return err
+	}
+	return config.ReadLBFromArchaius()
 }
 
 //EventListener is a struct
