@@ -100,7 +100,7 @@ func Enable() error {
 	InstallStrategy(StrategyRandom, newRandomStrategy)
 	InstallStrategy(StrategyRoundRobin, newRoundRobinStrategy)
 	InstallStrategy(StrategySessionStickiness, newSessionStickinessStrategy)
-	//InstallStrategy(StrategyLatency, WeightedResponse)
+	InstallStrategy(StrategyLatency, newWeightedResponseStrategy)
 
 	var strategyName string
 

@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 
 	"golang.org/x/net/context"
 )
@@ -39,7 +37,6 @@ var HTTPFailureTypeMap = map[string]bool{
 
 func init() {
 	client.InstallPlugin(Name, NewRestClient)
-	loadbalancer.LatencyMap = make(map[string][]time.Duration)
 }
 
 //NewRestClient is a function
