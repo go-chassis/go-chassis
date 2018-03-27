@@ -20,6 +20,22 @@ const (
 	EnvProjectID  = "CSE_PROJECT_ID"
 )
 
+// constant environment keys service center, config center, monitor server addresses
+const (
+	CseRegistryAddress     = "CSE_REGISTRY_ADDR"
+	CseConfigCenterAddress = "CSE_CONFIG_CENTER_ADDR"
+	CseMonitorServer       = "CSE_MONITOR_SERVER_ADDR"
+)
+
+// env connect with "." like service_description.name and service_description.version which can not be used in k8s.
+// So we can not use archaius to set env.
+// To support this decalring constant for service name and version
+// constant for service name and version.
+const (
+	ServiceName = "SERVICE_NAME"
+	Version     = "VERSION"
+)
+
 // constant for microservice environment
 const (
 	EnvValueDev  = "development"
