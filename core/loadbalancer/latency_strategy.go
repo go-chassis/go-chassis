@@ -6,170 +6,129 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"math/rand"
 )
 
 // ByDuration is for calculating the duration
-type ByDuration []time.Duration
+type ByDuration []*ProtocolStats
 
 func (a ByDuration) Len() int           { return len(a) }
 func (a ByDuration) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByDuration) Less(i, j int) bool { return a[i] < a[j] }
+func (a ByDuration) Less(i, j int) bool { return a[i].AvgLatency < a[j].AvgLatency }
 
 // variables for latency map, rest and highway requests count
 var (
-	//LatencyMap key is the combination of instance addr and microservice name separated by "/"
-	LatencyMap map[string][]time.Duration
+	//ProtocolStatsMap saves all stats for all service's protocol, one protocol has a lot of instances
+	ProtocolStatsMap = make(map[string][]*ProtocolStats)
 	//maintain different locks since multiple goroutine access the map
 	LatencyMapRWMutex sync.RWMutex
-	avgmtx            sync.RWMutex
 	weightedRespMutex sync.Mutex
 )
 
-// SetLatency for each requests
-func SetLatency(duration time.Duration, addr, microServiceNameAndProtocol string) {
-	key := addr + "/" + microServiceNameAndProtocol
+//BuildKey return key of stats map
+func BuildKey(microServiceName, version, app, protocol string) string {
+	//TODO add more data
+	return strings.Join([]string{microServiceName, protocol}, "/")
+}
+
+// SetLatency for a instance ,it only save latest 10 stats for instance's protocol
+func SetLatency(latency time.Duration, addr, microServiceName, version, app, protocol string) {
+	key := BuildKey(microServiceName, version, app, protocol)
 
 	LatencyMapRWMutex.RLock()
-	val, ok := LatencyMap[key]
+	stats, ok := ProtocolStatsMap[key]
 	LatencyMapRWMutex.RUnlock()
-
 	if !ok {
-		var durationQueue []time.Duration
-		durationQueue = append(durationQueue, duration)
-		LatencyMapRWMutex.Lock()
-		LatencyMap[key] = durationQueue
-		LatencyMapRWMutex.Unlock()
-	} else {
-		LatencyMapRWMutex.Lock()
-		if len(val) < 10 {
-			val = append(val, duration)
-			LatencyMap[key] = val
-		} else { // save only latest 10 data for one micro service's protocol endpoint
-			val = val[1:]
-			val = append(val, duration)
-			LatencyMap[key] = val
-		}
-		LatencyMapRWMutex.Unlock()
+		stats = make([]*ProtocolStats, 0)
 	}
+	exist := false
+	for _, v := range stats {
+		if v.Addr == addr {
+			v.SaveLatency(latency)
+			exist = true
+		}
+	}
+	if !exist {
+		ps := &ProtocolStats{
+			Addr: addr,
+		}
+
+		ps.SaveLatency(latency)
+		stats = append(stats, ps)
+	}
+	LatencyMapRWMutex.Lock()
+	ProtocolStatsMap[key] = stats
+	LatencyMapRWMutex.Unlock()
 }
 
-// SortingLatencyDuration sorting the average latencies recored for each instance
-// and returning the instance addr which has the least latency
-func SortingLatencyDuration(serviceAndProtocol string, avgLatencyMap map[string]time.Duration) string {
-	var mtx sync.Mutex
-	var tempLatencyMap = make(map[string]time.Duration)
-	for k, v := range avgLatencyMap {
-		epMs := strings.Split(k, "/")
-		//comparing the microservice and protocol name
-		if (epMs[1] + "/" + epMs[2]) == serviceAndProtocol {
-			mtx.Lock()
-			tempLatencyMap[epMs[0]] = v
-			mtx.Unlock()
-		}
+// SortLatency sort instance based on  the average latencies
+func SortLatency() {
+	for _, v := range ProtocolStatsMap {
+		sort.Sort(ByDuration(v))
 	}
-
-	//Inverting maps
-	invMap := make(map[time.Duration]string, len(tempLatencyMap))
-	for k, v := range tempLatencyMap {
-		mtx.Lock()
-		invMap[v] = k
-		mtx.Unlock()
-	}
-
-	//Sorting
-	sortedKeys := make([]time.Duration, len(invMap))
-	var i int
-	for k := range invMap {
-		sortedKeys[i] = k
-		i++
-	}
-	sort.Sort(ByDuration(sortedKeys))
-	return invMap[sortedKeys[0]]
 
 }
 
-// FindingAvgLatency Calculating the average latency for each instance using the statistics collected,
+// CalculateAvgLatency Calculating the average latency for each instance using the statistics collected,
 // key is addr/service/protocol
-func FindingAvgLatency(metadata string) (avgMap map[string]time.Duration, protocol string) {
-	avgMap = make(map[string]time.Duration)
+func CalculateAvgLatency() {
 	LatencyMapRWMutex.RLock()
-	defer LatencyMapRWMutex.RUnlock()
-	for k, v := range LatencyMap {
-		epMs := strings.Split(k, "/")
-		//comparing the microservice/protocol name
-		if (epMs[1] + "/" + epMs[2]) == metadata {
-			protocol = epMs[2]
-			var sum time.Duration
-			for i := 0; i < len(v); i++ {
-				sum = sum + v[i]
-			}
-			avgmtx.Lock()
-			avgMap[k] = time.Duration(sum.Nanoseconds() / int64(len(v)))
-			avgmtx.Unlock()
+	for _, v := range ProtocolStatsMap {
+		for _, stats := range v {
+			stats.CalculateAverageLatency()
 		}
 	}
-	return avgMap, protocol
+	LatencyMapRWMutex.RUnlock()
 }
 
 // WeightedResponseStrategy is a strategy plugin
 type WeightedResponseStrategy struct {
 	instances        []*registry.MicroServiceInstance
 	mtx              sync.Mutex
+	serviceName      string
 	protocol         string
-	instanceAddr     string
 	checkValuesExist bool
 	avgLatencyMap    map[string]time.Duration
 }
 
 func newWeightedResponseStrategy() Strategy {
+	ticker := time.NewTicker((30 * time.Second))
+	//run routine to prepare data
+	go func() {
+		for range ticker.C {
+			if config.GetLoadBalancing().Strategy["name"] == StrategyLatency {
+				CalculateAvgLatency()
+				SortLatency()
+				lager.Logger.Info("Preparing data for Weighted Response Strategy")
+			}
+
+		}
+	}()
 	return &WeightedResponseStrategy{}
 }
 
 // ReceiveData receive data
 func (r *WeightedResponseStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string) {
 	r.instances = instances
-	serviceAndProtocol := serviceName + "/" + protocol
-	r.avgLatencyMap, r.protocol = FindingAvgLatency(serviceAndProtocol)
-
-	r.checkValuesExist = true
-	// to check if 10 latency values of every instance is collected or not
-	for k := range r.avgLatencyMap {
-		LatencyMapRWMutex.RLock()
-		lvalues := len(LatencyMap[k])
-		LatencyMapRWMutex.RUnlock()
-		if lvalues != 10 {
-			r.checkValuesExist = false
-		}
-	}
-	r.instanceAddr = SortingLatencyDuration(serviceAndProtocol, r.avgLatencyMap)
+	r.serviceName = serviceName
+	r.protocol = protocol
 }
 
 // Pick return instance
 func (r *WeightedResponseStrategy) Pick() (*registry.MicroServiceInstance, error) {
-	if (r.checkValuesExist && len(r.avgLatencyMap) == 0) || !r.checkValuesExist {
-		if len(r.instances) == 0 {
-			return nil, ErrNoneAvailableInstance
+	if rand.Intn(100) < 70 {
+		var instanceAddr string
+		if len(ProtocolStatsMap[BuildKey(r.serviceName, "", "", r.protocol)]) != 0 {
+			instanceAddr = ProtocolStatsMap[BuildKey(r.serviceName, "", "", r.protocol)][0].Addr
 		}
-
-		//if no instances are selected round robin will be done
-		weightedRespMutex.Lock()
-		node := r.instances[i%len(r.instances)]
-		i++
-		weightedRespMutex.Unlock()
-		return node, nil
-	}
-	if len(r.instances) == 0 {
-		return nil, ErrNoneAvailableInstance
-	}
-
-	for _, node := range r.instances {
-		weightedRespMutex.Lock()
-		if r.instanceAddr == node.EndpointsMap[r.protocol] {
-			weightedRespMutex.Unlock()
-			return node, nil
+		for _, instance := range r.instances {
+			if instanceAddr == instance.EndpointsMap[r.protocol] {
+				return instance, nil
+			}
 		}
-		weightedRespMutex.Unlock()
 	}
 
 	//if no instances are selected round robin will be done
