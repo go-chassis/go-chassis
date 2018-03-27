@@ -2,11 +2,30 @@ package config_test
 
 import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
+	// "github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
+
+func TestLBInit(t *testing.T) {
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	config.Init()
+	archaius.Init()
+}
+
+func TestGetStrategyName(t *testing.T) {
+	check := config.GetStrategyName("source", "service")
+	assert.Equal(t, "RoundRobin", check)
+}
+
+func TestGetRetryOnNext(t *testing.T) {
+	check := config.GetRetryOnNext("source", "service")
+	assert.Equal(t, 0, check)
+}
 
 // GetServerListFilters get server list filters
 func BenchmarkGetServerListFilters(b *testing.B) {

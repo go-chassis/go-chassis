@@ -82,6 +82,7 @@ func SetRouteRule(rule map[string][]*model.RouteRule) {
 
 // Route route the APIs
 func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.Invocation) error {
+
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {
 		if Match(rule.Match, header, si) {
