@@ -99,3 +99,6 @@ const (
 const (
 	DefaultRefreshMode = 1
 )
+
+//ContextValueKey is the key of value in context
+type ContextValueKey struct{}

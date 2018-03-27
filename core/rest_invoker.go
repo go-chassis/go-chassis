@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ServiceComb/go-chassis/client/rest"
@@ -9,8 +10,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-
-	"golang.org/x/net/context"
 )
 
 // RestInvoker is rest invoker

@@ -3,17 +3,19 @@
 package provider_test
 
 import (
+	"context"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/provider"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	pb "github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 type HelloServerfk1 struct{}

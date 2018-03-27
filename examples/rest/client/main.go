@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
+
 	"github.com/ServiceComb/go-chassis"
 	_ "github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"golang.org/x/net/context"
 )
 
 func main() {

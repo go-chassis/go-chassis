@@ -12,7 +12,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/tracing"
 	"github.com/ServiceComb/go-chassis/util/iputil"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 	"github.com/emicklei/go-restful"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
@@ -67,13 +66,16 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		interfaceName = i.OperationID
 
 		// header stored in context
-		md, ok := metadata.FromContext(i.Ctx)
-		// no header
-		if !ok || md == nil {
+		if i.Ctx == nil {
 			lager.Logger.Debug("No metadata found in Invocation.Ctx")
 			break
 		}
-		carrier = (opentracing.TextMapCarrier)(md)
+		at, ok := i.Ctx.Value(common.ContextValueKey{}).(map[string]string)
+		if !ok {
+			lager.Logger.Debug("No metadata found in Invocation.Ctx")
+			break
+		}
+		carrier = (opentracing.TextMapCarrier)(at)
 	}
 
 	wireContext, err = tracer.Extract(
@@ -194,13 +196,13 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		}
 	default:
 		// header stored in context
-		var header metadata.Metadata
-		if md, ok := metadata.FromContext(i.Ctx); !ok || md == nil {
-			md = make(metadata.Metadata)
-			i.Ctx = metadata.NewContext(i.Ctx, md)
-			header = md
+		var header map[string]string
+		attachments, ok := i.Ctx.Value(common.ContextValueKey{}).(map[string]string)
+		if !ok {
+			header = make(map[string]string)
+			i.Ctx = context.WithValue(i.Ctx, common.ContextValueKey{}, header)
 		} else {
-			header = md
+			header = attachments
 		}
 
 		if err := tracer.Inject(
@@ -210,7 +212,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		); err != nil {
 			lager.Logger.Errorf(err, "Inject span failed")
 		} else {
-			i.Ctx = metadata.NewContext(i.Ctx, header)
+			i.Ctx = context.WithValue(i.Ctx, common.ContextValueKey{}, header)
 		}
 	}
 

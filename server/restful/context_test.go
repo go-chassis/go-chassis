@@ -1,13 +1,12 @@
 package restful
 
 import (
-	"testing"
-	//"context"
-	"github.com/emicklei/go-restful"
-	"golang.org/x/net/context"
-	"net/http"
-
+	"context"
 	"errors"
+	"net/http"
+	"testing"
+
+	"github.com/emicklei/go-restful"
 	"github.com/stretchr/testify/assert"
 )
 

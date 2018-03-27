@@ -1,7 +1,7 @@
 // Package client is an interface for any protocol's client
 package client
 
-import "golang.org/x/net/context"
+import "context"
 
 // 无论client 还是server request response都是协议无关的
 // request 和 response 都是编解码无关的

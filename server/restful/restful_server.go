@@ -1,6 +1,7 @@
 package restful
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -20,7 +21,6 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
-	"golang.org/x/net/context"
 )
 
 // constants for metric path and name

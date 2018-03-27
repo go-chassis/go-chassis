@@ -1,17 +1,17 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"io"
+	"mime/multipart"
+	"os"
+
 	"github.com/ServiceComb/go-chassis"
 	_ "github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"golang.org/x/net/context"
-	"mime/multipart"
-
-	"bytes"
-	"io"
-	"os"
 )
 
 func main() {

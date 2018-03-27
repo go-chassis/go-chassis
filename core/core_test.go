@@ -1,18 +1,19 @@
 package core_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	_ "github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
+
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
 )
 
 func initenv() {
@@ -26,7 +27,7 @@ func TestRPCInvoker_InvokeFailinChainInit(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{}
 	invoker := core.NewRPCInvoker(core.ChainName(""))
 	replyOne := &helloworld.HelloReply{}
-	ctx := metadata.NewContext(context.Background(), map[string]string{
+	ctx := context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 

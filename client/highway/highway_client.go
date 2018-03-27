@@ -1,11 +1,11 @@
 package highway
 
 import (
-	"github.com/ServiceComb/go-chassis/core/client"
+	"context"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	"golang.org/x/net/context"
+	"github.com/ServiceComb/go-chassis/core/client"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 //const timeout
@@ -59,11 +59,18 @@ func (c *highwayClient) Call(ctx context.Context, addr string, req *client.Reque
 	highwayReq.SvcName = req.MicroServiceName
 	//Current only twoway
 	highwayReq.TwoWay = true
-	var ok bool
-	highwayReq.Attachments, ok = metadata.FromContext(ctx)
-	if !ok {
+
+	if ctx == nil {
 		highwayReq.Attachments = make(map[string]string)
+	} else {
+		at, ok := ctx.Value(common.ContextValueKey{}).(map[string]string)
+		if !ok {
+			highwayReq.Attachments = make(map[string]string)
+		} else {
+			highwayReq.Attachments = at
+		}
 	}
+
 	err = baseClient.Send(highwayReq, tmpRsp, DefaultSendTimeOut)
 	if err != nil {
 		return err

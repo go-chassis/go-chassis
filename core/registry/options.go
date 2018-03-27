@@ -1,10 +1,9 @@
 package registry
 
 import (
+	"context"
 	"crypto/tls"
 	"time"
-
-	"golang.org/x/net/context"
 )
 
 // Options having micro-service parameters

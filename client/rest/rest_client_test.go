@@ -1,6 +1,7 @@
 package rest_test
 
 import (
+	"context"
 	"errors"
 	"log"
 	"os"
@@ -16,8 +17,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
+
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
 )
 
 var addrRest = "127.0.0.1:8039"

@@ -3,6 +3,9 @@ package highway
 import (
 	"bufio"
 	"context"
+	"net"
+	"sync"
+
 	highwayclient "github.com/ServiceComb/go-chassis/client/highway"
 	"github.com/ServiceComb/go-chassis/client/highway/pb"
 	"github.com/ServiceComb/go-chassis/core/common"
@@ -10,9 +13,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/provider"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	"net"
-	"sync"
 )
 
 //ConnectionMgr conn manage
@@ -175,7 +175,7 @@ func (svrConn *HighwayConnection) hanleFrame(protoObj *highwayclient.HighWayProt
 	if req.Attachments != nil {
 		i.SourceMicroService = req.Attachments[common.HeaderSourceName]
 	}
-	i.Ctx = metadata.NewContext(context.Background(), req.Attachments)
+	i.Ctx = context.WithValue(context.Background(), common.ContextValueKey{}, req.Attachments)
 	i.Protocol = common.ProtocolHighway
 	c, err := handler.GetChain(common.Provider, svrConn.handlerChain)
 	if err != nil {

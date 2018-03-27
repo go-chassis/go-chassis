@@ -1,12 +1,14 @@
 package handler_test
 
 import (
+	"context"
 	"log"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/ServiceComb/go-chassis"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/handler"
@@ -15,9 +17,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
+
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
 )
 
 func TestTransportHandler_Handle(t *testing.T) {
@@ -47,7 +48,7 @@ func TestTransportHandler_Handle(t *testing.T) {
 	c := &handler.Chain{}
 	i := &invocation.Invocation{}
 	i.Reply = &helloworld.HelloReply{}
-	i.Ctx = metadata.NewContext(context.Background(), map[string]string{
+	i.Ctx = context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 	i.Protocol = "highway"
