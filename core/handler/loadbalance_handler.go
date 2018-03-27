@@ -12,6 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 
+	"github.com/ServiceComb/go-chassis/session"
 	"github.com/cenkalti/backoff"
 	"github.com/valyala/fasthttp"
 )
@@ -187,6 +188,18 @@ func getSessionID(i *invocation.Invocation) string {
 		if value != "" && (cookieKey[0] == common.SessionID || cookieKey[0] == common.LBSessionID) {
 			metadata = cookieKey[1]
 		}
+	default:
+		value := session.GetContextMetadata(i.Ctx, common.LBSessionID)
+		if value != "" {
+			cookieKey := strings.Split(string(value), "=")
+			if len(cookieKey) > 1 {
+				metadata = cookieKey[1]
+			}
+		}
+	}
+
+	if metadata == nil {
+		metadata = ""
 	}
 
 	return metadata.(string)
