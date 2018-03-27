@@ -88,6 +88,7 @@ cse:
 	assert.Equal(t, true, c.HystrixConfig.IsolationProperties.Consumer.TimeoutEnable.Enabled)
 	assert.Equal(t, "throwexception", c.HystrixConfig.FallbackPolicyProperties.Consumer.Policy)
 	assert.Equal(t, 50, c.HystrixConfig.CircuitBreakerProperties.Consumer.AnyService["Server"].ErrorThresholdPercentage)
+	assert.NotEqual(t, nil, config.GetHystrixConfig())
 }
 
 func TestGetLoadBalancing(t *testing.T) {
@@ -126,4 +127,5 @@ cse:
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
 
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.Strategy["name"])
+	assert.NotEqual(t, nil, config.GetLoadBalancing())
 }

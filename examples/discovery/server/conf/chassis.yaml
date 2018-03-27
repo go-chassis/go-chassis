@@ -4,7 +4,8 @@ region:
   availableZone: us-east-1
 cse:
   loadbalance:
-    strategyName: RoundRobin
+    strategy:
+      name: RoundRobin
     retryEnabled: false
     retryOnNext: 2
     retryOnSame: 3

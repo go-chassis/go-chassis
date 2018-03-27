@@ -50,13 +50,6 @@ var SelfVersion string
 // ErrNoName is used to represent the service name missing error
 var ErrNoName = errors.New("Microservice name is missing in description file")
 
-// constant environment keys service center, config center, monitor server addresses
-const (
-	CseRegistryAddress     = "CSE_REGISTRY_ADDR"
-	CseConfigCenterAddress = "CSE_CONFIG_CENTER_ADDR"
-	CseMonitorServer       = "CSE_MONITOR_SERVER_ADDR"
-)
-
 // parse unmarshal configurations on respective structure
 func parse() error {
 	err := readGlobalConfigFile()
@@ -82,13 +75,15 @@ func parse() error {
 	populateServiceRegistryAddress()
 	populateMonitorServerAddress()
 	populateServiceEnvironment()
+	populateServiceName()
+	populateVersion()
 	return nil
 }
 
 // populateServiceRegistryAddress populate service registry address
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
-	registryAddrFromEnv := archaius.GetString(CseRegistryAddress, "")
+	registryAddrFromEnv := archaius.GetString(common.CseRegistryAddress, "")
 	if registryAddrFromEnv != "" {
 		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
 	}
@@ -97,7 +92,7 @@ func populateServiceRegistryAddress() {
 // populateConfigCenterAddress populate config center address
 func populateConfigCenterAddress() {
 	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := archaius.GetString(CseConfigCenterAddress, "")
+	configCenterAddrFromEnv := archaius.GetString(common.CseConfigCenterAddress, "")
 	if configCenterAddrFromEnv != "" {
 		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
 	}
@@ -106,7 +101,7 @@ func populateConfigCenterAddress() {
 // populateMonitorServerAddress populate monitor server address
 func populateMonitorServerAddress() {
 	//Monitor Center Address , higher priority for environment variable
-	monitorServerAddrFromEnv := archaius.GetString(CseMonitorServer, "")
+	monitorServerAddrFromEnv := archaius.GetString(common.CseMonitorServer, "")
 	if monitorServerAddrFromEnv != "" {
 		GlobalDefinition.Cse.Monitor.Client.ServerURI = monitorServerAddrFromEnv
 	}
@@ -116,6 +111,20 @@ func populateMonitorServerAddress() {
 func populateServiceEnvironment() {
 	if e := archaius.GetString(common.Env, ""); e != "" {
 		MicroserviceDefinition.ServiceDescription.Environment = e
+	}
+}
+
+// populateServiceName populate service name
+func populateServiceName() {
+	if e := archaius.GetString(common.ServiceName, ""); e != "" {
+		MicroserviceDefinition.ServiceDescription.Name = e
+	}
+}
+
+// populateVersion populate version
+func populateVersion() {
+	if e := archaius.GetString(common.Version, ""); e != "" {
+		MicroserviceDefinition.ServiceDescription.Version = e
 	}
 }
 
