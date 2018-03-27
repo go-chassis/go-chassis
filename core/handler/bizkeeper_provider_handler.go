@@ -12,10 +12,9 @@ type BizKeeperProviderHandler struct{}
 
 // Handle handler for bizkeeper provider
 func (bk *BizKeeperProviderHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	// command 支撑到SchemaID，后面根据情况进行测试
-	command := NewHystrixCmd(i.SourceMicroService, common.Provider, i.MicroServiceName, i.SchemaID, i.OperationID)
-	cmdConfig := GetHystrixConfig(command, common.Provider)
+	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Provider)
 	hystrix.ConfigureCommand(command, cmdConfig)
+
 	err := hystrix.Do(command, func() error {
 		var err error
 		chain.Next(i, func(resp *invocation.InvocationResponse) error {

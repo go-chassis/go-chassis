@@ -1,16 +1,15 @@
 package handler
 
 import (
+	"fmt"
+	"net/http"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-
-	"net/http"
-
-	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 
@@ -22,29 +21,31 @@ const (
 // BizKeeperConsumerHandler bizkeeper consumer handler
 type BizKeeperConsumerHandler struct{}
 
-// NewHystrixCmd new hystrix command
-func NewHystrixCmd(sourceName, protype, servicename, schemaID, OperationID string) string {
-	var cmd string
-	//for mesher to govern circuit breaker
-	if sourceName != "" {
-		cmd = strings.Join([]string{sourceName, protype}, ".")
-	} else {
-		cmd = protype
+// GetHystrixConfig get hystrix config
+func GetHystrixConfig(service, protype string) (string, hystrix.CommandConfig) {
+	command := protype
+	if service != "" {
+		command = strings.Join([]string{protype, service}, ".")
 	}
-	if servicename != "" {
-		cmd = strings.Join([]string{cmd, servicename}, ".")
+	return command, hystrix.CommandConfig{
+		ForceFallback:          config.DefaultForceFallback,
+		TimeoutEnabled:         config.GetTimeoutEnabled(service, protype),
+		Timeout:                config.GetTimeout(command, protype),
+		MaxConcurrentRequests:  config.GetMaxConcurrentRequests(command, protype),
+		ErrorPercentThreshold:  config.GetErrorPercentThreshold(command, protype),
+		RequestVolumeThreshold: config.GetRequestVolumeThreshold(command, protype),
+		SleepWindow:            config.GetSleepWindow(command, protype),
+		ForceClose:             config.GetForceClose(service, protype),
+		ForceOpen:              config.GetForceOpen(service, protype),
+		CircuitBreakerEnabled:  config.GetCircuitBreakerEnabled(command, protype),
 	}
-
-	return cmd
-
 }
 
 // Handle function is for to handle the chain
 func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	// command 支撑到SchemaID，后面根据情况进行测试
-	command := NewHystrixCmd(i.SourceMicroService, common.Consumer, i.MicroServiceName, i.SchemaID, i.OperationID)
-	cmdConfig := GetHystrixConfig(command, common.Consumer)
+	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Consumer)
 	hystrix.ConfigureCommand(command, cmdConfig)
+
 	err := hystrix.Do(command, func() error {
 		var err error
 		chain.Next(i, func(resp *invocation.InvocationResponse) error {
@@ -59,32 +60,19 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 	}
 }
 
-// GetHystrixConfig get hystrix config
-func GetHystrixConfig(command, t string) hystrix.CommandConfig {
-	cmdConfig := hystrix.CommandConfig{}
-	cmdConfig.ForceFallback = archaius.GetForceFallback(command, t)
-	cmdConfig.TimeoutEnabled = archaius.GetTimeoutEnabled(command, t)
-	cmdConfig.Timeout = archaius.GetTimeout(command, t)
-	cmdConfig.MaxConcurrentRequests = archaius.GetMaxConcurrentRequests(command, t)
-	cmdConfig.ErrorPercentThreshold = archaius.GetErrorPercentThreshold(command, t)
-	cmdConfig.RequestVolumeThreshold = archaius.GetRequestVolumeThreshold(command, t)
-	cmdConfig.SleepWindow = archaius.GetSleepWindow(command, t)
-	cmdConfig.ForceClose = archaius.GetForceClose(command, t)
-	cmdConfig.ForceOpen = archaius.GetForceOpen(command, t)
-	cmdConfig.CircuitBreakerEnabled = archaius.GetCircuitBreakerEnabled(command, t)
-	return cmdConfig
-}
-
 // GetFallbackFun get fallback function
 func GetFallbackFun(cmd, t string, i *invocation.Invocation, cb invocation.ResponseCallBack, isForce bool) func(error) error {
-	enabled := archaius.GetFallbackEnabled(cmd, t)
+	enabled := config.GetFallbackEnabled(cmd, t)
 	if enabled || isForce {
 		return func(err error) error {
-			if err.Error() == hystrix.ErrForceFallback.Error() || err.Error() == hystrix.ErrCircuitOpen.Error() || err.Error() == hystrix.ErrMaxConcurrency.Error() || err.Error() == hystrix.ErrTimeout.Error() {
-				//进入这里说明断路了，run函数没执行，那么必须callback
-				lager.Logger.Error("fallback: "+cmd, err)
+
+			if err.Error() == hystrix.ErrForceFallback.Error() || err.Error() == hystrix.ErrCircuitOpen.Error() ||
+				err.Error() == hystrix.ErrMaxConcurrency.Error() || err.Error() == hystrix.ErrTimeout.Error() {
+				// isolation happened, so lead to callback
+				lager.Logger.Errorf(err, fmt.Sprintf("fallback for %v", cmd))
 				resp := &invocation.InvocationResponse{}
-				if archaius.PolicyNull == archaius.GetPolicy(cmd, t) {
+
+				if config.PolicyNull == config.GetPolicy(i.MicroServiceName, t) {
 					resp.Err = hystrix.FallbackNullError{Message: "return null"}
 				} else {
 					resp.Err = hystrix.CircuitError{Message: i.MicroServiceName + " is isolated because of error: " + err.Error()}
@@ -93,14 +81,15 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, cb invocation.Respo
 						resp := i.Reply.(*rest.Response)
 						resp.SetStatusCode(http.StatusRequestTimeout)
 						//make sure body is empty
-						resp.GetResponse().Body.Close()
+						if resp.GetResponse().Body != nil {
+							resp.GetResponse().Body.Close()
+						}
 					}
-
 				}
 				cb(resp)
-				return nil //没有返回错误的必要
+				return nil //no need to return error
 			}
-			// 回调函数目前默认都是执行成功的
+			// call back success
 			return nil
 		}
 	}

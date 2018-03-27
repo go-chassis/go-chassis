@@ -4,10 +4,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/lager"
-
 	"github.com/ServiceComb/go-archaius/core"
+	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 
@@ -29,7 +29,11 @@ type CircuitBreakerEventListener struct {
 
 //Event is a method which triggers flush circuit
 func (e *CircuitBreakerEventListener) Event(event *core.Event) {
-	lager.Logger.Debug("Circuit key event: " + event.Key)
+	lager.Logger.Infof("Circuit key event: %v", event.Key)
+	if err := config.ReadHystrixFromArchaius(); err != nil {
+		lager.Logger.Error("can not unmarshal new cb config", err)
+	}
+
 	switch event.EventType {
 	case common.Update:
 		FlushCircuitByKey(event.Key)
