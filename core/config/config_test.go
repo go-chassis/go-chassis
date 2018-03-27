@@ -93,7 +93,7 @@ cse:
 func TestGetLoadBalancing(t *testing.T) {
 	lbBytes := []byte(`
 cse: 
-  loadbalancer: 
+  loadbalance: 
     TargetService: 
       backoff: 
         maxMs: 400

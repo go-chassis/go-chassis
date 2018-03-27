@@ -82,7 +82,7 @@ cse:
 	lbBytes := []byte(`
 ---
 cse: 
-  loadbalancer: 
+  loadbalance: 
     TargetService: 
       backoff: 
         kind: constant

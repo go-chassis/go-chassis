@@ -45,7 +45,7 @@ cse:
         enabled: true
         limit:
           Server.HelloServer: 10
-  loadbalancer:
+  loadbalance:
     strategy:
       name: RoundRobin
       sessionTimeoutInSeconds: 30

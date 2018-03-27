@@ -24,7 +24,7 @@ func TestGetStrategyName(t *testing.T) {
 
 func TestGetRetryOnNext(t *testing.T) {
 	check := config.GetRetryOnNext("source", "service")
-	assert.Equal(t, 0, check)
+	assert.Equal(t, 2, check)
 }
 
 // GetServerListFilters get server list filters
