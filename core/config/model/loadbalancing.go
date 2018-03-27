@@ -7,7 +7,7 @@ type LBWrapper struct {
 
 // LoadBalancingConfig loadbalancing structure
 type LoadBalancingConfig struct {
-	LBConfig *LoadBalancing `yaml:"loadbalancer"`
+	LBConfig *LoadBalancing `yaml:"loadbalance"`
 }
 
 // LoadBalancing loadbalancing structure
