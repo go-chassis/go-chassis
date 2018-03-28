@@ -52,24 +52,6 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 	if opts.Protocol == "" {
 		opts.Protocol = common.ProtocolHighway
 	}
-	if len(opts.Filters) == 0 {
-		opts.Filters = ri.opts.Filters
-	}
-
-	if ctx == nil {
-		ctx = context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
-			common.HeaderSourceName: config.SelfServiceName,
-		})
-	} else {
-		at, ok := ctx.Value(common.ContextValueKey{}).(map[string]string)
-		if ok {
-			at[common.HeaderSourceName] = config.SelfServiceName
-		} else {
-			ctx = context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
-				common.HeaderSourceName: config.SelfServiceName,
-			})
-		}
-	}
 
 	i := invocation.CreateInvocation()
 	wrapInvocationWithOpts(i, opts)
@@ -87,24 +69,13 @@ type abstractInvoker struct {
 	opts Options
 }
 
-func (ri *abstractInvoker) WithContext(ctx context.Context, key, val string) context.Context {
-	md, ok := metadata.FromContext(ctx)
-	if !ok {
-		return metadata.NewContext(ctx, map[string]string{
-			key: val,
-		})
-	}
-	md[key] = val
-	return ctx
-}
-
 func (ri *abstractInvoker) invoke(i *invocation.Invocation, reply interface{}) error {
 	if len(i.Filters) == 0 {
 		i.Filters = ri.opts.Filters
 	}
 
 	// add self service name into remote context, this value used in provider rate limiter
-	i.Ctx = ri.WithContext(i.Ctx, common.HeaderSourceName, config.SelfServiceName)
+	i.Ctx = common.WithContext(i.Ctx, common.HeaderSourceName, config.SelfServiceName)
 
 	c, err := handler.GetChain(common.Consumer, ri.opts.ChainName)
 	if err != nil {

@@ -114,6 +114,10 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 				Protocol:           common.ProtocolRest,
 				SchemaID:           schemaName,
 				OperationID:        method.Name,
+				Metadata: map[string]interface{}{
+					common.RestMethod:  req.Request.Method,
+					common.RestUrlPath: req.Request.URL.Path,
+				},
 			}
 			bs := NewBaseServer(context.TODO())
 			bs.req = req

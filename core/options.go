@@ -30,8 +30,6 @@ type InvokeOptions struct {
 	Endpoint string
 	// end to end，Directly call
 	Protocol string
-	// end to end，Directly call
-	ContentType string
 	//loadbalancer stratery
 	//StrategyFunc loadbalancer.Strategy
 	StrategyFunc string
@@ -112,13 +110,6 @@ func WithAppID(p string) InvocationOption {
 	}
 }
 
-// WithContentType is a request option
-func WithContentType(ct string) InvocationOption {
-	return func(o *InvokeOptions) {
-		o.ContentType = ct
-	}
-}
-
 //Request Options
 /*func WithStrategy(s loadbalancer.Strategy) InvocationOption {
 	return func(o *InvokeOptions) {
@@ -153,9 +144,6 @@ func getOpts(microservice string, options ...InvocationOption) InvokeOptions {
 	for _, o := range options {
 		o(&opts)
 	}
-	if opts.ContentType == "" {
-		opts.ContentType = common.JSON
-	}
 	if opts.Version == "" {
 		opts.Version = common.LatestVersion
 	}
@@ -166,7 +154,6 @@ func getOpts(microservice string, options ...InvocationOption) InvokeOptions {
 func wrapInvocationWithOpts(i *invocation.Invocation, opts InvokeOptions) {
 	i.Endpoint = opts.Endpoint
 	i.Protocol = opts.Protocol
-	i.ContentType = opts.ContentType
 	i.Version = opts.Version
 	i.Strategy = opts.StrategyFunc
 	i.Filters = opts.Filters

@@ -59,17 +59,7 @@ func (c *highwayClient) Call(ctx context.Context, addr string, req *client.Reque
 	highwayReq.SvcName = req.MicroServiceName
 	//Current only twoway
 	highwayReq.TwoWay = true
-
-	if ctx == nil {
-		highwayReq.Attachments = make(map[string]string)
-	} else {
-		at, ok := ctx.Value(common.ContextValueKey{}).(map[string]string)
-		if !ok {
-			highwayReq.Attachments = make(map[string]string)
-		} else {
-			highwayReq.Attachments = at
-		}
-	}
+	highwayReq.Attachments = common.FromContext(ctx)
 
 	err = baseClient.Send(highwayReq, tmpRsp, DefaultSendTimeOut)
 	if err != nil {

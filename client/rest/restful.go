@@ -113,6 +113,14 @@ func (req *Request) GetURI() string {
 	return req.Req.URL.String()
 }
 
+func (req *Request) SetContentType(ct string) {
+	req.Req.Header.Set("Content-Type", ct)
+}
+
+func (req *Request) GetContentType() string {
+	return req.Req.Header.Get("Content-Type")
+}
+
 //SetHeader is a method used for setting header in a request
 func (req *Request) SetHeader(key, value string) {
 	req.Req.Header.Set(key, value)

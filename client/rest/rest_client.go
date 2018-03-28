@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/ServiceComb/go-chassis/core/client"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 const (
@@ -99,7 +100,6 @@ func (c *Client) failure2Error(e error, r *Response) error {
 
 //Call is a method which uses client struct object
 func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp interface{}) error {
-
 	reqSend, ok := req.Arg.(*Request)
 	if !ok {
 		return errors.New("Rest consumer call arg is not *rest.Request type")
@@ -109,6 +109,8 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 	if !ok {
 		return errors.New("Rest consumer response arg is not *rest.Response type")
 	}
+
+	c.contextToHeader(ctx, reqSend)
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -134,6 +136,17 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 	}
 	return c.failure2Error(err, resp)
 }
+
 func (c *Client) String() string {
 	return "rest_client"
+}
+
+func (c *Client) contextToHeader(ctx context.Context, req *Request) {
+	for k, v := range common.FromContext(ctx) {
+		req.Req.Header.Set(k, v)
+	}
+
+	if len(req.GetContentType()) == 0 {
+		req.SetContentType(common.JSON)
+	}
 }

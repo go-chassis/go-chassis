@@ -7,7 +7,6 @@ import (
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
 )
 
 // RestInvoker is rest invoker
@@ -37,10 +36,6 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 
 	opts := getOpts(req.GetRequest().Host, options...)
 	opts.Protocol = common.ProtocolRest
-	// if req.GetHeader("Content-Type") == "" {
-	// 	req.SetHeader("Content-Type", "application/json")
-	// }
-	//newReq.SetHeader(common.HeaderSourceName, config.SelfServiceName)
 
 	resp := rest.NewResponse()
 
@@ -54,10 +49,11 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 	inv.Reply = resp
 	inv.Ctx = ctx
 
-	// TODO move these parameters to Metadata
-	// inv.ContentType = req.GetHeader("Content-Type")
-	inv.URLPathFormat = req.Req.URL.Path
-	inv.MethodType = req.GetMethod()
+	if inv.Metadata == nil {
+		inv.Metadata = make(map[string]interface{}, 2)
+	}
+	inv.Metadata[common.RestUrlPath] = req.Req.URL.Path
+	inv.Metadata[common.RestMethod] = req.GetMethod()
 
 	err := ri.invoke(inv, nil)
 	return resp, err
