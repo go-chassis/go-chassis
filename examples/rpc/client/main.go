@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
+
 	"github.com/ServiceComb/go-chassis"
 	_ "github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"golang.org/x/net/context"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder

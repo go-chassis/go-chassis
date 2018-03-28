@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"sync"
 
 	"github.com/ServiceComb/go-chassis/core/common"
@@ -8,9 +9,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
-
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	"golang.org/x/net/context"
 )
 
 // RPCInvoker is rpc invoker
@@ -56,13 +54,19 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 		opts.Filters = ri.opts.Filters
 	}
 
-	md, ok := metadata.FromContext(ctx)
-	if ok {
-		md[common.HeaderSourceName] = config.SelfServiceName
-	} else {
-		ctx = metadata.NewContext(context.Background(), map[string]string{
+	if ctx == nil {
+		ctx = context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
 			common.HeaderSourceName: config.SelfServiceName,
 		})
+	} else {
+		at, ok := ctx.Value(common.ContextValueKey{}).(map[string]string)
+		if ok {
+			at[common.HeaderSourceName] = config.SelfServiceName
+		} else {
+			ctx = context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
+				common.HeaderSourceName: config.SelfServiceName,
+			})
+		}
 	}
 
 	i := invocation.CreateInvocation()

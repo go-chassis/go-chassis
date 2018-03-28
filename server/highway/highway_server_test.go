@@ -3,6 +3,7 @@ package highway_test
 // Forked from github.com/micro/go-micro
 // Some parts of this file have been modified to make it functional in this package
 import (
+	"context"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,8 +18,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
 )
 
 var addrHighway = "127.0.0.1:2399"

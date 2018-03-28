@@ -1,16 +1,16 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/ServiceComb/go-chassis"
 	"github.com/ServiceComb/go-chassis/core"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	"golang.org/x/net/context"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
@@ -26,7 +26,7 @@ func main() {
 	// new response object
 	reply := &helloworld.HelloReply{}
 	// create context with metadata
-	ctx := metadata.NewContext(context.Background(), map[string]string{
+	ctx := context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 	err := invoker.Invoke(ctx, "SimpleServer", "HelloService", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, reply, core.WithEndpoint("127.0.0.1:9901"), core.WithProtocol("highway"))

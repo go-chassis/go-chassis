@@ -7,7 +7,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/router"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
 )
 
 // RouterHandler router handler
@@ -28,9 +27,11 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 		for k := range req.GetRequest().Header {
 			h[k] = req.Req.Header.Get(k)
 		}
-	} else {
-		ctx, _ := metadata.FromContext(i.Ctx)
-		h = map[string]string(ctx)
+	} else if i.Ctx != nil {
+		at, ok := i.Ctx.Value(common.ContextValueKey{}).(map[string]string)
+		if ok {
+			h = map[string]string(at)
+		}
 	}
 
 	err := router.Route(h, &registry.SourceInfo{Name: i.SourceMicroService, Tags: tags}, i)

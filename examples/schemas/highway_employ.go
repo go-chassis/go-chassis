@@ -1,9 +1,9 @@
 package schemas
 
 import (
-	"github.com/ServiceComb/go-chassis/examples/schemas/employ"
+	"context"
 
-	"golang.org/x/net/context"
+	"github.com/ServiceComb/go-chassis/examples/schemas/employ"
 )
 
 //EmployServer is a struct

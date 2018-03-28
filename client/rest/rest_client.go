@@ -1,14 +1,13 @@
 package rest
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/ServiceComb/go-chassis/core/client"
-
-	"golang.org/x/net/context"
 )
 
 const (
