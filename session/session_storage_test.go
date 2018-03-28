@@ -38,7 +38,7 @@ func TestSessionStorage(t *testing.T) {
 	ctx = session.SetContextMetadata(ctx, "key", "value")
 	val := session.GetContextMetadata(ctx, "key")
 	assert.Equal(t, val, "value")
-	ctx = session.CheckForSessionIDHighway(ctx, "", 1)
+	ctx = session.CheckForSessionIDFromContext(ctx, "", 1)
 	val = session.GetContextMetadata(ctx, "ServiceCombLB")
 	assert.NotEqual(t, val, "")
 }

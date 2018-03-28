@@ -81,7 +81,7 @@ func ProcessSpecialProtocol(inv *invocation.Invocation, req *client.Request) {
 			session.CheckForSessionID(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
 		}
 	case common.ProtocolHighway:
-		inv.Ctx = session.CheckForSessionIDHighway(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
+		inv.Ctx = session.CheckForSessionIDFromContext(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
 	}
 }
 
@@ -104,7 +104,7 @@ func ProcessSuccessiveFailure(i *invocation.Invocation, req *client.Request) {
 				loadbalancer.DeleteSuccessiveFailureCount(cookie)
 			}
 		}
-	case common.ProtocolHighway:
+	default:
 		cookie = session.GetSessionCookie(i.Ctx, nil)
 		if cookie != "" {
 			loadbalancer.IncreaseSuccessiveFailureCount(cookie)

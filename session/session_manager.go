@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
@@ -82,8 +83,8 @@ func GetSessionFromResp(cookieKey string, resp *http.Response) string {
 	return ""
 }
 
-// CheckForSessionIDHighway check session id
-func CheckForSessionIDHighway(ctx context.Context, ep string, autoTimeout int) context.Context {
+// CheckForSessionIDFromContext check session id
+func CheckForSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) context.Context {
 
 	timeValue := time.Duration(autoTimeout) * time.Second
 
@@ -113,7 +114,42 @@ func CheckForSessionIDHighway(ctx context.Context, ep string, autoTimeout int) c
 	setLBCookie(common.LBSessionID, cookie)
 	Save(sessionIDValue, ep, timeValue)
 	return SetContextMetadata(ctx, common.LBSessionID, cookie)
+}
 
+//Temporary responsewriter for SetCookie
+type cookieResponseWriter http.Header
+
+// Header implements ResponseWriter Header interface
+func (c cookieResponseWriter) Header() http.Header {
+	return http.Header(c)
+}
+
+//Write is a dummy function
+func (c cookieResponseWriter) Write([]byte) (int, error) {
+	panic("ERROR")
+}
+
+//WriteHeader is a dummy function
+func (c cookieResponseWriter) WriteHeader(int) {
+	panic("ERROR")
+}
+
+//setCookie appends cookie with already present cookie with ';' in between
+func setCookie(resp *http.Response, value string) {
+	Resp := rest.Response{Resp: resp}
+
+	newCookie := common.LBSessionID + "=" + value
+	oldCookie := string(Resp.GetCookie(common.LBSessionID))
+
+	if oldCookie != "" {
+		//If cookie is already set, append it with ';'
+		newCookie = newCookie + ";" + oldCookie
+	}
+
+	c1 := http.Cookie{Name: common.LBSessionID, Value: newCookie}
+
+	w := cookieResponseWriter(resp.Header)
+	http.SetCookie(w, &c1)
 }
 
 // CheckForSessionID check session id
@@ -144,17 +180,11 @@ func CheckForSessionID(ep string, autoTimeout int, resp *http.Response, req *htt
 	if string(valueChassisLb) != "" {
 		Save(valueChassisLb, ep, timeValue)
 	} else if sessionIDStr != "" && sessBool {
-		c1 := new(http.Cookie)
-		c1.Name = common.LBSessionID
-		c1.Value = common.LBSessionID + "=" + sessionIDStr
-		setCookie(c1, resp)
+		setCookie(resp, sessionIDStr)
 		Save(sessionIDStr, ep, timeValue)
 	} else {
-		c1 := new(http.Cookie)
-		c1.Name = common.LBSessionID
 		sessionIDValue := generateCookieSessionID()
-		c1.Value = common.LBSessionID + "=" + sessionIDValue
-		setCookie(c1, resp)
+		setCookie(resp, sessionIDValue)
 		Save(sessionIDValue, ep, timeValue)
 
 	}
@@ -178,11 +208,6 @@ func generateCookieSessionID() string {
 
 	return fmt.Sprintf("%x-%x-%x-%x-%x", result[0:4], result[4:6], result[6:8], result[8:10], result[10:])
 
-}
-
-// setCookie set cookie
-func setCookie(cookie *http.Cookie, resp *http.Response) {
-	resp.Header.Add("Set-Cookie", cookie.String())
 }
 
 // DeletingKeySuccessiveFailure deleting key successes and failures
