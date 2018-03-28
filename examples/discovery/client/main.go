@@ -130,9 +130,7 @@ func callRest(invoker *core.RestInvoker) {
 	}
 	log.Printf("Rest Server sayhi[POST] %s", string(resp1.ReadBody()))
 
-	req.SetMethod(http.MethodGet)
-	req.SetURI("cse://Server/sayerror")
-	req.SetBody([]byte(""))
+	req, _ = rest.NewRequest(http.MethodGet, "cse://Server/sayerror", []byte(""))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
 		log.Println(err)
