@@ -172,7 +172,7 @@ func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.HighWayPro
 	i.SchemaID = req.Schema
 	i.OperationID = req.MethodName
 	i.Ctx = common.NewContext(req.Attachments)
-	i.SourceMicroService, _ = i.Ctx.Value(common.HeaderSourceName).(string)
+	i.SourceMicroService = common.FromContext(i.Ctx)[common.HeaderSourceName]
 	i.Protocol = common.ProtocolHighway
 	c, err := handler.GetChain(common.Provider, svrConn.handlerChain)
 	if err != nil {

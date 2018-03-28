@@ -113,10 +113,12 @@ func (req *Request) GetURI() string {
 	return req.Req.URL.String()
 }
 
+// SetContentType is a method used for setting content-type in a request
 func (req *Request) SetContentType(ct string) {
 	req.Req.Header.Set("Content-Type", ct)
 }
 
+// GetContentType is a method used for getting content-type in a request
 func (req *Request) GetContentType() string {
 	return req.Req.Header.Get("Content-Type")
 }

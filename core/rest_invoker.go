@@ -48,11 +48,11 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 	inv.Args = req
 	inv.Reply = resp
 	inv.Ctx = ctx
+	inv.URLPathFormat = req.Req.URL.Path
 
 	if inv.Metadata == nil {
-		inv.Metadata = make(map[string]interface{}, 2)
+		inv.Metadata = make(map[string]interface{})
 	}
-	inv.Metadata[common.RestUrlPath] = req.Req.URL.Path
 	inv.Metadata[common.RestMethod] = req.GetMethod()
 
 	err := ri.invoke(inv, nil)

@@ -85,8 +85,8 @@ const (
 )
 
 const (
-	RestMethod  = "method"
-	RestUrlPath = "url"
+	// RestMethod is the http method for restful protocol
+	RestMethod = "method"
 )
 
 // constant for default application name and version
@@ -125,6 +125,7 @@ const (
 //ContextValueKey is the key of value in context
 type ContextValueKey struct{}
 
+// NewContext transforms a metadata to context object
 func NewContext(m map[string]string) context.Context {
 	if m == nil {
 		return context.WithValue(context.Background(), ContextValueKey{}, make(map[string]string, 0))
@@ -150,6 +151,7 @@ func WithContext(ctx context.Context, key, val string) context.Context {
 	return ctx
 }
 
+// FromContext transforms a context object to metadata
 func FromContext(ctx context.Context) map[string]string {
 	if ctx == nil {
 		return make(map[string]string, 0)

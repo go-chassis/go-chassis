@@ -57,7 +57,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 			break
 		}
 		// set url path to span name
-		if u, e := url.Parse(i.Metadata[common.RestUrlPath].(string)); e != nil {
+		if u, e := url.Parse(i.URLPathFormat); e != nil {
 			lager.Logger.Error("parse request url failed.", e)
 		} else {
 			interfaceName = u.Path
@@ -240,7 +240,7 @@ func setInterfaceName(interfaceName string, i *invocation.Invocation) string {
 	switch i.Protocol {
 	case common.ProtocolRest:
 		// set url path to span name
-		if u, e := url.Parse(i.Metadata[common.RestUrlPath].(string)); e != nil {
+		if u, e := url.Parse(i.URLPathFormat); e != nil {
 			lager.Logger.Error("parse request url failed.", e)
 		} else {
 			interfaceName = u.Path

@@ -43,6 +43,8 @@ type Invocation struct {
 	//correspond struct func
 	OperationID string
 	Args        interface{}
+	//an url path has muntil path params such as "/v2/microsvice/:id/instance/:instanceid",http client use this to format correct url
+	URLPathFormat string
 
 	Reply interface{}
 	//just in local memory
