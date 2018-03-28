@@ -94,19 +94,34 @@ type WeightedResponseStrategy struct {
 	avgLatencyMap    map[string]time.Duration
 }
 
-func newWeightedResponseStrategy() Strategy {
+func init() {
 	ticker := time.NewTicker((30 * time.Second))
 	//run routine to prepare data
 	go func() {
 		for range ticker.C {
-			if config.GetLoadBalancing().Strategy["name"] == StrategyLatency {
-				CalculateAvgLatency()
-				SortLatency()
-				lager.Logger.Info("Preparing data for Weighted Response Strategy")
+			if config.GetLoadBalancing() != nil {
+				useLatencyAware := false
+				for _, v := range config.GetLoadBalancing().AnyService {
+					if v.Strategy["name"] == StrategyLatency {
+						useLatencyAware = true
+						break
+					}
+				}
+				if config.GetLoadBalancing().Strategy["name"] == StrategyLatency {
+					useLatencyAware = true
+				}
+				if useLatencyAware {
+					CalculateAvgLatency()
+					SortLatency()
+					lager.Logger.Info("Preparing data for Weighted Response Strategy")
+				}
 			}
 
 		}
 	}()
+}
+func newWeightedResponseStrategy() Strategy {
+
 	return &WeightedResponseStrategy{}
 }
 

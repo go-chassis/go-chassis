@@ -228,7 +228,10 @@ func ReadMicroserviceConfigFromBytes(data []byte) error {
 
 //GetLoadBalancing return lb config
 func GetLoadBalancing() *model.LoadBalancing {
-	return lbConfig.Prefix.LBConfig
+	if lbConfig != nil {
+		return lbConfig.Prefix.LBConfig
+	}
+	return nil
 }
 
 //GetHystrixConfig return cb config
