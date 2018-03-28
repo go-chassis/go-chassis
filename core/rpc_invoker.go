@@ -15,8 +15,8 @@ import (
 //one invoker for one microservice
 //thread safe
 type RPCInvoker struct {
+	*abstractInvoker
 	sync.RWMutex
-	opts Options
 }
 
 // NewRPCInvoker is gives the object of rpc invoker
@@ -24,7 +24,9 @@ func NewRPCInvoker(opt ...Option) *RPCInvoker {
 	opts := newOptions(opt...)
 
 	ri := &RPCInvoker{
-		opts: opts,
+		abstractInvoker: &abstractInvoker{
+			opts: opts,
+		},
 	}
 	//clientPluginName := os.Getenv("rpc_client_plugin")
 	//clientF := client.GetClientNewFunc(clientPluginName)
@@ -77,6 +79,33 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 	i.Args = arg
 	i.Reply = reply
 	i.Ctx = ctx
+	return ri.invoke(i, reply)
+}
+
+// abstract invoker is a common invoker for RPC
+type abstractInvoker struct {
+	opts Options
+}
+
+func (ri *abstractInvoker) WithContext(ctx context.Context, key, val string) context.Context {
+	md, ok := metadata.FromContext(ctx)
+	if !ok {
+		return metadata.NewContext(ctx, map[string]string{
+			key: val,
+		})
+	}
+	md[key] = val
+	return ctx
+}
+
+func (ri *abstractInvoker) invoke(i *invocation.Invocation, reply interface{}) error {
+	if len(i.Filters) == 0 {
+		i.Filters = ri.opts.Filters
+	}
+
+	// add self service name into remote context, this value used in provider rate limiter
+	i.Ctx = ri.WithContext(i.Ctx, common.HeaderSourceName, config.SelfServiceName)
+
 	c, err := handler.GetChain(common.Consumer, ri.opts.ChainName)
 	if err != nil {
 		lager.Logger.Errorf(err, "Handler chain init err.")

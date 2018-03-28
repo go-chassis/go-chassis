@@ -82,6 +82,10 @@ const (
 	HeaderSourceName = "x-cse-src-microservice"
 )
 
+const (
+	MetaContentType = "Content-Type"
+)
+
 // constant for default application name and version
 const (
 	DefaultApp     = "default"
@@ -101,7 +105,6 @@ const (
 	Client            = "client"
 	File              = "File"
 	SessionID         = "sessionid"
-	ContentTypeJSON   = "application/json"
 	DefaultTenant     = "default"
 	DefaultChainName  = "default"
 	RollingPolicySize = "size"
