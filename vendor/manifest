@@ -2,6 +2,14 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/DataDog/datadog-go",
+			"repository": "https://github.com/DataDog/datadog-go",
+			"vcs": "git",
+			"revision": "9487d3a9d3be5bf3cf60b86ae810b97926964515",
+			"branch": "HEAD",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/ServiceComb/auth",
 			"repository": "https://github.com/ServiceComb/auth",
 			"vcs": "git",
@@ -96,18 +104,18 @@
 			"notests": true
 		},
 		{
-			"importpath": "github.com/cenkalti/backoff",
-			"repository": "https://github.com/cenkalti/backoff",
+			"importpath": "github.com/cactus/go-statsd-client",
+			"repository": "https://github.com/cactus/go-statsd-client",
 			"vcs": "git",
-			"revision": "3db60c813733fce657c114634171689bbf1f8dee",
+			"revision": "138b925ccdf617776955904ba7759fce64406cec",
 			"branch": "HEAD",
 			"notests": true
 		},
 		{
-			"importpath": "github.com/DataDog/datadog-go",
-			"repository": "https://github.com/DataDog/datadog-go",
+			"importpath": "github.com/cenkalti/backoff",
+			"repository": "https://github.com/cenkalti/backoff",
 			"vcs": "git",
-			"revision": "9487d3a9d3be5bf3cf60b86ae810b97926964515",
+			"revision": "3db60c813733fce657c114634171689bbf1f8dee",
 			"branch": "HEAD",
 			"notests": true
 		},
@@ -172,14 +180,6 @@
 			"repository": "https://github.com/go-logfmt/logfmt",
 			"vcs": "git",
 			"revision": "390ab7935ee28ec6b286364bba9b4dd6410cb3d5",
-			"branch": "HEAD",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/cactus/go-statsd-client",
-			"repository": "https://github.com/cactus/go-statsd-client",
-			"vcs": "git",
-			"revision": "138b925ccdf617776955904ba7759fce64406cec",
 			"branch": "HEAD",
 			"notests": true
 		},
@@ -313,22 +313,6 @@
 			"notests": true
 		},
 		{
-			"importpath": "github.com/pierrec/lz4",
-			"repository": "https://github.com/pierrec/lz4",
-			"vcs": "git",
-			"revision": "5c9560bfa9ace2bf86080bf40d46b34ae44604df",
-			"branch": "HEAD",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/pierrec/xxHash",
-			"repository": "https://github.com/pierrec/xxHash",
-			"vcs": "git",
-			"revision": "f051bb7f1d1aaf1b5a665d74fb6b0217712c69f7",
-			"branch": "HEAD",
-			"notests": true
-		},
-		{
 			"importpath": "github.com/prometheus/client_golang",
 			"repository": "https://github.com/prometheus/client_golang",
 			"vcs": "git",
@@ -357,14 +341,6 @@
 			"repository": "https://github.com/prometheus/procfs",
 			"vcs": "git",
 			"revision": "e645f4e5aaa8506fc71d6edbc5c4ff02c04c46f2",
-			"branch": "HEAD",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/reactivex/rxgo",
-			"repository": "https://github.com/ReactiveX/RxGo",
-			"vcs": "git",
-			"revision": "23f38f99d1c3fadfb560f5f7ac2fce17b9ebc03d",
 			"branch": "HEAD",
 			"notests": true
 		},
@@ -405,22 +381,6 @@
 			"repository": "https://github.com/stretchr/testify",
 			"vcs": "git",
 			"revision": "87b1dfb5b2fa649f52695dd9eae19abe404a4308",
-			"branch": "HEAD",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/urfave/cli",
-			"repository": "https://github.com/urfave/cli",
-			"vcs": "git",
-			"revision": "01857ac33766ce0c93856370626f9799281c14f4",
-			"branch": "HEAD",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/valyala/bytebufferpool",
-			"repository": "https://github.com/valyala/bytebufferpool",
-			"vcs": "git",
-			"revision": "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7",
 			"branch": "HEAD",
 			"notests": true
 		},
@@ -479,14 +439,6 @@
 			"revision": "150d32b09b5966b39cb02d7945f0d1bc7b9f1a19",
 			"branch": "master",
 			"path": "/pkg/util/sets",
-			"notests": true
-		},
-		{
-			"importpath": "go.uber.org/ratelimit",
-			"repository": "https://github.com/uber-go/ratelimit",
-			"vcs": "git",
-			"revision": "d15fa2e2a63dd52104bc96d8ea7dc47ce8027de8",
-			"branch": "HEAD",
 			"notests": true
 		}
 	]
