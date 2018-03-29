@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"time"
-
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/common"
@@ -10,6 +8,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/session"
+	"time"
 
 	"github.com/ServiceComb/go-chassis/core/config"
 )
@@ -49,24 +48,10 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	if err != nil {
 		r.Err = err
 		lager.Logger.Errorf(err, "Call got Error")
-		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalancer.StrategySessionStickiness {
-			var reply *rest.Response
-			reply = i.Reply.(*rest.Response)
-			if i.Reply != nil && req.Arg != nil {
-				reply = i.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(i.Endpoint, config.GetSessionTimeout(i.SourceMicroService, i.MicroServiceName), reply.GetResponse(), req.GetRequest())
-			}
+		if i.Strategy == loadbalancer.StrategySessionStickiness {
+			ProcessSpecialProtocol(i, req)
+			ProcessSuccessiveFailure(i, req)
 
-			cookie := session.GetSessionCookie(reply.GetResponse())
-			if cookie != "" {
-				loadbalancer.IncreaseSuccessiveFailureCount(cookie)
-				errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
-				if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
-					session.DeletingKeySuccessiveFailure(reply.GetResponse())
-					loadbalancer.DeleteSuccessiveFailureCount(cookie)
-				}
-			}
 		}
 
 		cb(r)
@@ -78,8 +63,11 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		loadbalancer.SetLatency(timeAfter, i.Endpoint, i.MicroServiceName, i.Version, i.AppID, i.Protocol)
 	}
 
+	if i.Strategy == loadbalancer.StrategySessionStickiness {
+		ProcessSpecialProtocol(i, req)
+	}
+
 	r.Result = i.Reply
-	ProcessSpecialProtocol(i, req)
 
 	cb(r)
 }
@@ -88,14 +76,45 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 func ProcessSpecialProtocol(inv *invocation.Invocation, req *client.Request) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
-		if inv.Strategy == loadbalancer.StrategySessionStickiness {
-			var reply *rest.Response
-			if inv.Reply != nil && inv.Args != nil {
-				reply = inv.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
-			}
+		var reply *rest.Response
+		if inv.Reply != nil && inv.Args != nil {
+			reply = inv.Reply.(*rest.Response)
+			req := req.Arg.(*rest.Request)
+			session.CheckForSessionID(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
+		}
+	case common.ProtocolHighway:
+		inv.Ctx = session.CheckForSessionIDFromContext(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
+	}
+}
 
+//ProcessSuccessiveFailure handles special logic for protocol
+func ProcessSuccessiveFailure(i *invocation.Invocation, req *client.Request) {
+	var cookie string
+	var reply *rest.Response
+
+	switch i.Protocol {
+	case common.ProtocolRest:
+		if i.Reply != nil && req.Arg != nil {
+			reply = i.Reply.(*rest.Response)
+		}
+		cookie = session.GetSessionCookie(nil, reply.GetResponse())
+		if cookie != "" {
+			loadbalancer.IncreaseSuccessiveFailureCount(cookie)
+			errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
+			if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
+				session.DeletingKeySuccessiveFailure(reply.GetResponse())
+				loadbalancer.DeleteSuccessiveFailureCount(cookie)
+			}
+		}
+	default:
+		cookie = session.GetSessionCookie(i.Ctx, nil)
+		if cookie != "" {
+			loadbalancer.IncreaseSuccessiveFailureCount(cookie)
+			errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
+			if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
+				session.DeletingKeySuccessiveFailure(nil)
+				loadbalancer.DeleteSuccessiveFailureCount(cookie)
+			}
 		}
 	}
 }

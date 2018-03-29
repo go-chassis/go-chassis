@@ -1,13 +1,13 @@
 package session_test
 
 import (
-	"net/http"
-	"testing"
-	"time"
-
+	"context"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/session"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
+	"time"
 )
 
 func TestSessionStorage(t *testing.T) {
@@ -20,17 +20,25 @@ func TestSessionStorage(t *testing.T) {
 	assert.Equal(t, false, ok)
 	assert.Equal(t, nil, addr)
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	cookieValue := session.GetSessionCookie(nil)
+	cookieValue := session.GetSessionCookie(nil, nil)
 	assert.Equal(t, "", cookieValue)
 
 	resp := &http.Response{
 		Header: http.Header{},
 	}
-	cookieValue = session.GetSessionCookie(resp)
+	cookieValue = session.GetSessionCookie(nil, resp)
 	assert.Equal(t, "", cookieValue)
 	session.DeletingKeySuccessiveFailure(nil)
 	session.DeletingKeySuccessiveFailure(resp)
 	cookieValue = session.GetSessionFromResp("abc", resp)
 	assert.Equal(t, "", cookieValue)
 	session.CheckForSessionID("", 1, resp, new(http.Request))
+
+	ctx := context.Background()
+	ctx = session.SetContextMetadata(ctx, "key", "value")
+	val := session.GetContextMetadata(ctx, "key")
+	assert.Equal(t, val, "value")
+	ctx = session.CheckForSessionIDFromContext(ctx, "", 1)
+	val = session.GetContextMetadata(ctx, "ServiceCombLB")
+	assert.NotEqual(t, val, "")
 }
