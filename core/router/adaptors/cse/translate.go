@@ -9,15 +9,16 @@ import (
 
 // DarkLaunchRule2RouteRule translates dark launch rule to route rule
 func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
+
 	if rule.Type == DarkLaunchTypeRate {
-		routes := make([]*model.RouteTag, len(rule.Items))
-		for i, v := range rule.Items {
+		routes := make([]*model.RouteTag, 0)
+		for _, v := range rule.Items {
 			weight, _ := strconv.Atoi(v.PolicyCondition)
 			version := strings.Replace(v.GroupCondition, "version=", "", 1)
-			routes[i] = &model.RouteTag{
-				Weight: weight,
-				Tags:   map[string]string{"version": version},
-			}
+
+			newTag := generateRouteTags(weight, strings.Split(version, ","))
+			routes = append(routes, newTag...)
+
 		}
 		return []*model.RouteRule{{
 			Routes:     routes,
@@ -56,23 +57,22 @@ func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
 				match.Headers[strings.Split(con, "~")[0]] = map[string]string{"regex": strings.Split(con, "~")[1]}
 			}
 			newRule := &model.RouteRule{
-				Routes:     generateRouteTags(strings.Split(version, ",")),
+				Routes:     generateRouteTags(100, strings.Split(version, ",")),
 				Match:      match,
 				Precedence: 1,
 			}
 			rules[i] = newRule
 		}
-		return rules
 	}
 	return nil
 }
 
 // generateRouteTags generate route tags
-func generateRouteTags(versions []string) []*model.RouteTag {
+func generateRouteTags(weights int, versions []string) []*model.RouteTag {
 	length := len(versions)
 	if length == 1 {
 		return []*model.RouteTag{{
-			Weight: 100,
+			Weight: weights,
 			Tags:   map[string]string{"version": versions[0]},
 		}}
 	}
@@ -80,7 +80,7 @@ func generateRouteTags(versions []string) []*model.RouteTag {
 	tags := make([]*model.RouteTag, length)
 	for i, v := range versions {
 		tags[i] = &model.RouteTag{
-			Weight: 100 / length,
+			Weight: weights / length,
 			Tags:   map[string]string{"version": v},
 		}
 	}
