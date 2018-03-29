@@ -10,7 +10,7 @@ import (
 // constants for loadbalancer strategy name, and timeout
 const (
 	//LoadBalanceKey is variable of type string that matches load balancing events
-	LoadBalanceKey = "^cse\\.loadbalancer\\."
+	LoadBalanceKey = "^cse\\.loadbalance\\."
 )
 
 //LoadbalanceEventListener is a struct
