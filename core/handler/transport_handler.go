@@ -38,6 +38,8 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	}
 
 	req := client.NewRequest(i.MicroServiceName, i.SchemaID, i.OperationID, i.Args)
+	req.Metadata = i.Metadata
+
 	r := &invocation.InvocationResponse{}
 
 	//taking the time elapsed to check for latency aware strategy

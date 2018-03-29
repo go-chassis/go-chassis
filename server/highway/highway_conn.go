@@ -2,7 +2,6 @@ package highway
 
 import (
 	"bufio"
-	"context"
 	"net"
 	"sync"
 
@@ -133,7 +132,7 @@ func (svrConn *HighwayConnection) msgRecvLoop() {
 			lager.Logger.Errorf(err, "DeSerializeFrame failed.")
 			break
 		}
-		go svrConn.hanleFrame(protoObj)
+		go svrConn.handleFrame(protoObj)
 	}
 	svrConn.Close()
 }
@@ -157,7 +156,7 @@ func (svrConn *HighwayConnection) writeError(req *highwayclient.HighwayRequest, 
 	}
 }
 
-func (svrConn *HighwayConnection) hanleFrame(protoObj *highwayclient.HighWayProtocalObject) error {
+func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.HighWayProtocalObject) error {
 	var err error
 	req := &highwayclient.HighwayRequest{}
 	err = protoObj.DeSerializeReq(req)
@@ -172,10 +171,8 @@ func (svrConn *HighwayConnection) hanleFrame(protoObj *highwayclient.HighWayProt
 	i.MicroServiceName = req.SvcName
 	i.SchemaID = req.Schema
 	i.OperationID = req.MethodName
-	if req.Attachments != nil {
-		i.SourceMicroService = req.Attachments[common.HeaderSourceName]
-	}
-	i.Ctx = context.WithValue(context.Background(), common.ContextValueKey{}, req.Attachments)
+	i.Ctx = common.NewContext(req.Attachments)
+	i.SourceMicroService = common.FromContext(i.Ctx)[common.HeaderSourceName]
 	i.Protocol = common.ProtocolHighway
 	c, err := handler.GetChain(common.Provider, svrConn.handlerChain)
 	if err != nil {

@@ -1,5 +1,7 @@
 package common
 
+import "context"
+
 // constant for provider and consumer
 const (
 	Provider = "Provider"
@@ -82,6 +84,11 @@ const (
 	HeaderSourceName = "x-cse-src-microservice"
 )
 
+const (
+	// RestMethod is the http method for restful protocol
+	RestMethod = "method"
+)
+
 // constant for default application name and version
 const (
 	DefaultApp     = "default"
@@ -101,7 +108,6 @@ const (
 	Client            = "client"
 	File              = "File"
 	SessionID         = "sessionid"
-	ContentTypeJSON   = "application/json"
 	DefaultTenant     = "default"
 	DefaultChainName  = "default"
 	RollingPolicySize = "size"
@@ -118,3 +124,41 @@ const (
 
 //ContextValueKey is the key of value in context
 type ContextValueKey struct{}
+
+// NewContext transforms a metadata to context object
+func NewContext(m map[string]string) context.Context {
+	if m == nil {
+		return context.WithValue(context.Background(), ContextValueKey{}, make(map[string]string, 0))
+	}
+	return context.WithValue(context.Background(), ContextValueKey{}, m)
+}
+
+// WithContext sets the KV and returns the context object
+func WithContext(ctx context.Context, key, val string) context.Context {
+	if ctx == nil {
+		return context.WithValue(context.Background(), ContextValueKey{}, map[string]string{
+			key: val,
+		})
+	}
+
+	at, ok := ctx.Value(ContextValueKey{}).(map[string]string)
+	if !ok {
+		return context.WithValue(ctx, ContextValueKey{}, map[string]string{
+			key: val,
+		})
+	}
+	at[key] = val
+	return ctx
+}
+
+// FromContext transforms a context object to metadata
+func FromContext(ctx context.Context) map[string]string {
+	if ctx == nil {
+		return make(map[string]string, 0)
+	}
+	at, ok := ctx.Value(ContextValueKey{}).(map[string]string)
+	if !ok {
+		return make(map[string]string, 0)
+	}
+	return at
+}

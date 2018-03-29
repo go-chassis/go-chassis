@@ -110,7 +110,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	})
 	switch i.Protocol {
 	case common.ProtocolRest:
-		span.SetTag(zipkincore.HTTP_METHOD, i.MethodType)
+		span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
 		span.SetTag(zipkincore.HTTP_PATH, interfaceName)
 		span.SetTag(zipkincore.HTTP_STATUS_CODE, resp.Status)
 		span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
@@ -227,7 +227,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	})
 	switch i.Protocol {
 	case common.ProtocolRest:
-		span.SetTag(zipkincore.HTTP_METHOD, i.MethodType)
+		span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
 		span.SetTag(zipkincore.HTTP_PATH, interfaceName)
 		span.SetTag(zipkincore.HTTP_STATUS_CODE, resp.Status)
 		span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)

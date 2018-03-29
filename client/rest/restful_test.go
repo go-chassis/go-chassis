@@ -23,8 +23,13 @@ func TestNewRestRequest(t *testing.T) {
 	assert.Equal(t, uri, "cse://example/:id")
 
 	req.SetBody([]byte("hello"))
-	req.SetHeader("Content-Type", "application/json")
-	value := req.GetHeader("Content-Type")
+
+	req.SetHeader("a", "1")
+	value := req.GetHeader("a")
+	assert.Equal(t, value, "1")
+
+	req.SetContentType("application/json")
+	value = req.GetContentType()
 	assert.Equal(t, value, "application/json")
 
 	req.SetMethod("POST")

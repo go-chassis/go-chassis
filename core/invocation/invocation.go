@@ -45,11 +45,10 @@ type Invocation struct {
 	Args        interface{}
 	//an url path has muntil path params such as "/v2/microsvice/:id/instance/:instanceid",http client use this to format correct url
 	URLPathFormat string
-	MethodType    string
-	Reply         interface{}
+
+	Reply interface{}
 	//just in local memory
-	Metadata    map[string]interface{}
-	ContentType string
+	Metadata map[string]interface{}
 	//loadbalancer stratery
 	//Strategy loadbalancer.Strategy
 	Strategy string

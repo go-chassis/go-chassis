@@ -6,17 +6,14 @@ import (
 
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
 )
 
 // RestInvoker is rest invoker
 // one invoker for one microservice
 // thread safe
 type RestInvoker struct {
-	opts Options
+	*abstractInvoker
 }
 
 // NewRestInvoker is gives the object of rest invoker
@@ -24,45 +21,40 @@ func NewRestInvoker(opt ...Option) *RestInvoker {
 	opts := newOptions(opt...)
 
 	ri := &RestInvoker{
-		opts: opts,
+		abstractInvoker: &abstractInvoker{
+			opts: opts,
+		},
 	}
 	return ri
 }
 
 // ContextDo is for requesting the API
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options ...InvocationOption) (*rest.Response, error) {
-	opts := getOpts(req.GetRequest().Host, options...)
-	opts.Protocol = common.ProtocolRest
-	if len(opts.Filters) == 0 {
-		opts.Filters = ri.opts.Filters
-	}
 	if string(req.GetRequest().URL.Scheme) != "cse" {
 		return nil, fmt.Errorf("Scheme invalid: %s, only support cse://", req.GetRequest().URL.Scheme)
 	}
-	if req.GetHeader("Content-Type") == "" {
-		req.SetHeader("Content-Type", "application/json")
-	}
-	newReq := req.Copy()
-	defer newReq.Close()
+
+	opts := getOpts(req.GetRequest().Host, options...)
+	opts.Protocol = common.ProtocolRest
+
 	resp := rest.NewResponse()
-	newReq.SetHeader(common.HeaderSourceName, config.SelfServiceName)
+
 	inv := invocation.CreateInvocation()
 	wrapInvocationWithOpts(inv, opts)
-	inv.AppID = config.GlobalDefinition.AppID
 	inv.MicroServiceName = req.GetRequest().Host
-	inv.Args = newReq
+	// TODO load from openAPI schema
+	// inv.SchemaID = schemaID
+	// inv.OperationID = operationID
+	inv.Args = req
 	inv.Reply = resp
 	inv.Ctx = ctx
 	inv.URLPathFormat = req.Req.URL.Path
-	inv.MethodType = req.GetMethod()
-	c, err := handler.GetChain(common.Consumer, ri.opts.ChainName)
-	if err != nil {
-		lager.Logger.Errorf(err, "Handler chain init err.")
-		return nil, err
+
+	if inv.Metadata == nil {
+		inv.Metadata = make(map[string]interface{})
 	}
-	c.Next(inv, func(ir *invocation.InvocationResponse) error {
-		err = ir.Err
-		return err
-	})
+	inv.Metadata[common.RestMethod] = req.GetMethod()
+
+	err := ri.invoke(inv, nil)
 	return resp, err
 }
