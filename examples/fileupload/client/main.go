@@ -7,11 +7,13 @@ import (
 	"mime/multipart"
 	"os"
 
+	"fmt"
 	"github.com/ServiceComb/go-chassis"
 	_ "github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"io/ioutil"
 )
 
 func main() {
@@ -62,6 +64,15 @@ func uploadfile(filename string) {
 }
 
 func uploadform(filename string) {
+	//Form part
+	headBuf := bytes.NewBufferString("")
+	headBufWriter := multipart.NewWriter(headBuf)
+	_, err := headBufWriter.CreateFormFile("uploadfile", filename)
+	if err != nil {
+		lager.Logger.Error("Error in create form file", err)
+		return
+	}
+
 	f, err := os.Open(filename)
 	if err != nil {
 		lager.Logger.Error("Error in opening file", err)
@@ -69,31 +80,26 @@ func uploadform(filename string) {
 	}
 	defer f.Close()
 
-	//Form part
-	var buf bytes.Buffer
-	w := multipart.NewWriter(&buf)
-
-	fw, err := w.CreateFormFile("uploadfile", filename)
+	fs, err := f.Stat()
 	if err != nil {
-		lager.Logger.Error("Error in create form file", err)
+		lager.Logger.Error("Error in stat file", err)
 		return
 	}
 
-	_, err = io.Copy(fw, f)
-	if err != nil {
-		return
-	}
-	w.Close()
+	lastBoundary := bytes.NewBufferString(fmt.Sprintf("\r\n--%s--\r\n", headBufWriter.Boundary()))
 
-	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadform", buf.Bytes())
+	bodyReader := io.MultiReader(headBuf, f, lastBoundary)
 
+	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadform")
 	if err != nil {
 		lager.Logger.Error("new request failed.", err)
 		return
 	}
-	defer req.Close()
+	req.Req.Body = ioutil.NopCloser(bodyReader)
+	req.SetHeader("Content-Type", headBufWriter.FormDataContentType())
+	req.Req.ContentLength = int64(headBuf.Len()) + fs.Size() + int64(lastBoundary.Len())
 
-	req.SetHeader("Content-Type", w.FormDataContentType())
+	defer req.Close()
 
 	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
