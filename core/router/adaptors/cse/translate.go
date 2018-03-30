@@ -63,6 +63,7 @@ func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
 			}
 			rules[i] = newRule
 		}
+		return rules
 	}
 	return nil
 }
