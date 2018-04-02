@@ -66,9 +66,11 @@ func SetLatency(latency time.Duration, addr, microServiceName, version, app, pro
 
 // SortLatency sort instance based on  the average latencies
 func SortLatency() {
+	LatencyMapRWMutex.RLock()
 	for _, v := range ProtocolStatsMap {
 		sort.Sort(ByDuration(v))
 	}
+	LatencyMapRWMutex.RUnlock()
 
 }
 
@@ -136,9 +138,11 @@ func (r *WeightedResponseStrategy) ReceiveData(instances []*registry.MicroServic
 func (r *WeightedResponseStrategy) Pick() (*registry.MicroServiceInstance, error) {
 	if rand.Intn(100) < 70 {
 		var instanceAddr string
+		LatencyMapRWMutex.RLock()
 		if len(ProtocolStatsMap[BuildKey(r.serviceName, "", "", r.protocol)]) != 0 {
 			instanceAddr = ProtocolStatsMap[BuildKey(r.serviceName, "", "", r.protocol)][0].Addr
 		}
+		LatencyMapRWMutex.RUnlock()
 		for _, instance := range r.instances {
 			if instanceAddr == instance.EndpointsMap[r.protocol] {
 				return instance, nil
