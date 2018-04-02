@@ -1,22 +1,43 @@
 package eventlistener_test
 
 import (
-	"github.com/ServiceComb/go-archaius/core"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/eventlistener"
+	"github.com/ServiceComb/go-chassis/util/fileutil"
+
+	"github.com/ServiceComb/go-archaius/core"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
-func TestCircuitBreakerEventListener_Event(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+func preTest() {
+	os.Setenv(fileutil.ChassisHome,
+		filepath.Join(os.Getenv("GOPATH"),
+			"src",
+			"github.com",
+			"ServiceComb",
+			"go-chassis",
+			"examples",
+			"discovery",
+			"server"))
+	lager.Initialize("",
+		"INFO",
+		filepath.Join("log", "chassis.log"),
+		"size",
+		true,
+		1,
+		10,
+		7)
+}
 
-	t.Log("Test circuit_breaker_event_listener.go")
+func TestCircuitBreakerEventListener_Event(t *testing.T) {
+	preTest()
 	config.Init()
-	lager.Initialize("", "INFO", "l", "size", true, 1, 10, 7)
+	t.Log("Test circuit_breaker_event_listener.go")
 	eventlistener.Init()
 	eventListen := &eventlistener.CircuitBreakerEventListener{}
 	t.Log("sending the events for the key cse.flowcontrol.Consumer.qps.limit.Server")
@@ -31,10 +52,8 @@ func TestCircuitBreakerEventListener_Event(t *testing.T) {
 
 }
 func TestGetNames(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	preTest()
 	config.Init()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	t.Log("verifying configuration keys by GetNames method")
 	sourceName, serviceName := eventlistener.GetNames("cse.isolation.Web.Consumer.carts.timeout.enabled")
 	assert.Equal(t, "Web", sourceName)
@@ -59,5 +78,4 @@ func TestGetNames(t *testing.T) {
 	assert.Equal(t, "carts.interface.get", serviceName)
 	n = eventlistener.GetCircuitName(sourceName, serviceName)
 	assert.Equal(t, "Consumer.carts.interface.get", n)
-
 }
