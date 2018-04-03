@@ -45,5 +45,5 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 	i.Args = arg
 	i.Reply = reply
 	i.Ctx = ctx
-	return ri.invoke(i, reply)
+	return ri.invoke(i)
 }

@@ -26,7 +26,7 @@ type abstractInvoker struct {
 	opts Options
 }
 
-func (ri *abstractInvoker) invoke(i *invocation.Invocation, reply interface{}) error {
+func (ri *abstractInvoker) invoke(i *invocation.Invocation) error {
 	if len(i.Filters) == 0 {
 		i.Filters = ri.opts.Filters
 	}
@@ -42,7 +42,6 @@ func (ri *abstractInvoker) invoke(i *invocation.Invocation, reply interface{}) e
 
 	c.Next(i, func(ir *invocation.InvocationResponse) error {
 		err = ir.Err
-		reply = ir.Result
 		return err
 	})
 	return err

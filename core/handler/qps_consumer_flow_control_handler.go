@@ -12,9 +12,7 @@ type ConsumerRateLimiterHandler struct{}
 // Handle is handles the consumer rate limiter APIs
 func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	if !archaius.GetBool("cse.flowcontrol.Consumer.qps.enabled", true) {
-		chain.Next(i, func(r *invocation.InvocationResponse) error {
-			return cb(r)
-		})
+		chain.Next(i, cb)
 
 		return
 	}
@@ -23,9 +21,7 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 	operationMeta := qpslimiter.InitSchemaOperations(i)
 	rl.GetOrCreate(operationMeta)
 
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		return cb(r)
-	})
+	chain.Next(i, cb)
 }
 
 func newConsumerRateLimiterHandler() Handler {

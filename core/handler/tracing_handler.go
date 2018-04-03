@@ -99,24 +99,23 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	newCtx := opentracing.ContextWithSpan(i.Ctx, span)
 	i.Ctx = newCtx
 
-	var resp *invocation.InvocationResponse
 	// To ensure accuracy, spans should finish immediately once server responds.
 	// So the best way is that spans finish in the callback func, not after it.
 	// But server may respond in the callback func too, that we have to remove
 	// span finishing from callback func's inside to outside.
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		resp = r
-		return cb(r)
+	chain.Next(i, func(r *invocation.InvocationResponse) (err error) {
+		err = cb(r)
+		switch i.Protocol {
+		case common.ProtocolRest:
+			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
+			span.SetTag(zipkincore.HTTP_PATH, interfaceName)
+			span.SetTag(zipkincore.HTTP_STATUS_CODE, r.Status)
+			span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
+		default:
+		}
+		span.Finish()
+		return
 	})
-	switch i.Protocol {
-	case common.ProtocolRest:
-		span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
-		span.SetTag(zipkincore.HTTP_PATH, interfaceName)
-		span.SetTag(zipkincore.HTTP_STATUS_CODE, resp.Status)
-		span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
-	default:
-	}
-	span.Finish()
 }
 
 // Name returns tracing-provider string
@@ -216,24 +215,23 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		}
 	}
 
-	var resp *invocation.InvocationResponse
 	// To ensure accuracy, spans should finish immediately once client send req.
 	// So the best way is that spans finish in the callback func, not after it.
 	// But client may send req in the callback func too, that we have to remove
 	// span finishing from callback func's inside to outside.
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		resp = r
-		return cb(r)
+	chain.Next(i, func(r *invocation.InvocationResponse) (err error) {
+		err = cb(r)
+		switch i.Protocol {
+		case common.ProtocolRest:
+			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
+			span.SetTag(zipkincore.HTTP_PATH, interfaceName)
+			span.SetTag(zipkincore.HTTP_STATUS_CODE, r.Status)
+			span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
+		default:
+		}
+		span.Finish()
+		return
 	})
-	switch i.Protocol {
-	case common.ProtocolRest:
-		span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
-		span.SetTag(zipkincore.HTTP_PATH, interfaceName)
-		span.SetTag(zipkincore.HTTP_STATUS_CODE, resp.Status)
-		span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
-	default:
-	}
-	span.Finish()
 }
 
 func setInterfaceName(interfaceName string, i *invocation.Invocation) string {

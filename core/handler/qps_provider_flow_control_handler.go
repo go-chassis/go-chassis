@@ -18,9 +18,7 @@ const (
 // Handle is to handle provider rateLimiter things
 func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	if !archaius.GetBool("cse.flowcontrol.Provider.qps.enabled", true) {
-		chain.Next(i, func(r *invocation.InvocationResponse) error {
-			return cb(r)
-		})
+		chain.Next(i, cb)
 		return
 	}
 
@@ -42,9 +40,7 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 	}
 
 	//call next chain
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		return cb(r)
-	})
+	chain.Next(i, cb)
 
 }
 
