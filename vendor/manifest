@@ -40,7 +40,7 @@
 			"importpath": "github.com/ServiceComb/go-sc-client",
 			"repository": "https://github.com/ServiceComb/go-sc-client",
 			"vcs": "git",
-			"revision": "0657883af96fff57a2f3bfb610bef5b45206b6a5",
+			"revision": "d0fa15b82d95d541b94f8e1a87db30ea46e0d01a",
 			"branch": "HEAD",
 			"notests": true,
 			"allfiles": true
