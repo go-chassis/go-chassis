@@ -27,7 +27,9 @@ func (r *RandomStrategy) Pick() (*registry.MicroServiceInstance, error) {
 		return nil, ErrNoneAvailableInstance
 	}
 
+	r.mtx.Lock()
 	k := rand.Int() % len(r.instances)
+	r.mtx.Unlock()
 	return r.instances[k], nil
 
 }
