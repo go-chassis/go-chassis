@@ -161,6 +161,7 @@ func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 
 // reRegisterSelfMSI 只重新注册实例
 func reRegisterSelfMSI(sid string) error {
+	RegistryService.AutoSync()
 	hostname, err := os.Hostname()
 	if err != nil {
 		lager.Logger.Errorf(err, "Get HostName failed, hostname:%s", hostname)
