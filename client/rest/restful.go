@@ -88,22 +88,9 @@ func (req *Request) SetBody(body []byte) {
 
 //SetCookie set key value in request cookie
 func (req *Request) SetCookie(k, v string) {
-	cookie, err := req.Req.Cookie(k)
-	if err == http.ErrNoCookie {
-		c := &http.Cookie{Name: k, Value: v}
-		req.Req.AddCookie(c)
-	}
 	c := &http.Cookie{
-		Name:       k,
-		Value:      v,
-		Path:       cookie.Path,
-		Expires:    cookie.Expires,
-		RawExpires: cookie.RawExpires,
-		Domain:     cookie.Domain,
-		Secure:     cookie.Secure,
-		HttpOnly:   cookie.HttpOnly,
-		Raw:        cookie.Raw,
-		Unparsed:   cookie.Unparsed,
+		Name:  k,
+		Value: v,
 	}
 	req.Req.AddCookie(c)
 }
