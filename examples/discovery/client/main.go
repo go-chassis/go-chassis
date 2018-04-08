@@ -113,6 +113,7 @@ func call(invoker *core.RPCInvoker) {
 func callRest(invoker *core.RestInvoker) {
 	defer wg.Done()
 	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest")
+
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
 	if err != nil {
@@ -120,9 +121,11 @@ func callRest(invoker *core.RestInvoker) {
 		return
 	}
 	log.Printf("Rest Server sayhello[Get] %s", string(resp1.ReadBody()))
-
+	log.Printf("Rest Server sayhello[Get] %s", string(resp1.GetCookie(common.LBSessionID)))
+	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	req, _ = rest.NewRequest(http.MethodPost, "cse://Server/sayhi", []byte(`{"name": "peter wang and me"}`))
 	req.SetHeader("Content-Type", "application/json")
+	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
 		log.Println(err)
@@ -131,6 +134,7 @@ func callRest(invoker *core.RestInvoker) {
 	log.Printf("Rest Server sayhi[POST] %s", string(resp1.ReadBody()))
 
 	req, _ = rest.NewRequest(http.MethodGet, "cse://Server/sayerror", []byte(""))
+	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
 		log.Println(err)

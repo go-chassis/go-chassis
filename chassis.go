@@ -38,6 +38,7 @@ import (
 	// highway package register the highway server plugin
 	_ "github.com/ServiceComb/go-chassis/server/highway"
 	// tcp package handles transport related things
+	"github.com/ServiceComb/go-chassis/core/metadata"
 )
 
 var goChassis *chassis
@@ -265,6 +266,6 @@ func Init() error {
 		log.Println("Init chassis fail:", err)
 		return err
 	}
-	lager.Logger.Infof("Init chassis success")
+	lager.Logger.Infof("Init chassis success, Version is %s", metadata.SdkVersion)
 	return nil
 }
