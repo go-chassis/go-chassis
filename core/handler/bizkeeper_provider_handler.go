@@ -15,18 +15,26 @@ func (bk *BizKeeperProviderHandler) Handle(chain *Chain, i *invocation.Invocatio
 	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Provider)
 	hystrix.ConfigureCommand(command, cmdConfig)
 
-	err := hystrix.Do(command, func() error {
-		var err error
+	finish := make(chan *invocation.InvocationResponse, 1)
+	err := hystrix.Do(command, func() (err error) {
 		chain.Next(i, func(resp *invocation.InvocationResponse) error {
-			err = cb(resp)
+			err = resp.Err
+			select {
+			case finish <- resp:
+			default:
+				// means hystrix error occurred
+			}
 			return err
 		})
-		return err
-	}, GetFallbackFun(command, common.Provider, i, cb, cmdConfig.ForceFallback))
+		return
+	}, GetFallbackFun(command, common.Provider, i, finish, cmdConfig.ForceFallback))
+
 	//if err is not nil, means fallback is nil, return original err
 	if err != nil {
 		writeErr(err, cb)
 	}
+
+	cb(<-finish)
 }
 
 // Name returns bizkeeper-provider string

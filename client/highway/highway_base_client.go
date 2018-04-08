@@ -110,14 +110,14 @@ func (baseClient *HighwayBaseClient) makeConnection() (*HighwayClientConnection,
 		lager.Logger.Error("the addr: "+baseClient.addr, errDial)
 		return nil, errDial
 	}
-	higwayConn := NewHighwayClientConnection(baseConn, baseClient)
-	err := higwayConn.Open()
+	highwayConn := NewHighwayClientConnection(baseConn, baseClient)
+	err := highwayConn.Open()
 	if err != nil {
-		lager.Logger.Error("higwayConn open: "+baseClient.addr, errDial)
+		lager.Logger.Error("highwayConn open: "+baseClient.addr, errDial)
 		return nil, err
 	}
 
-	return higwayConn, nil
+	return highwayConn, nil
 }
 
 func (baseClient *HighwayBaseClient) initConns() error {

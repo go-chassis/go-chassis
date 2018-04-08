@@ -114,9 +114,7 @@ func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, c
 	}
 
 	i.Endpoint = ep
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		return cb(r)
-	})
+	chain.Next(i, cb)
 }
 
 func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {

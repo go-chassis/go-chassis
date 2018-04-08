@@ -55,6 +55,6 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 	}
 	inv.Metadata[common.RestMethod] = req.GetMethod()
 
-	err := ri.invoke(inv, nil)
+	err := ri.invoke(inv)
 	return resp, err
 }
