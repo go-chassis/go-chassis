@@ -88,7 +88,26 @@ func MakeEndpointMap(m map[string]model.Protocol) map[string]string {
 				eps[name] = iputil.DefaultEndpoint4Protocol(name)
 			}
 		} else {
-			eps[name] = protocol.Advertise
+			var (
+				ip  net.IP
+				err error
+			)
+
+			// check the provided Advertise ip is IPV4 or IPV6
+			ipWithoutPort := strings.Split(protocol.Advertise, ":")
+			if len(ipWithoutPort) > 2 {
+				ip, _, err = net.ParseCIDR(protocol.Advertise + "/0")
+			} else {
+				ip, _, err = net.ParseCIDR(ipWithoutPort[0] + "/0")
+			}
+
+			if err != nil {
+				lager.Logger.Errorf(err, "failed to parse ip address")
+			} else {
+				if ip != nil && !ip.IsLoopback() && ip.To4() != nil {
+					eps[name] = ip.String() + ":" + ipWithoutPort[1]
+				}
+			}
 		}
 	}
 	return eps

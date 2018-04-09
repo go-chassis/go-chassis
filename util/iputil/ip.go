@@ -23,8 +23,8 @@ func GetLocalIP() string {
 		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
 			return ""
 		}
-		// Check if Isloopback
-		if ip != nil && !ip.IsLoopback() {
+		// Check if Isloopback and IPV4
+		if ip != nil && !ip.IsLoopback() && ip.To4() != nil {
 			return ip.String()
 		}
 	}
