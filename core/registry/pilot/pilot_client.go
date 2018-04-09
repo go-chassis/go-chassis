@@ -1,0 +1,120 @@
+package pilot
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/ServiceComb/http-client"
+	"io"
+	"io/ioutil"
+	"net/http"
+)
+
+const (
+	// BaseRoot is the root path of pilot API
+	BaseRoot = "/v1/registration"
+	// DefaultAddr is the default endpoint of pilot-discovery
+	DefaultAddr = "istio-pilot:8080"
+)
+
+// PilotClient is the client implements istio/pilot v1 API
+// See https://www.envoyproxy.io/docs/envoy/v1.6.0/api-v1/cluster_manager/sds#rest-api
+type PilotClient struct {
+	Options  Options
+	protocol string
+	client   *httpclient.URLClient
+}
+
+// Initialize is the func initialize the PilotClient
+func (c *PilotClient) Initialize(options Options) (err error) {
+	// copy options
+	c.Options = options
+
+	// set http protocol
+	sslEnabled := options.TLSConfig != nil
+	c.protocol = "http"
+	if sslEnabled {
+		c.protocol = "https"
+	}
+
+	// new rest client
+	c.client, err = httpclient.GetURLClient(&httpclient.URLClientOption{
+		SSLEnabled: sslEnabled,
+		TLSConfig:  options.TLSConfig,
+	})
+	if err != nil {
+		return err
+	}
+	return
+}
+
+// GetAllServices returns all services registered by istio
+func (c *PilotClient) GetAllServices() ([]*service, error) {
+	apiUrl := c.getAddress() + BaseRoot
+	resp, err := c.client.HttpDo("GET", apiUrl, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
+	}()
+	var body []byte
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("GetAllServices failed, %s", err.Error())
+	}
+	if resp.StatusCode == http.StatusOK {
+		var response []*service
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return nil, fmt.Errorf("GetAllServices failed, %s, response body: %s", err.Error(), string(body))
+		}
+		return response, nil
+	}
+	return nil, fmt.Errorf("GetAllServices failed, response StatusCode: %d, response body: %s",
+		resp.StatusCode, string(body))
+}
+
+// GetServiceHosts returns hosts using serviceName
+func (c *PilotClient) GetServiceHosts(serviceName string) (*hosts, error) {
+	apiUrl := c.getAddress() + BaseRoot + "/" + serviceName
+	resp, err := c.client.HttpDo("GET", apiUrl, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
+	}()
+	var body []byte
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("GetServiceHosts failed, %s, serviceName: %s", err.Error(), serviceName)
+	}
+	if resp.StatusCode == http.StatusOK {
+		var response hosts
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return nil, fmt.Errorf("GetServiceHosts failed, %s, serviceName: %s, response body: %s",
+				err.Error(), serviceName, string(body))
+		}
+		return &response, nil
+	}
+	return nil, fmt.Errorf("GetServiceHosts failed, serviceName: %s, response StatusCode: %d, response body: %s",
+		serviceName, resp.StatusCode, string(body))
+}
+
+// Close is the function clean up client resources
+func (c *PilotClient) Close() error {
+	return nil
+}
+
+// getAddress contains a round robin lb to return registry address.
+func (c *PilotClient) getAddress() string {
+	next := RoundRobin(c.Options.Addrs)
+	addr, err := next()
+	if err != nil {
+		return c.protocol + "://" + DefaultAddr
+	}
+	return c.protocol + "://" + addr
+}
