@@ -48,10 +48,10 @@ func (c *PilotClient) Initialize(options Options) (err error) {
 	return
 }
 
-// GetAllServices returns all services registered by istio
+// GetAllServices returns a list of service registered by istio
 func (c *PilotClient) GetAllServices() ([]*service, error) {
-	apiUrl := c.getAddress() + BaseRoot
-	resp, err := c.client.HttpDo("GET", apiUrl, nil, nil)
+	apiURL := c.getAddress() + BaseRoot
+	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +78,8 @@ func (c *PilotClient) GetAllServices() ([]*service, error) {
 
 // GetServiceHosts returns hosts using serviceName
 func (c *PilotClient) GetServiceHosts(serviceName string) (*hosts, error) {
-	apiUrl := c.getAddress() + BaseRoot + "/" + serviceName
-	resp, err := c.client.HttpDo("GET", apiUrl, nil, nil)
+	apiURL := c.getAddress() + BaseRoot + "/" + serviceName
+	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
 	if err != nil {
 		return nil, err
 	}

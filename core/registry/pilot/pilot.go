@@ -9,9 +9,10 @@ import (
 	"strings"
 )
 
-// Pilot constant string
+// PilotPlugin is the constant string of the plugin name
 const PilotPlugin = "pilot"
 
+// Pilot is the struct to do service discovery from istio pilot server
 type Pilot struct {
 	Name           string
 	registryClient *PilotClient

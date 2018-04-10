@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	// framework name
+	// Istio is the constant string of framework name
 	Istio = "Istio"
-	// microservice level
+	// DefaultLevel is the constant string of default microservice level
 	DefaultLevel = "BACK"
-	// microservice status
+	// DefaultStatus is the constant string of default microservice status
 	DefaultStatus = "UP"
 )
 
