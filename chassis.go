@@ -27,6 +27,8 @@ import (
 	_ "github.com/ServiceComb/go-chassis/core/registry/file"
 	// servicecenter package handles service center api calls
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+	// pilot package handles istio pilot SDS api calls
+	_ "github.com/ServiceComb/go-chassis/core/registry/pilot"
 	"github.com/ServiceComb/go-chassis/core/router"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/core/tracing"

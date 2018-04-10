@@ -1,7 +1,6 @@
 package registry
 
 import (
-	client "github.com/ServiceComb/go-sc-client"
 	cache "github.com/patrickmn/go-cache"
 )
 
@@ -24,11 +23,6 @@ var SchemaInterfaceIndexedCache *cache.Cache
 
 //SchemaServiceIndexedCache key: schema service name value: []*microservice
 var SchemaServiceIndexedCache *cache.Cache
-
-//CacheManager cache manager struct
-type CacheManager struct {
-	registryClient *client.RegistryClient
-}
 
 func initCache() *cache.Cache {
 	var value *cache.Cache

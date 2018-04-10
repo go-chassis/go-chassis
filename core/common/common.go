@@ -91,14 +91,18 @@ const (
 
 // constant for default application name and version
 const (
-	DefaultApp     = "default"
-	DefaultVersion = "0.0.1"
-	LatestVersion  = "latest"
-	AllVersion     = "0+"
+	DefaultApp        = "default"
+	DefaultVersion    = "0.0.1"
+	LatestVersion     = "latest"
+	AllVersion        = "0+"
+	DefaultStatus     = "UP"
+	DefaultLevel      = "BACK"
+	DefaultHBInterval = 30
 )
 
 //constant used
 const (
+	HTTP              = "http"
 	HTTPS             = "https"
 	JSON              = "application/json"
 	Create            = "CREATE"

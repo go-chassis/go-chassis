@@ -11,9 +11,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 
-	client "github.com/ServiceComb/go-sc-client"
+	"github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
-	cache "github.com/patrickmn/go-cache"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -294,13 +293,6 @@ func findVersionRule(microservice string) string {
 	return common.AllVersion
 }
 
-// initCache initialize cache
-func initCache() *cache.Cache {
-	var value *cache.Cache
-	value = cache.New(DefaultExpireTime, 0)
-	return value
-}
-
 // watch watching micro-service instance status
 func watch(response *model.MicroServiceInstanceChangedEvent) {
 	if response.Instance.Status != model.MSInstanceUP {
@@ -409,11 +401,4 @@ func updateAction(response *model.MicroServiceInstanceChangedEvent) {
 	}
 	registry.MicroserviceInstanceCache.Set(key, microServiceInstances, 0)
 	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE,sid = %s,instances length = %d", response.Instance.ServiceID, len(microServiceInstances))
-}
-
-// initialize cache
-func init() {
-	registry.MicroserviceInstanceCache = initCache()
-	registry.SelfInstancesCache = initCache()
-	registry.IPIndexedCache = initCache()
 }

@@ -88,7 +88,7 @@ func enableRegistry(opts ...Option) {
 // InstallPlugin install plugin
 func InstallPlugin(name string, f func(opts ...Option) Registry) {
 	registryFunc[name] = f
-	log.Println("Installed registry plugin: %s.", name)
+	log.Printf("Installed registry plugin: %s.\n", name)
 }
 
 // Enable create RegistryService
