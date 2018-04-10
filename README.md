@@ -3,7 +3,6 @@
 
 Go-Chassis is a Software Development Kit(SDK) for rapid development of microservices in GoLang, providing service-discovery,  fault-tolerance, circuit breaker, load balancing, monitoring, hot-reconfiguration features
  
-Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable RPC framework, and did some enhancements.
 
 # Features
  - **Pluggable registry**: Support Service center and file based registry by default

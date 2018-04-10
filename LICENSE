@@ -211,28 +211,10 @@ licenses.
 
 
 ========================================================================
-For third_party/forked/go-micro:
-========================================================================
-
-See licenses/LICENSE-go-micro
-
-========================================================================
 For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go:
 ========================================================================
 
 See licenses/LICENSE-hystrix-go
-
-========================================================================
-For client/highway/highway_client.go,client/highway/highway_client_test.go:
-========================================================================
-
-See licenses/LICENSE-go-micro
-
-========================================================================
-For core/loadbalance/default.go,core/loadbalance/default_test.go:
-========================================================================
-
-See licenses/LICENSE-go-micro
 
 ========================================================================
 For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go:
@@ -253,7 +235,7 @@ For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws:
 See licenses/LICENSE-datastream-aws
 
 ========================================================================
-For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go:
+For core/provider/default_provider.go:
 ========================================================================
 
 See licenses/LICENSE-golang
