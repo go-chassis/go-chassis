@@ -17,16 +17,16 @@ const (
 	DefaultAddr = "istio-pilot:8080"
 )
 
-// PilotClient is the client implements istio/pilot v1 API
+// EnvoyDSClient is the client implements istio/pilot v1 API
 // See https://www.envoyproxy.io/docs/envoy/v1.6.0/api-v1/cluster_manager/sds#rest-api
-type PilotClient struct {
+type EnvoyDSClient struct {
 	Options  Options
 	protocol string
 	client   *httpclient.URLClient
 }
 
-// Initialize is the func initialize the PilotClient
-func (c *PilotClient) Initialize(options Options) (err error) {
+// Initialize is the func initialize the EnvoyDSClient
+func (c *EnvoyDSClient) Initialize(options Options) (err error) {
 	// copy options
 	c.Options = options
 
@@ -48,8 +48,8 @@ func (c *PilotClient) Initialize(options Options) (err error) {
 	return
 }
 
-// GetAllServices returns a list of service registered by istio
-func (c *PilotClient) GetAllServices() ([]*service, error) {
+// GetAllServices returns a list of Service registered by istio
+func (c *EnvoyDSClient) GetAllServices() ([]*Service, error) {
 	apiURL := c.getAddress() + BaseRoot
 	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
 	if err != nil {
@@ -65,7 +65,7 @@ func (c *PilotClient) GetAllServices() ([]*service, error) {
 		return nil, fmt.Errorf("GetAllServices failed, %s", err.Error())
 	}
 	if resp.StatusCode == http.StatusOK {
-		var response []*service
+		var response []*Service
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, fmt.Errorf("GetAllServices failed, %s, response body: %s", err.Error(), string(body))
@@ -76,8 +76,8 @@ func (c *PilotClient) GetAllServices() ([]*service, error) {
 		resp.StatusCode, string(body))
 }
 
-// GetServiceHosts returns hosts using serviceName
-func (c *PilotClient) GetServiceHosts(serviceName string) (*hosts, error) {
+// GetServiceHosts returns Hosts using serviceName
+func (c *EnvoyDSClient) GetServiceHosts(serviceName string) (*Hosts, error) {
 	apiURL := c.getAddress() + BaseRoot + "/" + serviceName
 	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
 	if err != nil {
@@ -93,7 +93,7 @@ func (c *PilotClient) GetServiceHosts(serviceName string) (*hosts, error) {
 		return nil, fmt.Errorf("GetServiceHosts failed, %s, serviceName: %s", err.Error(), serviceName)
 	}
 	if resp.StatusCode == http.StatusOK {
-		var response hosts
+		var response Hosts
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, fmt.Errorf("GetServiceHosts failed, %s, serviceName: %s, response body: %s",
@@ -106,12 +106,12 @@ func (c *PilotClient) GetServiceHosts(serviceName string) (*hosts, error) {
 }
 
 // Close is the function clean up client resources
-func (c *PilotClient) Close() error {
+func (c *EnvoyDSClient) Close() error {
 	return nil
 }
 
 // getAddress contains a round robin lb to return registry address.
-func (c *PilotClient) getAddress() string {
+func (c *EnvoyDSClient) getAddress() string {
 	next := RoundRobin(c.Options.Addrs)
 	addr, err := next()
 	if err != nil {

@@ -13,34 +13,34 @@ type mockPilotHandler struct {
 
 func (m *mockPilotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var b []byte
-	hs1 := hosts{
-		Hosts: []*host{
+	hs1 := Hosts{
+		Hosts: []*Host{
 			{
 				"1.1.1.1", 80,
-				&tags{
+				&Tags{
 					"az", false, 80,
 				},
 			},
 			{
 				"1.1.1.2", 80,
-				&tags{
+				&Tags{
 					"az", false, 20,
 				},
 			},
 		},
 	}
-	hs2 := hosts{
-		Hosts: []*host{
+	hs2 := Hosts{
+		Hosts: []*Host{
 			{
 				"1.1.2.1", 80,
-				&tags{
+				&Tags{
 					"az", false, 100,
 				},
 			},
 		},
 	}
 	if r.URL.Path == BaseRoot {
-		s := []*service{
+		s := []*Service{
 			{ServiceKey: "a", Hosts: hs1.Hosts},
 			{ServiceKey: "b", Hosts: hs2.Hosts},
 		}
@@ -60,7 +60,7 @@ func (m *mockErrPilotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 func TestPilotClient_GetServiceHosts(t *testing.T) {
-	client := PilotClient{}
+	client := EnvoyDSClient{}
 	err := client.Initialize(Options{})
 	assert.NoError(t, err)
 	hosts, err := client.GetServiceHosts("a")
@@ -94,7 +94,7 @@ func TestPilotClient_GetServiceHosts(t *testing.T) {
 }
 
 func TestPilotClient_GetAllServices(t *testing.T) {
-	client := PilotClient{}
+	client := EnvoyDSClient{}
 	err := client.Initialize(Options{})
 	assert.NoError(t, err)
 	svcs, err := client.GetAllServices()

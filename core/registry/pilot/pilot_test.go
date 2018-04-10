@@ -25,18 +25,18 @@ func TestPilot_RegisterServiceAndInstance(t *testing.T) {
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "1.1.1.1:80"},
 	}
-	serviceId, instanceId, err := r.RegisterServiceAndInstance(microservice, microServiceInstance)
+	serviceID, instanceID, err := r.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
-	assert.Equal(t, "a", serviceId)
-	assert.Equal(t, "1.1.1.1_80", instanceId)
+	assert.Equal(t, "a", serviceID)
+	assert.Equal(t, "1.1.1.1_80", instanceID)
 
 	microservice, err = r.GetMicroService("a")
 	assert.NoError(t, err)
 	assert.Equal(t, "a", microservice.ServiceName)
 
-	serviceId, err = r.GetMicroServiceID("", "a", "", "")
+	serviceID, err = r.GetMicroServiceID("", "a", "", "")
 	assert.NoError(t, err)
-	assert.Equal(t, "a", serviceId)
+	assert.Equal(t, "a", serviceID)
 
 	services, err := r.GetAllMicroServices()
 	assert.NoError(t, err)
@@ -45,12 +45,12 @@ func TestPilot_RegisterServiceAndInstance(t *testing.T) {
 	instances, err := r.GetMicroServiceInstances("", "a")
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(instances))
-	assert.Equal(t, instanceId, instances[0].InstanceID)
+	assert.Equal(t, instanceID, instances[0].InstanceID)
 	assert.Equal(t, microServiceInstance.EndpointsMap["rest"], instances[0].EndpointsMap["rest"])
 
 	instances, err = r.FindMicroServiceInstances("", "", "a", "", "")
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(instances))
-	assert.Equal(t, instanceId, instances[0].InstanceID)
+	assert.Equal(t, instanceID, instances[0].InstanceID)
 	assert.Equal(t, microServiceInstance.EndpointsMap["rest"], instances[0].EndpointsMap["rest"])
 }

@@ -15,7 +15,7 @@ const PilotPlugin = "pilot"
 // Pilot is the struct to do service discovery from istio pilot server
 type Pilot struct {
 	Name           string
-	registryClient *PilotClient
+	registryClient *EnvoyDSClient
 }
 
 // RegisterService : 注册微服务
@@ -131,7 +131,7 @@ func (r *Pilot) GetMicroService(microServiceID string) (*registry.MicroService, 
 		return nil, err
 	}
 	lager.Logger.Debugf("GetMicroServices success, MicroService: %s", microServiceID)
-	return ToMicroService(&service{
+	return ToMicroService(&Service{
 		ServiceKey: microServiceID,
 		Hosts:      hs.Hosts,
 	}), nil
@@ -150,7 +150,7 @@ func (r *Pilot) GetMicroServiceInstances(consumerID, providerID string) ([]*regi
 }
 
 // filterInstances filter instances
-func filterInstances(hs []*host) []*registry.MicroServiceInstance {
+func filterInstances(hs []*Host) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, h := range hs {
 		msi := ToMicroServiceInstance(h)
@@ -261,7 +261,7 @@ func newPilotRegistry(opts ...registry.Option) registry.Registry {
 	for _, o := range opts {
 		o(&options)
 	}
-	c := &PilotClient{}
+	c := &EnvoyDSClient{}
 	c.Initialize(Options{
 		Addrs:     options.Addrs,
 		TLSConfig: options.TLSConfig,

@@ -18,7 +18,7 @@ const (
 )
 
 // ToMicroService assign pilot micro-service to go chassis micro-service
-func ToMicroService(scs *service) *registry.MicroService {
+func ToMicroService(scs *Service) *registry.MicroService {
 	cs := &registry.MicroService{}
 	cs.ServiceID = scs.ServiceKey
 	cs.ServiceName = scs.ServiceKey
@@ -35,7 +35,7 @@ func ToMicroService(scs *service) *registry.MicroService {
 }
 
 // ToMicroServiceInstance assign pilot host parameters to registry micro-service instance parameters
-func ToMicroServiceInstance(ins *host) *registry.MicroServiceInstance {
+func ToMicroServiceInstance(ins *Host) *registry.MicroServiceInstance {
 	ipPort := fmt.Sprintf("%s:%d", ins.Address, ins.Port)
 	msi := &registry.MicroServiceInstance{}
 	msi.InstanceID = strings.Replace(ipPort, ":", "_", 1)

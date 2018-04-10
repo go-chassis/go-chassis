@@ -21,7 +21,7 @@ const (
 
 // CacheManager cache manager
 type CacheManager struct {
-	registryClient *PilotClient
+	registryClient *EnvoyDSClient
 }
 
 // AutoSync automatically syncing with the running instances
@@ -107,7 +107,7 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 }
 
 // getServiceStore returns service sets
-func (c *CacheManager) getServiceStore(exist []*service) sets.String {
+func (c *CacheManager) getServiceStore(exist []*Service) sets.String {
 	//get Provider's instances
 	serviceStore := sets.NewString()
 	for _, microservice := range exist {
@@ -139,7 +139,7 @@ func (c *CacheManager) autoClearCache(exist sets.String) {
 }
 
 // filterRestore filter and restore instances to cache
-func filterRestore(hs []*host, serviceName string) {
+func filterRestore(hs []*Host, serviceName string) {
 	var store []*registry.MicroServiceInstance
 	for _, ins := range hs {
 		msi := ToMicroServiceInstance(ins)

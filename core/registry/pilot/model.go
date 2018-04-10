@@ -1,25 +1,25 @@
 package pilot
 
-// envoy service struct
-type service struct {
+// Service is the envoy service struct
+type Service struct {
 	ServiceKey string  `json:"service-key"`
-	Hosts      []*host `json:"hosts"`
+	Hosts      []*Host `json:"hosts"`
 }
 
-// a list of hosts that make up the service
-type hosts struct {
-	Hosts []*host `json:"hosts"`
+// Hosts is the struct which contains a list of Host
+type Hosts struct {
+	Hosts []*Host `json:"hosts"`
 }
 
-// host contains upstream ip address, port and tags
-type host struct {
+// Host contains upstream ip address, port and tags
+type Host struct {
 	Address string `json:"ip_address"`
 	Port    int    `json:"port"`
-	Tags    *tags  `json:"tags,omitempty"`
+	Tags    *Tags  `json:"tags,omitempty"`
 }
 
-// optional tags per host
-type tags struct {
+// Tags contains az, canary and weight
+type Tags struct {
 	AZ     string `json:"az,omitempty"`
 	Canary bool   `json:"canary,omitempty"`
 
