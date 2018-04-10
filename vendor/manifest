@@ -31,7 +31,7 @@
 			"importpath": "github.com/ServiceComb/go-cc-client",
 			"repository": "https://github.com/ServiceComb/go-cc-client",
 			"vcs": "git",
-			"revision": "60a10167aabab92ecad8c3abf00e9ee179fe37f3",
+			"revision": "3d262a6cdb8160b89cea17038541e9e367ffdc5a",
 			"branch": "HEAD",
 			"notests": true,
 			"allfiles": true

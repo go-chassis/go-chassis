@@ -4,7 +4,8 @@ set -e
 echo "mode: atomic" > coverage.txt
 # Make Necessary directories needed by Test (Ideally it should get created automatically but Travis is not allowing to create it using os.MkdriAll)
 # I know this is insane but nothing can be done
-mkdir -p root/conf
+
+# For transport test
 mkdir -p $GOPATH/src/github.com/ServiceComb/go-chassis/core/transport/tls
 mkdir -p $GOPATH/src/github.com/ServiceComb/go-chassis/examples/discovery/server/log
 mkdir -p $GOPATH/src/github.com/ServiceComb/go-chassis/examples/discovery/server/conf
@@ -25,6 +26,10 @@ mkdir -p $GOPATH/conf/microservice3/schema
 
 # For router test
 mkdir -p $GOPATH/test/router/manager/conf
+
+# For Init test
+mkdir -p $GOPATH/test/chassisInit/conf
+mkdir -p $GOPATH/test/chassisInit/log
 
 #Start the Test
 for d in $(go list ./... | grep -v vendor |  grep -v third_party | grep -v examples); do
