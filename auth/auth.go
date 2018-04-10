@@ -181,7 +181,7 @@ func getAkskConfig() (*model.CredentialStruct, error) {
 	// 2, use project in cse uri contain
 	// 3, use project "default"
 	if c.Project == "" {
-		project, err := getProjectFromURI(config.GlobalDefinition.Cse.Service.Registry.Address)
+		project, err := getProjectFromURI(config.GetRegistratorAddress())
 		if err != nil {
 			return nil, err
 		}

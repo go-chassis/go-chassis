@@ -5,7 +5,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"log"
@@ -61,8 +60,11 @@ type Registrator interface {
 }
 
 func enableRegistrator(opts Options) {
-	rt := config.GlobalDefinition.Cse.Service.Registry.Type
+	rt := config.GetRegistratorType()
 	if rt == "" {
+		if len(opts.Addrs) == 0 {
+			return
+		}
 		rt = DefaultRegistratorPlugin
 	}
 	f := registryFunc[rt]
@@ -70,6 +72,13 @@ func enableRegistrator(opts Options) {
 		panic("No registry plugin")
 	}
 	DefaultRegistrator = f(opts)
+
+	if err := RegisterMicroservice(); err != nil {
+		lager.Logger.Errorf(err, "start bacskoff for register microservice")
+		startBackOff(RegisterMicroservice)
+	}
+	go HBService.Start()
+
 	lager.Logger.Warnf(nil, "Enable %s registry.", DefaultRegistrator)
 }
 
@@ -78,114 +87,70 @@ func InstallRegistrator(name string, f func(opts Options) Registrator) {
 	registryFunc[name] = f
 	log.Printf("Installed registry plugin: %s.\n", name)
 }
-func setSpecifiedOptions(oR, oSD, oCD Options) error {
-	lager.Logger.Info("Doesn't set address for registry, so use Registrator, Discovery separated configs")
-	hostsR, schemeR, err := URIs2Hosts(strings.Split(config.GlobalDefinition.Cse.Service.Registrator.Address, ","))
+
+func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
+	hostsR, schemeR, err := URIs2Hosts(strings.Split(config.GetRegistratorAddress(), ","))
 	if err != nil {
-		return err
+		return
 	}
 	oR.Addrs = hostsR
-	oR.Tenant = config.GlobalDefinition.Cse.Service.Registrator.Tenant
-	oR.Version = config.GlobalDefinition.Cse.Service.Registrator.APIVersion.Version
+	oR.Tenant = config.GetRegistratorTenant()
+	oR.Version = config.GetRegistratorAPIVersion()
 	oR.TLSConfig, err = getTLSConfig(schemeR, RTag)
 	if err != nil {
-		return err
+		return
 	}
 	if oR.TLSConfig != nil {
 		oR.EnableSSL = true
 	}
-	hostsSD, schemeSD, err := URIs2Hosts(strings.Split(config.GlobalDefinition.Cse.Service.ServiceDiscovery.Address, ","))
+	hostsSD, schemeSD, err := URIs2Hosts(strings.Split(config.GetServiceDiscoveryAddress(), ","))
 	if err != nil {
-		return err
+		return
 	}
 	oSD.Addrs = hostsSD
-	oSD.Tenant = config.GlobalDefinition.Cse.Service.ServiceDiscovery.Tenant
-	oSD.Version = config.GlobalDefinition.Cse.Service.ServiceDiscovery.APIVersion.Version
+	oSD.Tenant = config.GetServiceDiscoveryTenant()
+	oSD.Version = config.GetServiceDiscoveryAPIVersion()
 	oSD.TLSConfig, err = getTLSConfig(schemeSD, SDTag)
 	if err != nil {
-		return err
+		return
 	}
 	if oSD.TLSConfig != nil {
 		oSD.EnableSSL = true
 	}
-	hostsCD, schemeCD, err := URIs2Hosts(strings.Split(config.GlobalDefinition.Cse.Service.ContractDiscovery.Address, ","))
+	hostsCD, schemeCD, err := URIs2Hosts(strings.Split(config.GetContractDiscoveryAddress(), ","))
 	if err != nil {
-		return err
+		return
 	}
 	oCD.Addrs = hostsCD
-	oCD.Tenant = config.GlobalDefinition.Cse.Service.ContractDiscovery.Tenant
-	oCD.Version = config.GlobalDefinition.Cse.Service.ContractDiscovery.APIVersion.Version
+	oCD.Tenant = config.GetContractDiscoveryTenant()
+	oCD.Version = config.GetContractDiscoveryAPIVersion()
 	oCD.TLSConfig, err = getTLSConfig(schemeCD, CDTag)
 	if err != nil {
-		return err
+		return
 	}
 	if oCD.TLSConfig != nil {
 		oCD.EnableSSL = true
 	}
-	return nil
+	return
 }
 
 // Enable create DefaultRegistrator
-func Enable() error {
+func Enable() (err error) {
 	mu.Lock()
 	defer mu.Unlock()
 	if IsEnabled {
-		return nil
+		return
 	}
 
-	if config.GlobalDefinition.Cse.Service.Registry.Tenant == "" {
-		config.GlobalDefinition.Cse.Service.Registry.Tenant = common.DefaultApp
-	}
-
-	var scheme string
-	hosts, scheme, err := URIs2Hosts(strings.Split(config.GlobalDefinition.Cse.Service.Registry.Address, ","))
-	if err != nil {
+	var oR, oSD, oCD Options
+	if oR, oSD, oCD, err = getSpecifiedOptions(); err != nil {
 		return err
-	}
-	tlsConfig, err := getTLSConfig(scheme, Name)
-	if err != nil {
-		return err
-	}
-	var secure bool
-	if tlsConfig != nil {
-		secure = true
-	}
-	oR := Options{
-		Addrs:     hosts,
-		Tenant:    config.GlobalDefinition.Cse.Service.Registry.Tenant,
-		EnableSSL: secure,
-		TLSConfig: tlsConfig,
-		Version:   config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version,
-	}
-	oSD := Options{
-		Addrs:     hosts,
-		Tenant:    config.GlobalDefinition.Cse.Service.Registry.Tenant,
-		EnableSSL: secure,
-		TLSConfig: tlsConfig,
-		Version:   config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version,
-	}
-	oCD := Options{
-		Addrs:     hosts,
-		Tenant:    config.GlobalDefinition.Cse.Service.Registry.Tenant,
-		EnableSSL: secure,
-		TLSConfig: tlsConfig,
-		Version:   config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version,
-	}
-	if len(hosts) == 0 {
-		if err := setSpecifiedOptions(oR, oSD, oCD); err != nil {
-			return err
-		}
 	}
 
 	enableRegistrator(oR)
-	enableContractDiscovery(oSD)
-	enableServiceDiscovery(oCD)
-	if err := RegisterMicroservice(); err != nil {
-		lager.Logger.Errorf(err, "start backoff for register microservice")
-		startBackOff(RegisterMicroservice)
-	}
-	go HBService.Start()
-	DefaultServiceDiscoveryService.AutoSync()
+	enableServiceDiscovery(oSD)
+	enableContractDiscovery(oCD)
+
 	lager.Logger.Info("Enabled Registry")
 	IsEnabled = true
 	return nil
@@ -193,8 +158,11 @@ func Enable() error {
 
 // DoRegister for registering micro-service instances
 func DoRegister() error {
-	var isAutoRegister bool
-	switch config.GlobalDefinition.Cse.Service.Registry.AutoRegister {
+	var (
+		isAutoRegister bool
+		t              = config.GetRegistratorAutoRegister()
+	)
+	switch t {
 	case "":
 		isAutoRegister = true
 	case Auto:
@@ -203,7 +171,7 @@ func DoRegister() error {
 		isAutoRegister = false
 	default:
 		{
-			tmpErr := fmt.Errorf("parameter incorrect, autoregister: %s", config.GlobalDefinition.Cse.Service.Registry.AutoRegister)
+			tmpErr := fmt.Errorf("parameter incorrect, autoregister: %s", t)
 			lager.Logger.Error(tmpErr.Error(), nil)
 			return tmpErr
 		}

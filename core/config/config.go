@@ -80,6 +80,8 @@ func parse() error {
 	populateServiceEnvironment()
 	populateServiceName()
 	populateVersion()
+	populateTenant()
+
 	return nil
 }
 
@@ -88,6 +90,9 @@ func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
 	registryAddrFromEnv := archaius.GetString(common.CseRegistryAddress, "")
 	if registryAddrFromEnv != "" {
+		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
+		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
+		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
 	}
 }
@@ -128,6 +133,13 @@ func populateServiceName() {
 func populateVersion() {
 	if e := archaius.GetString(common.Version, ""); e != "" {
 		MicroserviceDefinition.ServiceDescription.Version = e
+	}
+}
+
+// populateTenant populate tenant
+func populateTenant() {
+	if GlobalDefinition.Cse.Service.Registry.Tenant == "" {
+		GlobalDefinition.Cse.Service.Registry.Tenant = common.DefaultApp
 	}
 }
 

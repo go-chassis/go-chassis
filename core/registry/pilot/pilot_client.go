@@ -14,7 +14,7 @@ const (
 	// BaseRoot is the root path of pilot API
 	BaseRoot = "/v1/registration"
 	// DefaultAddr is the default endpoint of pilot-discovery
-	DefaultAddr = "istio-pilot:8080"
+	DefaultAddr = "istio-pilot.istio-system:8080"
 )
 
 // EnvoyDSClient is the client implements istio/pilot v1 API

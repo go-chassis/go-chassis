@@ -14,7 +14,7 @@ if [ "$CSE_CONFIG_CENTER" ]; then
     export CSE_CONFIG_CENTER_ADDR=$CSE_CONFIG_CENTER
 fi
 
-name=gosdk-discovery-client
+name=gosdk-istio-client
 
 listen_addr="0.0.0.0"
 advertise_addr=$(ifconfig eth0 | grep -E 'inet\W' | grep -o -E [0-9]+.[0-9]+.[0-9]+.[0-9]+ | head -n 1)

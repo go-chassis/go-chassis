@@ -13,7 +13,7 @@ cd $ROOT_PATH
 mkdir -p $RELEASE_PATH/$appname
 rm -rf $RELEASE_PATH/*
 
-go build -a -o "$RELEASE_PATH/$appname/app"
+go build --ldflags " -extldflags '-static'" -a -o "$RELEASE_PATH/$appname/app"
 
 cp -rf conf $RELEASE_PATH/$appname
 if [ -d "lib" ]; then

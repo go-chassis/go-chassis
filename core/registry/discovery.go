@@ -49,28 +49,33 @@ type ContractDiscovery interface {
 }
 
 func enableServiceDiscovery(opts Options) {
-	t := config.GlobalDefinition.Cse.Service.ServiceDiscovery.Type
+	t := config.GetServiceDiscoveryType()
 	if t == "" {
-		// to compatible with old config
-		t = config.GlobalDefinition.Cse.Service.Registry.Type
-		if t == "" {
-			t = DefaultServiceDiscoveryPlugin
+		if len(opts.Addrs) == 0 {
+			return
 		}
-
+		t = DefaultServiceDiscoveryPlugin
 	}
 	f := sdFunc[t]
 	if f == nil {
 		panic("No service discovery plugin")
 	}
 	DefaultServiceDiscoveryService = f(opts)
+
+	DefaultServiceDiscoveryService.AutoSync()
+
 	lager.Logger.Infof("Enable %s service discovery.", t)
 }
+
 func enableContractDiscovery(opts Options) {
-	t := config.GlobalDefinition.Cse.Service.ContractDiscovery.Type
+	t := config.GetContractDiscoveryType()
 	if t == "" {
 		// to compatible with old config
 		t = config.GlobalDefinition.Cse.Service.Registry.Type
 		if t == "" {
+			if len(opts.Addrs) == 0 {
+				return
+			}
 			t = DefaultContractDiscoveryPlugin
 		}
 	}

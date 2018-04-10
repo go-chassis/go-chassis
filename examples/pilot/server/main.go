@@ -5,7 +5,6 @@ import (
 	_ "github.com/ServiceComb/go-chassis/bootstrap"
 	_ "github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 )
 

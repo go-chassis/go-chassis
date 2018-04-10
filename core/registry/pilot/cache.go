@@ -28,7 +28,7 @@ type CacheManager struct {
 func (c *CacheManager) AutoSync() {
 	c.refreshCache()
 	var ticker *time.Ticker
-	refreshInterval := config.GlobalDefinition.Cse.Service.Registry.RefreshInterval
+	refreshInterval := config.GetServiceDiscoveryRefreshInterval()
 	if refreshInterval == "" {
 		ticker = time.NewTicker(DefaultRefreshInterval)
 	} else {
