@@ -3,6 +3,7 @@ package pilot
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/http-client"
 	"io"
 	"io/ioutil"
@@ -31,9 +32,9 @@ func (c *PilotClient) Initialize(options Options) (err error) {
 
 	// set http protocol
 	sslEnabled := options.TLSConfig != nil
-	c.protocol = "http"
-	if sslEnabled {
-		c.protocol = "https"
+	c.protocol = common.HTTPS
+	if !sslEnabled {
+		c.protocol = common.HTTP
 	}
 
 	// new rest client

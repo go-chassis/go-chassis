@@ -5,9 +5,9 @@ import (
 	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-	"github.com/ServiceComb/go-sc-client/model"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/ServiceComb/go-chassis/core/common"
 	"os"
 	"testing"
 	"time"
@@ -31,7 +31,7 @@ func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "FtestAppThreeZero",
 		Version:     "2.0.9",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
@@ -51,14 +51,14 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "FtestAppThree",
 		Version:     "2.0.4",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8088"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
+		Status:       common.DefaultStatus,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -76,14 +76,14 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "FtestAppTwo",
 		Version:     "2.0.5",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080?sslEnabled=true"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
+		Status:       common.DefaultStatus,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -101,14 +101,14 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "FtestAppOne",
 		Version:     "2.0.6",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8089?sslEnabled=false"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
+		Status:       common.DefaultStatus,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)

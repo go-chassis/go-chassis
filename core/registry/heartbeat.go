@@ -9,9 +9,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 
-	client "github.com/ServiceComb/go-sc-client"
-	"github.com/ServiceComb/go-sc-client/model"
-	pb "github.com/ServiceComb/go-sc-client/model"
+	"github.com/ServiceComb/go-chassis/core/common"
 )
 
 // DefaultRetryTime default retry time
@@ -27,7 +25,6 @@ type HeartbeatTask struct {
 
 // HeartbeatService heartbeat service
 type HeartbeatService struct {
-	Client    *client.RegistryClient
 	instances map[string]*HeartbeatTask
 	shutdown  bool
 	mux       sync.Mutex
@@ -111,7 +108,7 @@ func (s *HeartbeatService) run() {
 			if v.Running {
 				continue
 			}
-			if endTime.Sub(v.Time) >= pb.DefaultLeaseRenewalInterval*time.Second {
+			if endTime.Sub(v.Time) >= common.DefaultHBInterval*time.Second {
 				go s.DoHeartBeat(v.ServiceID, v.InstanceID)
 			}
 		}
@@ -174,7 +171,7 @@ func reRegisterSelfMSI(sid string) error {
 	microServiceInstance := &MicroServiceInstance{
 		EndpointsMap: eps,
 		HostName:     hostname,
-		Status:       model.MSInstanceUP,
+		Status:       common.DefaultStatus,
 	}
 	instanceID, err := RegistryService.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {

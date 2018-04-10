@@ -10,7 +10,6 @@ import (
 
 	"errors"
 	"fmt"
-	"github.com/patrickmn/go-cache"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -147,18 +146,4 @@ func filterRestore(hs []*host, serviceName string) {
 		store = append(store, msi)
 	}
 	registry.MicroserviceInstanceCache.Set(serviceName, store, 0)
-}
-
-// initCache initialize cache
-func initCache() *cache.Cache {
-	var value *cache.Cache
-	value = cache.New(DefaultExpireTime, 0)
-	return value
-}
-
-// initialize cache
-func init() {
-	registry.MicroserviceInstanceCache = initCache()
-	registry.SelfInstancesCache = initCache()
-	registry.IPIndexedCache = initCache()
 }

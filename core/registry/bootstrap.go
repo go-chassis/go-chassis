@@ -3,11 +3,11 @@ package registry
 import (
 	"os"
 
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/metadata"
-	"github.com/ServiceComb/go-sc-client/model"
 )
 
 // microServiceDependencies micro-service dependencies
@@ -31,7 +31,7 @@ func RegisterMicroservice() error {
 		schemas = make([]string, 0)
 	}
 	if service.ServiceDescription.Level == "" {
-		service.ServiceDescription.Level = "BACK"
+		service.ServiceDescription.Level = common.DefaultLevel
 	}
 	framework := metadata.NewFramework()
 
@@ -40,7 +40,7 @@ func RegisterMicroservice() error {
 		ServiceName: service.ServiceDescription.Name,
 		Version:     service.ServiceDescription.Version,
 		Environment: service.ServiceDescription.Environment,
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       service.ServiceDescription.Level,
 		Schemas:     schemas,
 		Framework: &Framework{
@@ -132,7 +132,7 @@ func RegisterMicroserviceInstances() error {
 	microServiceInstance := &MicroServiceInstance{
 		EndpointsMap: eps,
 		HostName:     hostname,
-		Status:       model.MSInstanceUP,
+		Status:       common.DefaultStatus,
 		Metadata:     map[string]string{"nodeIP": config.NodeIP},
 	}
 

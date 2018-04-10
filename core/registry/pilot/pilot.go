@@ -19,7 +19,8 @@ type Pilot struct {
 
 // RegisterService : 注册微服务
 func (r *Pilot) RegisterService(ms *registry.MicroService) (string, error) {
-	lager.Logger.Warnf(nil, "Microservice [%s] exists in registry, no need register", ms.ServiceName)
+	lager.Logger.Warnf(errors.New("Not support operation"),
+		"RegisterService [%s] failed.", ms.ServiceName)
 	return ms.ServiceName, nil
 }
 

@@ -103,7 +103,7 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 		lager.Logger.Error("Error occurred while parsing config center Server Uri", err)
 		return nil, err
 	}
-	if ccURL.Scheme == "http" {
+	if ccURL.Scheme == common.HTTP {
 		return nil, nil
 	}
 

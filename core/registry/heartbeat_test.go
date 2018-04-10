@@ -1,12 +1,12 @@
 package registry_test
 
 import (
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	"github.com/ServiceComb/go-sc-client/model"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -27,14 +27,14 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",
 		Version:     "2.0.3",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
+		Status:       common.DefaultStatus,
 	}
 
 	sid, insID, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -64,14 +64,14 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",
 		Version:     "2.0.3",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
+		Status:       common.DefaultStatus,
 	}
 
 	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
