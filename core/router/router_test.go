@@ -1,14 +1,20 @@
-package router
+package router_test
 
 import (
-	"testing"
-
+	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/core/router/model"
+	router "github.com/ServiceComb/go-chassis/core/router"
+	_ "github.com/ServiceComb/go-chassis/core/router/cse"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
+	"os"
+	"path/filepath"
+	"testing"
 )
 
 var file = []byte(`
@@ -106,6 +112,22 @@ routeRule:
         weight: 100
  `)
 
+func TestBuildRouter(t *testing.T) {
+	path := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+
+	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
+	config.Init()
+	err := archaius.Init()
+	assert.NoError(t, err)
+	router.BuildRouter("cse")
+
+	err = router.BuildRouter("fake")
+	assert.Error(t, err)
+	err = router.BuildRouter("cse")
+	assert.NoError(t, err)
+	assert.NotNil(t, router.DefaultRouter)
+}
 func TestRPCRoute(t *testing.T) {
 	si := &registry.SourceInfo{
 		Tags: map[string]string{},
@@ -116,8 +138,8 @@ func TestRPCRoute(t *testing.T) {
 	if err := yaml.Unmarshal([]byte(rpcfile), c); err != nil {
 		t.Error(err)
 	}
-	dests = c.Destinations
-	templates = c.SourceTemplates
+	router.DefaultRouter.SetRouteRule(c.Destinations)
+	router.Templates = c.SourceTemplates
 
 	header := map[string]string{
 		"cookie": "user=jason",
@@ -127,7 +149,7 @@ func TestRPCRoute(t *testing.T) {
 
 	inv := new(invocation.Invocation)
 	inv.MicroServiceName = "RPCServer"
-	err := Route(header, si, inv)
+	err := router.Route(header, si, inv)
 	assert.Nil(t, err, "")
 	assert.Equal(t, "default", inv.AppID)
 	assert.Equal(t, "v2", inv.Version)
@@ -146,8 +168,8 @@ func TestRoute(t *testing.T) {
 	if err := yaml.Unmarshal([]byte(file), c); err != nil {
 		t.Error(err)
 	}
-	dests = c.Destinations
-	templates = c.SourceTemplates
+	router.DefaultRouter.SetRouteRule(c.Destinations)
+	router.Templates = c.SourceTemplates
 
 	header := map[string]string{
 		"cookie": "user=jason",
@@ -157,14 +179,14 @@ func TestRoute(t *testing.T) {
 	inv := new(invocation.Invocation)
 	inv.MicroServiceName = "ShoppingCart"
 
-	err := Route(header, si, inv)
+	err := router.Route(header, si, inv)
 	assert.Nil(t, err, "")
 	assert.Equal(t, "HelloWorld", inv.AppID)
 	assert.Equal(t, "1.2", inv.Version)
 	assert.Equal(t, "ShoppingCart", inv.MicroServiceName)
 
 	si.Name = "source"
-	err = Route(header, si, inv)
+	err = router.Route(header, si, inv)
 	assert.Equal(t, "v3", inv.Version)
 	assert.Equal(t, "HelloWorld", inv.AppID)
 
@@ -172,13 +194,13 @@ func TestRoute(t *testing.T) {
 	inv.MicroServiceName = "server"
 	header["test"] = "test"
 	si.Name = "reviews.default.svc.cluster.local"
-	err = Route(header, si, inv)
+	err = router.Route(header, si, inv)
 	assert.Nil(t, err, "")
 
 	inv.Version = ""
 	inv.AppID = ""
 	inv.MicroServiceName = "notexist"
-	err = Route(header, nil, inv)
+	err = router.Route(header, nil, inv)
 	assert.Equal(t, common.LatestVersion, inv.Version)
 }
 
@@ -187,13 +209,13 @@ func TestRoute2(t *testing.T) {
 	if err := yaml.Unmarshal([]byte(file2), c); err != nil {
 		t.Error(err)
 	}
-	dests = c.Destinations
+	router.DefaultRouter.SetRouteRule(c.Destinations)
 
 	header := map[string]string{}
 	inv := new(invocation.Invocation)
 	inv.MicroServiceName = "carts"
 
-	err := Route(header, nil, inv)
+	err := router.Route(header, nil, inv)
 	assert.Nil(t, err, "")
 	t.Log(inv.AppID)
 	t.Log(inv.Version)
@@ -211,37 +233,37 @@ func TestMatch(t *testing.T) {
 	match := InitMatch("service", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
 	headers := map[string]string{}
 	headers["cookie"] = "abc-def-ghi"
-	assert.Equal(t, false, Match(match, headers, si))
+	assert.Equal(t, false, router.Match(match, headers, si))
 	si.Tags["tag1"] = "v1"
-	assert.Equal(t, false, Match(match, headers, si))
+	assert.Equal(t, false, router.Match(match, headers, si))
 	headers["age"] = "15"
-	assert.Equal(t, true, Match(match, headers, si))
+	assert.Equal(t, true, router.Match(match, headers, si))
 	match.HTTPHeaders["noEqual"] = map[string]string{"noEqu": "e"}
-	assert.Equal(t, true, Match(match, headers, si))
+	assert.Equal(t, true, router.Match(match, headers, si))
 	headers["noEqual"] = "noe"
-	assert.Equal(t, true, Match(match, headers, si))
+	assert.Equal(t, true, router.Match(match, headers, si))
 	match.HTTPHeaders["noLess"] = map[string]string{"noLess": "100"}
 	headers["noLess"] = "120"
-	assert.Equal(t, true, Match(match, headers, si))
+	assert.Equal(t, true, router.Match(match, headers, si))
 	match.HTTPHeaders["noGreater"] = map[string]string{"noGreater": "100"}
 	headers["noGreater"] = "120"
-	assert.Equal(t, false, Match(match, headers, si))
+	assert.Equal(t, false, router.Match(match, headers, si))
 
 	si.Name = "error"
-	assert.Equal(t, false, Match(match, headers, si))
+	assert.Equal(t, false, router.Match(match, headers, si))
 
 	headers["cookie"] = "7gh"
 	si.Name = "service"
-	assert.Equal(t, false, Match(match, headers, si))
+	assert.Equal(t, false, router.Match(match, headers, si))
 }
 
 func TestFitRate(t *testing.T) {
 	tags := InitTags("0.1", "0.2")
-	tag, _ := FitRate(tags, "service") //0,0
+	tag, _ := router.FitRate(tags, "service") //0,0
 	assert.Equal(t, "0.1", tag.Tags["version"])
-	tag, _ = FitRate(tags, "service") //100%, 0
+	tag, _ = router.FitRate(tags, "service") //100%, 0
 	assert.Equal(t, "0.2", tag.Tags["version"])
-	tag, _ = FitRate(tags, "service") //50%, 50%
+	tag, _ = router.FitRate(tags, "service") //50%, 50%
 	assert.Equal(t, "0.1", tag.Tags["version"])
 
 	count := 100
@@ -253,12 +275,12 @@ func TestFitRate(t *testing.T) {
 
 func fit() {
 	tags := InitTags("0.1", "0.2")
-	FitRate(tags, "service")
+	router.FitRate(tags, "service")
 }
 
 func TestSortRules(t *testing.T) {
-	dests = InitDests()
-	assert.Equal(t, 20, SortRules("test")[3].Precedence)
+	router.DefaultRouter.SetRouteRule(InitDests())
+	assert.Equal(t, 20, router.SortRules("test")[3].Precedence)
 }
 
 func InitDests() map[string][]*model.RouteRule {

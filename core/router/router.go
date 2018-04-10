@@ -1,35 +1,25 @@
+// Package router expose API for user to get or set route rule
 package router
 
 import (
 	"regexp"
 	"strconv"
-	"sync"
 
+	"errors"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/core/router/model"
+	"sync"
 )
 
-var dests map[string][]*model.RouteRule
-
-var templates map[string]*model.Match
-
-var lock sync.RWMutex
-
-var invokeCount = initMap()
+//Templates is for source match template settings
+var Templates = make(map[string]*model.Match)
 
 // SafeMap safe map structure
 type SafeMap struct {
 	sync.RWMutex
 	Map map[string]int
-}
-
-// initMap initialize map
-func initMap() *SafeMap {
-	sm := new(SafeMap)
-	sm.Map = make(map[string]int)
-	return sm
 }
 
 func (sm *SafeMap) get(key string) (int, bool) {
@@ -45,39 +35,46 @@ func (sm *SafeMap) set(key string, value int) {
 	sm.Unlock()
 }
 
-// SetRouteRuleByKey set route rule by key
-func SetRouteRuleByKey(k string, r []*model.RouteRule) {
-	lock.Lock()
-	dests[k] = r
-	lock.Unlock()
+var invokeCount = initMap()
+
+// initMap initialize map
+func initMap() *SafeMap {
+	sm := new(SafeMap)
+	sm.Map = make(map[string]int)
+	return sm
 }
 
-// DeleteRouteRuleByKey set route rule by key
-func DeleteRouteRuleByKey(k string) {
-	lock.Lock()
-	delete(dests, k)
-	lock.Unlock()
+//Router return route rule, you can also set custom route rule
+type Router interface {
+	SetRouteRule(map[string][]*model.RouteRule)
+	FetchRouteRule() map[string][]*model.RouteRule
+	FetchRouteRuleByServiceName(string) []*model.RouteRule
 }
 
-// GetRouteRuleByKey get route rule by key
-func GetRouteRuleByKey(k string) []*model.RouteRule {
-	lock.RLock()
-	defer lock.RUnlock()
-	return dests[k]
+// ErrNoExist means if there is no router implementation
+var ErrNoExist = errors.New("router not exists")
+var routerServices = make(map[string]func() (Router, error))
+
+// DefaultRouter is current router implementation
+var DefaultRouter Router
+
+// InstallRouterService install router service for developer
+func InstallRouterService(name string, f func() (Router, error)) {
+	routerServices[name] = f
 }
 
-// GetRouteRule get route rule
-func GetRouteRule() map[string][]*model.RouteRule {
-	lock.RLock()
-	defer lock.RUnlock()
-	return dests
-}
-
-// SetRouteRule set route rule
-func SetRouteRule(rule map[string][]*model.RouteRule) {
-	lock.RLock()
-	defer lock.RUnlock()
-	dests = rule
+//BuildRouter create a router
+func BuildRouter(name string) error {
+	f, ok := routerServices[name]
+	if !ok {
+		return ErrNoExist
+	}
+	r, err := f()
+	if err != nil {
+		return err
+	}
+	DefaultRouter = r
+	return nil
 }
 
 // Route route the APIs
@@ -158,7 +155,7 @@ func FitRate(tags []*model.RouteTag, dest string) (tag *model.RouteTag, err erro
 func Match(match model.Match, headers map[string]string, source *registry.SourceInfo) bool {
 	//validate template first
 	if refer := match.Refer; refer != "" {
-		return SourceMatch(templates[refer], headers, source)
+		return SourceMatch(Templates[refer], headers, source)
 	}
 	//match rule is not set
 	if match.Source == "" && match.HTTPHeaders == nil && match.Headers == nil {
@@ -262,7 +259,7 @@ func isMatch(headers map[string]string, k string, v map[string]string) bool {
 
 // SortRules sort route rules
 func SortRules(name string) []*model.RouteRule {
-	slice := dests[name]
+	slice := DefaultRouter.FetchRouteRuleByServiceName(name)
 	return QuickSort(0, len(slice)-1, slice)
 }
 
@@ -298,9 +295,4 @@ func QuickSort(left int, right int, rules []*model.RouteRule) (s []*model.RouteR
 	QuickSort(i+1, right, s)
 
 	return
-}
-
-func init() {
-	dests = make(map[string][]*model.RouteRule)
-	templates = make(map[string]*model.Match)
 }

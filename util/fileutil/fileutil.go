@@ -115,11 +115,6 @@ func GetMonitoring() string {
 	return filepath.Join(GetConfDir(), Monitoring)
 }
 
-//GetRouter is a function used to join .yaml file name with configuration directory
-func GetRouter() string {
-	return filepath.Join(GetConfDir(), Router)
-}
-
 //MicroserviceDefinition is a function used to join .yaml file name with configuration directory
 func MicroserviceDefinition(microserviceName string) string {
 	return filepath.Join(GetConfDir(), microserviceName, Definition)
@@ -138,6 +133,11 @@ func GlobalDefinition() string {
 //PassLagerDefinition is a function used to join .yaml file name with configuration directory
 func PassLagerDefinition() string {
 	return filepath.Join(GetConfDir(), PaasLager)
+}
+
+//RouterDefinition is a function used to join .yaml file name with configuration directory
+func RouterDefinition() string {
+	return filepath.Join(GetConfDir(), Router)
 }
 
 //GetAuth is a function used to join .yaml file name with configuration directory

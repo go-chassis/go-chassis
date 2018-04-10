@@ -5,7 +5,7 @@ import (
 
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/router/adaptors/cse"
+	"github.com/ServiceComb/go-chassis/core/router/cse"
 )
 
 // constants for dark launch key and prefix

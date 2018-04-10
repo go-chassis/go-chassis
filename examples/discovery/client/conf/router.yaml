@@ -1,3 +1,5 @@
+router:
+  infra: cse # router rule comes from where
 routeRule:
   Server: #这里就是请求里的host,也是sc里的service name
     - precedence: 2

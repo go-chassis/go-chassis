@@ -28,6 +28,9 @@ var MicroserviceDefinition *model.MicroserviceCfg
 // PassLagerDefinition is having the information about loging
 var PassLagerDefinition *model.PassLagerCfg
 
+// RouterDefinition is route rule config
+var RouterDefinition *model.RouterConfig
+
 //HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystrixConfig *model.HystrixConfigWrapper
 
@@ -170,6 +173,22 @@ func readPassLagerConfigFile(lagerFile string) error {
 	return nil
 }
 
+// readRouterConfigFile is unmarshal the paas lager configuration file(lager.yaml)
+func readRouterConfigFile(file string) error {
+	c := model.RouterConfig{}
+	yamlFile, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Printf("yamlFile.Get err   #%v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, &c)
+	if err != nil {
+		log.Printf("Unmarshal: %v", err)
+	}
+	RouterDefinition = &c
+
+	return nil
+}
+
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
 func ReadHystrixFromArchaius() error {
 	cbMutex.RLock()
@@ -254,6 +273,9 @@ func Init() error {
 		PassLagerDefinition.LogFormatText, PassLagerDefinition.LogRotateDate,
 		PassLagerDefinition.LogRotateSize, PassLagerDefinition.LogBackupCount)
 
+	if err := readRouterConfigFile(fileutil.RouterDefinition()); err != nil {
+		log.Println("WARN: Can not read router config in local" + err.Error())
+	}
 	err = archaius.Init()
 	if err != nil {
 		return err

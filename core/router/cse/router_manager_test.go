@@ -1,4 +1,4 @@
-package router
+package cse
 
 import (
 	"errors"
@@ -10,9 +10,9 @@ import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/router/adaptors/cse"
-	"github.com/ServiceComb/go-chassis/core/router/model"
 
+	"github.com/ServiceComb/go-chassis/core/config/model"
+	"github.com/ServiceComb/go-chassis/core/router"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -219,36 +219,36 @@ func genDarkLaunchRuleAfterUpdate() string {
 }
 
 func addDarkLaunchRule(s string) {
-	key := cse.DarkLaunchPrefix + s
+	key := DarkLaunchPrefix + s
 	NewExternalConfigurationSource().AddKeyValue(key, genDarkLaunchRuleAfterAdd())
 	e := &core.Event{
-		EventSource: cse.RouteDarkLaunchGovernSourceName,
+		EventSource: RouteDarkLaunchGovernSourceName,
 		EventType:   core.Create,
 		Key:         s,
 		Value:       genDarkLaunchRuleAfterAdd(),
 	}
-	cse.NewRouteDarkLaunchGovernSource().Callback(e)
+	NewRouteDarkLaunchGovernSource().Callback(e)
 }
 func updateDarkLaunchRule(s string) {
-	key := cse.DarkLaunchPrefix + s
+	key := DarkLaunchPrefix + s
 	NewExternalConfigurationSource().AddKeyValue(key, genDarkLaunchRuleAfterUpdate())
 	e := &core.Event{
-		EventSource: cse.RouteDarkLaunchGovernSourceName,
+		EventSource: RouteDarkLaunchGovernSourceName,
 		EventType:   core.Update,
 		Key:         s,
 		Value:       genDarkLaunchRuleAfterUpdate(),
 	}
-	cse.NewRouteDarkLaunchGovernSource().Callback(e)
+	NewRouteDarkLaunchGovernSource().Callback(e)
 }
 func deleteDarkLaunchRule(s string) {
-	key := cse.DarkLaunchPrefix + s
+	key := DarkLaunchPrefix + s
 	NewExternalConfigurationSource().DeleteKey(key)
 	e := &core.Event{
-		EventSource: cse.RouteDarkLaunchGovernSourceName,
+		EventSource: RouteDarkLaunchGovernSourceName,
 		EventType:   core.Delete,
 		Key:         s,
 	}
-	cse.NewRouteDarkLaunchGovernSource().Callback(e)
+	NewRouteDarkLaunchGovernSource().Callback(e)
 }
 
 func preInit(t *testing.T) {
@@ -263,12 +263,12 @@ func preInit(t *testing.T) {
 
 func TestInitRouterManager(t *testing.T) {
 	preInit(t)
-	dests[svcRoute] = genSvcRouteRule()
+	SetRouteRuleByKey(svcRoute, genSvcRouteRule())
 	r, s := genSvcRouteAndDarkLaunchRule()
-	dests[svcRouteAndDarkLaunch] = r
-	NewExternalConfigurationSource().AddKeyValue(cse.DarkLaunchPrefix+svcRouteAndDarkLaunch, s)
-	NewExternalConfigurationSource().AddKeyValue(cse.DarkLaunchPrefix+svcDarkLaunch, genSvcDarkLaunchRule())
-	err := Init()
+	SetRouteRuleByKey(svcRouteAndDarkLaunch, r)
+	NewExternalConfigurationSource().AddKeyValue(DarkLaunchPrefix+svcRouteAndDarkLaunch, s)
+	NewExternalConfigurationSource().AddKeyValue(DarkLaunchPrefix+svcDarkLaunch, genSvcDarkLaunchRule())
+	err := router.Init()
 	if err != nil {
 		t.Error(err)
 	}
@@ -343,6 +343,6 @@ func TestAddRouteRuleSource(t *testing.T) {
 
 	t.Log("Before init, add source should get err")
 	routeRuleMgr = nil
-	err = AddRouteRuleSource(cse.NewRouteDarkLaunchGovernSource())
+	err = AddRouteRuleSource(NewRouteDarkLaunchGovernSource())
 	assert.Error(t, err)
 }

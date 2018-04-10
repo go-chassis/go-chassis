@@ -1,4 +1,4 @@
-package router
+package cse
 
 import (
 	"errors"
@@ -7,9 +7,9 @@ import (
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-archaius/core/config-manager"
 	"github.com/ServiceComb/go-archaius/core/event-system"
+	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/router/adaptors/cse"
-	"github.com/ServiceComb/go-chassis/core/router/model"
+	"github.com/ServiceComb/go-chassis/core/router"
 )
 
 const routeFileSourceName = "RouteFileSource"
@@ -38,7 +38,7 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 		return
 	}
 
-	if validateRule(map[string][]*model.RouteRule{e.Key: routeRules}) {
+	if router.ValidateRule(map[string][]*model.RouteRule{e.Key: routeRules}) {
 		SetRouteRuleByKey(e.Key, routeRules)
 		lager.Logger.Infof("Update [%s] route rule success", e.Key)
 	}
@@ -54,7 +54,7 @@ type routeFileSource struct {
 // only initializes once
 func (r *routeFileSource) Init() {
 	r.once.Do(func() {
-		routeRules := dests
+		routeRules := GetRouteRule()
 		d := make(map[string]interface{}, 0)
 		if routeRules == nil {
 			r.d = d
@@ -113,7 +113,7 @@ func initRouterManager() error {
 	if err := AddRouteRuleSource(&routeFileSource{}); err != nil {
 		return err
 	}
-	return AddRouteRuleSource(cse.NewRouteDarkLaunchGovernSource())
+	return AddRouteRuleSource(NewRouteDarkLaunchGovernSource())
 }
 
 // AddRouteRuleSource adds a config source to route rule manager
