@@ -58,7 +58,7 @@ func TestUtil(t *testing.T) {
 	protocolArrRest = registry.MakeEndpointMap(mapprotoRest)
 	t.Log("making endpoints with listen and advertise addr, endpoint : ", protocolArrRest)
 	assert.NotNil(t, protocolArrRest)
-	assert.Equal(t, "", protocolArrRest[common.ProtocolRest])
+	assert.Equal(t, "127.0.0.1:1", protocolArrRest[common.ProtocolRest])
 
 	// Advertise address are given in the protocol map for rest
 	// and addr is IPV6 ip. so it should return empty response

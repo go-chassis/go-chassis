@@ -76,7 +76,7 @@ func TestGetMonitoring(t *testing.T) {
 }
 
 func TestGetRouter(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetRouter())
+	assert.NotEmpty(t, fileutil.RouterDefinition())
 }
 
 func TestGetMicroserviceDesc(t *testing.T) {

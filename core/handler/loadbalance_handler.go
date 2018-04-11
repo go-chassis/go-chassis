@@ -12,6 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 
+	"fmt"
 	"github.com/ServiceComb/go-chassis/session"
 	"github.com/cenkalti/backoff"
 	"github.com/valyala/fasthttp"
@@ -88,7 +89,8 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 	}
 	ep, ok := ins.EndpointsMap[i.Protocol]
 	if !ok {
-		errStr := "No available instance support [" + i.Protocol + "] protocol, msName: " + i.MicroServiceName
+		errStr := fmt.Sprintf("No available instance support ["+i.Protocol+"] protocol,"+
+			" msName: "+i.MicroServiceName+" %s %s %s", i.Version, i.AppID, ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
 		lager.Logger.Errorf(nil, lbErr.Error())
 		writeErr(lbErr, cb)

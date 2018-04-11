@@ -9,7 +9,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/router"
-	"github.com/ServiceComb/go-chassis/core/router/adaptors/cse"
+	"github.com/ServiceComb/go-chassis/core/router/cse"
 	"github.com/ServiceComb/go-chassis/eventlistener"
 
 	"github.com/stretchr/testify/assert"
@@ -40,14 +40,14 @@ func TestDarkLaunchEventListenerEvent(t *testing.T) {
 	}
 
 	t.Log("Before event, there should be no router config")
-	assert.Nil(t, router.GetRouteRuleByKey(svcDarkLaunch))
+	assert.Nil(t, router.DefaultRouter.FetchRouteRuleByServiceName(svcDarkLaunch))
 
 	t.Log("After event, there should exists router config")
 	archaius.AddKeyValue(eventlistener.DarkLaunchPrefix+svcDarkLaunch, svcDarkLaunchConfig)
 	l := &eventlistener.DarkLaunchEventListener{}
 	l.Event(e)
 	time.Sleep(100 * time.Millisecond)
-	r := router.GetRouteRuleByKey(svcDarkLaunch)
+	r := router.DefaultRouter.FetchRouteRuleByServiceName(svcDarkLaunch)
 	assert.NotNil(t, r)
 	if r == nil {
 		t.FailNow()

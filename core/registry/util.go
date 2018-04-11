@@ -104,7 +104,7 @@ func MakeEndpointMap(m map[string]model.Protocol) map[string]string {
 			if err != nil {
 				lager.Logger.Errorf(err, "failed to parse ip address")
 			} else {
-				if ip != nil && !ip.IsLoopback() && ip.To4() != nil {
+				if ip != nil && ip.To4() != nil {
 					eps[name] = ip.String() + ":" + ipWithoutPort[1]
 				}
 			}
