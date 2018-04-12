@@ -81,7 +81,7 @@ func UnRegistrySelfInstances() error {
 			lager.Logger.Warnf(nil, "StartServer() type asserts failed, mid: %s", mid)
 		}
 		for _, iid := range instanceIDs {
-			err := registry.RegistryService.UnregisterMicroServiceInstance(mid, iid)
+			err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(mid, iid)
 			if err != nil {
 				lager.Logger.Errorf(err, "StartServer() UnregisterMicroServiceInstance failed, mid/iid: %s/%s", mid, iid)
 				return err

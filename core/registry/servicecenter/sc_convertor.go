@@ -3,6 +3,7 @@ package servicecenter
 import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 
+	"github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 )
 
@@ -105,4 +106,18 @@ func ToSCDependency(dep *registry.MicroServiceDependency) *model.MircroServiceDe
 		scDep.Dependencies[0].Providers = append(scDep.Dependencies[0].Providers, scP)
 	}
 	return scDep
+}
+
+//ToSCOptions convert registry opstions into sc client options
+func ToSCOptions(options registry.Options) client.Options {
+	sco := client.Options{}
+	sco.Timeout = options.Timeout
+	sco.TLSConfig = options.TLSConfig
+	sco.Addrs = options.Addrs
+	sco.Compressed = options.Compressed
+	sco.ConfigTenant = options.Tenant
+	sco.EnableSSL = options.EnableSSL
+	sco.Verbose = options.Verbose
+	sco.Version = options.Version
+	return sco
 }

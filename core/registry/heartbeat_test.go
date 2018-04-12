@@ -37,7 +37,7 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 		Status:       common.DefaultStatus,
 	}
 
-	sid, insID, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	sid, insID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
 
 	heartBeatService := registry.HeartbeatService{}
@@ -74,7 +74,7 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 		Status:       common.DefaultStatus,
 	}
 
-	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
 
 }

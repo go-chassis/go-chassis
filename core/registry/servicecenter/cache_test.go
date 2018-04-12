@@ -38,11 +38,11 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		HostName:     "event_test",
 		Status:       model.MSInstanceUP,
 	}
-	sid, instanceID, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	sid, instanceID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
 	assert.Equal(t, "event1", instanceID)
 	time.Sleep(time.Second * 1)
-	instances, err := registry.RegistryService.FindMicroServiceInstances(sid, "default", "Server", "0.1", "")
+	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "default", "Server", "0.1", "")
 	assert.NotZero(t, len(instances))
 	assert.NoError(t, err)
 	var ok = false
@@ -60,7 +60,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	var exist = false
 	pro := make(map[string]string)
 	pro["attr1"] = "b"
-	err = registry.RegistryService.UpdateMicroServiceInstanceProperties(sid, "event1", pro)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceProperties(sid, "event1", pro)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -71,7 +71,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_UPDATE操作")
 
 	exist = false
-	err = registry.RegistryService.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSIinstanceDown)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSIinstanceDown)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -82,7 +82,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_DELETE操作")
 
 	exist = false
-	err = registry.RegistryService.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSInstanceUP)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSInstanceUP)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -93,7 +93,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_DELETE操作")
 
 	exist = false
-	err = registry.RegistryService.UnregisterMicroServiceInstance(sid, "event1")
+	err = registry.DefaultRegistrator.UnRegisterMicroServiceInstance(sid, "event1")
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true

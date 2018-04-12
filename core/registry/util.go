@@ -6,10 +6,13 @@ import (
 	"strings"
 	"time"
 
+	"crypto/tls"
+	"fmt"
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 	"github.com/ServiceComb/go-chassis/util/iputil"
-
 	"github.com/cenkalti/backoff"
 )
 
@@ -138,4 +141,46 @@ func startBackOff(operation func() error) {
 			return
 		}
 	}
+}
+
+//URIs2Hosts return hosts and scheme
+func URIs2Hosts(uris []string) ([]string, string, error) {
+	hosts := make([]string, len(uris))
+	var scheme string
+	for index, addr := range uris {
+		u, e := url.Parse(addr)
+		if e != nil {
+			//not uri. but still permitted, like zookeeper,file system
+			hosts[index] = u.Host
+			continue
+		}
+		if len(scheme) != 0 && u.Scheme != scheme {
+			return nil, "", fmt.Errorf("inconsistent scheme found in registry address")
+		}
+		scheme = u.Scheme
+		hosts[index] = u.Host
+
+	}
+	return hosts, scheme, nil
+}
+func getTLSConfig(scheme, t string) (*tls.Config, error) {
+	var tlsConfig *tls.Config
+	secure := scheme == common.HTTPS
+	if secure {
+		sslTag := Name + "." + common.Consumer
+		tmpTLSConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(t, "", common.Consumer)
+		if err != nil {
+			if chassisTLS.IsSSLConfigNotExist(err) {
+				tmpErr := fmt.Errorf("%s tls mode, but no ssl config", sslTag)
+				lager.Logger.Error(tmpErr.Error(), err)
+				return nil, tmpErr
+			}
+			lager.Logger.Errorf(err, "Load %s TLS config failed.", sslTag)
+			return nil, err
+		}
+		lager.Logger.Warnf(nil, "%s TLS mode, verify peer: %t, cipher plugin: %s.",
+			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+		tlsConfig = tmpTLSConfig
+	}
+	return tlsConfig, nil
 }

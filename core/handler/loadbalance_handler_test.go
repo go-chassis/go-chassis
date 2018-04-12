@@ -201,8 +201,8 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	mss = append(mss, ms1)
 	mss = append(mss, ms2)
 
-	testRegistryObj := new(mk.RegistryMock)
-	registry.RegistryService = testRegistryObj
+	testRegistryObj := new(mk.DiscoveryMock)
+	registry.DefaultServiceDiscoveryService = testRegistryObj
 	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
@@ -260,8 +260,8 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	mss = append(mss, ms1)
 	mss = append(mss, ms2)
 
-	testRegistryObj := new(mk.RegistryMock)
-	registry.RegistryService = testRegistryObj
+	testRegistryObj := new(mk.DiscoveryMock)
+	registry.DefaultServiceDiscoveryService = testRegistryObj
 	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
@@ -319,8 +319,8 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			EndpointsMap: map[string]string{"highway": "10.0.0.3:1234"},
 		},
 	}
-	sid, _, _ := registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[0])
-	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[1])
+	sid, _, _ := registry.DefaultRegistrator.RegisterServiceAndInstance(testData1[0], testData2[0])
+	_, _, _ = registry.DefaultRegistrator.RegisterServiceAndInstance(testData1[0], testData2[1])
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})
 	c.AddHandler(&handler1{})

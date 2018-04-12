@@ -33,13 +33,13 @@ type CacheManager struct {
 	registryClient *client.RegistryClient
 }
 
-// AutoSync automatically syncing with the running instances
+// AutoSync automatically sync the running instances
 func (c *CacheManager) AutoSync() {
 	c.refreshCache()
 	if config.GlobalDefinition.Cse.Service.Registry.Watch {
 		err := c.registryClient.WatchMicroService(config.SelfServiceID, watch)
 		if err != nil {
-			lager.Logger.Errorf(err, "Watch failed.Self MicroserviceId:%s.", config.SelfServiceID)
+			lager.Logger.Errorf(err, "Watch failed. Self Micro service Id:%s.", config.SelfServiceID)
 		}
 		lager.Logger.Debugf("Watching Intances change events.")
 	}

@@ -116,3 +116,10 @@ func TestGetProtocolList(t *testing.T) {
 	assert.Equal(t, 2, len(eps))
 	t.Log(eps)
 }
+
+func TestURIs2Hosts(t *testing.T) {
+	hosts, s, err := registry.URIs2Hosts([]string{"http://127.0.0.1:8080"})
+	assert.NoError(t, err)
+	assert.Equal(t, "http", s)
+	assert.Equal(t, "127.0.0.1:8080", hosts[0])
+}
