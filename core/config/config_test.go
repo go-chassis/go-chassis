@@ -52,14 +52,14 @@ cse:
     Consumer:
       enabled: true
       forceOpen: false
-      forceClose: true
+      forceClosed: true
       sleepWindowInMilliseconds: 10000
       requestVolumeThreshold: 20
       errorThresholdPercentage: 50
       Server:
         enabled: true
         forceOpen: false
-        forceClose: true
+        forceClosed: true
         sleepWindowInMilliseconds: 10000
         requestVolumeThreshold: 20
         errorThresholdPercentage: 50
@@ -67,7 +67,7 @@ cse:
       Server:
         enabled: true
         forceOpen: false
-        forceClose: true
+        forceClosed: true
         sleepWindowInMilliseconds: 10000
         requestVolumeThreshold: 20
         errorThresholdPercentage: 50
