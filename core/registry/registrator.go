@@ -17,6 +17,9 @@ const (
 	DefaultServiceDiscoveryPlugin  = "servicecenter"
 	DefaultContractDiscoveryPlugin = "servicecenter"
 	Name                           = "registry"
+	SDTag                          = "serviceDiscovery"
+	CDTag                          = "contractDiscovery"
+	RTag                           = "registrator"
 	Auto                           = "auto"
 	Manual                         = "manual"
 )
@@ -84,7 +87,7 @@ func setSpecifiedOptions(oR, oSD, oCD Options) error {
 	oR.Addrs = hostsR
 	oR.Tenant = config.GlobalDefinition.Cse.Service.Registrator.Tenant
 	oR.Version = config.GlobalDefinition.Cse.Service.Registrator.APIVersion.Version
-	oR.TLSConfig, err = getTLSConfig(schemeR, config.GlobalDefinition.Cse.Service.Registrator.Type)
+	oR.TLSConfig, err = getTLSConfig(schemeR, RTag)
 	if err != nil {
 		return err
 	}
@@ -98,7 +101,7 @@ func setSpecifiedOptions(oR, oSD, oCD Options) error {
 	oSD.Addrs = hostsSD
 	oSD.Tenant = config.GlobalDefinition.Cse.Service.ServiceDiscovery.Tenant
 	oSD.Version = config.GlobalDefinition.Cse.Service.ServiceDiscovery.APIVersion.Version
-	oSD.TLSConfig, err = getTLSConfig(schemeSD, config.GlobalDefinition.Cse.Service.ServiceDiscovery.Type)
+	oSD.TLSConfig, err = getTLSConfig(schemeSD, SDTag)
 	if err != nil {
 		return err
 	}
@@ -112,7 +115,7 @@ func setSpecifiedOptions(oR, oSD, oCD Options) error {
 	oCD.Addrs = hostsCD
 	oCD.Tenant = config.GlobalDefinition.Cse.Service.ContractDiscovery.Tenant
 	oCD.Version = config.GlobalDefinition.Cse.Service.ContractDiscovery.APIVersion.Version
-	oCD.TLSConfig, err = getTLSConfig(schemeCD, config.GlobalDefinition.Cse.Service.ContractDiscovery.Type)
+	oCD.TLSConfig, err = getTLSConfig(schemeCD, CDTag)
 	if err != nil {
 		return err
 	}
@@ -139,7 +142,7 @@ func Enable() error {
 	if err != nil {
 		return err
 	}
-	tlsConfig, err := getTLSConfig(scheme, config.GlobalDefinition.Cse.Service.Registry.Type)
+	tlsConfig, err := getTLSConfig(scheme, Name)
 	if err != nil {
 		return err
 	}
