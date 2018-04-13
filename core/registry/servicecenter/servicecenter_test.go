@@ -22,24 +22,22 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
-	testRegisterServiceAndInstance(t, registry.RegistryService)
-	sid := testGetMicroServiceID(t, "CSE", "DSFtestAppThree", "2.0.3", registry.RegistryService)
-	registry.Enable()
-	registry.DoRegister()
+	testRegisterServiceAndInstance(t, registry.DefaultRegistrator, registry.DefaultServiceDiscoveryService)
+	sid := testGetMicroServiceID(t, "CSE", "DSFtestAppThree", "2.0.3", registry.DefaultServiceDiscoveryService)
 	t.Log("获取依赖的实例")
-	instances, err := registry.RegistryService.FindMicroServiceInstances(sid, "CSE", "DSFtestAppThree", "2.0.3", "")
+	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "CSE", "DSFtestAppThree", "2.0.3", "")
 	assert.NoError(t, err)
 	assert.NotZero(t, len(instances))
 
-	err = registry.RegistryService.AddSchemas(sid, "dsfapp.HelloHuawei", "Testschemainfo")
+	err = registry.DefaultRegistrator.AddSchemas(sid, "dsfapp.HelloHuawei", "Testschemainfo")
 	assert.NoError(t, err)
 
-	microservices, err := registry.RegistryService.GetAllMicroServices()
+	microservices, err := registry.DefaultServiceDiscoveryService.GetAllMicroServices()
 	assert.NoError(t, err)
 	assert.NotZero(t, len(microservices))
 }
 
-func testRegisterServiceAndInstance(t *testing.T, scc registry.Registry) {
+func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd registry.ServiceDiscovery) {
 	microservice := &registry.MicroService{
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",
@@ -57,7 +55,7 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registry) {
 	assert.NoError(t, err)
 	t.Log("test update")
 	scc.UpdateMicroServiceProperties(sid, map[string]string{"test": "test"})
-	microservice2, err := scc.GetMicroService(sid)
+	microservice2, err := sd.GetMicroService(sid)
 	assert.NoError(t, err)
 	assert.Equal(t, "test", microservice2.Metadata["test"])
 
@@ -68,7 +66,7 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registry) {
 	_, err = scc.Heartbeat("jdfhbh", insID)
 	assert.Error(t, err)
 
-	ins, err := scc.GetMicroServiceInstances(sid, sid)
+	ins, err := sd.GetMicroServiceInstances(sid, sid)
 	assert.NotZero(t, len(ins))
 	assert.NoError(t, err)
 
@@ -77,9 +75,6 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registry) {
 
 	err = scc.UpdateMicroServiceInstanceProperties(sid, insID, map[string]string{"test": "test"})
 	assert.NoError(t, err)
-
-	name := scc.String()
-	assert.NotEmpty(t, name)
 
 	msdep := &registry.MicroServiceDependency{
 		Consumer:  &registry.MicroService{AppID: "CSE", ServiceName: "DSFtestAppThree", Version: "2.0.3"},
@@ -94,8 +89,8 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registry) {
 	scc.Close()
 }
 
-func testGetMicroServiceID(t *testing.T, appID, microServiceName, version string, scc registry.Registry) string {
-	sid, err := scc.GetMicroServiceID(appID, microServiceName, version, "")
+func testGetMicroServiceID(t *testing.T, appID, microServiceName, version string, sd registry.ServiceDiscovery) string {
+	sid, err := sd.GetMicroServiceID(appID, microServiceName, version, "")
 	assert.Nil(t, err)
 	//sCenter := servicecenter.Servicecenter{}
 	//instances, err := sCenter.GetDependentMicroServiceInstances(appID, microServiceName, version)

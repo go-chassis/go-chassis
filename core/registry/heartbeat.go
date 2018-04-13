@@ -89,7 +89,7 @@ func (s *HeartbeatService) toggleTask(microServiceID, microServiceInstanceID str
 // DoHeartBeat do heartbeat for each instance
 func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID string) {
 	s.toggleTask(microServiceID, microServiceInstanceID, true)
-	_, err := RegistryService.Heartbeat(microServiceID, microServiceInstanceID)
+	_, err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
 		lager.Logger.Errorf(err, "Run Heartbeat fail")
 		s.RemoveTask(microServiceID, microServiceInstanceID)
@@ -122,12 +122,12 @@ func (s *HeartbeatService) RetryRegister(sid string) error {
 	for {
 		time.Sleep(DefaultRetryTime)
 		lager.Logger.Infof("Try to re-register self")
-		_, err := RegistryService.GetAllMicroServices()
+		_, err := DefaultServiceDiscoveryService.GetAllMicroServices()
 		if err != nil {
-			lager.Logger.Errorf(err, "RegistryService is not healthy")
+			lager.Logger.Errorf(err, "DefaultRegistrator is not healthy")
 			continue
 		}
-		if _, e := RegistryService.GetMicroService(sid); e != nil {
+		if _, e := DefaultServiceDiscoveryService.GetMicroService(sid); e != nil {
 			err = s.ReRegisterSelfMSandMSI()
 		} else {
 			err = reRegisterSelfMSI(sid)
@@ -158,7 +158,7 @@ func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 
 // reRegisterSelfMSI 只重新注册实例
 func reRegisterSelfMSI(sid string) error {
-	RegistryService.AutoSync()
+	DefaultServiceDiscoveryService.AutoSync()
 	hostname, err := os.Hostname()
 	if err != nil {
 		lager.Logger.Errorf(err, "Get HostName failed, hostname:%s", hostname)
@@ -173,7 +173,7 @@ func reRegisterSelfMSI(sid string) error {
 		HostName:     hostname,
 		Status:       common.DefaultStatus,
 	}
-	instanceID, err := RegistryService.RegisterServiceInstance(sid, microServiceInstance)
+	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
 		lager.Logger.Errorf(err, "RegisterInstance failed.")
 		return err

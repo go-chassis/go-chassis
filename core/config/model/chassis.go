@@ -146,38 +146,11 @@ type Protocol struct {
 	Failure      string `yaml:"failure"`
 }
 
-//ServiceStruct SC注册中心地址信息结构体
-type ServiceStruct struct {
-	Registry RegistryStruct `yaml:"registry"`
-}
-
-//RegistryStruct SC注册中心地址信息
-type RegistryStruct struct {
-	Disable         bool                     `yaml:"disabled"`
-	Type            string                   `yaml:"type"`
-	Scope           string                   `yaml:"scope"`
-	AutoClearCache  bool                     `yaml:"autoClearCache"`
-	AutoDiscovery   bool                     `yaml:"autodiscovery"`
-	AutoIPIndex     bool                     `yaml:"autoIPIndex"`
-	Address         string                   `yaml:"address"`
-	RefreshInterval string                   `yaml:"refeshInterval"`
-	Watch           bool                     `yaml:"watch"`
-	Tenant          string                   `yaml:"tenant"`
-	AutoRegister    string                   `yaml:"register"`
-	APIVersion      RegistryAPIVersionStruct `yaml:"api"`
-}
-
-// RegistryAPIVersionStruct registry api version structure
-type RegistryAPIVersionStruct struct {
-	Version string `yaml:"version"`
-}
-
 // MicroserviceCfg microservice.yaml 配置项
 type MicroserviceCfg struct {
 	AppID              string           `yaml:"APPLICATION_ID"`
 	Provider           string           `yaml:"Provider"`
 	ServiceDescription MicServiceStruct `yaml:"service_description"`
-	Cse                MicCseStruct     `yaml:"cse"`
 }
 
 // MicServiceStruct ServiceStruct 设置微服务的私有属性
@@ -188,15 +161,6 @@ type MicServiceStruct struct {
 	Level              string            `yaml:"level"`
 	Properties         map[string]string `yaml:"properties"`
 	InstanceProperties map[string]string `yaml:"instance_properties"`
-}
-
-// MicCseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
-type MicCseStruct struct {
-	RPC     map[string]string `yaml:"rpc"`
-	TCP     map[string]string `yaml:"tcp"`
-	Rest    map[string]string `yaml:"rest"`
-	HighWay map[string]string `yaml:"highway"`
-	Handler HandlerStruct     `yaml:"handler"`
 }
 
 // HandlerStruct 调用链信息

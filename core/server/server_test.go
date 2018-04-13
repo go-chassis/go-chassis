@@ -65,9 +65,9 @@ func TestSrcMgr(t *testing.T) {
 	}
 	server.InstallPlugin("rest",f)*/
 
-	testRegistryObj := new(mock.RegistryMock)
-	registry.RegistryService = testRegistryObj
-	testRegistryObj.On("UnregisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(nil)
+	testRegistryObj := new(mock.RegistratorMock)
+	registry.DefaultRegistrator = testRegistryObj
+	testRegistryObj.On("UnRegisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(nil)
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -135,10 +135,10 @@ func TestSrcMgrErr(t *testing.T) {
 	}
 	server.InstallPlugin("protocol",f)*/
 
-	testRegistryObj := new(mock.RegistryMock)
-	registry.RegistryService = testRegistryObj
+	testRegistryObj := new(mock.RegistratorMock)
+	registry.DefaultRegistrator = testRegistryObj
 	//testRegistryObj.On("UnregisterMicroServiceInstance","microServiceID", "microServiceInstanceID").Return(nil)
-	testRegistryObj.On("UnregisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
+	testRegistryObj.On("UnRegisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""

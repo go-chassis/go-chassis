@@ -8,7 +8,6 @@ import (
 
 	client "github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
-	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -16,15 +15,15 @@ const (
 	ServiceCenter = "servicecenter"
 )
 
-// Servicecenter to represent the object of service center to call the APIs of service center
-type Servicecenter struct {
+// Registrator to represent the object of service center to call the APIs of service center
+type Registrator struct {
 	Name           string
 	registryClient *client.RegistryClient
 	opts           client.Options
 }
 
 // RegisterService : 注册微服务
-func (r *Servicecenter) RegisterService(ms *registry.MicroService) (string, error) {
+func (r *Registrator) RegisterService(ms *registry.MicroService) (string, error) {
 	serviceKey := registry.Microservice2ServiceKeyStr(ms)
 	microservice := ToSCService(ms)
 	sid, err := r.registryClient.GetMicroServiceID(microservice.AppID, microservice.ServiceName, microservice.Version, microservice.Environment)
@@ -46,7 +45,7 @@ func (r *Servicecenter) RegisterService(ms *registry.MicroService) (string, erro
 }
 
 // RegisterServiceInstance : 注册微服务
-func (r *Servicecenter) RegisterServiceInstance(sid string, cIns *registry.MicroServiceInstance) (string, error) {
+func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroServiceInstance) (string, error) {
 	instance := ToSCInstance(cIns)
 	instance.ServiceID = sid
 	instanceID, err := r.registryClient.RegisterMicroServiceInstance(instance)
@@ -83,10 +82,10 @@ func (r *Servicecenter) RegisterServiceInstance(sid string, cIns *registry.Micro
 }
 
 // RegisterServiceAndInstance : 注册微服务
-func (r *Servicecenter) RegisterServiceAndInstance(cMicroService *registry.MicroService, cInstance *registry.MicroServiceInstance) (string, string, error) {
+func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroService, cInstance *registry.MicroServiceInstance) (string, string, error) {
 	microService := ToSCService(cMicroService)
 	instance := ToSCInstance(cInstance)
-	microServiceID, err := r.GetMicroServiceID(microService.AppID, microService.ServiceName, microService.Version, microService.Environment)
+	microServiceID, err := r.registryClient.GetMicroServiceID(microService.AppID, microService.ServiceName, microService.Version, microService.Environment)
 	if microServiceID == "" {
 		microServiceID, err = r.registryClient.RegisterService(microService)
 		if err != nil {
@@ -130,8 +129,36 @@ func (r *Servicecenter) RegisterServiceAndInstance(cMicroService *registry.Micro
 	return microServiceID, instanceID, nil
 }
 
+// UnRegisterMicroServiceInstance : 去注册微服务实例
+func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error {
+	isSuccess, err := r.registryClient.UnregisterMicroServiceInstance(microServiceID, microServiceInstanceID)
+	if !isSuccess || err != nil {
+		lager.Logger.Errorf(nil, "unregisterMicroServiceInstance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		return err
+	}
+
+	value, ok := registry.SelfInstancesCache.Get(microServiceID)
+	if !ok {
+		lager.Logger.Warnf(nil, "UnregisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
+	}
+	instanceIDs, ok := value.([]string)
+	if !ok {
+		lager.Logger.Warnf(nil, "UnregisterMicroServiceInstance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
+	}
+	var newInstanceIDs = make([]string, 0)
+	for _, v := range instanceIDs {
+		if v != microServiceInstanceID {
+			newInstanceIDs = append(newInstanceIDs, v)
+		}
+	}
+	registry.SelfInstancesCache.Set(microServiceID, newInstanceIDs, 0)
+
+	lager.Logger.Debugf("unregisterMicroServiceInstance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	return nil
+}
+
 // Heartbeat : Keep instance heartbeats.
-func (r *Servicecenter) Heartbeat(microServiceID, microServiceInstanceID string) (bool, error) {
+func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (bool, error) {
 	bo, err := r.registryClient.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
 		lager.Logger.Errorf(err, "Heartbeat failed, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
@@ -146,7 +173,7 @@ func (r *Servicecenter) Heartbeat(microServiceID, microServiceInstanceID string)
 }
 
 // AddDependencies ： 注册微服务的依赖关系
-func (r *Servicecenter) AddDependencies(cDep *registry.MicroServiceDependency) error {
+func (r *Registrator) AddDependencies(cDep *registry.MicroServiceDependency) error {
 	request := ToSCDependency(cDep)
 	err := r.registryClient.AddDependencies(request)
 	if err != nil {
@@ -158,7 +185,7 @@ func (r *Servicecenter) AddDependencies(cDep *registry.MicroServiceDependency) e
 }
 
 // AddSchemas to service center
-func (r *Servicecenter) AddSchemas(microServiceID, schemaName, schemaInfo string) error {
+func (r *Registrator) AddSchemas(microServiceID, schemaName, schemaInfo string) error {
 	if err := r.registryClient.AddSchemas(microServiceID, schemaName, schemaInfo); err != nil {
 		lager.Logger.Errorf(err, "AddSchemas failed.")
 		return err
@@ -167,21 +194,59 @@ func (r *Servicecenter) AddSchemas(microServiceID, schemaName, schemaInfo string
 	return nil
 }
 
-// GetSchema from service center
-func (r *Servicecenter) GetSchema(microServiceID, schemaName string) ([]byte, error) {
-	var schemaContent []byte
-	var err error
-	if schemaContent, err = r.registryClient.GetSchema(microServiceID, schemaName); err != nil {
-		lager.Logger.Errorf(err, "GetSchema failed.")
-		return []byte(""), err
+// UpdateMicroServiceInstanceStatus : 更新微服务实例状态信息
+func (r *Registrator) UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error {
+	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status)
+	if !isSuccess {
+		lager.Logger.Errorf(nil, "UpdateMicroServiceInstanceStatus failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		return err
 	}
-	lager.Logger.Debugf("GetSchema success.")
-	return schemaContent, nil
+	lager.Logger.Debugf("UpdateMicroServiceInstanceStatus success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	return nil
+}
 
+// UpdateMicroServiceProperties 更新微服务properties信息
+func (r *Registrator) UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error {
+	microService := &model.MicroService{
+		Properties: properties,
+	}
+	isSuccess, err := r.registryClient.UpdateMicroServiceProperties(microServiceID, microService)
+	if !isSuccess {
+		lager.Logger.Errorf(nil, "UpdateMicroService Properties failed, microServiceID/instanceID = %s.", microServiceID)
+		return err
+	}
+	lager.Logger.Debugf("UpdateMicroService Properties success, microServiceID/instanceID = %s.", microServiceID)
+	return nil
+}
+
+// UpdateMicroServiceInstanceProperties : 更新微服务实例properties信息
+func (r *Registrator) UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID string, properties map[string]string) error {
+	microServiceInstance := &model.MicroServiceInstance{
+		Properties: properties,
+	}
+	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID, microServiceInstance)
+	if !isSuccess {
+		lager.Logger.Errorf(nil, "UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		return err
+	}
+	lager.Logger.Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	return nil
+}
+
+// Close : Close all client connection.
+func (r *Registrator) Close() error {
+	return closeClient(r.registryClient)
+}
+
+// ServiceDiscovery to represent the object of service center to call the APIs of service center
+type ServiceDiscovery struct {
+	Name           string
+	registryClient *client.RegistryClient
+	opts           client.Options
 }
 
 // GetMicroServiceID : 获取指定微服务的MicroServiceID
-func (r *Servicecenter) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
+func (r *ServiceDiscovery) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
 	microServiceID, err := r.registryClient.GetMicroServiceID(appID, microServiceName, version, env)
 	if err != nil {
 		lager.Logger.Errorf(err, "GetMicroServiceID failed")
@@ -192,7 +257,7 @@ func (r *Servicecenter) GetMicroServiceID(appID, microServiceName, version, env 
 }
 
 // GetAllMicroServices : Get all MicroService information.
-func (r *Servicecenter) GetAllMicroServices() ([]*registry.MicroService, error) {
+func (r *ServiceDiscovery) GetAllMicroServices() ([]*registry.MicroService, error) {
 	microServices, err := r.registryClient.GetAllMicroServices()
 	if err != nil {
 		lager.Logger.Errorf(err, "GetAllMicroServices failed")
@@ -207,7 +272,7 @@ func (r *Servicecenter) GetAllMicroServices() ([]*registry.MicroService, error) 
 }
 
 // GetAllApplications : Get all Applications information.
-func (r *Servicecenter) GetAllApplications() ([]string, error) {
+func (r *ServiceDiscovery) GetAllApplications() ([]string, error) {
 	apps, err := r.registryClient.GetAllApplications()
 	if err != nil {
 		lager.Logger.Errorf(err, "GetAllApplications failed")
@@ -222,7 +287,7 @@ func (r *Servicecenter) GetAllApplications() ([]string, error) {
 }
 
 // GetMicroService : 根据microServiceID获取对应的微服务信息
-func (r *Servicecenter) GetMicroService(microServiceID string) (*registry.MicroService, error) {
+func (r *ServiceDiscovery) GetMicroService(microServiceID string) (*registry.MicroService, error) {
 	microService, err := r.registryClient.GetMicroService(microServiceID)
 	if err != nil {
 		lager.Logger.Errorf(err, "GetMicroService failed")
@@ -233,7 +298,7 @@ func (r *Servicecenter) GetMicroService(microServiceID string) (*registry.MicroS
 }
 
 // GetMicroServiceInstances : 获取指定微服务的所有实例
-func (r *Servicecenter) GetMicroServiceInstances(consumerID, providerID string) ([]*registry.MicroServiceInstance, error) {
+func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID string) ([]*registry.MicroServiceInstance, error) {
 	providerInstances, err := r.registryClient.GetMicroServiceInstances(consumerID, providerID)
 	if err != nil {
 		lager.Logger.Errorf(err, "GetMicroServiceInstances failed.")
@@ -244,21 +309,92 @@ func (r *Servicecenter) GetMicroServiceInstances(consumerID, providerID string) 
 	return instances, nil
 }
 
-// filterInstances filter instances
-func filterInstances(providerInstances []*model.MicroServiceInstance) []*registry.MicroServiceInstance {
-	instances := make([]*registry.MicroServiceInstance, 0)
-	for _, ins := range providerInstances {
-		if ins.Status != model.MSInstanceUP {
-			continue
+// FindMicroServiceInstances find micro-service instances
+func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
+	key := microServiceName + ":" + version + ":" + appID
+
+	value, boo := registry.MicroserviceInstanceCache.Get(key)
+	if !boo || value == nil {
+		lager.Logger.Warnf(nil, "%s Get instances from remote, key: %s", consumerID, key)
+		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
+			findVersionRule(microServiceName))
+		if err != nil {
+			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", key, err)
 		}
-		msi := ToMicroServiceInstance(ins)
-		instances = append(instances, msi)
+
+		filterRestore(providerInstances, microServiceName, appID)
+		value, boo = registry.MicroserviceInstanceCache.Get(key)
+		if !boo || value == nil {
+			lager.Logger.Debugf("Find no microservice instances for %s from cache", key)
+			return nil, nil
+		}
 	}
-	return instances
+	microServiceInstance, ok := value.([]*registry.MicroServiceInstance)
+	if !ok {
+		lager.Logger.Errorf(nil, "FindMicroServiceInstances failed, Type asserts failed.consumerIDL: %s", consumerID)
+	}
+	return microServiceInstance, nil
+}
+
+// GetDependentMicroServiceInstances : 获取指定微服务所依赖的所有实例
+func (r *ServiceDiscovery) GetDependentMicroServiceInstances(appID, consumerMicroServiceName, version, env string) ([]*model.MicroServiceInstance, error) {
+	var instancesAll []*model.MicroServiceInstance
+	microServiceConsumerID, err := r.GetMicroServiceID(appID, consumerMicroServiceName, version, env)
+	if err != nil {
+		lager.Logger.Errorf(err, "GetMicroServiceID failed.")
+		return nil, err
+	}
+	providers, err := r.registryClient.GetProviders(microServiceConsumerID)
+	if err != nil {
+		lager.Logger.Errorf(err, "Get Provider failed.")
+		return nil, err
+	}
+	for _, provider := range providers.Services {
+		microServiceProviderID, err := r.GetMicroServiceID(provider.AppID, provider.ServiceName, provider.Version, env)
+		if err != nil {
+			lager.Logger.Errorf(err, "GetMicroServiceID failed.")
+			return nil, err
+		}
+		instances, err := r.GetMicroServiceInstances(microServiceConsumerID, microServiceProviderID)
+		if err != nil {
+			lager.Logger.Errorf(err, "GetMicroServiceInstances failed.")
+			return nil, err
+		}
+		for _, value := range instances {
+			instancesAll = append(instancesAll, ToSCInstance(value))
+		}
+	}
+	lager.Logger.Debugf("GetDependentMicroServiceInstances success, appID/microServiceName/version: %s/%s/%s", appID, consumerMicroServiceName, version)
+	return instancesAll, nil
+}
+
+// WatchMicroService : 支持用户自调用主动监听实例变化功能
+func (r *ServiceDiscovery) WatchMicroService(selfMicroServiceID string, callback func(*model.MicroServiceInstanceChangedEvent)) {
+	r.registryClient.WatchMicroService(selfMicroServiceID, callback)
+}
+
+// AutoSync updating the cache manager
+func (r *ServiceDiscovery) AutoSync() {
+	c := &CacheManager{
+		registryClient: r.registryClient,
+	}
+	c.AutoSync()
+}
+
+// Close : Close all websocket connection.
+func (r *ServiceDiscovery) Close() error {
+	return closeClient(r.registryClient)
+}
+
+// ContractDiscovery to represent the object of service center to call the APIs of service center
+type ContractDiscovery struct {
+	Name           string
+	registryClient *client.RegistryClient
+	opts           client.Options
 }
 
 // GetMicroServicesByInterface get micro-services by interface
-func (r *Servicecenter) GetMicroServicesByInterface(interfaceName string) (microService []*registry.MicroService) {
+func (r *ContractDiscovery) GetMicroServicesByInterface(interfaceName string) (microService []*registry.MicroService) {
 	value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 	if !ok || value == nil {
 		r.fillSchemaInterfaceIndexCache(nil, interfaceName)
@@ -279,7 +415,7 @@ func (r *Servicecenter) GetMicroServicesByInterface(interfaceName string) (micro
 }
 
 // GetSchemaContentByInterface get schema content by interface
-func (r *Servicecenter) GetSchemaContentByInterface(interfaceName string) (schemas registry.SchemaContent) {
+func (r *ContractDiscovery) GetSchemaContentByInterface(interfaceName string) (schemas registry.SchemaContent) {
 	value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 	if !ok || value == nil {
 		return r.fillSchemaInterfaceIndexCache(nil, interfaceName)
@@ -296,7 +432,7 @@ func (r *Servicecenter) GetSchemaContentByInterface(interfaceName string) (schem
 }
 
 // GetSchemaContentByServiceName get schema content by service name
-func (r *Servicecenter) GetSchemaContentByServiceName(svcName, version, appID, env string) (schemas []*registry.SchemaContent) {
+func (r *ContractDiscovery) GetSchemaContentByServiceName(svcName, version, appID, env string) (schemas []*registry.SchemaContent) {
 	serviceID, err := r.registryClient.GetMicroServiceID(appID, svcName, version, env)
 	if err != nil {
 		return schemas
@@ -317,7 +453,7 @@ func (r *Servicecenter) GetSchemaContentByServiceName(svcName, version, appID, e
 }
 
 // fillSchemaServiceIndexCache fill schema service index cache
-func (r *Servicecenter) fillSchemaServiceIndexCache(ms []*model.MicroService, serviceID string) (content []*registry.SchemaContent) {
+func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*model.MicroService, serviceID string) (content []*registry.SchemaContent) {
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
@@ -332,7 +468,7 @@ func (r *Servicecenter) fillSchemaServiceIndexCache(ms []*model.MicroService, se
 }
 
 // fillCacheAndGetServiceSchemaContent fill cache and get services schema content
-func (r *Servicecenter) fillCacheAndGetServiceSchemaContent(microServiceList []*model.MicroService, serviceID string) (schemaContent []*registry.SchemaContent) {
+func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList []*model.MicroService, serviceID string) (schemaContent []*registry.SchemaContent) {
 
 	for _, ms := range microServiceList {
 
@@ -363,7 +499,7 @@ func (r *Servicecenter) fillCacheAndGetServiceSchemaContent(microServiceList []*
 }
 
 // fillSchemaInterfaceIndexCache fill schema interface index cache
-func (r *Servicecenter) fillSchemaInterfaceIndexCache(ms []*model.MicroService, interfaceName string) (content registry.SchemaContent) {
+func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*model.MicroService, interfaceName string) (content registry.SchemaContent) {
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
@@ -378,7 +514,7 @@ func (r *Servicecenter) fillSchemaInterfaceIndexCache(ms []*model.MicroService, 
 }
 
 // fillCacheAndGetInterfaceSchemaContent fill cache and get interface schema content
-func (r *Servicecenter) fillCacheAndGetInterfaceSchemaContent(microServiceList []*model.MicroService, interfaceName string) (schemaContent registry.SchemaContent) {
+func (r *ContractDiscovery) fillCacheAndGetInterfaceSchemaContent(microServiceList []*model.MicroService, interfaceName string) (schemaContent registry.SchemaContent) {
 
 	for _, ms := range microServiceList {
 		serviceID, err := r.registryClient.GetMicroServiceID(ms.AppID, ms.ServiceName, ms.Version, ms.Environment)
@@ -423,234 +559,67 @@ func (r *Servicecenter) fillCacheAndGetInterfaceSchemaContent(microServiceList [
 	return
 }
 
-// FindMicroServiceInstances find micro-service instances
-func (r *Servicecenter) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
-	key := microServiceName + ":" + version + ":" + appID
-
-	value, boo := registry.MicroserviceInstanceCache.Get(key)
-	if !boo || value == nil {
-		lager.Logger.Warnf(nil, "%s Get instances from remote, key: %s", consumerID, key)
-		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
-			findVersionRule(microServiceName))
-		if err != nil {
-			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", key, err)
-		}
-
-		filterRestore(providerInstances, microServiceName, appID)
-		value, boo = registry.MicroserviceInstanceCache.Get(key)
-		if !boo || value == nil {
-			lager.Logger.Debugf("Find no microservice instances for %s from cache", key)
-			return nil, nil
-		}
+// GetSchema from service center
+func (r *ContractDiscovery) GetSchema(microServiceID, schemaName string) ([]byte, error) {
+	var schemaContent []byte
+	var err error
+	if schemaContent, err = r.registryClient.GetSchema(microServiceID, schemaName); err != nil {
+		lager.Logger.Errorf(err, "GetSchema failed.")
+		return []byte(""), err
 	}
-	microServiceInstance, ok := value.([]*registry.MicroServiceInstance)
-	if !ok {
-		lager.Logger.Errorf(nil, "FindMicroServiceInstances failed, Type asserts failed.consumerIDL: %s", consumerID)
-	}
-	return microServiceInstance, nil
+	lager.Logger.Debugf("GetSchema success.")
+	return schemaContent, nil
+
 }
 
-// GetDependentMicroServiceInstances : 获取指定微服务所依赖的所有实例
-func (r *Servicecenter) GetDependentMicroServiceInstances(appID, consumerMicroServiceName, version, env string) ([]*model.MicroServiceInstance, error) {
-	var instancesAll []*model.MicroServiceInstance
-	microServiceConsumerID, err := r.GetMicroServiceID(appID, consumerMicroServiceName, version, env)
-	if err != nil {
-		lager.Logger.Errorf(err, "GetMicroServiceID failed.")
-		return nil, err
-	}
-	providers, err := r.registryClient.GetProviders(microServiceConsumerID)
-	if err != nil {
-		lager.Logger.Errorf(err, "Get Provider failed.")
-		return nil, err
-	}
-	for _, provider := range providers.Services {
-		microServiceProviderID, err := r.GetMicroServiceID(provider.AppID, provider.ServiceName, provider.Version, env)
-		if err != nil {
-			lager.Logger.Errorf(err, "GetMicroServiceID failed.")
-			return nil, err
-		}
-		instances, err := r.GetMicroServiceInstances(microServiceConsumerID, microServiceProviderID)
-		if err != nil {
-			lager.Logger.Errorf(err, "GetMicroServiceInstances failed.")
-			return nil, err
-		}
-		for _, value := range instances {
-			instancesAll = append(instancesAll, ToSCInstance(value))
-		}
-	}
-	lager.Logger.Debugf("GetDependentMicroServiceInstances success, appID/microServiceName/version: %s/%s/%s", appID, consumerMicroServiceName, version)
-	return instancesAll, nil
+//Close close client connection
+func (r *ContractDiscovery) Close() error {
+	return closeClient(r.registryClient)
 }
-
-// UnregisterMicroServiceInstance : 去注册微服务实例
-func (r *Servicecenter) UnregisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error {
-	isSuccess, err := r.registryClient.UnregisterMicroServiceInstance(microServiceID, microServiceInstanceID)
-	if !isSuccess || err != nil {
-		lager.Logger.Errorf(nil, "unregisterMicroServiceInstance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
-		return err
-	}
-
-	value, ok := registry.SelfInstancesCache.Get(microServiceID)
-	if !ok {
-		lager.Logger.Warnf(nil, "UnregisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
-	}
-	instanceIDs, ok := value.([]string)
-	if !ok {
-		lager.Logger.Warnf(nil, "UnregisterMicroServiceInstance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
-	}
-	var newInstanceIDs = make([]string, 0)
-	for _, v := range instanceIDs {
-		if v != microServiceInstanceID {
-			newInstanceIDs = append(newInstanceIDs, v)
-		}
-	}
-	registry.SelfInstancesCache.Set(microServiceID, newInstanceIDs, 0)
-
-	lager.Logger.Debugf("unregisterMicroServiceInstance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
-	return nil
-}
-
-// UpdateMicroServiceInstanceStatus : 更新微服务实例状态信息
-func (r *Servicecenter) UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error {
-	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status)
-	if !isSuccess {
-		lager.Logger.Errorf(nil, "UpdateMicroServiceInstanceStatus failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
-		return err
-	}
-	lager.Logger.Debugf("UpdateMicroServiceInstanceStatus success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
-	return nil
-}
-
-// UpdateMicroServiceProperties 更新微服务properties信息
-func (r *Servicecenter) UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error {
-	microService := &model.MicroService{
-		Properties: properties,
-	}
-	isSuccess, err := r.registryClient.UpdateMicroServiceProperties(microServiceID, microService)
-	if !isSuccess {
-		lager.Logger.Errorf(nil, "UpdateMicroService Properties failed, microServiceID/instanceID = %s.", microServiceID)
-		return err
-	}
-	lager.Logger.Debugf("UpdateMicroService Properties success, microServiceID/instanceID = %s.", microServiceID)
-	return nil
-}
-
-// UpdateMicroServiceInstanceProperties : 更新微服务实例properties信息
-func (r *Servicecenter) UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID string, properties map[string]string) error {
-	microServiceInstance := &model.MicroServiceInstance{
-		Properties: properties,
-	}
-	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID, microServiceInstance)
-	if !isSuccess {
-		lager.Logger.Errorf(nil, "UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
-		return err
-	}
-	lager.Logger.Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
-	return nil
-}
-
-// WatchMicroService : 支持用户自调用主动监听实例变化功能
-func (r *Servicecenter) WatchMicroService(selfMicroServiceID string, callback func(*model.MicroServiceInstanceChangedEvent)) {
-	r.registryClient.WatchMicroService(selfMicroServiceID, callback)
-}
-
-// String returns string
-func (r *Servicecenter) String() string {
-	return r.Name
-}
-
-// AutoSync updating the cache manager
-func (r *Servicecenter) AutoSync() {
-	c := &CacheManager{
-		registryClient: r.registryClient,
-	}
-	c.AutoSync()
-}
-
-// Close : Close all websocket connection.
-func (r *Servicecenter) Close() error {
-	err := r.registryClient.Close()
-	if err != nil {
-		lager.Logger.Errorf(err, "Conn close failed.")
-		return err
-	}
-	lager.Logger.Debugf("Conn close success.")
-	return nil
-}
-
-// auto sync
-func newServicecenterRegistry(opts ...registry.Option) registry.Registry {
-	var options registry.Options
-	for _, o := range opts {
-		o(&options)
-	}
-	sco := client.Options{}
-	sco.Timeout = options.Timeout
-	sco.TLSConfig = options.TLSConfig
-	sco.Context = options.Context
-	sco.Addrs = options.Addrs
-	sco.Compressed = options.Compressed
-	sco.ConfigTenant = options.ConfigTenant
-	sco.EnableSSL = options.EnableSSL
-	sco.Verbose = options.Verbose
-	sco.Version = options.Version
+func newRegistrator(options registry.Options) registry.Registrator {
+	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
-	err := r.Initialize(sco)
-	if err != nil {
+	if err := r.Initialize(sco); err != nil {
 		lager.Logger.Errorf(err, "RegistryClient initialization failed.")
 	}
 
-	if err != nil {
-		lager.Logger.Errorf(err, "startMicroservice failed.")
-		panic("Can not register service")
+	return &Registrator{
+		Name:           ServiceCenter,
+		registryClient: r,
+		opts:           sco,
+	}
+}
+func newServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
+	sco := ToSCOptions(options)
+	r := &client.RegistryClient{}
+	if err := r.Initialize(sco); err != nil {
+		lager.Logger.Errorf(err, "RegistryClient initialization failed.")
 	}
 
-	return &Servicecenter{
+	return &ServiceDiscovery{
+		Name:           ServiceCenter,
+		registryClient: r,
+		opts:           sco,
+	}
+}
+func newContractDiscovery(options registry.Options) registry.ContractDiscovery {
+	sco := ToSCOptions(options)
+	r := &client.RegistryClient{}
+	if err := r.Initialize(sco); err != nil {
+		lager.Logger.Errorf(err, "RegistryClient initialization failed.")
+	}
+
+	return &ContractDiscovery{
 		Name:           ServiceCenter,
 		registryClient: r,
 		opts:           sco,
 	}
 }
 
-// parseSchemaContent parse schema content into SchemaContent structure
-func parseSchemaContent(content []byte) (registry.SchemaContent, error) {
-	var (
-		err           error
-		schema        = &registry.Schema{}
-		schemaContent = &registry.SchemaContent{}
-	)
-
-	if err = yaml.Unmarshal(content, schema); err != nil {
-		return *schemaContent, err
-	}
-
-	if err = yaml.Unmarshal([]byte(schema.Schema), schemaContent); err != nil {
-		return *schemaContent, err
-	}
-
-	return *schemaContent, nil
-}
-
-// parseSchemaContent parse schema content into SchemaContent structure
-func unmarshalSchemaContent(content []byte) (*registry.SchemaContent, error) {
-	var (
-		err           error
-		schema        = &registry.Schema{}
-		schemaContent = &registry.SchemaContent{}
-	)
-
-	if err = yaml.Unmarshal(content, schema); err != nil {
-		return schemaContent, err
-	}
-
-	if err = yaml.Unmarshal([]byte(schema.Schema), schemaContent); err != nil {
-		return schemaContent, err
-	}
-
-	return schemaContent, nil
-}
-
 // init initialize the plugin of service center registry
 func init() {
-	registry.InstallPlugin(ServiceCenter, newServicecenterRegistry)
+	registry.InstallRegistrator(ServiceCenter, newRegistrator)
+	registry.InstallServiceDiscovery(ServiceCenter, newServiceDiscovery)
+	registry.InstallContractDiscovery(ServiceCenter, newContractDiscovery)
+
 }

@@ -52,7 +52,7 @@ func RegisterMicroservice() error {
 	lager.Logger.Infof("Framework registered is [ %s:%s ]", framework.Name, framework.Version)
 	lager.Logger.Infof("Microservice registered by [ %s ]", framework.Register)
 
-	sid, err := RegistryService.RegisterService(microservice)
+	sid, err := DefaultRegistrator.RegisterService(microservice)
 	config.SelfServiceID = sid
 	if err != nil {
 		lager.Logger.Errorf(err, "Register microservice [%s] failed", microservice.ServiceName)
@@ -62,7 +62,7 @@ func RegisterMicroservice() error {
 
 	for _, schemaID := range schemas {
 		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
-		RegistryService.AddSchemas(sid, schemaID, schemaInfo)
+		DefaultRegistrator.AddSchemas(sid, schemaID, schemaInfo)
 	}
 	if service.ServiceDescription.Properties == nil {
 		service.ServiceDescription.Properties = make(map[string]string)
@@ -74,7 +74,7 @@ func RegisterMicroservice() error {
 	} else {
 		service.ServiceDescription.Properties["allowCrossApp"] = "false"
 	}
-	if err := RegistryService.UpdateMicroServiceProperties(sid, service.ServiceDescription.Properties); err != nil {
+	if err := DefaultRegistrator.UpdateMicroServiceProperties(sid, service.ServiceDescription.Properties); err != nil {
 		lager.Logger.Errorf(err, "Update microservice properties failed, serviceID = %s.", sid)
 		return err
 	}
@@ -104,7 +104,7 @@ func refreshDependency(service *MicroService) error {
 	}
 	microServiceDependencies = microServiceDependency
 
-	return RegistryService.AddDependencies(microServiceDependencies)
+	return DefaultRegistrator.AddDependencies(microServiceDependencies)
 }
 
 // RegisterMicroserviceInstances register micro-service instances
@@ -116,7 +116,7 @@ func RegisterMicroserviceInstances() error {
 		return err
 	}
 	service := config.MicroserviceDefinition
-	sid, err := RegistryService.GetMicroServiceID(config.GlobalDefinition.AppID, service.ServiceDescription.Name, service.ServiceDescription.Version, service.ServiceDescription.Environment)
+	sid, err := DefaultServiceDiscoveryService.GetMicroServiceID(config.GlobalDefinition.AppID, service.ServiceDescription.Name, service.ServiceDescription.Version, service.ServiceDescription.Environment)
 	if err != nil {
 		lager.Logger.Errorf(err, "Get service failed, key: %s:%s:%s",
 			config.GlobalDefinition.AppID,
@@ -145,13 +145,13 @@ func RegisterMicroserviceInstances() error {
 		microServiceInstance.DataCenterInfo = dInfo
 	}
 
-	instanceID, err := RegistryService.RegisterServiceInstance(sid, microServiceInstance)
+	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
 		lager.Logger.Errorf(err, "Register instance failed, serviceID: %s.", sid)
 		return err
 	}
 	if service.ServiceDescription.InstanceProperties != nil {
-		if err := RegistryService.UpdateMicroServiceInstanceProperties(sid, instanceID, service.ServiceDescription.InstanceProperties); err != nil {
+		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(sid, instanceID, service.ServiceDescription.InstanceProperties); err != nil {
 			lager.Logger.Errorf(nil, "UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", sid, instanceID)
 			return err
 		}

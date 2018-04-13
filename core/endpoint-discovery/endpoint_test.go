@@ -36,7 +36,7 @@ func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 
-	_, err := registry.RegistryService.RegisterService(microservice)
+	_, err := registry.DefaultRegistrator.RegisterService(microservice)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
 	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
@@ -61,7 +61,7 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 		Status:       common.DefaultStatus,
 	}
 
-	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
 	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
@@ -86,7 +86,7 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 		Status:       common.DefaultStatus,
 	}
 
-	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
 	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
@@ -111,7 +111,7 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 		Status:       common.DefaultStatus,
 	}
 
-	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
 	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)

@@ -55,7 +55,7 @@ func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID st
 		app = config.GlobalDefinition.AppID
 	}
 
-	instances, err := registry.RegistryService.FindMicroServiceInstances(consumerID, app, serviceName, version, "")
+	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(consumerID, app, serviceName, version, "")
 	if err != nil {
 		lbErr := LBError{err.Error()}
 		lager.Logger.Errorf(lbErr, "Lb err")
