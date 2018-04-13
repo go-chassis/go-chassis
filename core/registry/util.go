@@ -167,7 +167,7 @@ func getTLSConfig(scheme, t string) (*tls.Config, error) {
 	var tlsConfig *tls.Config
 	secure := scheme == common.HTTPS
 	if secure {
-		sslTag := Name + "." + common.Consumer
+		sslTag := t + "." + common.Consumer
 		tmpTLSConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(t, "", common.Consumer)
 		if err != nil {
 			if chassisTLS.IsSSLConfigNotExist(err) {
