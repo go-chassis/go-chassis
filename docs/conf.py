@@ -5,7 +5,7 @@
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/stable/config
-
+import sphinx_rtd_theme
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -20,8 +20,8 @@
 # -- Project information -----------------------------------------------------
 
 project = u'go-chassis'
-copyright = u'2018, tianxiaoliang[D[D[D[D[D[D[D[D[D[D[D[D[C[[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[C[C[C[C[C'
-author = u'tianxiaoliang[D[D[D[D[D[D[D[D[D[D[D[D[C[[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[C[C[C[C[C'
+copyright = u'2018, xiaoliang'
+author = u'xiaoliang'
 
 # The short X.Y version
 version = u''
@@ -39,6 +39,7 @@ from recommonmark.parser import CommonMarkParser
 source_parsers = {
     '.md': CommonMarkParser,
 }
+
 source_suffix = ['.rst', '.md']
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -51,7 +52,8 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md']
+#
+# source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
@@ -61,12 +63,12 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = u'en'
+language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = []
+exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -77,7 +79,15 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_logo = 'img/logo.svg'
+html_theme_options = {
+    'logo_only': True,
+    'display_version': False,
+}
+
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -132,7 +142,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'go-chassis.tex', u'go-chassis Documentation',
-     u'tianxiaoliang{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}C{[}{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}C{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}D{[}C{[}C{[}C{[}C{[}C', 'manual'),
+     u'xiaoliang', 'manual'),
 ]
 
 
@@ -156,24 +166,3 @@ texinfo_documents = [
      author, 'go-chassis', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-# -- Options for Epub output -------------------------------------------------
-
-# Bibliographic Dublin Core info.
-epub_title = project
-epub_author = author
-epub_publisher = author
-epub_copyright = copyright
-
-# The unique identifier of the text. This can be a ISBN number
-# or the project homepage.
-#
-# epub_identifier = ''
-
-# A unique identification for the text.
-#
-# epub_uid = ''
-
-# A list of files that should not be packed into the epub file.
-epub_exclude_files = ['search.html']
