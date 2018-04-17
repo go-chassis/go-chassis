@@ -60,11 +60,12 @@ type Registrator interface {
 }
 
 func enableRegistrator(opts Options) {
+	if config.GetRegistratorDisable() {
+		return
+	}
+
 	rt := config.GetRegistratorType()
 	if rt == "" {
-		if len(opts.Addrs) == 0 {
-			return
-		}
 		rt = DefaultRegistratorPlugin
 	}
 	f := registryFunc[rt]

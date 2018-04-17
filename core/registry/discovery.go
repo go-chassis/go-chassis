@@ -49,11 +49,12 @@ type ContractDiscovery interface {
 }
 
 func enableServiceDiscovery(opts Options) {
+	if config.GetServiceDiscoveryDisable() {
+		return
+	}
+
 	t := config.GetServiceDiscoveryType()
 	if t == "" {
-		if len(opts.Addrs) == 0 {
-			return
-		}
 		t = DefaultServiceDiscoveryPlugin
 	}
 	f := sdFunc[t]
@@ -68,16 +69,13 @@ func enableServiceDiscovery(opts Options) {
 }
 
 func enableContractDiscovery(opts Options) {
+	if config.GetContractDiscoveryDisable() {
+		return
+	}
+
 	t := config.GetContractDiscoveryType()
 	if t == "" {
-		// to compatible with old config
-		t = config.GlobalDefinition.Cse.Service.Registry.Type
-		if t == "" {
-			if len(opts.Addrs) == 0 {
-				return
-			}
-			t = DefaultContractDiscoveryPlugin
-		}
+		t = DefaultContractDiscoveryPlugin
 	}
 	f := cdFunc[t]
 	if f == nil {

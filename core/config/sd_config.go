@@ -1,5 +1,7 @@
 package config
 
+import "github.com/ServiceComb/go-chassis/core/archaius"
+
 // GetServiceDiscoveryType returns the Type of SD registry
 func GetServiceDiscoveryType() string {
 	if GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Type != "" {
@@ -46,4 +48,12 @@ func GetServiceDiscoveryAPIVersion() string {
 		return GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.APIVersion.Version
 	}
 	return GlobalDefinition.Cse.Service.Registry.APIVersion.Version
+}
+
+// GetServiceDiscoveryDisable returns the Disable of SD registry
+func GetServiceDiscoveryDisable() bool {
+	if b := archaius.GetBool("cse.service.registry.serviceDiscovery.disabled", false); b {
+		return b
+	}
+	return archaius.GetBool("cse.service.registry.disabled", false)
 }
