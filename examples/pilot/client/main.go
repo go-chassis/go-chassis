@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"sync"
 
 	"github.com/ServiceComb/go-chassis"
 	_ "github.com/ServiceComb/go-chassis/bootstrap"
@@ -13,8 +12,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 )
 
-var wg sync.WaitGroup
-
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
 	//chassis operation
@@ -22,21 +19,15 @@ func main() {
 		lager.Logger.Error("Init failed.", err)
 		return
 	}
-	n := 25
-	wg.Add(n)
-
 	restInvoker := core.NewRestInvoker()
 
 	// use the configured chain
-	for m := 0; m < n; m++ {
-		callRest(restInvoker, m)
+	for {
+		callRest(restInvoker, 10)
 	}
-
-	wg.Wait()
 }
 
 func callRest(invoker *core.RestInvoker, i int) {
-	defer wg.Done()
 	url := "cse://istioserver/sayhello/b"
 	if i < 10 {
 		url = "cse://istioserver/sayhello/a"
