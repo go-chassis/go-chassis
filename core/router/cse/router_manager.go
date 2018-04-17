@@ -10,6 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/router"
+	wp "github.com/ServiceComb/go-chassis/core/router/weightpool"
 )
 
 const routeFileSourceName = "RouteFileSource"
@@ -40,6 +41,7 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 
 	if router.ValidateRule(map[string][]*model.RouteRule{e.Key: routeRules}) {
 		SetRouteRuleByKey(e.Key, routeRules)
+		wp.GetPool().Reset(e.Key)
 		lager.Logger.Infof("Update [%s] route rule success", e.Key)
 	}
 }

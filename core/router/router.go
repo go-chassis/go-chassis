@@ -2,47 +2,19 @@
 package router
 
 import (
+	"errors"
 	"regexp"
 	"strconv"
 
-	"errors"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"sync"
+	wp "github.com/ServiceComb/go-chassis/core/router/weightpool"
 )
 
 //Templates is for source match template settings
 var Templates = make(map[string]*model.Match)
-
-// SafeMap safe map structure
-type SafeMap struct {
-	sync.RWMutex
-	Map map[string]int
-}
-
-func (sm *SafeMap) get(key string) (int, bool) {
-	sm.RLock()
-	value, ok := sm.Map[key]
-	sm.RUnlock()
-	return value, ok
-}
-
-func (sm *SafeMap) set(key string, value int) {
-	sm.Lock()
-	sm.Map[key] = value
-	sm.Unlock()
-}
-
-var invokeCount = initMap()
-
-// initMap initialize map
-func initMap() *SafeMap {
-	sm := new(SafeMap)
-	sm.Map = make(map[string]int)
-	return sm
-}
 
 //Router return route rule, you can also set custom route rule
 type Router interface {
@@ -83,9 +55,8 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {
 		if Match(rule.Match, header, si) {
-			tag, _ := FitRate(rule.Routes, inv.MicroServiceName)
+			tag := FitRate(rule.Routes, inv.MicroServiceName)
 			if tag != nil {
-
 				inv.Version = tag.Tags[common.BuildinTagVersion]
 				if tag.Tags[common.BuildinTagApp] != "" {
 					inv.AppID = tag.Tags[common.BuildinTagApp]
@@ -112,43 +83,18 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 }
 
 // FitRate fit rate
-func FitRate(tags []*model.RouteTag, dest string) (tag *model.RouteTag, err error) {
+func FitRate(tags []*model.RouteTag, dest string) *model.RouteTag {
 	if tags[0].Weight == 100 {
-		tag = tags[0]
-		return tag, nil
+		return tags[0]
 	}
 
-	totalKey := dest + "-t-" + tags[0].Tags[common.BuildinTagVersion] + "-" + tags[0].Tags[common.BuildinTagApp]
-	firstKey := dest + "-" + tags[0].Tags[common.BuildinTagVersion] + "-" + tags[0].Tags[common.BuildinTagApp]
-	total, ok := invokeCount.get(totalKey)
-	// invoke request num for dest is 0
+	pool, ok := wp.GetPool().Get(dest)
 	if !ok {
-		total = 0
-		invokeCount.set(firstKey, 0)
+		// first request route to tags[0]
+		wp.GetPool().Set(dest, wp.NewPool(tags...))
+		return tags[0]
 	}
-
-	invokeCount.set(totalKey, total+1)
-	// first request or only contain one rule tag, route to tags[0]
-	if total == 0 {
-		tag = tags[0]
-		invokeCount.set(firstKey, 1)
-		return tag, nil
-	}
-
-	for _, t := range tags {
-		key := dest + "-" + t.Tags[common.BuildinTagVersion] + "-" + t.Tags[common.BuildinTagApp]
-		percent, exist := invokeCount.get(key)
-		if !exist {
-			percent = 0
-		}
-		//currently, t does not get enough requests, then route this one to t
-		if (percent * 100 / total) <= t.Weight {
-			tag = t
-			invokeCount.set(key, percent+1)
-			break
-		}
-	}
-	return tag, nil
+	return pool.PickOne()
 }
 
 // Match check the route rule
