@@ -10,6 +10,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"time"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
@@ -24,6 +25,7 @@ func main() {
 	// use the configured chain
 	for {
 		callRest(restInvoker, 10)
+		<-time.After(time.Second)
 	}
 }
 
