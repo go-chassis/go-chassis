@@ -5,4 +5,4 @@ cse:
       qps:
         enabled: true
         limit:
-          IstioServer.RestFulHello: 100
+          istioserver.RestFulHello: 100

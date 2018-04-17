@@ -4,7 +4,7 @@ metadata:
   labels:
     app: default
     version: v1
-  name: istioserver
+  name: istioclient
   namespace: default
 spec:
   progressDeadlineSeconds: 600
@@ -26,9 +26,9 @@ spec:
         version: v1
     spec:
       containers:
-      - image: gosdk-istio-server:latest
+      - image: gosdk-istio-client:latest
         imagePullPolicy: IfNotPresent
-        name: istioserver
+        name: istioclient
         ports:
         - containerPort: 8084
           protocol: TCP
