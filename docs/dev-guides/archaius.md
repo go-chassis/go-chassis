@@ -110,7 +110,7 @@ func NewConfigSource() core.ConfigSource {
 ```
 
 ```go
-factory, _ := goarchaius.NewConfigFactory()
+factory, _ := goarchaius.NewConfigFactory(lager.Logger)
 err := factory.AddSource(fakeSource.NewConfigSource())
 ```
 

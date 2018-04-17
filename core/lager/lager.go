@@ -8,7 +8,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/common"
 
-	"github.com/ServiceComb/paas-lager"
+	paaslager "github.com/ServiceComb/paas-lager"
 	"github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager"
 )
 
@@ -72,14 +72,14 @@ func newLog(lag *Lager) lager.Logger {
 	if len(strings.TrimSpace(lag.Writers)) == 0 {
 		writers = []string{"stdout"}
 	}
-	stlager.Init(stlager.Config{
+	paaslager.Init(paaslager.Config{
 		Writers:       writers,
 		LoggerLevel:   lag.LoggerLevel,
 		LoggerFile:    logFilePath,
 		LogFormatText: lag.LogFormatText,
 	})
 
-	logger := stlager.NewLogger(lag.LoggerFile)
+	logger := paaslager.NewLogger(lag.LoggerFile)
 	return logger
 }
 

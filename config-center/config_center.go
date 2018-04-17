@@ -75,7 +75,7 @@ func InitConfigCenter() error {
 		return err
 	}
 
-	lager.Logger.Warnf(nil, "config center init success")
+	lager.Logger.Warnf("config center init success")
 	return nil
 }
 
@@ -115,7 +115,7 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 		}
 		return nil, err
 	}
-	lager.Logger.Warnf(nil, "%s TLS mode, verify peer: %t, cipher plugin: %s.",
+	lager.Logger.Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
 		sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 
 	return tlsConfig, nil

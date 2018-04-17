@@ -231,7 +231,7 @@ func readMicroserviceConfigFiles() error {
 		}
 		msName := microserviceNames[0]
 		msDefPath := fileutil.MicroserviceDefinition(msName)
-		lager.Logger.Warnf(nil, fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
+		lager.Logger.Warnf(fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
 		data, err := ioutil.ReadFile(msDefPath)
 		if err != nil {
 			return fmt.Errorf("Missing microservice description file: %s", err.Error())

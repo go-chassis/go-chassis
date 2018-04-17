@@ -309,10 +309,10 @@ func watch(response *model.MicroServiceInstanceChangedEvent) {
 		updateAction(response)
 		break
 	case model.EventError:
-		lager.Logger.Warnf(nil, "MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %s", response)
+		lager.Logger.Warnf("MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %s", response)
 		break
 	default:
-		lager.Logger.Warnf(nil, "Do not support this Action = %s", response.Action)
+		lager.Logger.Warnf("Do not support this Action = %s", response.Action)
 		return
 	}
 }
@@ -331,7 +331,7 @@ func createAction(response *model.MicroServiceInstanceChangedEvent) {
 		return
 	}
 	if response.Instance.Status != model.MSInstanceUP {
-		lager.Logger.Warnf(nil, "createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
+		lager.Logger.Warnf("createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
 		return
 	}
 	msi := ToMicroServiceInstance(response.Instance)
@@ -377,7 +377,7 @@ func updateAction(response *model.MicroServiceInstanceChangedEvent) {
 		return
 	}
 	if response.Instance.Status != model.MSInstanceUP {
-		lager.Logger.Warnf(nil, "updateAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
+		lager.Logger.Warnf("updateAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
 		return
 	}
 	msi := ToMicroServiceInstance(response.Instance)
@@ -397,7 +397,7 @@ func updateAction(response *model.MicroServiceInstanceChangedEvent) {
 		microServiceInstances = append(microServiceInstances, msi)
 		break
 	default:
-		lager.Logger.Warnf(nil, "updateAction error, iid:%s", response.Instance.InstanceID)
+		lager.Logger.Warnf("updateAction error, iid:%s", response.Instance.InstanceID)
 	}
 	registry.MicroserviceInstanceCache.Set(key, microServiceInstances, 0)
 	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE,sid = %s,instances length = %d", response.Instance.ServiceID, len(microServiceInstances))

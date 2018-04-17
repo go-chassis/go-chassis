@@ -106,7 +106,7 @@ func CreateChain(serviceType string, chainName string, handlerNames ...string) (
 	}
 
 	if len(c.Handlers) == 0 {
-		lager.Logger.Warn("Chain "+chainName+" is Empty", errEmptyChain)
+		lager.Logger.Warnf("Chain "+chainName+" is Empty", errEmptyChain)
 		return c, nil
 	}
 	return c, nil

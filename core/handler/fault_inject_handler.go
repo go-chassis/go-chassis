@@ -49,7 +49,7 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 	faultInject, ok := fault.FaultInjectors[inv.Protocol]
 	r := &invocation.InvocationResponse{}
 	if !ok {
-		lager.Logger.Warn("fault injection doesn't support for protocol ", errors.New(inv.Protocol))
+		lager.Logger.Warnf("fault injection doesn't support for protocol ", errors.New(inv.Protocol))
 		r.Err = nil
 		cb(r)
 		return

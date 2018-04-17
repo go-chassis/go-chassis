@@ -81,18 +81,18 @@ func (f *fileClient) getInstanceDataFromFile() *serviceData {
 
 	file, err := os.Open(path)
 	if err != nil {
-		lager.Logger.Warnf(err, "failed to open a file")
+		lager.Logger.Warnf("failed to open a file", err)
 	}
 	defer file.Close()
 
 	plan, err := ioutil.ReadFile(path)
 	if err != nil {
-		lager.Logger.Warnf(err, "failed to do readfile operation")
+		lager.Logger.Warnf("failed to do readfile operation", err)
 	}
 
 	err = json.Unmarshal(plan, &data)
 	if err != nil {
-		lager.Logger.Warnf(err, "failed to do unmarshall")
+		lager.Logger.Warnf("failed to do unmarshall", err)
 	}
 
 	return data

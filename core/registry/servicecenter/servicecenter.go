@@ -28,17 +28,17 @@ func (r *Registrator) RegisterService(ms *registry.MicroService) (string, error)
 	microservice := ToSCService(ms)
 	sid, err := r.registryClient.GetMicroServiceID(microservice.AppID, microservice.ServiceName, microservice.Version, microservice.Environment)
 	if err != nil {
-		lager.Logger.Warnf(err, "Get microservice [%s] failed", serviceKey)
+		lager.Logger.Warnf("Get microservice [%s] failed", serviceKey, err)
 	}
 	if sid == "" {
-		lager.Logger.Warnf(err, "Microservice [%s] not exists in registry, register it", serviceKey)
+		lager.Logger.Warnf("Microservice [%s] not exists in registry, register it", serviceKey, err)
 		sid, err = r.registryClient.RegisterService(microservice)
 		if err != nil {
 			lager.Logger.Errorf(err, "Register microservice [%s] failed", serviceKey)
 			return "", err
 		}
 	} else {
-		lager.Logger.Warnf(err, "Microservice [%s] exists in registry, no need register", serviceKey)
+		lager.Logger.Warnf("Microservice [%s] exists in registry, no need register", serviceKey, err)
 	}
 
 	return sid, nil
@@ -55,11 +55,11 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 	}
 	value, ok := registry.SelfInstancesCache.Get(instance.ServiceID)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	var isRepeat bool
 	for _, va := range instanceIDs {
@@ -103,11 +103,11 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 
 	value, ok := registry.SelfInstancesCache.Get(instance.ServiceID)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	var isRepeat bool
 	for _, va := range instanceIDs {
@@ -139,11 +139,11 @@ func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServic
 
 	value, ok := registry.SelfInstancesCache.Get(microServiceID)
 	if !ok {
-		lager.Logger.Warnf(nil, "UnregisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
+		lager.Logger.Warnf("UnregisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf(nil, "UnregisterMicroServiceInstance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
+		lager.Logger.Warnf("UnregisterMicroServiceInstance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
 	}
 	var newInstanceIDs = make([]string, 0)
 	for _, v := range instanceIDs {
@@ -315,7 +315,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, appID, microSer
 
 	value, boo := registry.MicroserviceInstanceCache.Get(key)
 	if !boo || value == nil {
-		lager.Logger.Warnf(nil, "%s Get instances from remote, key: %s", consumerID, key)
+		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, key)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
 			findVersionRule(microServiceName))
 		if err != nil {

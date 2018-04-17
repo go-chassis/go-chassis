@@ -25,7 +25,7 @@ var DefaultConf *Config
 // NewConfig is gives the object of Config(it is having configuration files, and configuration factory)
 func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 	// created config factory object
-	factory, err := goarchaius.NewConfigFactory()
+	factory, err := goarchaius.NewConfigFactory(lager.Logger)
 	if err != nil {
 		return nil, err
 	}

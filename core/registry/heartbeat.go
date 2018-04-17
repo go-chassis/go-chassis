@@ -181,11 +181,11 @@ func reRegisterSelfMSI(sid string) error {
 
 	value, ok := SelfInstancesCache.Get(microServiceInstance.ServiceID)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceInstance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceInstance.ServiceID, instanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", microServiceInstance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", microServiceInstance.ServiceID, instanceID)
 	}
 	var isRepeat bool
 	for _, va := range instanceIDs {
@@ -197,7 +197,7 @@ func reRegisterSelfMSI(sid string) error {
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	SelfInstancesCache.Set(microServiceInstance.ServiceID, instanceIDs, 0)
-	lager.Logger.Warnf(nil, "RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", microServiceInstance.ServiceID, instanceID)
+	lager.Logger.Warnf("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", microServiceInstance.ServiceID, instanceID)
 
 	return nil
 }
