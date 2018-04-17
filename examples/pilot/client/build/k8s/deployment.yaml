@@ -37,7 +37,7 @@ spec:
         terminationMessagePolicy: File
         env:
         - name: CSE_SERVICE_CENTER
-          value: http://istio-pilot:8080
+          value: http://istio-pilot.istio-system:8080
         - name: POD_NAME
           valueFrom:
             fieldRef:
