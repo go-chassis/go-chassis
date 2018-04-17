@@ -23,6 +23,7 @@ type RegistryStruct struct {
 	ContractDiscovery ContractDiscoveryStruct  `yaml:"contractDiscovery"`
 }
 
+//RegistratorStruct service registry config struct
 type RegistratorStruct struct {
 	Disable         bool                     `yaml:"disabled"`
 	Type            string                   `yaml:"type"`
@@ -34,6 +35,7 @@ type RegistratorStruct struct {
 	APIVersion      RegistryAPIVersionStruct `yaml:"api"`
 }
 
+//ServiceDiscoveryStruct service discovery config struct
 type ServiceDiscoveryStruct struct {
 	Disable         bool                     `yaml:"disabled"`
 	Type            string                   `yaml:"type"`
@@ -46,6 +48,7 @@ type ServiceDiscoveryStruct struct {
 	APIVersion      RegistryAPIVersionStruct `yaml:"api"`
 }
 
+//ContractDiscoveryStruct contract discovery config struct
 type ContractDiscoveryStruct struct {
 	Disable         bool                     `yaml:"disabled"`
 	Type            string                   `yaml:"type"`
