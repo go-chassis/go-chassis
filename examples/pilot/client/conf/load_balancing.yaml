@@ -1,0 +1,20 @@
+---
+#APPLICATION_ID: CSE optional
+
+cse:
+  loadbalance:
+    Server:
+      strategy:
+        name: Random
+    strategy:
+      name: WeightedResponse
+      sessionTimeoutInSeconds: 30
+    retryEnabled: false
+    retryOnNext: 2
+    retryOnSame: 3
+    serverListFilters: zoneaware
+    backoff:
+      kind: constant
+      MinMs: 200
+      MaxMs: 400
+

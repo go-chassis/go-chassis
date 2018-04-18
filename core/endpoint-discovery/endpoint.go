@@ -12,15 +12,7 @@ import (
 
 // GetEndpointFromServiceCenter is used to get the endpoint based on appID, microservice and version
 func GetEndpointFromServiceCenter(appID, microService, version string) (string, error) {
-	var (
-		endPoint string
-	)
-
-	if registry.DefaultRegistrator == nil {
-		err := errors.New("DefaultRegistrator is not initialized")
-		lager.Logger.Error("GetEndpointFromServiceCenter cannot proceed", err)
-		return "", err
-	}
+	var endPoint string
 
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(config.SelfServiceID, appID, microService, version, "")
 	if err != nil {

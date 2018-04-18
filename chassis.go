@@ -17,7 +17,6 @@ import (
 	// rest package handle rest apis
 	_ "github.com/ServiceComb/go-chassis/client/rest"
 	// archaius package to get the conguration info fron diffent configuration sources
-	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/handler"
@@ -41,6 +40,7 @@ import (
 	// highway package register the highway server plugin
 	_ "github.com/ServiceComb/go-chassis/server/highway"
 	// tcp package handles transport related things
+	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/metadata"
 )
 
@@ -209,7 +209,7 @@ func Run() {
 	if err != nil {
 		lager.Logger.Error("run chassis fail:", err)
 	}
-	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+	if !config.GetRegistratorDisable() {
 		//Register instance after Server started
 		if err := registry.DoRegister(); err != nil {
 			lager.Logger.Error("register instance fail:", err)
@@ -232,7 +232,7 @@ func Run() {
 		}
 		lager.Logger.Info(name + " server stop success")
 	}
-	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+	if !config.GetRegistratorDisable() {
 		if err = server.UnRegistrySelfInstances(); err != nil {
 			lager.Logger.Errorf(err, "servers failed to unregister")
 		}

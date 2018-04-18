@@ -8,13 +8,14 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 const (
 	// BaseRoot is the root path of pilot API
 	BaseRoot = "/v1/registration"
 	// DefaultAddr is the default endpoint of pilot-discovery
-	DefaultAddr = "istio-pilot:8080"
+	DefaultAddr = "istio-pilot.istio-system:8080"
 )
 
 // EnvoyDSClient is the client implements istio/pilot v1 API
@@ -78,31 +79,19 @@ func (c *EnvoyDSClient) GetAllServices() ([]*Service, error) {
 
 // GetServiceHosts returns Hosts using serviceName
 func (c *EnvoyDSClient) GetServiceHosts(serviceName string) (*Hosts, error) {
-	apiURL := c.getAddress() + BaseRoot + "/" + serviceName
-	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
+	services, err := c.GetAllServices()
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		io.Copy(ioutil.Discard, resp.Body)
-		resp.Body.Close()
-	}()
-	var body []byte
-	body, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("GetServiceHosts failed, %s, serviceName: %s", err.Error(), serviceName)
-	}
-	if resp.StatusCode == http.StatusOK {
-		var response Hosts
-		err = json.Unmarshal(body, &response)
-		if err != nil {
-			return nil, fmt.Errorf("GetServiceHosts failed, %s, serviceName: %s, response body: %s",
-				err.Error(), serviceName, string(body))
+
+	var response Hosts
+	for _, service := range services {
+		if strings.Index(service.ServiceKey+".", serviceName+".") != 0 {
+			continue
 		}
-		return &response, nil
+		response.Hosts = append(response.Hosts, service.Hosts...)
 	}
-	return nil, fmt.Errorf("GetServiceHosts failed, serviceName: %s, response StatusCode: %d, response body: %s",
-		serviceName, resp.StatusCode, string(body))
+	return &response, nil
 }
 
 // Close is the function clean up client resources

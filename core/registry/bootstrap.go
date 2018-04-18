@@ -69,7 +69,7 @@ func RegisterMicroservice() error {
 	}
 
 	//update metadata
-	if config.GlobalDefinition.Cse.Service.Registry.Scope == "full" {
+	if config.GetRegistratorScope() == "full" {
 		service.ServiceDescription.Properties["allowCrossApp"] = "true"
 	} else {
 		service.ServiceDescription.Properties["allowCrossApp"] = "false"

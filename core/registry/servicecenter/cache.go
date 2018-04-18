@@ -36,7 +36,7 @@ type CacheManager struct {
 // AutoSync automatically sync the running instances
 func (c *CacheManager) AutoSync() {
 	c.refreshCache()
-	if config.GlobalDefinition.Cse.Service.Registry.Watch {
+	if config.GetServiceDiscoveryWatch() {
 		err := c.registryClient.WatchMicroService(config.SelfServiceID, watch)
 		if err != nil {
 			lager.Logger.Errorf(err, "Watch failed. Self Micro service Id:%s.", config.SelfServiceID)
@@ -44,7 +44,7 @@ func (c *CacheManager) AutoSync() {
 		lager.Logger.Debugf("Watching Intances change events.")
 	}
 	var ticker *time.Ticker
-	refreshInterval := config.GlobalDefinition.Cse.Service.Registry.RefreshInterval
+	refreshInterval := config.GetServiceDiscoveryRefreshInterval()
 	if refreshInterval == "" {
 		ticker = time.NewTicker(DefaultRefreshInterval)
 	} else {

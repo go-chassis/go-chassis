@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: default
+  name: istioserver
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 8084
+    protocol: TCP
+    targetPort: 8084
+  selector:
+    app: default
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
