@@ -259,11 +259,11 @@ func TestMatch(t *testing.T) {
 
 func TestFitRate(t *testing.T) {
 	tags := InitTags("0.1", "0.2")
-	tag, _ := router.FitRate(tags, "service") //0,0
+	tag := router.FitRate(tags, "service") //0,0
 	assert.Equal(t, "0.1", tag.Tags["version"])
-	tag, _ = router.FitRate(tags, "service") //100%, 0
+	tag = router.FitRate(tags, "service") //100%, 0
 	assert.Equal(t, "0.2", tag.Tags["version"])
-	tag, _ = router.FitRate(tags, "service") //50%, 50%
+	tag = router.FitRate(tags, "service") //50%, 50%
 	assert.Equal(t, "0.1", tag.Tags["version"])
 
 	count := 100
