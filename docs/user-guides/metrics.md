@@ -7,13 +7,14 @@ Metrics用于度量服务性能指标。开发者可通过配置文件来将框�
 
 ## 配置
 
-Metrics配置项如下：
+**cse.metrics.enable**
+> *(optional, bool)* 是否开启metrics功能，默认为*false*
 
-| 配置项 | 默认值 | 说明 |
-| --- | --- | --- |
-| cse.metrics.enable | false | 开启metrics功能 |
-| cse.metrics.apipath | /metrics | metrics接口 |
-| cse.metrics.enableGoRuntimeMetrics | false | 开启go runtime检测 |
+**cse.metrics.apipath**
+> *(optional, string)* metrics接口，默认为*/metrics*
+
+**cse.metrics.enableGoRuntimeMetrics**
+>*(optional, bool)* 是否开启go runtime监测，默认为*false*
 
 ## API
 

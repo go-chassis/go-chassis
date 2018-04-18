@@ -5,14 +5,16 @@
 
 ## 配置
 
-使用调用链追踪功能，必须先在handler chain中添加对应handler：tracing-provider或tracing-consumer。
+使用调用链追踪功能，必须先在handler chain中添加对应handler：tracing-provider或tracing-consumer,默认存在。
 
-调用链追踪配置项如下：
+**tracing.collectorType**
 
-| 配置项 | 默认值 | 允许值 | 说明 |
-| :--- | :--- | :--- | :--- |
-| tracing.collectorType |  | zipkin\|namedPipe | zipkin: 数据发送到zipkin， namedPipe: 数据写入linux的named pipe |
-| tracing.collectorTarget |  | URI、文件路径 | collectorType为http时，collectorTarget为zipkin地址否则，collectorTarget为文件路径 |
+> *(requied, string)*  定义调用数据向什么服务发送，支持 *zipkin*，*namedPipe*
+
+**tracing.collectorTarget**
+
+>  *(requied, string)* 服务的URI，比如文件路径，http地址。
+>  collectorType为http时，collectorTarget为zipkin地址否则，namedPipe为文件路径
 
 ## 示例
 

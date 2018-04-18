@@ -13,26 +13,36 @@
 * register: 配置项默认为自动注册，即框架启动时完成实例的自动注册。当配置manual时，框架只会注册配置文件中的微服务，不会注册实例，使用者可以通过服务中心对外的API完成实例注册。
 * api.version: 目前只支持v4版本。
 
-| 配置项 | 默认值 | 配置说明 |
-| --- | --- | --- |
-| disabled | false | 是否开启服务注册发现模块 |
-| type | servicecenter | 对接服务发现系统类型 |
-| scope | "" | 默认为空，不允许跨app发现，填入full以允许跨应用发现 |
-| autodiscovery | false | 自动发现 |
-| address | [http://127.0.0.1:30100](http://127.0.0.1:30100) | 服务中心地址 允许配置多个以逗号隔开 |
-| register | auto | 自动注册 |
-| refeshInterval | 30s | 更新实例缓存的时间间隔，格式为数字加单位（s/m/h），如1s/1m/1h |
-| watch | false | 是否watch实例变化事件 |
-| api.version | v4 | 访问服务中心的api版本 |
 
-每个微服务都具有自己的定制的microservice.yaml文件，用来配置微服务私有信息。其中properties以key-value对的形式为微服务添加非通用的属性，比如allowCrossApp: false可用于配置是否允许跨应用发现和访问。
+**disabled**
+> *(optional, bool)* 是否开启服务注册发现模块，默认为false
 
-| 配置项 | 默认值 | 配置说明 |
-| --- | --- | --- |
-| name | - | 微服务名称 必填 |
-| version | 0.0.1 | 版本号 |
-| level | BACK | \[FRONT或MIDDLE或BACK\] |
-| properties | - | 微服务元数据 |
+**type**
+> *(optional, string)* 对接服务中心插件类型，默认为servicecenter
+
+**scope**
+> *(optional, bool)* 默认为空，不允许跨app发现，填入full以允许跨应用发现
+
+**autodiscovery**
+> *(optional, bool)* 自动发现 服务中心集群节点 默认为false
+
+**address**
+> *(optional, bool)*服务中心地址 允许配置多个以逗号隔开，默认为空
+
+**register**
+> *(optional, bool)* 是否自动自注册，默认为 auto，可选manual
+
+**refeshInterval**
+> *(optional, string)* 更新实例缓存的时间间隔，格式为数字加单位（s/m/h），如1s/1m/1h，默认为30s
+
+**api.version**
+> *(optional, string)* 访问服务中心的api版本，默认为v4
+
+**watch**
+> *(optional, bool)*  是否watch实例变化事件，默认为false
+
+
+
 
 ## API
 
@@ -77,11 +87,6 @@ cse:
         version: v4
 ```
 
-```yaml
-service_description:
-  name: Server
-  # version: 0.0.1 optional
-```
 
 
 

@@ -15,21 +15,34 @@ Consumer表示，当你要调用别的服务时，会通过的处理链
 Provider表示，当你被别人调用人，会通过的处理链
 支持在Consumer和Provider中定义多个不同的chain name
 如果handler配置为空那么框架会自动为Consumer与Provider加载默认的handlers，chain的名称为default
-Consumer的默认chain为
+
+### Consumer的默认chain为
 
 名称	功能
+
+
 ratelimiter-consumer	客户端限流
+
 bizkeeper-consumer	熔断降级
+
 router	路由策略
+
 loadbalance	负载均衡
+
 tracing-consumer	客户端调用链追踪
+
 transport	各协议客户端处理请求，如果你使用自定义处理链配置，那么结尾处必须加入这个handler
-Provider的默认chain为
+
+### Provider的默认chain为
 
 名称	功能
+
 ratelimiter-provider	服务端限流
+
 tracing-provider	服务端调用链追踪
+
 bizkeeper-provider	服务端熔断
+
 ## API
 当处理链配置为空，用户也可自定义自己的默认处理链
 ```go

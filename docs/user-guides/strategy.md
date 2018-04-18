@@ -11,17 +11,13 @@
 
 为便于描述，以下配置项说明仅针对PropertyName字段
 
-| 配置项 | 默认值 | 配置说明 |
-| --- | --- | --- |
-| strategy.name | RoundRobin | 策略，可选值：RoundRobin/Random/SessionStickiness/WeightedResponse。SessionStickiness目前只支持Rest调用。 |
-| retryEnabled | false | 是否允许重试 |
-| retryOnNext | 0 | 请求失败后向其他实例重试的次数 |
-| retryOnSame | 0 | 请求失败后向同一个实例重试的次数 |
-| backoff | - | 重试配置，详见[容错](fault-tolerant.md) |
+**strategy.name**
+>*(optional, bool)* RoundRobin | 策略，可选值：*RoundRobin*,*Random*,*SessionStickiness*,*WeightedResponse*。
+>SessionStickiness目前只支持Rest调用。
 
 **注意：**
 
-1. **使用SessionStickiness**策略**，需要业务代码存储cookie，并在http请求中带入Cookie。使用go-chassis进行调用时，http头中将返回如下信息：Set-Cookie: SERVICECOMBLB=0406060d-0009-4e06-4803-080008060f0d，若用户使用SessionStickiness策略，需要将将该头部信息保存，并在发送后续请求时带上如下http头：Cookie: SERVICECOMBLB=0406060d-0009-4e06-4803-080008060f0d**
+1. **使用SessionStickiness**策略，需要业务代码存储cookie，并在http请求中带入Cookie。使用go-chassis进行调用时，http头中将返回如下信息：Set-Cookie: SERVICECOMBLB=0406060d-0009-4e06-4803-080008060f0d，若用户使用SessionStickiness策略，需要将将该头部信息保存，并在发送后续请求时带上如下http头：Cookie: SERVICECOMBLB=0406060d-0009-4e06-4803-080008060f0d**
 2. **使用 WeightedResponse策略，启用后30s 策略会计算好数据并生效，80%左右的请求会被发送到延迟最低的实例里**
 
 ## API
