@@ -5,16 +5,19 @@
 
 Welcome to go-chassis's documentation!
 ======================================
+.. toctree::
+   :maxdepth: 4
+   :caption: User Documentations
+   :glob:
+
+   intro
+   get-started
+   user-guides
+
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Developer Documentations
 
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
