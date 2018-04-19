@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 //GlobalCfg chassis.yaml 配置项
 type GlobalCfg struct {
 	AppID      string            `yaml:"APPLICATION_ID"`
@@ -41,29 +39,6 @@ type CseStruct struct {
 	Monitor     MonitorStruct               `yaml:"monitor"`
 	Metrics     MetricsStruct               `yaml:"metrics"`
 	Credentials CredentialStruct            `yaml:"credentials"`
-}
-
-// FaultProtocolStruct fault protocol struct
-type FaultProtocolStruct struct {
-	Fault map[string]Fault `yaml:"protocols"`
-}
-
-// Fault fault struct
-type Fault struct {
-	Abort Abort `yaml:"abort"`
-	Delay Delay `yaml:"delay"`
-}
-
-// Abort abort struct
-type Abort struct {
-	Percent    int `yaml:"percent"`
-	HTTPStatus int `yaml:"httpStatus"`
-}
-
-// Delay delay struct
-type Delay struct {
-	Percent    int           `yaml:"percent"`
-	FixedDelay time.Duration `yaml:"fixedDelay"`
 }
 
 // MetricsStruct metrics struct
