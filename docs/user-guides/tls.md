@@ -12,32 +12,60 @@ ssl:
   [tag].[key]: [configuration]
 ```
 
-#### TAG
+### TAG
 
 tag为空时ssl配置为公共配置。registry.consumer及configcenter.consumer是作为消费者访问服务中心和配置中心时的ssl配置。protocol.serviceType允许协议和类型的任意组合。name.protocol.serviceType在协议和类型的基础上可定制服务名。
 
-| 标签名                       | 配置说明                                     |
-| ------------------------- | ---------------------------------------- |
-| N/A                       | 公共配置                                     |
-| registry.consumer         | 服务注册中心                                   |
-| configcenter.consumer     | 配置中心                                     |
-| protocol.serviceType      | 协议: \[highway或rest\]  类型: \[Consumer或Provider\] |
-| name.protocol.serviceType | 定制标签                                     |
+**registry.Consumer**
+> 服务注册中心TLS配置
 
-#### KEY
+**serviceDiscovery.Consumer**
+> 服务发现TLS配置
+
+**contractDiscovery.Consumer**
+> 契约发现TLS配置
+
+**registrator.Consumer**
+> 服务注册中心TLS配置
+
+**configcenter.Consumer**
+>配置中心TLS配置                                     |
+
+**{protocol}.{serviceType}**
+>协议为任意协议目前包括 *highway*，*rest*，用户扩展协议后，即可使用新的协议配置。
+>类型为*Consumer*,*Provider* |
+
+**{name}.{protocol}.{serviceType}**
+>定制某微服务的独有的TLS配置 name为微服务名
+
+### KEY
 
 ssl支持以下配置项，其中若私钥KEY文件加密，则需要指定加解密插件及密码套件等信息进行解密。
 
-| 配置项          | 默认值                                      | 配置说明                           |
-| ------------ | ---------------------------------------- | ------------------------------ |
-| cipherPlugin | default                                  | 指定加解密插件 内部插件支持 \[default aes\] |
-| verifyPeer   | false                                    | 是否验证对端                         |
-| cipherSuits  | TLS\_ECDHE\_RSA\_WITH\_AES\_128\_GCM\_SHA256, TLS\_ECDHE\_RSA\_WITH\_AES\_256\_GCM\_SHA384 | 密码套件                           |
-| protocol     | TLSv1.2                                  | TLS协议的最小版本                     |
-| caFile       |                                          | ca文件路径                         |
-| certFile     |                                          | 私钥cert文件路径                     |
-| keyFile      |                                          | 私钥key文件路径                      |
-| certPwdFile  |                                          | 私钥key加密的密码文件                   |
+**cipherPlugin**
+> *(optional, string)* 指定加解密插件 内部插件支持 *default* *aes*， 默认*default*                                  |
+
+**verifyPeer**
+>*(optional, bool)* | 是否验证对端,默认*false*
+
+**cipherSuits**
+> *(optional, string)* *TLS\_ECDHE\_RSA\_WITH\_AES\_128\_GCM\_SHA256*, *TLS\_ECDHE\_RSA\_WITH\_AES\_256\_GCM\_SHA384*
+> 密码套件                           |
+
+**protocol**
+> *(optional, string)* TLS协议的最小版本,默认为*TLSv1.2*
+
+**caFile**
+> *(optional, string)* ca文件路径
+
+**certFile**
+> *(optional, string)* 私钥cert文件路径
+
+**keyFile**
+> *(optional, string)*  私钥key文件路径
+
+**certPwdFile**
+> *(optional, string)* 私钥key加密的密码文件
 
 ## API
 

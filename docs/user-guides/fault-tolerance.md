@@ -11,14 +11,23 @@ go-chassis提供自动重试的容错能力，用户可配置retry及backOff策�
 - constant: 固定时间为backoff.minMs的重试策略，即失败后等待backoff.minMs再重试。
 - jittered: 按指数增加重试时间的重试策略，初始重试时间为backoff.minMs，最大重试时间为backoff.MaxMs。
 
-| 配置项           | 默认值   | 配置说明                           |
-| ------------- | ----- | ------------------------------ |
-| retryEnabled  | false | 是否开启重试功能                       |
-| retryOnSame   | 0     | 请求失败后向同一个实例重试的次数               |
-| retryOnNext   | 0     | 请求失败后向其他实例重试的次数                |
-| backoff.kind  | zero  | 重试策略: [jittered或constant或zero] |
-| backoff.minMs | 0     | 重试最小时间间隔 单位ms                  |
-| backoff.MaxMs | 0     | 重试最大时间间隔 单位ms                  |
+**retryEnabled**
+> *(optional, bool)* 是否开启重试功能, 默认值为*false*
+
+**retryOnSame**
+> *(optional, int)* 请求失败后向同一个实例重试的次数，默认为*0*
+
+**retryOnNext**
+> *(optional, int)* 请求失败后向其他实例重试的次数，默认为*0*
+
+**backoff.kind**
+> *(optional, string)* 重试策略: [jittered或constant或zero] 默认为*zero*
+
+**retryEnabled**
+> *(optional, int)* 重试最小时间间隔 单位ms , 默认值为*0*
+
+**retryEnabled**
+> *(optional, int)* 重试最大时间间隔 单位ms, 默认值为*0*
 
 ## 示例
 

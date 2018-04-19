@@ -7,11 +7,15 @@
 
 限流配置在rate\_limiting.yaml中，同时需要在chassis.yaml的handler chain中添加handler。其中qps.limit.\[service\] 是指限制从service 发来的请求的处理频率，若该项未配置则global.limit生效。Consumer端不支持global全局配置，其他配置项与Provider端一致。
 
-| 配置项 | 默认值 | 配置说明 |
-| --- | --- | --- |
-| flowcontrol.qps.enabled | true | 是否开启流控模块 |
-| flowcontrol.qps.global.limit | 2147483647（max int） | 流控全局配置 |
-| flowcontrol.qps.limit.\[service\] | 2147483647（max int） | 每秒允许的请求数 |
+**flowcontrol.qps.enabled**
+> *(optional, bool)* 是否开启限流，默认true
+
+**flowcontrol.qps.global.limit**
+> *(optional, int)* 每秒允许的请求数，默认2147483647max int）
+
+**flowcontrol.qps.limit.{service}**
+> *(optional, string)* 针对某微服务每秒允许的请求数 ，默认2147483647max int）
+
 
 #### Provider示例
 

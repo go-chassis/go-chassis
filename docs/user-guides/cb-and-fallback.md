@@ -29,19 +29,41 @@ cse.{namespace}.Consumer.{serviceName}.{property}: {configuration}
 
 为了方便描述，下表中的配置项均省略了Consumer和{serviceName}。
 
-| 配置项 | 默认值 | 取值范围 | 是否必选 | 含义 | 注意 |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| cse.isolation.timeout.enabled | FALSE | - | 否 | 是否启用超时检测 |  |
-| cse.isolation.timeoutInMilliseconds | 30000 | - | 否 | 超时时间阈值 |  |
-| cse.isolation.maxConcurrentRequests | 1000 | - | 否 | 最大并发数阈值 |  |
-| cse.circuitBreaker.enabled | TRUE | - | 否 | 是否启用熔断措施 |  |
-| cse.circuitBreaker.forceOpen | FALSE | - | 否 | 不管失败次数，都进行熔断 |  |
-| cse.circuitBreaker.forceClosed | FALSE | - | 否 | 任何时候都不熔断 | 当与forceOpen同时配置时，forceOpen优先。 |
-| cse.circuitBreaker.sleepWindowInMilliseconds | 15000 | - | 否 | 熔断后，多长时间恢复 | 恢复后，会重新计算失败情况。注意：如果恢复后的调用立即失败，那么会立即重新进入熔断。 |
-| cse.circuitBreaker.requestVolumeThreshold | 20 | - | 否 | 10s内统计错误发生次数阈值，超过阈值则触发熔断 | 由于10秒还会被划分为10个1秒的统计周期，经过1s中后才会开始计算错误率，因此从调用开始至少经过1s，才会发生熔断。 |
-| cse.circuitBreaker.errorThresholdPercentage | 50 | - | 否 | 错误率阈值，达到阈值则触发熔断 |  |
-| cse.fallback.enabled | TRUE | - | 否 | 是否启用出错后的故障处理措施 |  |
-| cse.fallbackpolicy.policy | returnnull | returnnull \| throwexception | 否 | 出错后的处理策略 |  |
+**cse.isolation.timeout.enabled**
+> *(optional, bool)*  是否启用超时检测,默认*false*
+
+**cse.isolation.timeoutInMilliseconds**
+> *(optional, int)* 超时阈值，默认*30000*
+
+**cse.isolation.maxConcurrentRequests**
+> *(optional, int)*最大并发数阈值 默认1000
+
+**cse.circuitBreaker.enabled**
+> *(optional, bool)* 是否启用熔断措施,默认true
+
+**cse.circuitBreaker.forceOpen**
+> *(optional, bool)* 不管失败次数，都进行熔断 默认false
+
+**cse.circuitBreaker.forceClosed**
+> *(optional, bool)*任何时候都不熔断，当与forceOpen同时配置时，forceOpen优先。默认false
+
+**cse.circuitBreaker.sleepWindowInMilliseconds**
+> *(optional, int)* 熔断后，多长时间恢复。恢复后，会重新计算失败情况。注意：如果恢复后的调用立即失败，那么会立即重新进入熔断。
+>默认15000
+
+**cse.circuitBreaker.requestVolumeThreshold**
+> *(optional, int)* 10s内统计错误发生次数阈值，超过阈值则触发熔断 | 由于10秒还会被划分为10个1秒的统计周期，经过1s中后才会开始计算错误率，因此从调用开始至少经过1s，才会发生熔断
+> 默认20
+
+**cse.circuitBreaker.errorThresholdPercentage**
+> *(optional, int)* 错误率阈值，达到阈值则触发熔断 默认50
+
+**cse.fallback.enabled**
+> *(optional, bool)* 是否启用出错后的故障处理措施 默认为true
+
+**cse.fallbackpolicy.policy**
+> *(optional, string)* 出错后的处理策略 可选 *returnnull* *throwexception*，默认returnnull
+
 
 ## **示例**
 

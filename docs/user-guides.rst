@@ -5,6 +5,7 @@ User guides
    :maxdepth: 4
    :glob:
 
+   user-guides/microservice
    user-guides/registry
    user-guides/service-discovery
    user-guides/handler-chain
