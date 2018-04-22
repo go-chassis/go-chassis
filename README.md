@@ -21,7 +21,7 @@ Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable
  - **Hot-reconfiguraion**: A lot of configuration can be reload in runtime, like loadbalancing, circuit breaker, rate limiting
  
 # Quick Start
-You can see more informations in gitbook http://go-chassis.readthedocs.io/en/latest/
+You can see more informations in here http://go-chassis.readthedocs.io/en/latest/
 
 ## Write a http service provider
 
