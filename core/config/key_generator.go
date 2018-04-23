@@ -1,4 +1,4 @@
-package archaius
+package config
 
 import "strings"
 

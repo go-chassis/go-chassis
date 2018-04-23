@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/fault"
 	"github.com/ServiceComb/go-chassis/core/invocation"
@@ -94,10 +94,10 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 func GetFaultConfig(protocol, microServiceName, schemaID, operationID string) model.Fault {
 
 	faultStruct := model.Fault{}
-	faultStruct.Abort.Percent = archaius.GetAbortPercent(protocol, microServiceName, schemaID, operationID)
-	faultStruct.Abort.HTTPStatus = archaius.GetAbortStatus(protocol, microServiceName, schemaID, operationID)
-	faultStruct.Delay.Percent = archaius.GetDelayPercent(protocol, microServiceName, schemaID, operationID)
-	faultStruct.Delay.FixedDelay = archaius.GetFixedDelay(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Abort.Percent = config.GetAbortPercent(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Abort.HTTPStatus = config.GetAbortStatus(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Delay.Percent = config.GetDelayPercent(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Delay.FixedDelay = config.GetFixedDelay(protocol, microServiceName, schemaID, operationID)
 
 	return faultStruct
 }

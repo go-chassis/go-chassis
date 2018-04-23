@@ -29,14 +29,14 @@ var cbMutex = sync.RWMutex{}
 
 // GetFallbackEnabled get fallback enabled
 func GetFallbackEnabled(command, t string) bool {
-	return archaius.GetBool(archaius.GetFallbackEnabledKey(command),
-		archaius.GetBool(archaius.GetDefaultGetFallbackEnabledKey(t), DefaultFallbackEnable))
+	return archaius.GetBool(GetFallbackEnabledKey(command),
+		archaius.GetBool(GetDefaultGetFallbackEnabledKey(t), DefaultFallbackEnable))
 }
 
 // GetCircuitBreakerEnabled get circuit breaker enabled
 func GetCircuitBreakerEnabled(command, t string) bool {
-	return archaius.GetBool(archaius.GetCircuitBreakerEnabledKey(command),
-		archaius.GetBool(archaius.GetDefaultCircuitBreakerEnabledKey(t), DefaultCircuitBreakerEnabled))
+	return archaius.GetBool(GetCircuitBreakerEnabledKey(command),
+		archaius.GetBool(GetDefaultCircuitBreakerEnabledKey(t), DefaultCircuitBreakerEnabled))
 }
 
 // GetTimeoutEnabled get timeout enabled
@@ -82,7 +82,7 @@ func GetTimeout(command, t string) int {
 	if global == 0 {
 		global = DefaultTimeout
 	}
-	m := archaius.GetInt(archaius.GetTimeoutKey(command), global)
+	m := archaius.GetInt(GetTimeoutKey(command), global)
 	cbMutex.RUnlock()
 	return m
 }
@@ -94,7 +94,7 @@ func GetMaxConcurrentRequests(command, t string) int {
 	if global == 0 {
 		global = DefaultMaxConcurrent
 	}
-	m := archaius.GetInt(archaius.GetMaxConcurrentKey(command), global)
+	m := archaius.GetInt(GetMaxConcurrentKey(command), global)
 	cbMutex.RUnlock()
 	return m
 }
@@ -106,7 +106,7 @@ func GetErrorPercentThreshold(command, t string) int {
 	if global == 0 {
 		global = DefaultErrorPercentThreshold
 	}
-	m := archaius.GetInt(archaius.GetErrorPercentThresholdKey(command), global)
+	m := archaius.GetInt(GetErrorPercentThresholdKey(command), global)
 	cbMutex.RUnlock()
 	return m
 }
@@ -118,7 +118,7 @@ func GetRequestVolumeThreshold(command, t string) int {
 	if global == 0 {
 		global = DefaultRequestVolumeThreshold
 	}
-	m := archaius.GetInt(archaius.GetRequestVolumeThresholdKey(command), global)
+	m := archaius.GetInt(GetRequestVolumeThresholdKey(command), global)
 	cbMutex.RUnlock()
 	return m
 }
@@ -130,7 +130,7 @@ func GetSleepWindow(command, t string) int {
 	if global == 0 {
 		global = DefaultSleepWindow
 	}
-	m := archaius.GetInt(archaius.GetSleepWindowKey(command), global)
+	m := archaius.GetInt(GetSleepWindowKey(command), global)
 	cbMutex.RUnlock()
 	return m
 }
