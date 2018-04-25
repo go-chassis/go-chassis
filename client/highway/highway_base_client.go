@@ -65,7 +65,7 @@ func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, err
 	defer mgr.mapMutex.Unlock()
 	if tmp, ok := mgr.clients[connParmas.Addr]; ok {
 		if !tmp.Closed() {
-			lager.Logger.Info("GetClient from cached addr:" + connParmas.Addr)
+			//GetClient from cached addr
 			return tmp, nil
 		}
 		delete(mgr.clients, connParmas.Addr)
