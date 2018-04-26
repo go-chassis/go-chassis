@@ -130,8 +130,8 @@ func GlobalDefinition() string {
 	return filepath.Join(GetConfDir(), Global)
 }
 
-//PassLagerDefinition is a function used to join .yaml file name with configuration directory
-func PassLagerDefinition() string {
+//PaasLagerDefinition is a function used to join .yaml file name with configuration directory
+func PaasLagerDefinition() string {
 	return filepath.Join(GetConfDir(), PaasLager)
 }
 
