@@ -1,12 +1,16 @@
 package archaius
 
 import (
+	"os"
+	"strings"
+
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/util/fileutil"
+
 	"github.com/ServiceComb/go-archaius"
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-archaius/sources/file-source"
 	"github.com/ServiceComb/go-archaius/sources/memory-source"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
 )
 
 // Config is the struct of configuration files, and configuration factory
@@ -40,8 +44,14 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 		files = append(files, v)
 	}
 	for _, v := range commonfiles {
+		_, err := os.Stat(v)
+		if os.IsNotExist(err) {
+			lager.Logger.Infof("[%s] not exist", v)
+			continue
+		}
 		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority); err != nil {
 			lager.Logger.Infof("%v", err)
+			return nil, err
 		}
 		files = append(files, v)
 	}
@@ -62,6 +72,7 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 
 	factory.RegisterListener(eventHandler, "a*")
 
+	lager.Logger.Infof("Configuration files: %s", strings.Join(files, ", "))
 	return conf, nil
 }
 
@@ -93,7 +104,6 @@ func Init() error {
 		fileutil.GetTracing(),
 	}
 
-	lager.Logger.Infof("Essential Configuration Path: %v, Configuration Paths %v", essentialfiles, commonfiles)
 	dConf, err := NewConfig(essentialfiles, commonfiles)
 	DefaultConf = dConf
 	return err

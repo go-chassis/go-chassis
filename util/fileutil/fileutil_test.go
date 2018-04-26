@@ -34,7 +34,7 @@ func TestGlobalDefinition(t *testing.T) {
 	assert.Equal(t, filepath.Join("test", "conf", fileutil.Global), def)
 }
 func TestPassLagerDefinition(t *testing.T) {
-	def := fileutil.PassLagerDefinition()
+	def := fileutil.PaasLagerDefinition()
 	assert.Equal(t, filepath.Join("test", "conf", fileutil.PaasLager), def)
 }
 func TestSchemaDir(t *testing.T) {

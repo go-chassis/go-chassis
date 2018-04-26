@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
+	"os"
 
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
@@ -25,8 +25,8 @@ var lbConfig *model.LBWrapper
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
 
-// PassLagerDefinition is having the information about loging
-var PassLagerDefinition *model.PassLagerCfg
+// PaasLagerDefinition is having the information about loging
+var PaasLagerDefinition *model.PassLagerCfg
 
 // RouterDefinition is route rule config
 var RouterDefinition *model.RouterConfig
@@ -169,36 +169,39 @@ func ReadLBFromArchaius() error {
 	return nil
 }
 
-// readPassLagerConfigFile is unmarshal the paas lager configuration file(lager.yaml)
-func readPassLagerConfigFile(lagerFile string) error {
-	passLagerDef := model.PassLagerCfg{}
-	yamlFile, err := ioutil.ReadFile(lagerFile)
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(yamlFile, &passLagerDef)
-	if err != nil {
-		log.Printf("Unmarshal: %v", err)
-	}
-	PassLagerDefinition = &passLagerDef
-
-	return nil
+type pathError struct {
+	Path string
+	Err  error
 }
 
-// readRouterConfigFile is unmarshal the paas lager configuration file(lager.yaml)
-func readRouterConfigFile(file string) error {
-	c := model.RouterConfig{}
-	yamlFile, err := ioutil.ReadFile(file)
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(yamlFile, &c)
-	if err != nil {
-		log.Printf("Unmarshal: %v", err)
-	}
-	RouterDefinition = &c
+func (e *pathError) Error() string { return e.Path + ": " + e.Err.Error() }
 
-	return nil
+// parsePaasLagerConfig unmarshals the paas lager configuration file(lager.yaml)
+func parsePaasLagerConfig(file string) error {
+	PaasLagerDefinition = &model.PassLagerCfg{}
+	err := unmarshalYamlFile(file, PaasLagerDefinition)
+	if err != nil && !os.IsNotExist(err) {
+		return &pathError{Path: file, Err: err}
+	}
+	return err
+}
+
+// parseRouterConfig is unmarshal the paas lager configuration file(lager.yaml)
+func parseRouterConfig(file string) error {
+	RouterDefinition = &model.RouterConfig{}
+	err := unmarshalYamlFile(file, RouterDefinition)
+	if err != nil && !os.IsNotExist(err) {
+		return &pathError{Path: file, Err: err}
+	}
+	return err
+}
+
+func unmarshalYamlFile(file string, target interface{}) error {
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	return yaml.Unmarshal(content, target)
 }
 
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
@@ -272,21 +275,28 @@ func GetHystrixConfig() *model.HystrixConfig {
 
 // Init is initialize the configuration directory, lager, archaius, route rule, and schema
 func Init() error {
-
-	lagerFile := fileutil.PassLagerDefinition()
-
-	err := readPassLagerConfigFile(lagerFile)
+	err := parsePaasLagerConfig(fileutil.PaasLagerDefinition())
+	//initialize log in any case
 	if err != nil {
-		log.Println("WARN:lager.yaml does not exist,use the default configuration")
+		lager.Initialize("", "", "", "", true, 1, 10, 7)
+		if os.IsNotExist(err) {
+			lager.Logger.Infof("[%s] not exist", fileutil.PaasLagerDefinition())
+		} else {
+			return err
+		}
+	} else {
+		lager.Initialize(PaasLagerDefinition.Writers, PaasLagerDefinition.LoggerLevel,
+			PaasLagerDefinition.LoggerFile, PaasLagerDefinition.RollingPolicy,
+			PaasLagerDefinition.LogFormatText, PaasLagerDefinition.LogRotateDate,
+			PaasLagerDefinition.LogRotateSize, PaasLagerDefinition.LogBackupCount)
 	}
 
-	lager.Initialize(PassLagerDefinition.Writers, PassLagerDefinition.LoggerLevel,
-		PassLagerDefinition.LoggerFile, PassLagerDefinition.RollingPolicy,
-		PassLagerDefinition.LogFormatText, PassLagerDefinition.LogRotateDate,
-		PassLagerDefinition.LogRotateSize, PassLagerDefinition.LogBackupCount)
-
-	if err := readRouterConfigFile(fileutil.RouterDefinition()); err != nil {
-		log.Println("WARN: Can not read router config in local" + err.Error())
+	if err = parseRouterConfig(fileutil.RouterDefinition()); err != nil {
+		if os.IsNotExist(err) {
+			lager.Logger.Infof("[%s] not exist", fileutil.RouterDefinition())
+		} else {
+			return err
+		}
 	}
 	err = archaius.Init()
 	if err != nil {

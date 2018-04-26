@@ -200,6 +200,11 @@ func loadAkskAuth() error {
 	if err != nil {
 		return err
 	}
+	if c.Project == "" {
+		lager.Logger.Debug("Huawei Cloud project is empty")
+	} else {
+		lager.Logger.Debugf("Huawei Cloud project: %s", c.Project)
+	}
 
 	plainSk := c.SecretKey
 	cipher := c.AkskCustomCipher
