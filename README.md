@@ -28,19 +28,19 @@ You can see more informations in here http://go-chassis.readthedocs.io/en/latest
 
 2. Clone the project
 
-``sh
+```sh
 git clone git@github.com:ServiceComb/go-chassis.git
-``
+```
 
 3. Use gvt to download deps
 
-``sh
+```sh
 go get -u github.com/FiloSottile/gvt
 
 cd go-chassis 
 
 gvt restore
-``
+```
 
 4. Install ServiceComb service-center https://github.com/ServiceComb/service-center/releases
 
