@@ -25,11 +25,13 @@ You can see more informations in here http://go-chassis.readthedocs.io/en/latest
 
 ## Installation
 1. Install go 1.8+ https://golang.org/doc/install
+
 2. Clone the project
 
 ``sh
 git clone git@github.com:ServiceComb/go-chassis.git
 ``
+
 3. Use gvt to download deps
 
 ``sh
@@ -37,6 +39,7 @@ go get -u github.com/FiloSottile/gvt
 cd go-chassis 
 gvt restore
 ``
+
 4. Install ServiceComb service-center https://github.com/ServiceComb/service-center/releases
 
 ## Write a http service provider
