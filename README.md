@@ -36,9 +36,7 @@ git clone git@github.com:ServiceComb/go-chassis.git
 
 ```sh
 go get -u github.com/FiloSottile/gvt
-
 cd go-chassis 
-
 gvt restore
 ```
 
