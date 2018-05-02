@@ -155,7 +155,7 @@ func setCookie(resp *http.Response, value string) {
 // CheckForSessionID check session id
 func CheckForSessionID(ep string, autoTimeout int, resp *http.Response, req *http.Request) {
 	if resp == nil {
-		lager.Logger.Warn("", ErrResponseNil)
+		lager.Logger.Warnf("", ErrResponseNil)
 		return
 	}
 
@@ -241,7 +241,7 @@ func GetSessionCookie(ctx context.Context, resp *http.Response) string {
 	}
 
 	if resp == nil {
-		lager.Logger.Warn("", ErrResponseNil)
+		lager.Logger.Warnf("", ErrResponseNil)
 		return ""
 	}
 

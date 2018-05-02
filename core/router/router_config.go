@@ -36,7 +36,7 @@ func ValidateRule(rules map[string][]*model.RouteRule) bool {
 			}
 
 			if allWeight > 100 {
-				lager.Logger.Warnf(nil, "route rule for [%s] is not valid: ruleTag weight is over 100%", name)
+				lager.Logger.Warnf("route rule for [%s] is not valid: ruleTag weight is over 100%", name)
 				return false
 			}
 		}

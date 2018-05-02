@@ -59,7 +59,7 @@ func Init() error {
 	for k, report := range reporterPlugins {
 		lager.Logger.Info("report metrics to " + k)
 		if err := report(GetSystemRegistry()); err != nil {
-			lager.Logger.Warn(err.Error(), err)
+			lager.Logger.Warnf(err.Error(), err)
 			return err
 		}
 	}

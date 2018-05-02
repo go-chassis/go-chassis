@@ -76,7 +76,7 @@ func MakeEndpointMap(m map[string]model.Protocol) map[string]string {
 		if len(protocol.Advertise) == 0 {
 			host, port, err := net.SplitHostPort(protocol.Listen)
 			if err != nil {
-				lager.Logger.Warn("get port from listen addr failed.", err)
+				lager.Logger.Warnf("get port from listen addr failed.", err)
 				port = iputil.DefaultPort4Protocol(name)
 				host = iputil.Localhost()
 			}
@@ -181,7 +181,7 @@ func getTLSConfig(scheme, t string) (*tls.Config, error) {
 			lager.Logger.Errorf(err, "Load %s TLS config failed.", sslTag)
 			return nil, err
 		}
-		lager.Logger.Warnf(nil, "%s TLS mode, verify peer: %t, cipher plugin: %s.",
+		lager.Logger.Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
 			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 		tlsConfig = tmpTLSConfig
 	}

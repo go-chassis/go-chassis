@@ -80,7 +80,7 @@ func enableRegistrator(opts Options) {
 	}
 	go HBService.Start()
 
-	lager.Logger.Warnf(nil, "Enable %s registry.", DefaultRegistrator)
+	lager.Logger.Warnf("Enable %s registry.", DefaultRegistrator)
 }
 
 // InstallRegistrator install registrator plugin

@@ -38,7 +38,7 @@ func CreateClient(protocol, service string) (ProtocolClient, error) {
 			return nil, err
 		}
 	} else {
-		lager.Logger.Warnf(nil, "%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
+		lager.Logger.Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
 			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 	p := GetProtocolSpec(protocol)

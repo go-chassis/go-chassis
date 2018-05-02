@@ -82,7 +82,7 @@ func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID strin
 func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
 	value, boo := registry.MicroserviceInstanceCache.Get(microServiceName)
 	if !boo || value == nil {
-		lager.Logger.Warnf(nil, "%s Get instances from remote, key: %s", consumerID, microServiceName)
+		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, microServiceName)
 		hs, err := r.registryClient.GetServiceHosts(microServiceName)
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s",

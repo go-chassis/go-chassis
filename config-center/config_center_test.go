@@ -110,7 +110,7 @@ func TestInitConfigCenterWithInvalidName(t *testing.T) {
 
 func TestEvent(t *testing.T) {
 	t.Log("Testing EventListener function")
-	factoryObj, _ := goarchaius.NewConfigFactory()
+	factoryObj, _ := goarchaius.NewConfigFactory(nil)
 
 	factoryObj.Init()
 

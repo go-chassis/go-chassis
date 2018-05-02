@@ -74,11 +74,11 @@ func UnRegistrySelfInstances() error {
 	for mid := range microserviceIDs {
 		value, ok := registry.SelfInstancesCache.Get(mid)
 		if !ok {
-			lager.Logger.Warnf(nil, "StartServer() get SelfInstancesCache failed, mid: %s", mid)
+			lager.Logger.Warnf("StartServer() get SelfInstancesCache failed, mid: %s", mid)
 		}
 		instanceIDs, ok := value.([]string)
 		if !ok {
-			lager.Logger.Warnf(nil, "StartServer() type asserts failed, mid: %s", mid)
+			lager.Logger.Warnf("StartServer() type asserts failed, mid: %s", mid)
 		}
 		for _, iid := range instanceIDs {
 			err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(mid, iid)
@@ -128,7 +128,7 @@ func initialSingle(providerMap map[string]string, p model.Protocol, name string)
 			return err
 		}
 	} else {
-		lager.Logger.Warnf(nil, "%s TLS mode, verify peer: %t, cipher plugin: %s.",
+		lager.Logger.Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
 			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 
