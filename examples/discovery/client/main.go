@@ -121,7 +121,7 @@ func callRest(invoker *core.RestInvoker) {
 		return
 	}
 	log.Printf("Rest Server sayhello[Get] %s", string(resp1.ReadBody()))
-	log.Printf("Rest Server sayhello[Get] %s", string(resp1.GetCookie(common.LBSessionID)))
+	log.Printf("Cookie from LB %s", string(resp1.GetCookie(common.LBSessionID)))
 	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	req, _ = rest.NewRequest(http.MethodPost, "cse://Server/sayhi", []byte(`{"name": "peter wang and me"}`))
 	req.SetHeader("Content-Type", "application/json")
