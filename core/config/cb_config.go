@@ -178,7 +178,13 @@ func getFallbackPolicySpec(command string) *model.FallbackPolicySpec {
 }
 
 // GetForceFallback get force fallback
-func GetForceFallback(command, t string) bool {
-	return archaius.GetBool(GetForceFallbackKey(command),
-		archaius.GetBool(GetDefaultForceFallbackKey(t), DefaultForceFallback))
+func GetForceFallback(service, t string) bool {
+	cbMutex.RLock()
+	fallback := getFallbackSpec(t)
+	if en, ok := fallback.AnyService[service]; ok {
+		cbMutex.RUnlock()
+		return en.Force
+	}
+	cbMutex.RUnlock()
+	return fallback.Force
 }
