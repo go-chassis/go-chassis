@@ -15,7 +15,14 @@ import (
 )
 
 var errSSLConfigNotExist = errors.New("No SSL config")
-var useDefaultSslTag = sets.NewString("registry.Consumer.", "configcenter.Consumer.", "monitor.Consumer.")
+var useDefaultSslTag = sets.NewString(
+	"registry.Consumer.",
+	"configcenter.Consumer.",
+	"monitor.Consumer.",
+	"serviceDiscovery.Consumer.",
+	"registrator.Consumer.",
+	"contractDiscovery.Consumer.",
+)
 
 func hasDefaultSslTag(tag string) bool {
 	if len(tag) == 0 {
