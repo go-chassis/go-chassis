@@ -2,7 +2,7 @@ package model
 
 // RouterConfig is the struct having info about route rule destinations, source templates
 type RouterConfig struct {
-	Router          string                  `yaml:"router"`
+	Router          Router                  `yaml:"router"`
 	Destinations    map[string][]*RouteRule `yaml:"routeRule"`
 	SourceTemplates map[string]*Match       `yaml:"sourceTemplate"`
 }
