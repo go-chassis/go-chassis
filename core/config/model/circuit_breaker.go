@@ -68,6 +68,7 @@ type CircuitBreakerSpec struct {
 // FallbackSpec fallback specifications
 type FallbackSpec struct {
 	Enabled               bool                              `yaml:"enabled"`
+	Force                 bool                              `yaml:"force"`
 	MaxConcurrentRequests int                               `yaml:"maxConcurrentRequests"`
 	AnyService            map[string]FallbackPropertyStruct `yaml:",inline"`
 }
@@ -98,6 +99,7 @@ type CircuitBreakPropertyStruct struct {
 // FallbackPropertyStruct fallback property structure
 type FallbackPropertyStruct struct {
 	Enabled               bool `yaml:"enabled"`
+	Force                 bool `yaml:"force"`
 	MaxConcurrentRequests int  `yaml:"maxConcurrentRequests"`
 }
 

@@ -176,3 +176,9 @@ func getFallbackPolicySpec(command string) *model.FallbackPolicySpec {
 	}
 	return GetHystrixConfig().FallbackPolicyProperties.Provider
 }
+
+// GetForceFallback get force fallback
+func GetForceFallback(command, t string) bool {
+	return archaius.GetBool(GetForceFallbackKey(command),
+		archaius.GetBool(GetDefaultForceFallbackKey(t), DefaultForceFallback))
+}
