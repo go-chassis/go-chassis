@@ -30,7 +30,7 @@ func GetHystrixConfig(service, protype string) (string, hystrix.CommandConfig) {
 		command = strings.Join([]string{protype, service}, ".")
 	}
 	return command, hystrix.CommandConfig{
-		ForceFallback:          config.DefaultForceFallback,
+		ForceFallback:          config.GetForceFallback(service, protype),
 		TimeoutEnabled:         config.GetTimeoutEnabled(service, protype),
 		Timeout:                config.GetTimeout(command, protype),
 		MaxConcurrentRequests:  config.GetMaxConcurrentRequests(command, protype),

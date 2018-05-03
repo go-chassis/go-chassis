@@ -176,3 +176,15 @@ func getFallbackPolicySpec(command string) *model.FallbackPolicySpec {
 	}
 	return GetHystrixConfig().FallbackPolicyProperties.Provider
 }
+
+// GetForceFallback get force fallback
+func GetForceFallback(service, t string) bool {
+	cbMutex.RLock()
+	fallback := getFallbackSpec(t)
+	if en, ok := fallback.AnyService[service]; ok {
+		cbMutex.RUnlock()
+		return en.Force
+	}
+	cbMutex.RUnlock()
+	return fallback.Force
+}

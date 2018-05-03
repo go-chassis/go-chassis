@@ -92,3 +92,10 @@ func TestGetPolicy(t *testing.T) {
 	check = config.GetPolicy("Server", common.Consumer)
 	assert.Equal(t, "throwexception", check)
 }
+
+func TestGetForceFallback(t *testing.T) {
+	check := config.GetForceFallback("test", common.Consumer)
+	assert.False(t, check)
+	check = config.GetForceFallback("Server", common.Consumer)
+	assert.False(t, check)
+}
