@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/ServiceComb/go-chassis/client/rest"
@@ -12,7 +13,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 
-	"fmt"
 	"github.com/ServiceComb/go-chassis/session"
 	"github.com/cenkalti/backoff"
 	"github.com/valyala/fasthttp"
@@ -21,7 +21,7 @@ import (
 // LBHandler loadbalancer handler struct
 type LBHandler struct{}
 
-func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.ResponseCallBack) (string, error) {
+func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 	var metadata interface{}
 	strategy := i.Strategy
 	var strategyFun func() loadbalancer.Strategy
@@ -66,14 +66,12 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 	s, err := loadbalancer.BuildStrategy(i.SourceServiceID,
 		i.MicroServiceName, i.AppID, i.Version, i.Protocol, sessionID, i.Filters, strategyFun(), metadata)
 	if err != nil {
-		writeErr(err, cb)
 		return "", err
 	}
 
 	ins, err := s.Pick()
 	if err != nil {
 		lbErr := loadbalancer.LBError{Message: err.Error()}
-		writeErr(lbErr, cb)
 		return "", lbErr
 	}
 
@@ -93,7 +91,6 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 			" msName: "+i.MicroServiceName+" %s %s %s", i.Version, i.AppID, ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
 		lager.Logger.Errorf(nil, lbErr.Error())
-		writeErr(lbErr, cb)
 		return "", lbErr
 	}
 	return ep, nil
@@ -109,7 +106,7 @@ func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocatio
 }
 
 func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	ep, err := lb.getEndpoint(i, cb)
+	ep, err := lb.getEndpoint(i)
 	if err != nil {
 		writeErr(err, cb)
 		return
@@ -123,11 +120,12 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb 
 	retryOnSame := config.GetRetryOnSame(i.SourceMicroService, i.MicroServiceName)
 	retryOnNext := config.GetRetryOnNext(i.SourceMicroService, i.MicroServiceName)
 	handlerIndex := chain.HandlerIndex
+	var invResp *invocation.InvocationResponse
 	for j := 0; j < retryOnNext+1; j++ {
-
 		// exchange and retry on the next server
-		ep, err := lb.getEndpoint(i, cb)
+		ep, err := lb.getEndpoint(i)
 		if err != nil {
+			// if get endpoint failed, no need to retry
 			writeErr(err, cb)
 			return
 		}
@@ -136,30 +134,30 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb 
 		callTimes := 0
 		operation := func() error {
 			if callTimes == retryOnSame+1 {
-				return backoff.Permanent(errors.New("Retry time expires"))
+				return backoff.Permanent(errors.New("retry times expires"))
 			}
 			callTimes++
 			i.Endpoint = ep
 			var respErr error
-			var callbackErr error
 			chain.HandlerIndex = handlerIndex
 			chain.Next(i, func(r *invocation.InvocationResponse) error {
-				respErr = r.Err
-				callbackErr = cb(r)
-				return callbackErr
+				if r != nil {
+					invResp = r
+					respErr = invResp.Err
+					return invResp.Err
+				}
+				return nil
 			})
-			if respErr != nil {
-				return respErr
-			}
-			if callbackErr != nil {
-				return callbackErr
-			}
-			return nil
+			return respErr
 		}
 		if err = backoff.Retry(operation, lbBackoff); err == nil {
-			return
+			break
 		}
 	}
+	if invResp == nil {
+		invResp = &invocation.InvocationResponse{}
+	}
+	cb(invResp)
 }
 
 // Name returns loadbalancer string
