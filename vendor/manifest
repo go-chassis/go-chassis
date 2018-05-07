@@ -155,7 +155,7 @@
 			"importpath": "github.com/emicklei/go-restful",
 			"repository": "https://github.com/emicklei/go-restful",
 			"vcs": "git",
-			"revision": "777bb3f19bcafe2575ffb2a3e46af92509ae9594",
+			"revision": "v2.7.0",
 			"branch": "HEAD",
 			"notests": true
 		},
