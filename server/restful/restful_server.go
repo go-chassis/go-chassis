@@ -60,7 +60,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 			metricPath = "/" + metricPath
 		}
 		lager.Logger.Info("Enbaled metrics API on " + metricPath)
-		ws.Route(ws.GET(metricPath).To(metrics.MetricsHandleFunc))
+		ws.Route(ws.GET(metricPath).To(metrics.HTTPHandleFunc))
 	}
 	return &restfulServer{
 		opts:      opts,

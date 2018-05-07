@@ -50,7 +50,7 @@ func RegisterMicroservice() error {
 		RegisterBy: framework.Register,
 	}
 	lager.Logger.Infof("Framework registered is [ %s:%s ]", framework.Name, framework.Version)
-	lager.Logger.Infof("Microservice registered by [ %s ]", framework.Register)
+	lager.Logger.Infof("Micro service registered by [ %s ]", framework.Register)
 
 	sid, err := DefaultRegistrator.RegisterService(microservice)
 	config.SelfServiceID = sid
@@ -69,16 +69,16 @@ func RegisterMicroservice() error {
 	}
 
 	//update metadata
-	if config.GetRegistratorScope() == "full" {
+	if config.GetRegistratorScope() == common.ScopeFull {
 		service.ServiceDescription.Properties["allowCrossApp"] = "true"
 	} else {
 		service.ServiceDescription.Properties["allowCrossApp"] = "false"
 	}
 	if err := DefaultRegistrator.UpdateMicroServiceProperties(sid, service.ServiceDescription.Properties); err != nil {
-		lager.Logger.Errorf(err, "Update microservice properties failed, serviceID = %s.", sid)
+		lager.Logger.Errorf(err, "Update micro service properties failed, serviceID = %s.", sid)
 		return err
 	}
-	lager.Logger.Debugf("Update microservice properties success, serviceID = %s.", sid)
+	lager.Logger.Debugf("Update micro service properties success, serviceID = %s.", sid)
 
 	return refreshDependency(microservice)
 }

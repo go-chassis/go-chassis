@@ -19,7 +19,7 @@ import (
 
 var wg sync.WaitGroup
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
+//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/discovery/client/
 func main() {
 	//chassis operation
 	if err := chassis.Init(); err != nil {

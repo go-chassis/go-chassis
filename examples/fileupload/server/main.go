@@ -6,7 +6,7 @@ import (
 	example "github.com/ServiceComb/go-chassis/examples/fileupload/server/schemas"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
+//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/server/
 func main() {
 	chassis.RegisterSchema("rest", &example.RestFulUpload{})
 

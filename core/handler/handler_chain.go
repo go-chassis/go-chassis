@@ -130,7 +130,7 @@ func GetChain(serviceType string, name string) (*Chain, error) {
 	c := &Chain{}
 	origin, ok := ChainMap[serviceType+name]
 	if !ok {
-		return nil, fmt.Errorf("get chain fail, chain: %s do not exist", serviceType+name)
+		return nil, fmt.Errorf("get chain [%s] failed", serviceType+name)
 	}
 	*c = *origin
 	return c, nil

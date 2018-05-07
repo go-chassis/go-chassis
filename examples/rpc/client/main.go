@@ -10,7 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
+//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rpc/client/
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
