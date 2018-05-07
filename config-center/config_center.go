@@ -84,7 +84,7 @@ func isConfigCenter() (string, error) {
 	if configCenterURL == "" {
 		ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
 		if err != nil {
-			lager.Logger.Errorf(err, "empty config center endpoint, please provide the config center endpoint")
+			lager.Logger.Warnf("empty config center endpoint in service center %s", err.Error())
 			return "", err
 		}
 

@@ -19,6 +19,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/metrics"
 
+	"github.com/ServiceComb/go-chassis/util/fileutil"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
 )
@@ -33,7 +34,6 @@ const (
 )
 
 func init() {
-	restful.SetCacheReadEntity(false)
 	server.InstallPlugin(Name, newRestfulServer)
 }
 
@@ -156,6 +156,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 }
 
 func (r *restfulServer) Start() error {
+	var err error
 	config := r.opts
 	r.mux.Lock()
 	r.opts.Address = config.Address
@@ -168,18 +169,19 @@ func (r *restfulServer) Start() error {
 	}
 	// TODO Choose a suitable strategy of transforming code to contract
 	// register to swagger ui
-	if val := os.Getenv("GO_CHASSIS_SWAGGERFILEPATH"); val != "" {
-		swaggerConfig := swagger.Config{
-			WebServices:    r.container.RegisteredWebServices(),
-			WebServicesUrl: config.Address,
-			ApiPath:        "/apidocs.json",
-			// Optionally, specify where the UI is located
-			SwaggerPath:     "/apidocs/",
-			SwaggerFilePath: val}
-		swagger.RegisterSwaggerService(swaggerConfig, r.container)
+	var val string
+	if val = os.Getenv("SWAGGER_FILE_PATH"); val == "" {
+		val, err = fileutil.GetWorkDir()
+		if err != nil {
+			return err
+		}
 	}
-
-	var err error
+	swaggerConfig := swagger.Config{
+		WebServices:     r.container.RegisteredWebServices(),
+		WebServicesUrl:  config.Address,
+		ApiPath:         "/apidocs.json",
+		SwaggerFilePath: val}
+	swagger.RegisterSwaggerService(swaggerConfig, r.container)
 	go func() {
 		if r.server.TLSConfig != nil {
 			err = r.server.ListenAndServeTLS("", "")
