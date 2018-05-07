@@ -1,0 +1,6 @@
+version: "3"
+services:
+  sc:
+    image: servicecomb/service-center:1.0.0-m1
+    ports:
+      - "30100:30100"
