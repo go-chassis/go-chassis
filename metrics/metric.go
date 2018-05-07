@@ -12,7 +12,7 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-var errMonitoringFail = errors.New("Con not report metrics to CSE monitoring service")
+var errMonitoringFail = errors.New("can not report metrics to CSE monitoring service")
 
 // constants for header parameters
 const (
@@ -47,8 +47,8 @@ func GetOrCreateRegistry(name string) metrics.Registry {
 	return r
 }
 
-// MetricsHandleFunc is a restful handler which can expose metrics in http server
-func MetricsHandleFunc(req *restful.Request, rep *restful.Response) {
+// HTTPHandleFunc is a go-restful handler which can expose metrics in http server
+func HTTPHandleFunc(req *restful.Request, rep *restful.Response) {
 	reg := DefaultPrometheusSinker.PromRegistry.(*prometheus.Registry)
 	promhttp.HandlerFor(reg, promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
 }

@@ -12,6 +12,12 @@ const (
 const (
 	TransportTCP = "tcp"
 )
+const (
+	// ScopeFull means service is able to access to another app's service
+	ScopeFull = "full"
+	// ScopeApp means service is not able to access to another app's service
+	ScopeApp = "app"
+)
 
 // constant for microservice environment parameters
 const (

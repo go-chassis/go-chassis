@@ -1,6 +1,9 @@
 package config
 
-import "github.com/ServiceComb/go-chassis/core/archaius"
+import (
+	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/ServiceComb/go-chassis/core/common"
+)
 
 // GetRegistratorType returns the Type of service registry
 func GetRegistratorType() string {
@@ -20,8 +23,8 @@ func GetRegistratorAddress() string {
 
 // GetRegistratorScope returns the Scope of service registry
 func GetRegistratorScope() string {
-	if GlobalDefinition.Cse.Service.Registry.Registrator.Scope != "" {
-		return GlobalDefinition.Cse.Service.Registry.Registrator.Scope
+	if GlobalDefinition.Cse.Service.Registry.Registrator.Scope == "" {
+		GlobalDefinition.Cse.Service.Registry.Registrator.Scope = common.ScopeFull
 	}
 	return GlobalDefinition.Cse.Service.Registry.Scope
 }

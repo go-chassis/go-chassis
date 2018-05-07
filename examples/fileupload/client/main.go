@@ -16,6 +16,7 @@ import (
 	"io/ioutil"
 )
 
+//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/client/
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
