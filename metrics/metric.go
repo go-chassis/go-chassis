@@ -49,8 +49,7 @@ func GetOrCreateRegistry(name string) metrics.Registry {
 
 // HTTPHandleFunc is a go-restful handler which can expose metrics in http server
 func HTTPHandleFunc(req *restful.Request, rep *restful.Response) {
-	reg := DefaultPrometheusSinker.PromRegistry.(*prometheus.Registry)
-	promhttp.HandlerFor(reg, promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
+	promhttp.HandlerFor(GetSystemPrometheusRegistry(), promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
 }
 
 //Init prepare the metrics registry and report metrics to other systems

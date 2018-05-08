@@ -113,13 +113,13 @@ func getAkskCustomCipher(name string) (security.Cipher, error) {
 	}
 	cipherPlugin := f()
 	if cipherPlugin == nil {
-		return nil, fmt.Errorf("Cipher plugin [%s] invalid", name)
+		return nil, fmt.Errorf("cipher plugin [%s] invalid", name)
 	}
 	return cipherPlugin, nil
 }
 
 func getProjectFromURI(rawurl string) (string, error) {
-	errGetProjectFailed := errors.New("Get project from CSE uri failed")
+	errGetProjectFailed := errors.New("get project from CSE uri failed")
 	// rawurl: https://cse.cn-north-1.myhwclouds.com:443
 	if rawurl == "" {
 		return "", fmt.Errorf("%v, CSE uri empty", errGetProjectFailed)

@@ -2,7 +2,7 @@ cse:
   metrics:
     apiPath: /metrics      # we can also give api path having prefix "/" ,like /adas/metrics
     enable: true
-    enableGoRuntimeMetrics: false
+    enableGoRuntimeMetrics: true
 tracing:
   collectorType: zipkin
   collectorTarget: http://localhost:9411/api/v1/spans

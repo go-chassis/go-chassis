@@ -33,7 +33,7 @@ var onceInit sync.Once
 // PrometheusSinker is the struct for prometheus configuration parameters
 type PrometheusSinker struct {
 	Registry      metrics.Registry      // Registry to be exported
-	PromRegistry  prometheus.Registerer //Prometheus registry
+	promRegistry  prometheus.Registerer //Prometheus registry
 	FlushInterval time.Duration         //interval to update prom metrics
 	gauges        map[string]prometheus.Gauge
 	gaugeVecs     map[string]*prometheus.GaugeVec
@@ -51,7 +51,7 @@ func GetPrometheusSinker(mr metrics.Registry, pr *prometheus.Registry) *Promethe
 func NewPrometheusProvider(r metrics.Registry, promRegistry prometheus.Registerer, FlushInterval time.Duration) *PrometheusSinker {
 	return &PrometheusSinker{
 		Registry:      r,
-		PromRegistry:  promRegistry,
+		promRegistry:  promRegistry,
 		FlushInterval: FlushInterval,
 		gauges:        make(map[string]prometheus.Gauge),
 		gaugeVecs:     make(map[string]*prometheus.GaugeVec),
@@ -73,7 +73,7 @@ func (c *PrometheusSinker) gaugeFromNameAndValue(name string, val float64) {
 			Name: c.flattenKey(name),
 			Help: name,
 		})
-		c.PromRegistry.MustRegister(g)
+		c.promRegistry.MustRegister(g)
 		c.gauges[name] = g
 	}
 	g.Set(val)
@@ -90,7 +90,7 @@ func (c *PrometheusSinker) gaugeVecFromNameAndValue(name string, val float64, la
 			Name: c.flattenKey(name),
 			Help: name,
 		}, labelNames)
-		c.PromRegistry.MustRegister(gVec)
+		c.promRegistry.MustRegister(gVec)
 		c.gaugeVecs[name] = gVec
 	}
 	gVec.With(labels).Set(val)
@@ -156,8 +156,8 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 
 // EnableRunTimeMetrics enable runtime metrics
 func (c *PrometheusSinker) EnableRunTimeMetrics() {
-	c.PromRegistry.MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
-	c.PromRegistry.MustRegister(prometheus.NewGoCollector())
+	c.promRegistry.MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
+	c.promRegistry.MustRegister(prometheus.NewGoCollector())
 }
 
 func getEventType(metricName string) string {
