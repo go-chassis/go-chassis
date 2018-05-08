@@ -30,10 +30,6 @@ cse:
       refreshInterval: 30
       tenantName:  default
       autodiscovery: false
-  #metrics:
-    #apiPath: /metric       # we can also give api path having prefix "/" ,like /adas/metrics
-    #enable: true
-    #enableGoRuntimeMetrics: true
   protocols:
     highway:
       listenAddress: 127.0.0.1:8082
@@ -44,7 +40,7 @@ cse:
   handler:
     chain:
       Provider:
-        default: bizkeeper-provider
+        default: tracing-provider,bizkeeper-provider
 # ssl:
   # registry.Consumer.cipherPlugin: default
   # registry.Consumer.verifyPeer: false

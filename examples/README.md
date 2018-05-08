@@ -22,3 +22,31 @@ go run main.go
  go run main.go
  
 ```
+
+# Examples
+
+### communication
+ 
+A simple end to end communication without any service registry involved
+
+### discovery
+
+A complicated example with most of go chassis-features
+
+### rest
+
+simple rest communication 
+
+### rpc
+
+simple rpc communication
+
+### file upload
+
+a file upload example by using go-chassis rest communication
+
+### pilot 
+
+this example use  Istio pilot as service registry
+
+ 
