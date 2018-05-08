@@ -14,6 +14,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/provider"
 	"github.com/ServiceComb/go-chassis/core/util/string"
 	"github.com/golang/protobuf/proto"
+	"io"
 )
 
 //number const
@@ -185,7 +186,10 @@ func (msgObj *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error
 	for count < FrameHeadLen {
 		tmpsize, rdErr := rdBuf.Read(buf[count:])
 		if rdErr != nil {
-			lager.Logger.Errorf(rdErr, "Recv Frame head  failed.")
+			if rdErr != io.EOF {
+				lager.Logger.Errorf(rdErr, "Recv Frame head failed.")
+			}
+
 			return rdErr
 		}
 		count += tmpsize

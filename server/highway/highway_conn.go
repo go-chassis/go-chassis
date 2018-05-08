@@ -12,6 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/provider"
+	"io"
 )
 
 //ConnectionMgr conn manage
@@ -129,7 +130,10 @@ func (svrConn *HighwayConnection) msgRecvLoop() {
 		protoObj := &highwayclient.HighWayProtocalObject{}
 		err := protoObj.DeSerializeFrame(rdBuf)
 		if err != nil {
-			lager.Logger.Errorf(err, "DeSerializeFrame failed.")
+			if err != io.EOF {
+				lager.Logger.Errorf(err, "DeSerializeFrame failed.")
+			}
+
 			break
 		}
 		go svrConn.handleFrame(protoObj)
