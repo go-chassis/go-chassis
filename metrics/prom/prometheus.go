@@ -163,10 +163,6 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 func EnableRunTimeMetrics() {
 	metrics.GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
 	metrics.GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
-<<<<<<< cbd7c7579487ce700177522114e012795f4a6cba:metrics/prom/prometheus.go
-
-=======
->>>>>>> add new example:metrics/prom/prometheus.go
 }
 
 func getEventType(metricName string) string {

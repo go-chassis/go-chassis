@@ -10,7 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 )
 
-var errEmptyChain = errors.New("Chain can not be empty")
+var errEmptyChain = errors.New("chain can not be empty")
 
 // ChainMap just concurrent read
 var ChainMap = make(map[string]*Chain)

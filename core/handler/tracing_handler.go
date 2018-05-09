@@ -51,7 +51,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 			carrier = &tracing.HeaderCarrier{Header: headerMap}
 		default:
 			lager.Logger.Error("rest consumer call arg is neither *restful.Request|*fasthttp.Request type.", nil)
-			err = errors.New("Type invalid")
+			err = errors.New("type invalid")
 		}
 		if err != nil {
 			break
@@ -90,7 +90,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	default:
 		lager.Logger.Errorf(err, "Extract span failed")
 	}
-	operationName := genOperaitonName(i.MicroServiceName, interfaceName)
+	operationName := genOperationName(i.MicroServiceName, interfaceName)
 	span := tracer.StartSpan(operationName, ext.RPCServerOption(wireContext))
 	// set span kind to be server
 	ext.SpanKindRPCServer.Set(span)
@@ -152,7 +152,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	interfaceName := "unknown"
 	interfaceName = setInterfaceName(interfaceName, i)
 
-	operationName := genOperaitonName(i.MicroServiceName, interfaceName)
+	operationName := genOperationName(i.MicroServiceName, interfaceName)
 	if parentSpan := opentracing.SpanFromContext(i.Ctx); parentSpan != nil {
 		opts = append(opts, opentracing.ChildOf(parentSpan.Context()))
 		span = tracer.StartSpan(operationName, opts...)
@@ -180,17 +180,13 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 			carrier = &(i.Args.(*fasthttp.Request).Header)
 		default:
 			lager.Logger.Error("rest consumer call arg is neither *rest.Request|*fasthttp.Request type.", nil)
-			err = errors.New("Type invalid")
+			err = errors.New("type invalid")
 		}
 		if err != nil {
 			break
 		}
 
-		if err = tracer.Inject(
-			span.Context(),
-			opentracing.TextMap,
-			carrier,
-		); err != nil {
+		if err = tracer.Inject(span.Context(), opentracing.TextMap, carrier); err != nil {
 			lager.Logger.Errorf(err, "Inject span failed")
 		}
 	default:
@@ -220,7 +216,6 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	// But client may send req in the callback func too, that we have to remove
 	// span finishing from callback func's inside to outside.
 	chain.Next(i, func(r *invocation.InvocationResponse) (err error) {
-		err = cb(r)
 		switch i.Protocol {
 		case common.ProtocolRest:
 			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
@@ -230,7 +225,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		default:
 		}
 		span.Finish()
-		return
+		return cb(r)
 	})
 }
 
@@ -267,6 +262,6 @@ func newTracingConsumerHandler() Handler {
 	return &TracingConsumerHandler{}
 }
 
-func genOperaitonName(microserviceName, interfaceName string) string {
+func genOperationName(microserviceName, interfaceName string) string {
 	return "[" + microserviceName + "]:[" + interfaceName + "]"
 }
