@@ -9,7 +9,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package metrics_test
+package prom
 
 // Forked from github.com/deathowl
 // Some parts of this file have been modified to make it functional in this package
@@ -17,7 +17,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	m "github.com/ServiceComb/go-chassis/metrics"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -33,10 +32,10 @@ var (
 	makeMeterFunc        = func() interface{} { return metrics.NewMeter() }
 )
 
-func TestPrometheusConfig_UpdatePrometheusMetricsOnce(t *testing.T) {
+func TestPrometheusSinker_UpdatePrometheusMetrics(t *testing.T) {
 	config.GlobalDefinition = new(model.GlobalCfg)
 	config.GlobalDefinition.Cse.Metrics.EnableGoRuntimeMetrics = false
-	prometheusConfig := m.GetPrometheusSinker(m.GetSystemRegistry(), m.GetSystemPrometheusRegistry())
+	prometheusSinker := GetPrometheusSinker(m.GetSystemRegistry())
 	t.Log("registering various metric types to go-metrics registry")
 	c, _ := m.GetSystemRegistry().GetOrRegister("server.attempts", makeCounterFunc).(metrics.Counter)
 	c.Inc(1)
@@ -52,8 +51,7 @@ func TestPrometheusConfig_UpdatePrometheusMetricsOnce(t *testing.T) {
 	h.Update(23)
 	meter, _ := m.GetSystemRegistry().GetOrRegister("foo", makeMeterFunc).(metrics.Meter)
 	meter.Mark(12)
-	prometheusConfig.UpdatePrometheusMetricsOnce()
-	metricsGatherer := prometheusConfig.PromRegistry.(prometheus.Gatherer)
-	metricsFamilies, _ := metricsGatherer.Gather()
+	prometheusSinker.UpdatePrometheusMetricsOnce()
+	metricsFamilies, _ := m.GetSystemPrometheusRegistry().Gather()
 	assert.Equal(t, len(metricsFamilies), 6)
 }

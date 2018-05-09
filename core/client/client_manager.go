@@ -5,11 +5,13 @@ import (
 	"strings"
 	"sync"
 
+	"crypto/tls"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
+	"time"
 )
 
 var clients = make(map[string]map[string]ProtocolClient)
@@ -18,6 +20,14 @@ var sl sync.RWMutex
 
 //DefaultPoolSize is 500
 const DefaultPoolSize = 50
+
+//Options is configs for client creation
+type Options struct {
+	PoolSize  int
+	PoolTTL   time.Duration
+	TLSConfig *tls.Config
+	Failure   map[string]bool
+}
 
 // GetProtocolSpec is to get protocol specifications
 func GetProtocolSpec(p string) model.Protocol {

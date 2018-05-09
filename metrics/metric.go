@@ -1,3 +1,7 @@
+//Package metrics bootstrap metrics reporter, and supply 2 metrics registry
+//native prometheus registry and rcrowley/go-metrics registry
+//system registry is the place where go-chassis feed metrics data to
+//you can get system registry and report them to varies monitoring system
 package metrics
 
 import (
@@ -49,8 +53,7 @@ func GetOrCreateRegistry(name string) metrics.Registry {
 
 // HTTPHandleFunc is a go-restful handler which can expose metrics in http server
 func HTTPHandleFunc(req *restful.Request, rep *restful.Response) {
-	reg := DefaultPrometheusSinker.PromRegistry.(*prometheus.Registry)
-	promhttp.HandlerFor(reg, promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
+	promhttp.HandlerFor(GetSystemPrometheusRegistry(), promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
 }
 
 //Init prepare the metrics registry and report metrics to other systems

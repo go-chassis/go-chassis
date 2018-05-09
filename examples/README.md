@@ -49,4 +49,6 @@ a file upload example by using go-chassis rest communication
 
 this example use  Istio pilot as service registry
 
- 
+### monitoring
+
+show tracing on zipkin and export prometheus metrics format  
