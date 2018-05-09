@@ -44,6 +44,7 @@ type CseStruct struct {
 // MetricsStruct metrics struct
 type MetricsStruct struct {
 	APIPath                string `yaml:"apiPath"`
+	FlushInterval          string `yaml:"flushInterval"`
 	Enable                 bool   `yaml:"enable"`
 	EnableGoRuntimeMetrics bool   `yaml:"enableGoRuntimeMetrics"`
 }

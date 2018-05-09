@@ -17,7 +17,7 @@ import (
 )
 
 // ErrResponseNil used for to represent the error response, when it is nil
-var ErrResponseNil = errors.New("Can not Set session, resp is nil")
+var ErrResponseNil = errors.New("can not set session, resp is nil")
 
 // SessionCache session cache variable
 var SessionCache *cache.Cache

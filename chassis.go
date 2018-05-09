@@ -34,6 +34,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/tracing"
 	"github.com/ServiceComb/go-chassis/eventlistener"
 	// aes package handles security related plugins
+	_ "github.com/ServiceComb/go-chassis/metrics/prom"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	_ "github.com/ServiceComb/go-chassis/server/restful"

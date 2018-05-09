@@ -29,7 +29,7 @@ func InstallPlugin(protocol string, newFunc NewFunc) {
 func GetServerFunc(protocol string) (NewFunc, error) {
 	f, ok := serverPlugins[protocol]
 	if !ok {
-		return nil, fmt.Errorf("Don't support protocol [%s]", protocol)
+		return nil, fmt.Errorf("unkown protocol server [%s]", protocol)
 	}
 	return f, nil
 }
@@ -59,7 +59,7 @@ func StartServer() error {
 		err := server.Start()
 		if err != nil {
 			lager.Logger.Errorf(err, "servers failed to start")
-			return fmt.Errorf("Can not start [%s] server,%s", name, err.Error())
+			return fmt.Errorf("can not start [%s] server,%s", name, err.Error())
 		}
 		lager.Logger.Info(name + " server start success")
 	}

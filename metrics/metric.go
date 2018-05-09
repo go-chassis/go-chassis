@@ -1,3 +1,7 @@
+//Package metrics bootstrap metrics reporter, and supply 2 metrics registry
+//native prometheus registry and rcrowley/go-metrics registry
+//system registry is the place where go-chassis feed metrics data to
+//you can get system registry and report them to varies monitoring system
 package metrics
 
 import (

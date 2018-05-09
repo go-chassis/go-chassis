@@ -9,7 +9,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package metrics
+package prom
 
 // Forked from github.com/deathowl
 // Some parts of this file have been modified to make it functional in this package
@@ -22,8 +22,11 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/config"
 
+	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/metrics"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/rcrowley/go-metrics"
+	gometrics "github.com/rcrowley/go-metrics"
 )
 
 // DefaultPrometheusSinker variable for default prometheus configurations
@@ -32,26 +35,28 @@ var onceInit sync.Once
 
 // PrometheusSinker is the struct for prometheus configuration parameters
 type PrometheusSinker struct {
-	Registry      metrics.Registry      // Registry to be exported
-	promRegistry  prometheus.Registerer //Prometheus registry
-	FlushInterval time.Duration         //interval to update prom metrics
+	Registry      gometrics.Registry // Registry to be exported
+	FlushInterval time.Duration      //interval to update prom metrics
 	gauges        map[string]prometheus.Gauge
 	gaugeVecs     map[string]*prometheus.GaugeVec
 }
 
 // GetPrometheusSinker get prometheus configurations
-func GetPrometheusSinker(mr metrics.Registry, pr *prometheus.Registry) *PrometheusSinker {
+func GetPrometheusSinker(mr gometrics.Registry) *PrometheusSinker {
 	onceInit.Do(func() {
-		DefaultPrometheusSinker = NewPrometheusProvider(mr, pr, time.Second)
+		t, err := time.ParseDuration(config.GlobalDefinition.Cse.Metrics.FlushInterval)
+		if err != nil {
+			t = time.Second * 10
+		}
+		DefaultPrometheusSinker = NewPrometheusProvider(mr, t)
 	})
 	return DefaultPrometheusSinker
 }
 
 // NewPrometheusProvider returns the object of prometheus configurations
-func NewPrometheusProvider(r metrics.Registry, promRegistry prometheus.Registerer, FlushInterval time.Duration) *PrometheusSinker {
+func NewPrometheusProvider(r gometrics.Registry, FlushInterval time.Duration) *PrometheusSinker {
 	return &PrometheusSinker{
 		Registry:      r,
-		promRegistry:  promRegistry,
 		FlushInterval: FlushInterval,
 		gauges:        make(map[string]prometheus.Gauge),
 		gaugeVecs:     make(map[string]*prometheus.GaugeVec),
@@ -73,7 +78,7 @@ func (c *PrometheusSinker) gaugeFromNameAndValue(name string, val float64) {
 			Name: c.flattenKey(name),
 			Help: name,
 		})
-		c.promRegistry.MustRegister(g)
+		metrics.GetSystemPrometheusRegistry().MustRegister(g)
 		c.gauges[name] = g
 	}
 	g.Set(val)
@@ -90,7 +95,7 @@ func (c *PrometheusSinker) gaugeVecFromNameAndValue(name string, val float64, la
 			Name: c.flattenKey(name),
 			Help: name,
 		}, labelNames)
-		c.promRegistry.MustRegister(gVec)
+		metrics.GetSystemPrometheusRegistry().MustRegister(gVec)
 		c.gaugeVecs[name] = gVec
 	}
 	gVec.With(labels).Set(val)
@@ -110,24 +115,24 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 		operationID := extractOperationID(name)
 		schemaID := extractSchemaID(name)
 		hostName, _ := os.Hostname()
-		promLabels := prometheus.Labels{"hostname": hostName, "servicename": config.SelfServiceName, "appID": config.GlobalDefinition.AppID, "version": config.SelfVersion, "schemaID": schemaID, "operationID": operationID}
+		promLabels := prometheus.Labels{"hostname": hostName, "service": config.SelfServiceName, "appID": config.GlobalDefinition.AppID, "version": config.SelfVersion, "schemaID": schemaID, "operationID": operationID}
 		switch metric := i.(type) {
-		case metrics.Counter:
+		case gometrics.Counter:
 			c.gaugeVecFromNameAndValue(metricName, float64(metric.Count()), promLabels)
-		case metrics.Gauge:
+		case gometrics.Gauge:
 			c.gaugeVecFromNameAndValue(metricName, float64(metric.Value()), promLabels)
-		case metrics.GaugeFloat64:
+		case gometrics.GaugeFloat64:
 			c.gaugeVecFromNameAndValue(metricName, float64(metric.Value()), promLabels)
-		case metrics.Histogram:
+		case gometrics.Histogram:
 			samples := metric.Snapshot().Sample().Values()
 			if len(samples) > 0 {
 				lastSample := samples[len(samples)-1]
 				c.gaugeVecFromNameAndValue(metricName, float64(lastSample), promLabels)
 			}
-		case metrics.Meter:
+		case gometrics.Meter:
 			lastSample := metric.Snapshot().Rate1()
 			c.gaugeVecFromNameAndValue(metricName, float64(lastSample), promLabels)
-		case metrics.Timer:
+		case gometrics.Timer:
 			t := metric.Snapshot()
 			ps := t.Percentiles([]float64{0.05, 0.25, 0.5, 0.75, 0.90, 0.99})
 			switch getEventType(name) {
@@ -155,9 +160,9 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 }
 
 // EnableRunTimeMetrics enable runtime metrics
-func (c *PrometheusSinker) EnableRunTimeMetrics() {
-	c.promRegistry.MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
-	c.promRegistry.MustRegister(prometheus.NewGoCollector())
+func EnableRunTimeMetrics() {
+	metrics.GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
+	metrics.GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
 }
 
 func getEventType(metricName string) string {
@@ -235,4 +240,23 @@ func extractMetricKey(key string) string {
 	key = strings.Replace(key, scID+".", "", 1)
 
 	return key
+}
+
+var onceEnable sync.Once
+
+//ReportMetricsToPrometheus report metrics to prometheus registry, you can use GetSystemPrometheusRegistry to get prometheus registry. by default chassis will report system metrics to prometheus
+func ReportMetricsToPrometheus(r gometrics.Registry) error {
+	promConfig := GetPrometheusSinker(r)
+	if archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", true) {
+		onceEnable.Do(func() {
+			EnableRunTimeMetrics()
+			lager.Logger.Info("Go Runtime Metrics is enabled")
+		})
+
+	}
+	go promConfig.UpdatePrometheusMetrics()
+	return nil
+}
+func init() {
+	metrics.InstallReporter("Prometheus", ReportMetricsToPrometheus)
 }

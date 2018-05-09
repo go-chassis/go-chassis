@@ -7,7 +7,3 @@ cse:
     rest:
       listenAddress: 127.0.0.1:5001
       advertiseAddress: 127.0.0.1:5001
-  handler:
-    chain:
-      Provider:
-        default: tracing-provider,bizkeeper-provider
