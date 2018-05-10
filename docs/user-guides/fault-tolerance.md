@@ -23,10 +23,10 @@ go-chassis提供自动重试的容错能力，用户可配置retry及backOff策�
 **backoff.kind**
 > *(optional, string)* 重试策略: [jittered或constant或zero] 默认为*zero*
 
-**retryEnabled**
-> *(optional, int)* 重试最小时间间隔 单位ms , 默认值为*0*
+**backoff.MinMs**
+> *(optional, bool)* 重试最小时间间隔 单位ms , 默认值为*false*
 
-**retryEnabled**
+**backoff.MaxMs**
 > *(optional, int)* 重试最大时间间隔 单位ms, 默认值为*0*
 
 ## 示例
