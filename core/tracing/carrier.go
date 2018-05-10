@@ -22,7 +22,7 @@ func (r RestClientHeaderWriter) Set(key, val string) {
 	restReq.SetHeader(key, val)
 }
 
-// HeaderCarrier http heaer carrier
+// HeaderCarrier http header carrier
 type HeaderCarrier struct {
 	Header map[string]string
 }

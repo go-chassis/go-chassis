@@ -31,7 +31,7 @@ func NewRestInvoker(opt ...Option) *RestInvoker {
 // ContextDo is for requesting the API
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options ...InvocationOption) (*rest.Response, error) {
 	if string(req.GetRequest().URL.Scheme) != "cse" {
-		return nil, fmt.Errorf("Scheme invalid: %s, only support cse://", req.GetRequest().URL.Scheme)
+		return nil, fmt.Errorf("scheme invalid: %s, only support cse://", req.GetRequest().URL.Scheme)
 	}
 
 	opts := getOpts(req.GetRequest().Host, options...)
