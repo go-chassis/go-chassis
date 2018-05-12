@@ -247,7 +247,7 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 		store      = make(map[string][]*registry.MicroServiceInstance, 0)
 		defaultKey = strings.Join([]string{serviceName, common.LatestVersion, appID}, ":")
 		latestVer  string
-		latestKey  string
+		latestKey  = common.LatestVersion
 	)
 
 	for _, ins := range providerInstances {

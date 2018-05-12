@@ -1,18 +1,21 @@
 package registry
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/healthz/client"
 	"strings"
 	"time"
 )
 
 const (
-	timeoutToPending = 1 * time.Second
-	timeoutToPackage = 100 * time.Millisecond
-	chanCapacity     = 1000
+	timeoutToPending     = 1 * time.Second
+	timeoutToPackage     = 100 * time.Millisecond
+	timeoutToHealthCheck = 5 * time.Second
+	chanCapacity         = 1000
 )
 
 var defaultHealthChecker = &HealthChecker{}
@@ -95,10 +98,15 @@ func (hc *HealthChecker) check() {
 			rs = append(rs, hc.doCheck(v))
 		}
 		for _, r := range rs {
-			if cr := <-r; cr.Err != nil {
+			cr := <-r
+			if cr.Err != nil {
+				lager.Logger.Debugf("Health check instance %s failed, %s",
+					cr.Item.ServiceKey(), cr.Err)
 				hc.removeFromCache(cr.Item)
 				continue
 			}
+			lager.Logger.Debugf("Health check instance %s %s is still alive, keep it in cache",
+				cr.Item.ServiceKey(), cr.Item.Instance.EndpointsMap)
 		}
 	}
 }
@@ -106,9 +114,25 @@ func (hc *HealthChecker) check() {
 func (hc *HealthChecker) doCheck(i *WrapInstance) <-chan checkResult {
 	cr := make(chan checkResult)
 	go func() {
-		// TODO call provider healthz api
-		cr <- checkResult{Item: i, Err: errors.New("DELETE")}
-		lager.Logger.Debugf("Health check %s failed", i.String())
+		ctx, cancel := context.WithTimeout(context.Background(), timeoutToHealthCheck)
+		r := checkResult{Item: i, Err: nil}
+		defer func() {
+			cancel()
+			cr <- r
+		}()
+		req := client.Reply{
+			AppId:       i.AppID,
+			ServiceName: i.ServiceName,
+			Version:     i.Version,
+		}
+
+		for protocol, ep := range i.Instance.EndpointsMap {
+			if protocol != "highway" {
+				continue
+			}
+			r.Err = client.Test(ctx, protocol, ep, req)
+			return
+		}
 	}()
 	return cr
 }
@@ -145,13 +169,16 @@ func HealthCheck(serviceKey string, instance *MicroServiceInstance) error {
 	})
 }
 
+// RefreshCache is the function to filter changes between new pulling instances and cache
 func RefreshCache(store map[string][]*MicroServiceInstance) {
 	for key, v := range store {
 		c, ok := MicroserviceInstanceCache.Get(key)
-		if !ok {
+		if !ok || len(v) > 0 {
+			// if full new instances or at less one instance, then refresh cache immediately
 			MicroserviceInstanceCache.Set(key, v, 0)
 			continue
 		}
+
 		var (
 			news   []*MicroServiceInstance
 			lefts  []*MicroServiceInstance
