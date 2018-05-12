@@ -3,6 +3,8 @@ package registry
 import (
 	"errors"
 	"fmt"
+	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/lager"
 	"strings"
 	"time"
 )
@@ -14,6 +16,10 @@ const (
 )
 
 var defaultHealthChecker = &HealthChecker{}
+
+func init() {
+	defaultHealthChecker.Run()
+}
 
 // WrapInstance is the struct defines an instance object with appID/serviceName/version
 type WrapInstance struct {
@@ -64,8 +70,8 @@ func (hc *HealthChecker) Add(i *WrapInstance) error {
 }
 
 func (hc *HealthChecker) wait() {
+	pack := make(map[string]*WrapInstance)
 	for {
-		pack := make(map[string]*WrapInstance)
 		select {
 		case i, ok := <-hc.pendingCh:
 			if !ok {
@@ -74,7 +80,10 @@ func (hc *HealthChecker) wait() {
 			}
 			pack[i.String()] = i
 		case <-time.After(timeoutToPackage):
-			hc.delCh <- pack
+			if len(pack) > 0 {
+				hc.delCh <- pack
+				pack = make(map[string]*WrapInstance)
+			}
 		}
 	}
 }
@@ -99,6 +108,7 @@ func (hc *HealthChecker) doCheck(i *WrapInstance) <-chan checkResult {
 	go func() {
 		// TODO call provider healthz api
 		cr <- checkResult{Item: i, Err: errors.New("DELETE")}
+		lager.Logger.Debugf("Health check %s failed", i.String())
 	}()
 	return cr
 }
@@ -117,10 +127,15 @@ func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
 		is = append(is, inst)
 	}
 	MicroserviceInstanceCache.Set(key, is, 0)
+	lager.Logger.Debugf("Health check: cached [%d] Instances of service [%s]", len(is), key)
 }
 
 // HealthCheck is the function adds the instance to HealthChecker
 func HealthCheck(serviceKey string, instance *MicroServiceInstance) error {
+	if !config.GetServiceDiscoveryHealthCheck() {
+		return fmt.Errorf("Health check is disabled")
+	}
+
 	arr := strings.Split(serviceKey, ":")
 	return defaultHealthChecker.Add(&WrapInstance{
 		ServiceName: arr[0],
@@ -128,4 +143,49 @@ func HealthCheck(serviceKey string, instance *MicroServiceInstance) error {
 		AppID:       arr[2],
 		Instance:    instance,
 	})
+}
+
+func RefreshCache(store map[string][]*MicroServiceInstance) {
+	for key, v := range store {
+		c, ok := MicroserviceInstanceCache.Get(key)
+		if !ok {
+			MicroserviceInstanceCache.Set(key, v, 0)
+			continue
+		}
+		var (
+			news   []*MicroServiceInstance
+			lefts  []*MicroServiceInstance
+			elders = make(map[string]*MicroServiceInstance)
+			newers = make(map[string]*MicroServiceInstance)
+		)
+
+		for _, instance := range c.([]*MicroServiceInstance) {
+			elders[instance.InstanceID] = instance
+		}
+
+		for _, instance := range v {
+			newers[instance.InstanceID] = instance
+		}
+
+		for _, elder := range elders {
+			if _, ok := newers[elder.InstanceID]; ok {
+				lefts = append(lefts, elder)
+				continue
+			}
+			if err := HealthCheck(key, elder); err == nil {
+				lefts = append(lefts, elder)
+			} // else remove the cache immediately if HC failed
+		}
+
+		for _, newer := range v {
+			if _, ok := elders[newer.InstanceID]; ok {
+				continue
+			}
+			news = append(news, newer)
+		}
+
+		lefts = append(lefts, news...)
+		MicroserviceInstanceCache.Set(key, lefts, 0)
+		lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(lefts), key)
+	}
 }

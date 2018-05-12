@@ -57,3 +57,11 @@ func GetServiceDiscoveryDisable() bool {
 	}
 	return archaius.GetBool("cse.service.registry.disabled", false)
 }
+
+// GetServiceDiscoveryHealthCheck returns the HealthCheck of SD registry
+func GetServiceDiscoveryHealthCheck() bool {
+	if b := archaius.GetBool("cse.service.registry.serviceDiscovery.healthCheck", false); b {
+		return b
+	}
+	return archaius.GetBool("cse.service.registry.healthCheck", false)
+}
