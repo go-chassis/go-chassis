@@ -127,9 +127,6 @@ func (hc *HealthChecker) doCheck(i *WrapInstance) <-chan checkResult {
 		}
 
 		for protocol, ep := range i.Instance.EndpointsMap {
-			if protocol != "highway" {
-				continue
-			}
 			r.Err = client.Test(ctx, protocol, ep, req)
 			return
 		}
