@@ -244,10 +244,10 @@ func (c *CacheManager) autoClearCache(exist sets.String) {
 // filterRestore filter and restore instances to cache
 func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName, appID string) {
 	var (
-		latestKey = strings.Join([]string{serviceName, common.LatestVersion, appID}, ":")
-		store     = make(map[string][]*registry.MicroServiceInstance, 0)
-		latest    string
-		index     string
+		store      = make(map[string][]*registry.MicroServiceInstance, 0)
+		defaultKey = strings.Join([]string{serviceName, common.LatestVersion, appID}, ":")
+		latestVer  string
+		latestKey  = common.LatestVersion
 	)
 
 	for _, ins := range providerInstances {
@@ -259,12 +259,12 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 		var key string
 		if ins.Version != "" {
 			key = strings.Join([]string{serviceName, ins.Version, appID}, ":")
-			if ins.Version > latest {
-				latest, index = ins.Version, key
+			if ins.Version > latestVer {
+				latestVer, latestKey = ins.Version, key
 			}
 		} else {
-			key = latestKey
-			index = common.LatestVersion
+			key = defaultKey
+			latestKey = common.LatestVersion
 		}
 
 		msi := ToMicroServiceInstance(ins)
@@ -274,15 +274,11 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 		store[key] = append(store[key], msi)
 	}
 
-	for key, ins := range store {
-		registry.MicroserviceInstanceCache.Set(key, ins, 0)
-		lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(ins), key)
+	if latestKey != common.LatestVersion {
+		store[defaultKey] = store[latestKey]
 	}
 
-	if index != common.LatestVersion {
-		registry.MicroserviceInstanceCache.Set(latestKey, store[index], 0)
-		lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(store[index]), latestKey)
-	}
+	registry.RefreshCache(store)
 }
 
 // findVersionRule returns version rules for microservice
@@ -343,24 +339,31 @@ func createAction(response *model.MicroServiceInstanceChangedEvent) {
 // deleteAction delete micro-service instance
 func deleteAction(response *model.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName + ":" + response.Key.Version + ":" + response.Key.AppID
+
+	lager.Logger.Debugf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceID, response.Instance.Endpoints)
+	if err := registry.HealthCheck(key, ToMicroServiceInstance(response.Instance)); err == nil {
+		return
+	}
+
 	value, ok := registry.MicroserviceInstanceCache.Get(key)
 	if !ok {
-		lager.Logger.Errorf(nil, "ServiceID does not exist in MicroserviceInstanceCache,action is EVT_DELETE, key = %s", key)
+		lager.Logger.Errorf(nil, "ServiceID does not exist in MicroserviceInstanceCache, action is EVT_DELETE, key = %s", key)
 		return
 	}
 	microServiceInstances, ok := value.([]*registry.MicroServiceInstance)
 	if !ok {
-		lager.Logger.Errorf(nil, "Type asserts failed.action is EVT_DELETE,sid = %s", response.Instance.ServiceID)
+		lager.Logger.Errorf(nil, "Type asserts failed.action is EVT_DELETE, sid = %s", response.Instance.ServiceID)
 		return
 	}
-	var newInstances []*registry.MicroServiceInstance = make([]*registry.MicroServiceInstance, 0)
+	var newInstances = make([]*registry.MicroServiceInstance, 0)
 	for _, v := range microServiceInstances {
 		if v.InstanceID != response.Instance.InstanceID {
 			newInstances = append(newInstances, v)
 		}
 	}
+
 	registry.MicroserviceInstanceCache.Set(key, newInstances, 0)
-	lager.Logger.Debugf("Cached Instances,action is EVT_DELETE,sid = %s, instances length = %d", response.Instance.ServiceID, len(newInstances))
+	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(newInstances), key)
 }
 
 // updateAction update micro-service instance event
@@ -368,16 +371,16 @@ func updateAction(response *model.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName + ":" + response.Key.Version + ":" + response.Key.AppID
 	value, ok := registry.MicroserviceInstanceCache.Get(key)
 	if !ok {
-		lager.Logger.Errorf(nil, "ServiceID does not exist in MicroserviceInstanceCache,action is EVT_UPDATE,sid = %s", key)
+		lager.Logger.Errorf(nil, "ServiceID does not exist in MicroserviceInstanceCache, action is EVT_UPDATE, sid = %s", key)
 		return
 	}
 	microServiceInstances, ok := value.([]*registry.MicroServiceInstance)
 	if !ok {
-		lager.Logger.Errorf(nil, "Type asserts failed.action is EVT_UPDATE,sid = %s", response.Instance.ServiceID)
+		lager.Logger.Errorf(nil, "Type asserts failed.action is EVT_UPDATE, sid = %s", response.Instance.ServiceID)
 		return
 	}
 	if response.Instance.Status != model.MSInstanceUP {
-		lager.Logger.Warnf("updateAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
+		lager.Logger.Warnf("updateAction failed, MicroServiceInstance status is not MSI_UP, MicroServiceInstanceChangedEvent = %s", response)
 		return
 	}
 	msi := ToMicroServiceInstance(response.Instance)
@@ -400,5 +403,5 @@ func updateAction(response *model.MicroServiceInstanceChangedEvent) {
 		lager.Logger.Warnf("updateAction error, iid:%s", response.Instance.InstanceID)
 	}
 	registry.MicroserviceInstanceCache.Set(key, microServiceInstances, 0)
-	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE,sid = %s,instances length = %d", response.Instance.ServiceID, len(microServiceInstances))
+	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceID, len(microServiceInstances))
 }

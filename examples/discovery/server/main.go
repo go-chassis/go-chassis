@@ -7,6 +7,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/examples/schemas"
+	_ "github.com/ServiceComb/go-chassis/healthz/provider"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/discovery/server/

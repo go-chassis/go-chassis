@@ -21,6 +21,7 @@ type RegistryStruct struct {
 	Registrator       RegistratorStruct        `yaml:"registrator"`
 	ServiceDiscovery  ServiceDiscoveryStruct   `yaml:"serviceDiscovery"`
 	ContractDiscovery ContractDiscoveryStruct  `yaml:"contractDiscovery"`
+	HealthCheck       bool                     `yaml:"healthCheck"`
 }
 
 //RegistratorStruct service registry config struct
@@ -46,6 +47,7 @@ type ServiceDiscoveryStruct struct {
 	Watch           bool                     `yaml:"watch"`
 	Tenant          string                   `yaml:"tenant"`
 	APIVersion      RegistryAPIVersionStruct `yaml:"api"`
+	HealthCheck     bool                     `yaml:"healthCheck"`
 }
 
 //ContractDiscoveryStruct contract discovery config struct
