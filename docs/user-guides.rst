@@ -8,7 +8,7 @@ User guides
    user-guides/microservice
    user-guides/registry
    user-guides/service-discovery
-   user-guides/handler-chain
+   user-guides/healthz
    user-guides/invoker
    user-guides/strategy
    user-guides/filter
@@ -23,5 +23,6 @@ User guides
    user-guides/log
    user-guides/tls
    user-guides/contract
+   user-guides/istio
 
 
