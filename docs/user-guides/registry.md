@@ -75,7 +75,7 @@ InstallPlugin(name string, f func(opts ...Option) Registry)
 服务中心最简化配置只需要registry的address，注册的微服务实例通过appId、服务名和版本决定。
 
 ```yaml
-APPLICATION_ID: CSE #optional
+APPLICATION_ID: default #optional
 cse:
   service:
     registry:

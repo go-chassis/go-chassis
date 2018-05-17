@@ -24,10 +24,11 @@ Service Discovery与Registry只能选择其一进行配置
 ```yaml
 cse:
   service:
-    serviceDiscovery:
-      type: pilot      
-      address: http://istio-pilot.istio-system:8080
-      refeshInterval : 30s                    
+    Registry:
+      serviceDiscovery:
+        type: pilot      
+        address: http://istio-pilot.istio-system:8080
+        refeshInterval : 30s                    
 ```
 
 
