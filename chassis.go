@@ -43,6 +43,7 @@ import (
 	// tcp package handles transport related things
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/metadata"
+        _ "github.com/ServiceComb/cse-collector"
 )
 
 var goChassis *chassis
