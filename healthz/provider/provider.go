@@ -9,7 +9,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/healthz/client"
 	rf "github.com/ServiceComb/go-chassis/server/restful"
-	pb "github.com/apache/incubator-servicecomb-service-center/server/core/proto"
 	"net/http"
 	"sync"
 )
@@ -23,16 +22,12 @@ var (
 
 func firstRequest() {
 	once.Do(func() {
-		checkResult, _ = json.Marshal(&pb.MicroService{
-			AppId:       config.GlobalDefinition.AppID,
-			ServiceName: config.SelfServiceName,
-			Version:     config.SelfVersion,
-		})
 		checkReply = &client.Reply{
 			AppId:       config.GlobalDefinition.AppID,
 			ServiceName: config.SelfServiceName,
 			Version:     config.SelfVersion,
 		}
+		checkResult, _ = json.Marshal(checkReply)
 	})
 }
 
