@@ -92,7 +92,7 @@ func (c *Client) failure2Error(e error, r *Response) error {
 	codeStr := strconv.Itoa(r.GetStatusCode())
 	// The Failure map defines whether or not a request fail.
 	if c.opts.Failure["http_"+codeStr] {
-		return fmt.Errorf("Get error status code: %d from http response: %s", r.GetStatusCode(), string(r.ReadBody()))
+		return fmt.Errorf("%s", string(r.ReadBody()))
 	}
 
 	return nil
@@ -119,8 +119,9 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 	} else {
 		reqSend.Req.URL.Scheme = SchemaHTTP
 	}
-
-	reqSend.Req.URL.Host = addr
+	if addr != "" {
+		reqSend.Req.URL.Host = addr
+	}
 
 	//increase the max connection per host to prevent error "no free connection available" error while sending more requests.
 	c.c.Transport.(*http.Transport).MaxIdleConnsPerHost = 512 * 20
