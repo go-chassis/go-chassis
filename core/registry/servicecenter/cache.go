@@ -13,6 +13,7 @@ import (
 
 	"github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/hashicorp/go-version"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -246,25 +247,28 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 	var (
 		store      = make(map[string][]*registry.MicroServiceInstance, 0)
 		defaultKey = strings.Join([]string{serviceName, common.LatestVersion, appID}, ":")
-		latestVer  string
+		latestVer  = "0.0.0" //suppose latest version is 0.0.0, the most smallest version
 		latestKey  = common.LatestVersion
 	)
-
+	latestV, _ := version.NewVersion(latestVer)
 	for _, ins := range providerInstances {
 		if ins.Status != model.MSInstanceUP {
 			continue
 		}
 
-		// keep this for compatibility with old service-center
+		if ins.Version == "" {
+			lager.Logger.Warn("do not support old service center, plz upgrade")
+			continue
+		}
 		var key string
-		if ins.Version != "" {
-			key = strings.Join([]string{serviceName, ins.Version, appID}, ":")
-			if ins.Version > latestVer {
-				latestVer, latestKey = ins.Version, key
-			}
-		} else {
-			key = defaultKey
-			latestKey = common.LatestVersion
+		ver, err := version.NewVersion(ins.Version)
+		if err != nil {
+			lager.Logger.Error("illegal version from service center", err)
+		}
+
+		key = strings.Join([]string{serviceName, ins.Version, appID}, ":")
+		if latestV.LessThan(ver) {
+			latestVer, latestKey = ins.Version, key
 		}
 
 		msi := ToMicroServiceInstance(ins)

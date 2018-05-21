@@ -6,6 +6,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -106,5 +107,19 @@ func TestCacheManager_AutoSync(t *testing.T) {
 
 	t.Log("持有id", config.SelfServiceID)
 	t.Log("watch测试完成")
+
+}
+
+func TestServiceDiscovery_AutoSync(t *testing.T) {
+	v1, _ := version.NewVersion("1.2.1")
+	v2, _ := version.NewVersion("1.10.1")
+	v3, _ := version.NewVersion("1.21.1")
+	v4, err := version.NewVersion("0.0.0")
+	v5, err := version.NewVersion("0.0.1")
+	assert.NoError(t, err)
+	assert.True(t, v1.LessThan(v2))
+	assert.True(t, v1.LessThan(v3))
+	assert.True(t, v4.LessThan(v1))
+	assert.True(t, v4.LessThan(v5))
 
 }
