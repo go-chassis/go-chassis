@@ -38,7 +38,7 @@ func (r *Registrator) RegisterService(ms *registry.MicroService) (string, error)
 			return "", err
 		}
 	} else {
-		lager.Logger.Warnf("Microservice [%s] exists in registry, no need register", serviceKey, err)
+		lager.Logger.Warnf("[%s] exists in registry, no need register", serviceKey)
 	}
 
 	return sid, nil

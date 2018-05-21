@@ -27,7 +27,7 @@ func RegisterMicroservice() error {
 	microServiceDependencies = &MicroServiceDependency{}
 	schemas, err := schema.GetSchemaIDs(service.ServiceDescription.Name)
 	if err != nil {
-		lager.Logger.Warnf("Get schemas failed, microservice = %s.", service.ServiceDescription.Name)
+		lager.Logger.Warnf("No schemas file for microservice [%s].", service.ServiceDescription.Name)
 		schemas = make([]string, 0)
 	}
 	if service.ServiceDescription.Level == "" {

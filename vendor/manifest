@@ -1,6 +1,15 @@
 {
 	"version": 0,
 	"dependencies": [
+	    {
+    			"importpath": "github.com/hashicorp/go-version",
+    			"repository": "https://github.com/hashicorp/go-version",
+    			"vcs": "git",
+    			"revision": "23480c0665776210b5fbbac6eaaee40e3e6a96b7",
+    			"branch": "HEAD",
+    			"notests": true,
+    			"allfiles": true
+        },
 		{
 			"importpath": "github.com/DataDog/datadog-go",
 			"repository": "https://github.com/DataDog/datadog-go",
