@@ -20,7 +20,7 @@ func Init() error {
 			Templates = routerConfigFromFile.SourceTemplates
 		}
 	}
-
+	DefaultRouter.Init()
 	lager.Logger.Info("Router init success")
 	return nil
 }
