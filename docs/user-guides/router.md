@@ -63,7 +63,7 @@ sourceTemplate:  #定义source模板
 
 - 匹配特定请求由match配置，匹配条件是：source（源服务名）、source  tags 及headers，另外也可以使用refer字段来使用source模板进行匹配。
 - Match中的Source Tags用于和服务调用请求中的sourceInfo中的tags 进行逐一匹配。
-- Header中的字段的匹配支持正则, =, !=, &gt;, &lt;, &gt;=, &lt;=6种匹配方式。
+- Header中的字段的匹配支持正则, 等于, 小于, 大, 于不等于等匹配方式。
 - 如果未定义match，则可匹配任何请求。
 - 转发权重定义在routeRule.{targetServiceName}.route下，由weight配置。
 - 服务分组定义在routeRule.{targetServiceName}.route下，由tags配置，配置内容有version和app。
