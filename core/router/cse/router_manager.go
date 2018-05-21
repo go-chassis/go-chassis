@@ -53,8 +53,8 @@ type routeFileSource struct {
 	d    map[string]interface{}
 }
 
-// only initializes once
-func (r *routeFileSource) Init() {
+func newRouteFileSource() *routeFileSource {
+	r := &routeFileSource{}
 	r.once.Do(func() {
 		routeRules := GetRouteRule()
 		d := make(map[string]interface{}, 0)
@@ -68,13 +68,13 @@ func (r *routeFileSource) Init() {
 		}
 		r.d = d
 	})
+	return r
 }
 
 func (r *routeFileSource) GetSourceName() string {
 	return routeFileSourceName
 }
 func (r *routeFileSource) GetConfigurations() (map[string]interface{}, error) {
-	r.Init()
 	configMap := make(map[string]interface{})
 	for k, v := range r.d {
 		configMap[k] = v
@@ -85,7 +85,6 @@ func (r *routeFileSource) GetConfigurationsByDI(dimensionInfo string) (map[strin
 	return nil, nil
 }
 func (r *routeFileSource) GetConfigurationByKey(k string) (interface{}, error) {
-	r.Init()
 	v, ok := r.d[k]
 	if !ok {
 		return nil, errors.New("key " + k + " not exist")
@@ -112,7 +111,7 @@ func initRouterManager() error {
 	l := &routeRuleEventListener{}
 	d.RegisterListener(l, ".*")
 	routeRuleMgr = configmanager.NewConfigurationManager(d)
-	if err := AddRouteRuleSource(&routeFileSource{}); err != nil {
+	if err := AddRouteRuleSource(newRouteFileSource()); err != nil {
 		return err
 	}
 	return AddRouteRuleSource(NewRouteDarkLaunchGovernSource())

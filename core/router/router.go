@@ -18,6 +18,7 @@ var Templates = make(map[string]*model.Match)
 
 //Router return route rule, you can also set custom route rule
 type Router interface {
+	Init() error
 	SetRouteRule(map[string][]*model.RouteRule)
 	FetchRouteRule() map[string][]*model.RouteRule
 	FetchRouteRuleByServiceName(string) []*model.RouteRule

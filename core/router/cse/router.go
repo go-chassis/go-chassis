@@ -25,15 +25,17 @@ func (r *Router) SetRouteRule(rr map[string][]*model.RouteRule) {
 func (r *Router) FetchRouteRuleByServiceName(service string) []*model.RouteRule {
 	return GetRouteRuleByKey(service)
 }
-func newRouter() (router.Router, error) {
+
+//Init init router config
+func (r *Router) Init() error {
 	// the manager use dests to init, so must init after dests
 	if err := initRouterManager(); err != nil {
-		return nil, err
+		return err
 	}
+	return refresh()
+}
 
-	if err := refresh(); err != nil {
-		return nil, err
-	}
+func newRouter() (router.Router, error) {
 	return &Router{}, nil
 }
 
