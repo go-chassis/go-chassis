@@ -28,17 +28,18 @@ func (r *Registrator) RegisterService(ms *registry.MicroService) (string, error)
 	microservice := ToSCService(ms)
 	sid, err := r.registryClient.GetMicroServiceID(microservice.AppID, microservice.ServiceName, microservice.Version, microservice.Environment)
 	if err != nil {
-		lager.Logger.Warnf("Get microservice [%s] failed", serviceKey, err)
+		lager.Logger.Errorf(err, "Get service [%s] failed", serviceKey)
+		return "", err
 	}
 	if sid == "" {
-		lager.Logger.Warnf("Microservice [%s] not exists in registry, register it", serviceKey, err)
+		lager.Logger.Warnf("service [%s] not exists in registry, register it", serviceKey, err)
 		sid, err = r.registryClient.RegisterService(microservice)
 		if err != nil {
-			lager.Logger.Errorf(err, "Register microservice [%s] failed", serviceKey)
+			lager.Logger.Errorf(err, "Register service [%s] failed", serviceKey)
 			return "", err
 		}
 	} else {
-		lager.Logger.Warnf("[%s] exists in registry, no need register", serviceKey)
+		lager.Logger.Infof("[%s] exists in registry", serviceKey)
 	}
 
 	return sid, nil

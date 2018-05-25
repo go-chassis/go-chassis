@@ -195,7 +195,7 @@ func (r *restfulServer) Start() error {
 
 	}()
 
-	lager.Logger.Warnf("Restful server listening on: %s", config.Address)
+	lager.Logger.Infof("Restful server listening on: %s", config.Address)
 	return nil
 }
 

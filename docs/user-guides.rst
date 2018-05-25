@@ -8,11 +8,11 @@ User guides
    user-guides/microservice
    user-guides/registry
    user-guides/service-discovery
+   user-guides/handler-chain
    user-guides/healthz
    user-guides/invoker
    user-guides/strategy
    user-guides/filter
-   user-guides/lb
    user-guides/dynamic-conf
    user-guides/router
    user-guides/rate-limiting
