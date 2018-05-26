@@ -8,6 +8,7 @@ User guides
    user-guides/microservice
    user-guides/registry
    user-guides/service-discovery
+   user-guides/protocols
    user-guides/handler-chain
    user-guides/healthz
    user-guides/invoker
@@ -24,5 +25,5 @@ User guides
    user-guides/tls
    user-guides/contract
    user-guides/istio
-
+   user-guides/go-java-highway
 
