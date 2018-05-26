@@ -208,6 +208,9 @@ func (c *CacheManager) getServiceStore(exist []*model.MicroService) sets.String 
 	//get Provider's instances
 	serviceStore := sets.NewString()
 	for _, microservice := range exist {
+		if microservice == nil {
+			continue
+		}
 		key := strings.Join([]string{microservice.ServiceName, microservice.AppID}, ":")
 		if !serviceStore.Has(key) {
 			serviceStore.Insert(key)
@@ -269,6 +272,7 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 		key = strings.Join([]string{serviceName, ins.Version, appID}, ":")
 		if latestV.LessThan(ver) {
 			latestVer, latestKey = ins.Version, key
+			latestV, _ = version.NewVersion(latestVer)
 		}
 
 		msi := ToMicroServiceInstance(ins)
@@ -281,7 +285,6 @@ func filterRestore(providerInstances []*model.MicroServiceInstance, serviceName,
 	if latestKey != common.LatestVersion {
 		store[defaultKey] = store[latestKey]
 	}
-
 	registry.RefreshCache(store)
 }
 

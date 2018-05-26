@@ -2,11 +2,12 @@
 package loadbalancer
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
-
-	"fmt"
 	"github.com/ServiceComb/go-chassis/core/registry"
 )
 
@@ -74,13 +75,14 @@ func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID st
 		lager.Logger.Error(lbErr.Error(), nil)
 		return nil, lbErr
 	}
-	s.ReceiveData(instances, serviceName, protocol, sessionID)
+	serviceKey := strings.Join([]string{serviceName, version, app}, ":")
+	s.ReceiveData(instances, serviceKey, protocol, sessionID)
 	return s, nil
 }
 
 // Strategy is load balancer algorithm , call Pick to return one instance
 type Strategy interface {
-	ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string)
+	ReceiveData(instances []*registry.MicroServiceInstance, serviceKey, protocol, sessionID string)
 	Pick() (*registry.MicroServiceInstance, error)
 }
 

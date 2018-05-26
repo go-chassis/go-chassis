@@ -70,6 +70,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 	}
 
 	ins, err := s.Pick()
+
 	if err != nil {
 		lbErr := loadbalancer.LBError{Message: err.Error()}
 		return "", lbErr

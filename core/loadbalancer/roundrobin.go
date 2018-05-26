@@ -1,14 +1,16 @@
 package loadbalancer
 
 import (
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"math/rand"
 	"sync"
+
+	"github.com/ServiceComb/go-chassis/core/registry"
 )
 
 // RoundRobinStrategy is strategy
 type RoundRobinStrategy struct {
 	instances []*registry.MicroServiceInstance
-	mtx       sync.Mutex
+	key       string
 }
 
 func newRoundRobinStrategy() Strategy {
@@ -16,8 +18,9 @@ func newRoundRobinStrategy() Strategy {
 }
 
 //ReceiveData receive data
-func (r *RoundRobinStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string) {
+func (r *RoundRobinStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceKey, protocol, sessionID string) {
 	r.instances = instances
+	r.key = serviceKey
 }
 
 //Pick return instance
@@ -25,10 +28,33 @@ func (r *RoundRobinStrategy) Pick() (*registry.MicroServiceInstance, error) {
 	if len(r.instances) == 0 {
 		return nil, ErrNoneAvailableInstance
 	}
-	r.mtx.Lock()
-	instance := r.instances[i%len(r.instances)]
-	i++
-	r.mtx.Unlock()
 
-	return instance, nil
+	i := pick(r.key)
+	return r.instances[i%len(r.instances)], nil
+}
+
+var rrIdxMap = make(map[string]int)
+var mu sync.RWMutex
+
+func pick(key string) int {
+	mu.RLock()
+	i, ok := rrIdxMap[key]
+	if !ok {
+		mu.RUnlock()
+		mu.Lock()
+		i, ok = rrIdxMap[key]
+		if !ok {
+			i = rand.Int()
+			rrIdxMap[key] = i
+		}
+		rrIdxMap[key]++
+		mu.Unlock()
+		return i
+	}
+
+	mu.RUnlock()
+	mu.Lock()
+	rrIdxMap[key]++
+	mu.Unlock()
+	return i
 }

@@ -1,6 +1,7 @@
 package loadbalancer
 
 import (
+	"math/rand"
 	"sort"
 	"strings"
 	"sync"
@@ -9,7 +10,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"math/rand"
 )
 
 // ByDuration is for calculating the duration
@@ -128,9 +128,9 @@ func newWeightedResponseStrategy() Strategy {
 }
 
 // ReceiveData receive data
-func (r *WeightedResponseStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string) {
+func (r *WeightedResponseStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceKey, protocol, sessionID string) {
 	r.instances = instances
-	r.serviceName = serviceName
+	r.serviceName = strings.Split(serviceKey, ":")[0]
 	r.protocol = protocol
 }
 
