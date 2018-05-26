@@ -32,7 +32,7 @@ func init() {
 
 // Init initialize the tracer
 func Init() error {
-	lager.Logger.Warn("Tracing enabled. Start to init tracer map.", nil)
+	lager.Logger.Info("Tracing enabled. Start to init tracer map.", nil)
 	collector, err := NewCollector(config.GlobalDefinition.Tracing.CollectorType, config.GlobalDefinition.Tracing.CollectorTarget)
 	if err != nil {
 		lager.Logger.Error(err.Error(), nil)

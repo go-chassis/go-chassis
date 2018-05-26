@@ -55,10 +55,10 @@ func RegisterMicroservice() error {
 	sid, err := DefaultRegistrator.RegisterService(microservice)
 	config.SelfServiceID = sid
 	if err != nil {
-		lager.Logger.Errorf(err, "Register microservice [%s] failed", microservice.ServiceName)
+		lager.Logger.Errorf(err, "Register [%s] failed", microservice.ServiceName)
 		return err
 	}
-	lager.Logger.Warnf("Register microservice [%s] success", microservice.ServiceName)
+	lager.Logger.Infof("Register [%s] success", microservice.ServiceName)
 
 	for _, schemaID := range schemas {
 		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
@@ -109,7 +109,7 @@ func refreshDependency(service *MicroService) error {
 
 // RegisterMicroserviceInstances register micro-service instances
 func RegisterMicroserviceInstances() error {
-	lager.Logger.Warn("Start to register instances.", nil)
+	lager.Logger.Info("Start to register instance.", nil)
 	hostname, err := os.Hostname()
 	if err != nil {
 		lager.Logger.Error("Get hostname failed.", err)
@@ -170,6 +170,6 @@ func RegisterMicroserviceInstances() error {
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	SelfInstancesCache.Set(sid, instanceIDs, 0)
-	lager.Logger.Warnf("Register instance success, serviceID/instanceID: %s/%s.", sid, instanceID)
+	lager.Logger.Infof("Register instance success, serviceID/instanceID: %s/%s.", sid, instanceID)
 	return nil
 }
