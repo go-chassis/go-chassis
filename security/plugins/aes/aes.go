@@ -1,5 +1,3 @@
-//+build linux
-
 package aes
 
 import (
