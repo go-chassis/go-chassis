@@ -217,9 +217,7 @@ func (c *CacheManager) getServiceStore(exist []*model.MicroService) sets.String 
 		}
 	}
 
-	if archaius.GetBool("cse.service.registry.autoClearCache", false) {
-		c.autoClearCache(serviceStore)
-	}
+	c.autoClearCache(serviceStore)
 	return serviceStore
 }
 
