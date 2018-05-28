@@ -19,14 +19,10 @@ type Client struct {
 }
 
 //Do is a method
-func (c *Client) Do(req *Request, resp *Response) error {
+func (c *Client) Do(req *Request, resp *Response) (err error) {
 	c.c.Timeout = DefaultTimoutBySecond * time.Second
-	tempResponse, err := c.c.Do(req.Req)
-	if err != nil {
-		return err
-	}
-	resp.Resp = tempResponse
-	return nil
+	resp.Resp, err = c.c.Do(req.Req)
+	return
 }
 
 //Request is struct

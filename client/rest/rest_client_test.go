@@ -2,7 +2,6 @@ package rest_test
 
 import (
 	"context"
-	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -93,7 +92,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	cancel()
 
 	err = c.Call(ctx, addrRest, req, reply)
-	expectedError := errors.New("Request Cancelled")
+	expectedError := rest.ErrCanceled
 	if assert.Error(t, err) {
 		assert.Equal(t, expectedError, err)
 	}

@@ -26,6 +26,15 @@ const (
 	SchemaHTTPS = "https"
 )
 
+var (
+	//ErrCanceled means Request is canceled by context management
+	ErrCanceled = errors.New("request cancelled")
+	//ErrInvalidReq invalid input
+	ErrInvalidReq = errors.New("rest consumer call arg is not *rest.Request type")
+	//ErrInvalidResp invalid input
+	ErrInvalidResp = errors.New("rest consumer response arg is not *rest.Response type")
+)
+
 //HTTPFailureTypeMap is a variable of type map
 var HTTPFailureTypeMap = map[string]bool{
 	FailureTypePrefix + strconv.Itoa(http.StatusInternalServerError): true, //http_500
@@ -92,7 +101,7 @@ func (c *Client) failure2Error(e error, r *Response) error {
 	codeStr := strconv.Itoa(r.GetStatusCode())
 	// The Failure map defines whether or not a request fail.
 	if c.opts.Failure["http_"+codeStr] {
-		return fmt.Errorf("%s", string(r.ReadBody()))
+		return fmt.Errorf("http error status %d", r.GetStatusCode())
 	}
 
 	return nil
@@ -102,12 +111,12 @@ func (c *Client) failure2Error(e error, r *Response) error {
 func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp interface{}) error {
 	reqSend, ok := req.Arg.(*Request)
 	if !ok {
-		return errors.New("Rest consumer call arg is not *rest.Request type")
+		return ErrInvalidReq
 	}
 
 	resp, ok := rsp.(*Response)
 	if !ok {
-		return errors.New("Rest consumer response arg is not *rest.Response type")
+		return ErrInvalidResp
 	}
 
 	c.contextToHeader(ctx, reqSend)
@@ -132,7 +141,7 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 	var err error
 	select {
 	case <-ctx.Done():
-		err = errors.New("Request Cancelled")
+		err = ErrCanceled
 	case err = <-errChan:
 	}
 	return c.failure2Error(err, resp)
