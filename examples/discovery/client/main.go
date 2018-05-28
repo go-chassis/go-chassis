@@ -137,6 +137,7 @@ func callRest(invoker *core.RestInvoker) {
 	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
+		log.Printf("%s", string(resp1.ReadBody()))
 		log.Println(err)
 		return
 	}

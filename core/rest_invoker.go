@@ -29,6 +29,7 @@ func NewRestInvoker(opt ...Option) *RestInvoker {
 }
 
 // ContextDo is for requesting the API
+// by default if http status is 5XX, then it will return error
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options ...InvocationOption) (*rest.Response, error) {
 	if string(req.GetRequest().URL.Scheme) != "cse" {
 		return nil, fmt.Errorf("scheme invalid: %s, only support cse://", req.GetRequest().URL.Scheme)
