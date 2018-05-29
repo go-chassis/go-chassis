@@ -87,7 +87,6 @@ func (m *metricExchange) IncrementMetrics(wg *sync.WaitGroup, collector metricCo
 		collector.IncrementShortCircuits()
 
 		collector.IncrementAttempts()
-		collector.IncrementErrors()
 	}
 	if update.Types[0] == "timeout" {
 		collector.IncrementTimeouts()
