@@ -1,10 +1,22 @@
 最小化安装
 =====
-1. Go 参照官方文档安装1.8+版本 https://golang.org/doc/install
-2. 执行命令 git clone git@github.com:ServiceComb/go-chassis.git
-3. 执行命令 go get -u github.com/FiloSottile/gvt
-4. 进入go-chassis目录执行gvt restore
-5. 请参考文档安装Service center https://github.com/ServiceComb/service-center/releases
+1. Install [go 1.8+](https://golang.org/doc/install)
+
+2. Clone the project
+
+```sh
+git clone git@github.com:ServiceComb/go-chassis.git
+```
+
+3. Use [glide](https://github.com/Masterminds/glide) to download deps
+
+```sh
+cd go-chassis 
+glide intall
+```
+
+4. Install ServiceComb [service-center](https://github.com/ServiceComb/service-center/releases)
+
 
 使用RPC通信
 ===================
