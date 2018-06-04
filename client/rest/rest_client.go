@@ -89,7 +89,7 @@ func NewRestClient(opts client.Options) client.ProtocolClient {
 //Init is a method
 
 // If a request fails, we generate an error.
-func (c *Client) failure2Error(e error, r *Response) error {
+func (c *Client) failure2Error(e error, r *Response, addr string) error {
 	if e != nil {
 		return e
 	}
@@ -101,7 +101,7 @@ func (c *Client) failure2Error(e error, r *Response) error {
 	codeStr := strconv.Itoa(r.GetStatusCode())
 	// The Failure map defines whether or not a request fail.
 	if c.opts.Failure["http_"+codeStr] {
-		return fmt.Errorf("http error status %d", r.GetStatusCode())
+		return fmt.Errorf("http error status %d, server addr: %s", r.GetStatusCode(), addr)
 	}
 
 	return nil
@@ -144,7 +144,7 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 		err = ErrCanceled
 	case err = <-errChan:
 	}
-	return c.failure2Error(err, resp)
+	return c.failure2Error(err, resp, addr)
 }
 
 func (c *Client) String() string {
