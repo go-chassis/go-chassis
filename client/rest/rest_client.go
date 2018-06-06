@@ -9,6 +9,8 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"net"
+	"time"
 )
 
 const (
@@ -16,8 +18,10 @@ const (
 	Name = "rest"
 	// FailureTypePrefix is a constant of type string
 	FailureTypePrefix = "http_"
-	//DefaultTimoutBySecond defines the default timeout for http connections
-	DefaultTimoutBySecond = 60
+	//DefaultTimeoutBySecond defines the default timeout for http connections
+	DefaultTimeoutBySecond = 60 * time.Second
+	//DefaultKeepAliveSecond defines the connection time
+	DefaultKeepAliveSecond = 60 * time.Second
 	//DefaultMaxConnsPerHost defines the maximum number of concurrent connections
 	DefaultMaxConnsPerHost = 512
 	//SchemaHTTP represents the http schema
@@ -69,13 +73,16 @@ func NewRestClient(opts client.Options) client.ProtocolClient {
 		poolSize = opts.PoolSize
 	}
 
-	tp := &http.Transport{}
+	tp := &http.Transport{
+		MaxIdleConns:        poolSize,
+		MaxIdleConnsPerHost: poolSize,
+		DialContext: (&net.Dialer{
+			KeepAlive: DefaultKeepAliveSecond,
+			Timeout:   DefaultTimeoutBySecond,
+		}).DialContext}
 	if opts.TLSConfig != nil {
 		tp.TLSClientConfig = opts.TLSConfig
 	}
-	// There differences between MaxIdleConnsPerHost and MaxConnsPerHost
-	// See https://github.com/golang/go/issues/13957
-	tp.MaxIdleConnsPerHost = poolSize
 	rc := &Client{
 		opts: opts,
 		c: &http.Client{
