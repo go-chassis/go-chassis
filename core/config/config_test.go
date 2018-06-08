@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
@@ -16,7 +17,6 @@ func check(e error) {
 		panic(e)
 	}
 }
-
 func TestInit(t *testing.T) {
 	t.Log("testing config initialization")
 	gopath := os.Getenv("GOPATH")
@@ -128,4 +128,19 @@ cse:
 
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.Strategy["name"])
 	assert.NotEqual(t, nil, config.GetLoadBalancing())
+}
+
+func TestInit4(t *testing.T) {
+	t.Log("EnvCSEEndpoint has highest priority")
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	//config.Init()
+	os.Setenv(common.EnvCSEEndpoint, "123")
+	os.Setenv(common.CseRegistryAddress, "1243234234")
+	err := config.Init()
+	assert.NoError(t, err)
+
+	config.Init()
+	assert.Equal(t, "123", config.GlobalDefinition.Cse.Service.Registry.Address)
+	assert.Equal(t, "123", config.GlobalDefinition.Cse.Config.Client.ServerURI)
 }
