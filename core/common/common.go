@@ -19,13 +19,14 @@ const (
 	ScopeApp = "app"
 )
 
-// constant for microservice environment parameters
+// constant for micro service environment parameters
 const (
 	Env = "ServiceComb_ENV"
 
-	EnvNodeIP     = "HOSTING_SERVER_IP"
-	EnvSchemaRoot = "SCHEMA_ROOT"
-	EnvProjectID  = "CSE_PROJECT_ID"
+	EnvNodeIP      = "HOSTING_SERVER_IP"
+	EnvSchemaRoot  = "SCHEMA_ROOT"
+	EnvProjectID   = "CSE_PROJECT_ID"
+	EnvCSEEndpoint = "PAAS_CSE_ENDPOINT"
 )
 
 // constant environment keys service center, config center, monitor server addresses
@@ -37,7 +38,7 @@ const (
 
 // env connect with "." like service_description.name and service_description.version which can not be used in k8s.
 // So we can not use archaius to set env.
-// To support this decalring constant for service name and version
+// To support this declaring constant for service name and version
 // constant for service name and version.
 const (
 	ServiceName = "SERVICE_NAME"

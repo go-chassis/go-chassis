@@ -88,19 +88,26 @@ func parse() error {
 // populateServiceRegistryAddress populate service registry address
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
-	registryAddrFromEnv := archaius.GetString(common.CseRegistryAddress, "")
+	registryAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+	if registryAddrFromEnv == "" {
+		registryAddrFromEnv = archaius.GetString(common.CseRegistryAddress, "")
+	}
 	if registryAddrFromEnv != "" {
 		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
 	}
+
 }
 
 // populateConfigCenterAddress populate config center address
 func populateConfigCenterAddress() {
 	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := archaius.GetString(common.CseConfigCenterAddress, "")
+	configCenterAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+	if configCenterAddrFromEnv == "" {
+		configCenterAddrFromEnv = archaius.GetString(common.CseConfigCenterAddress, "")
+	}
 	if configCenterAddrFromEnv != "" {
 		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
 	}
