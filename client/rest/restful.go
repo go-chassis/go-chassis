@@ -2,13 +2,11 @@ package rest
 
 import (
 	"bytes"
+	"github.com/ServiceComb/go-chassis/core/client"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"sync"
-	"time"
-
-	"github.com/ServiceComb/go-chassis/core/client"
 )
 
 //Client is a struct
@@ -20,7 +18,6 @@ type Client struct {
 
 //Do is a method
 func (c *Client) Do(req *Request, resp *Response) (err error) {
-	c.c.Timeout = DefaultTimoutBySecond * time.Second
 	resp.Resp, err = c.c.Do(req.Req)
 	return
 }
