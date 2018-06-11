@@ -39,13 +39,6 @@ func genKey(s ...string) string {
 	return strings.Join(s, ".")
 }
 
-func genMsKey(prefix, src, dest, property string) string {
-	if src == "" {
-		return genKey(prefix, dest, property)
-	}
-	return genKey(prefix, src, dest, property)
-}
-
 // GetServerListFilters get server list filters
 func GetServerListFilters() (filters []string) {
 	lbMutex.RLock()
@@ -75,7 +68,7 @@ func GetSessionTimeout(source, service string) int {
 	if global == 0 {
 		global = DefaultSessionTimeout
 	}
-	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertySessionStickinessRuleTimeout), global)
+	ms := archaius.GetInt(genKey(lbPrefix, service, propertySessionStickinessRuleTimeout), global)
 	lbMutex.RUnlock()
 	return ms
 }
@@ -87,7 +80,7 @@ func StrategySuccessiveFailedTimes(source, service string) int {
 	if global == 0 {
 		global = DefaultFailedTimes
 	}
-	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertySessionStickinessRuleFailedTimes), global)
+	ms := archaius.GetInt(genKey(lbPrefix, service, propertySessionStickinessRuleFailedTimes), global)
 	lbMutex.RUnlock()
 	return ms
 }
@@ -96,7 +89,7 @@ func StrategySuccessiveFailedTimes(source, service string) int {
 func RetryEnabled(source, service string) bool {
 	lbMutex.RLock()
 	global := GetLoadBalancing().RetryEnabled
-	ms := archaius.GetBool(genMsKey(lbPrefix, source, service, propertyRetryEnabled), global)
+	ms := archaius.GetBool(genKey(lbPrefix, service, propertyRetryEnabled), global)
 	lbMutex.RUnlock()
 	return ms
 }
@@ -105,7 +98,7 @@ func RetryEnabled(source, service string) bool {
 func GetRetryOnNext(source, service string) int {
 	lbMutex.RLock()
 	global := GetLoadBalancing().RetryOnNext
-	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertyRetryOnNext), global)
+	ms := archaius.GetInt(genKey(lbPrefix, service, propertyRetryOnNext), global)
 	lbMutex.RUnlock()
 	return ms
 }
@@ -114,7 +107,7 @@ func GetRetryOnNext(source, service string) int {
 func GetRetryOnSame(source, service string) int {
 	lbMutex.RLock()
 	global := GetLoadBalancing().RetryOnSame
-	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertyRetryOnSame), global)
+	ms := archaius.GetInt(genKey(lbPrefix, service, propertyRetryOnSame), global)
 	lbMutex.RUnlock()
 	return ms
 }
@@ -132,13 +125,13 @@ func backoffKind(source, service string) string {
 
 func backoffMinMs(source, service string) int {
 	global := GetLoadBalancing().Backoff.MinMs
-	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertyBackoffMinMs), global)
+	ms := archaius.GetInt(genKey(lbPrefix, service, propertyBackoffMinMs), global)
 	return ms
 }
 
 func backoffMaxMs(source, service string) int {
 	global := GetLoadBalancing().Backoff.MaxMs
-	ms := archaius.GetInt(genMsKey(lbPrefix, source, service, propertyBackoffMaxMs), global)
+	ms := archaius.GetInt(genKey(lbPrefix, service, propertyBackoffMaxMs), global)
 	return ms
 }
 

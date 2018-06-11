@@ -144,18 +144,18 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	testConfigFactoryObj := new(MockConfigurationFactory)
 	archaius.DefaultConf.ConfigFactory = testConfigFactoryObj
 	key1 := fmt.Sprint("cse.loadbalance.retryEnabled")
-	key2 := fmt.Sprint("cse.loadbalance.source1.service1.retryEnabled")
+	key2 := fmt.Sprint("cse.loadbalance.service1.retryEnabled")
 	key3 := fmt.Sprint("cse.loadbalance.retryOnSame")
-	key4 := fmt.Sprint("cse.loadbalance.source1.service1.retryOnSame")
+	key4 := fmt.Sprint("cse.loadbalance.service1.retryOnSame")
 	key5 := fmt.Sprint("cse.loadbalance.retryOnNext")
-	key6 := fmt.Sprint("cse.loadbalance.source1.service1.retryOnNext")
+	key6 := fmt.Sprint("cse.loadbalance.service1.retryOnNext")
 	key7 := fmt.Sprint("cse.references.service1.transport")
 	key8 := fmt.Sprint("cse.loadbalance.backoff.kind")
-	key9 := fmt.Sprint("cse.loadbalance.source1.service1.backoff.kind")
+	key9 := fmt.Sprint("cse.loadbalance.service1.backoff.kind")
 	key10 := fmt.Sprint("cse.loadbalance.backoff.minMs")
-	key11 := fmt.Sprint("cse.loadbalance.source1.service1.backoff.minMs")
+	key11 := fmt.Sprint("cse.loadbalance.service1.backoff.minMs")
 	key12 := fmt.Sprint("cse.loadbalance.backoff.maxMs")
-	key13 := fmt.Sprint("cse.loadbalance.source1.service1.backoff.maxMs")
+	key13 := fmt.Sprint("cse.loadbalance.service1.backoff.maxMs")
 	key14 := fmt.Sprint("cse.loadbalance.strategy.name")
 	key15 := fmt.Sprint("cse.loadbalance.SessionStickinessRule.sessionTimeoutInSeconds")
 	key16 := fmt.Sprint("cse.loadbalance.SessionStickinessRule.successiveFailedTimes")
@@ -211,15 +211,14 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	req, _ := rest.NewRequest("GET", "127.0.0.1")
 	req.SetHeader("Set-Cookie", "sessionid=100")
 	i := &invocation.Invocation{
-		SourceMicroService: "source1",
-		MicroServiceName:   "service1",
-		SchemaID:           "schema1",
-		OperationID:        "SayHello",
-		Args:               req,
-		Version:            "1.0",
-		Strategy:           loadbalancer.StrategyRoundRobin,
-		AppID:              "appID",
-		SourceServiceID:    config.SelfServiceID,
+		MicroServiceName: "service1",
+		SchemaID:         "schema1",
+		OperationID:      "SayHello",
+		Args:             req,
+		Version:          "1.0",
+		Strategy:         loadbalancer.StrategyRoundRobin,
+		AppID:            "appID",
+		SourceServiceID:  config.SelfServiceID,
 		//Filters:
 	}
 	t.Log(i.SourceServiceID)
@@ -267,15 +266,14 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	config.GetLoadBalancing().Strategy = make(map[string]string)
 	loadbalancer.Enable()
 	i := &invocation.Invocation{
-		SourceMicroService: "source1",
-		MicroServiceName:   "service1",
-		SchemaID:           "schema1",
-		OperationID:        "SayHello",
-		Args:               &helloworld.HelloRequest{Name: "peter"},
-		Version:            "1.0",
-		Strategy:           loadbalancer.StrategyRoundRobin,
-		AppID:              "appID",
-		SourceServiceID:    "selfServiceID",
+		MicroServiceName: "service1",
+		SchemaID:         "schema1",
+		OperationID:      "SayHello",
+		Args:             &helloworld.HelloRequest{Name: "peter"},
+		Version:          "1.0",
+		Strategy:         loadbalancer.StrategyRoundRobin,
+		AppID:            "appID",
+		SourceServiceID:  "selfServiceID",
 		//Filters:
 	}
 	c.Next(i, func(r *invocation.InvocationResponse) error {
