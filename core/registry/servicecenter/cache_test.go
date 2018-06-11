@@ -43,7 +43,8 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "event1", instanceID)
 	time.Sleep(time.Second * 1)
-	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "default", "Server", "0.1", "")
+	tags := registry.NewDefaultTag("0.1", "default")
+	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "Server", tags)
 	assert.NotZero(t, len(instances))
 	assert.NoError(t, err)
 	var ok = false

@@ -131,7 +131,7 @@ func (f *Discovery) AutoSync() {
 }
 
 // FindMicroServiceInstances find micro-service instances
-func (f *Discovery) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
+func (f *Discovery) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
 	providerInstances, err := f.registryClient.FindMicroServiceInstances(microServiceName)
 	if err != nil {
 		return nil, fmt.Errorf("FindMicroServiceInstances failed, err: %s", err)

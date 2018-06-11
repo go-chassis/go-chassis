@@ -28,8 +28,7 @@ type ServiceDiscovery interface {
 	GetAllMicroServices() ([]*MicroService, error)
 	GetMicroService(microServiceID string) (*MicroService, error)
 	GetMicroServiceInstances(consumerID, providerID string) ([]*MicroServiceInstance, error)
-	// FindMicroServiceInstances find instances of a service specified by appID, microServiceName, version and env
-	FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*MicroServiceInstance, error)
+	FindMicroServiceInstances(consumerID, microServiceName string, tags Tags) ([]*MicroServiceInstance, error)
 	AutoSync()
 	Close() error
 }

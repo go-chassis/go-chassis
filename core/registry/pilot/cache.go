@@ -1,15 +1,14 @@
 package pilot
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-
-	"errors"
-	"fmt"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -115,16 +114,13 @@ func (c *CacheManager) getServiceStore(exist []*Service) sets.String {
 			serviceStore.Insert(microservice.ServiceKey)
 		}
 	}
-
-	if archaius.GetBool("cse.service.registry.autoClearCache", false) {
-		c.autoClearCache(serviceStore)
-	}
+	c.autoClearCache(serviceStore)
 	return serviceStore
 }
 
 // autoClearCache clear cache for non exist service
 func (c *CacheManager) autoClearCache(exist sets.String) {
-	old := registry.MicroserviceInstanceCache.Items()
+	old := registry.MicroserviceInstanceIndex.Items()
 	delsets := sets.NewString()
 
 	for key := range old {
@@ -134,7 +130,7 @@ func (c *CacheManager) autoClearCache(exist sets.String) {
 	}
 
 	for insKey := range delsets {
-		registry.MicroserviceInstanceCache.Delete(insKey)
+		registry.MicroserviceInstanceIndex.Delete(insKey)
 	}
 }
 
@@ -145,5 +141,5 @@ func filterRestore(hs []*Host, serviceName string) {
 		msi := ToMicroServiceInstance(ins)
 		store = append(store, msi)
 	}
-	registry.MicroserviceInstanceCache.Set(serviceName, store, 0)
+	registry.MicroserviceInstanceIndex.Set(serviceName, store)
 }

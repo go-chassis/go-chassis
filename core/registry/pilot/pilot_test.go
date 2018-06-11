@@ -10,12 +10,13 @@ import (
 
 var (
 	s  = httptest.NewServer(&mockPilotHandler{})
-	sd = newDiscoveryService(registry.Options{Addrs: []string{s.Listener.Addr().String()}})
+	sd registry.ServiceDiscovery
 )
 
 func init() {
-	lager.Initialize("stdout", "", "", "",
-		true, 0, 0, 0)
+	lager.Initialize("stdout", "", "", "", true, 0, 0, 0)
+	registry.SetNoIndexCache()
+	sd = newDiscoveryService(registry.Options{Addrs: []string{s.Listener.Addr().String()}})
 }
 
 func TestPilot_RegisterServiceAndInstance(t *testing.T) {
@@ -37,7 +38,7 @@ func TestPilot_RegisterServiceAndInstance(t *testing.T) {
 	assert.Equal(t, "1.1.1.1_80", instances[0].InstanceID)
 	assert.Equal(t, "1.1.1.1:80", instances[0].EndpointsMap["rest"])
 
-	instances, err = sd.FindMicroServiceInstances("", "", "a", "", "")
+	instances, err = sd.FindMicroServiceInstances("", "a", nil)
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(instances))
 	assert.Equal(t, "1.1.1.1_80", instances[0].InstanceID)
