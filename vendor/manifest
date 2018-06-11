@@ -226,6 +226,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/google/btree",
+			"repository": "https://github.com/google/btree",
+			"vcs": "git",
+			"revision": "e89373fe6b4a7413d7acd6da1725b83ef713e6e4",
+			"branch": "HEAD",
+			"notests": true		
+		},
+		{
 			"importpath": "github.com/gorilla/websocket",
 			"repository": "https://github.com/gorilla/websocket",
 			"vcs": "git",

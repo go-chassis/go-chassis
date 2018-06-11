@@ -166,7 +166,10 @@ func (resp *Response) GetResponse() *http.Response {
 
 // GetStatusCode returns response status code.
 func (resp *Response) GetStatusCode() int {
-	return resp.Resp.StatusCode
+	if resp.Resp != nil {
+		return resp.Resp.StatusCode
+	}
+	return 0
 }
 
 // SetStatusCode sets the status code
@@ -176,7 +179,7 @@ func (resp *Response) SetStatusCode(s int) {
 
 // ReadBody read body from the from the response
 func (resp *Response) ReadBody() []byte {
-	if resp.Resp.Body != nil {
+	if resp.Resp != nil && resp.Resp.Body != nil {
 		body, err := ioutil.ReadAll(resp.Resp.Body)
 		if err != nil {
 			return nil
@@ -197,7 +200,7 @@ func (resp *Response) GetHeader() []byte {
 // Close closes the file descriptor
 //TODO Confirm it's necessary or not
 func (resp *Response) Close() {
-	if resp.Resp.Body != nil {
+	if resp.Resp != nil && resp.Resp.Body != nil {
 		resp.Resp.Body.Close()
 	}
 }

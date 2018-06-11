@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/healthz/client"
-	"strings"
-	"time"
 )
 
 const (
@@ -135,8 +135,7 @@ func (hc *HealthChecker) doCheck(i *WrapInstance) <-chan checkResult {
 }
 
 func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
-	key := i.ServiceKey()
-	c, ok := MicroserviceInstanceCache.Get(key)
+	c, ok := MicroserviceInstanceIndex.Get(i.ServiceName, nil)
 	if !ok {
 		return
 	}
@@ -147,69 +146,65 @@ func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
 		}
 		is = append(is, inst)
 	}
-	MicroserviceInstanceCache.Set(key, is, 0)
-	lager.Logger.Debugf("Health check: cached [%d] Instances of service [%s]", len(is), key)
+	MicroserviceInstanceIndex.Set(i.ServiceName, is)
+	lager.Logger.Debugf("Health check: cached [%d] Instances of service [%s]", len(is), i.ServiceName)
 }
 
 // HealthCheck is the function adds the instance to HealthChecker
-func HealthCheck(serviceKey string, instance *MicroServiceInstance) error {
+func HealthCheck(service, version, appID string, instance *MicroServiceInstance) error {
 	if !config.GetServiceDiscoveryHealthCheck() {
 		return fmt.Errorf("Health check is disabled")
 	}
 
-	arr := strings.Split(serviceKey, ":")
 	return defaultHealthChecker.Add(&WrapInstance{
-		ServiceName: arr[0],
-		Version:     arr[1],
-		AppID:       arr[2],
+		ServiceName: service,
+		Version:     version,
+		AppID:       appID,
 		Instance:    instance,
 	})
 }
 
 // RefreshCache is the function to filter changes between new pulling instances and cache
-func RefreshCache(store map[string][]*MicroServiceInstance) {
-	for key, v := range store {
-		c, ok := MicroserviceInstanceCache.Get(key)
-		if !ok || len(v) > 0 {
-			// if full new instances or at less one instance, then refresh cache immediately
-			MicroserviceInstanceCache.Set(key, v, 0)
+func RefreshCache(service string, store []*MicroServiceInstance) {
+	c, ok := MicroserviceInstanceIndex.Get(service, nil)
+	if !ok || c == nil {
+		// if full new instances or at less one instance, then refresh cache immediately
+		MicroserviceInstanceIndex.Set(service, store)
+		return
+	}
+
+	var (
+		news   []*MicroServiceInstance
+		lefts  []*MicroServiceInstance
+		elders = make(map[string]*MicroServiceInstance)
+		newers = make(map[string]*MicroServiceInstance)
+	)
+	for _, instance := range c.([]*MicroServiceInstance) {
+		elders[instance.InstanceID] = instance
+	}
+
+	for _, instance := range store {
+		newers[instance.InstanceID] = instance
+	}
+
+	for _, elder := range elders {
+		if _, ok := newers[elder.InstanceID]; ok {
+			lefts = append(lefts, elder)
 			continue
 		}
-
-		var (
-			news   []*MicroServiceInstance
-			lefts  []*MicroServiceInstance
-			elders = make(map[string]*MicroServiceInstance)
-			newers = make(map[string]*MicroServiceInstance)
-		)
-
-		for _, instance := range c.([]*MicroServiceInstance) {
-			elders[instance.InstanceID] = instance
-		}
-
-		for _, instance := range v {
-			newers[instance.InstanceID] = instance
-		}
-
-		for _, elder := range elders {
-			if _, ok := newers[elder.InstanceID]; ok {
-				lefts = append(lefts, elder)
-				continue
-			}
-			if err := HealthCheck(key, elder); err == nil {
-				lefts = append(lefts, elder)
-			} // else remove the cache immediately if HC failed
-		}
-
-		for _, newer := range v {
-			if _, ok := elders[newer.InstanceID]; ok {
-				continue
-			}
-			news = append(news, newer)
-		}
-
-		lefts = append(lefts, news...)
-		MicroserviceInstanceCache.Set(key, lefts, 0)
-		lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(lefts), key)
+		if err := HealthCheck(service, elder.version(), elder.appID(), elder); err == nil {
+			lefts = append(lefts, elder)
+		} // else remove the cache immediately if HC failed
 	}
+
+	for _, newer := range newers {
+		if _, ok := elders[newer.InstanceID]; ok {
+			continue
+		}
+		news = append(news, newer)
+	}
+
+	lefts = append(lefts, news...)
+	MicroserviceInstanceIndex.Set(service, lefts)
+	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(lefts), service)
 }
