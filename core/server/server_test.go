@@ -13,6 +13,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry/mock"
 	"github.com/ServiceComb/go-chassis/core/server"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
+	cache "github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,6 +50,7 @@ func TestSrcMgr(t *testing.T) {
 
 	var arr = []string{"127.0.0.1", "hgfghfff"}
 
+	registry.SelfInstancesCache = cache.New(0, 0)
 	registry.SelfInstancesCache.Set("abc", arr, time.Second*30)
 	/*a:=func(...transport.Option) transport.Transport{
 		//var t transport.Transport
@@ -125,7 +127,7 @@ func TestSrcMgrErr(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	var arr = []string{"127.0.0.1", "hgfghfff"}
-
+	registry.SelfInstancesCache = cache.New(0, 0)
 	registry.SelfInstancesCache.Set("abc", arr, time.Second*30)
 	registry.SelfInstancesCache.Set("def", "def", time.Second*30)
 

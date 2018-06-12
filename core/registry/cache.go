@@ -50,6 +50,9 @@ type CacheIndex interface {
 	Delete(k string)
 }
 
+// SetNoIndexCache reset microservie instance index to no index cache
+func SetNoIndexCache() { MicroserviceInstanceIndex = newNoIndexCache() }
+
 // newCacheIndex returns default index implemention
 func newCacheIndex() CacheIndex {
 	if archaius.GetBool("cse.service.registry.cacheIndex", false) {

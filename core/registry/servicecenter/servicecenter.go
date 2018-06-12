@@ -5,7 +5,6 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-
 	client "github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 )
@@ -314,7 +313,6 @@ func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID strin
 func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
 	key := microServiceName
 	tags := registry.NewDefaultTag(version, appID)
-
 	value, boo := registry.MicroserviceInstanceIndex.Get(key, tags)
 	if !boo || value == nil {
 		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, key)

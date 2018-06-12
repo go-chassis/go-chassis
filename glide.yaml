@@ -104,6 +104,9 @@ import:
 - package: github.com/golang/snappy
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
   repo: https://github.com/golang/snappy
+- package: github.com/google/btree
+  version: e89373fe6b4a7413d7acd6da1725b83ef713e6e4
+  repo: https://github.com/google/btree
 - package: github.com/gorilla/websocket
   version: 1f512fc3f05332ba7117626cdfb4e07474e58e60
   repo: https://github.com/gorilla/websocket
