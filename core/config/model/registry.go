@@ -22,6 +22,7 @@ type RegistryStruct struct {
 	ServiceDiscovery  ServiceDiscoveryStruct   `yaml:"serviceDiscovery"`
 	ContractDiscovery ContractDiscoveryStruct  `yaml:"contractDiscovery"`
 	HealthCheck       bool                     `yaml:"healthCheck"`
+	CacheIndex        bool                     `yaml:"cacheIndex"`
 }
 
 //RegistratorStruct service registry config struct

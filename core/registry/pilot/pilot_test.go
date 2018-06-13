@@ -10,12 +10,13 @@ import (
 
 var (
 	s  = httptest.NewServer(&mockPilotHandler{})
-	sd = newDiscoveryService(registry.Options{Addrs: []string{s.Listener.Addr().String()}})
+	sd registry.ServiceDiscovery
 )
 
 func init() {
-	lager.Initialize("stdout", "", "", "",
-		true, 0, 0, 0)
+	lager.Initialize("stdout", "", "", "", true, 0, 0, 0)
+	registry.SetNoIndexCache()
+	sd = newDiscoveryService(registry.Options{Addrs: []string{s.Listener.Addr().String()}})
 }
 
 func TestPilot_RegisterServiceAndInstance(t *testing.T) {
