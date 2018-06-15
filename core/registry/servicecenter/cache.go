@@ -49,7 +49,7 @@ func (c *CacheManager) AutoSync() {
 	} else {
 		timeValue, err := time.ParseDuration(refreshInterval)
 		if err != nil {
-			lager.Logger.Errorf(err, "refeshInterval is invalid. So use Default value")
+			lager.Logger.Errorf(err, "refreshInterval is invalid. So use Default value")
 			timeValue = DefaultRefreshInterval
 		}
 		ticker = time.NewTicker(timeValue)
