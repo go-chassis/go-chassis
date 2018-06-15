@@ -63,7 +63,10 @@ func ToMicroServiceInstance(ins *model.MicroServiceInstance) *registry.MicroServ
 		msi.DataCenterInfo.AvailableZone = ins.DataCenterInfo.AvailableZone
 		msi.DataCenterInfo.Region = ins.DataCenterInfo.Region
 	}
-
+	if msi.Metadata == nil {
+		msi.Metadata = make(map[string]string)
+	}
+	msi.Metadata["version"] = ins.Version
 	return msi
 }
 

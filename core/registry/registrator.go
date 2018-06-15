@@ -148,6 +148,7 @@ func Enable() (err error) {
 		return err
 	}
 
+	enableRegistryCache()
 	enableRegistrator(oR)
 	enableServiceDiscovery(oSD)
 	enableContractDiscovery(oCD)

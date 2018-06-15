@@ -25,7 +25,8 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	testRegisterServiceAndInstance(t, registry.DefaultRegistrator, registry.DefaultServiceDiscoveryService)
 	sid := testGetMicroServiceID(t, "CSE", "DSFtestAppThree", "2.0.3", registry.DefaultServiceDiscoveryService)
 	t.Log("获取依赖的实例")
-	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "CSE", "DSFtestAppThree", "2.0.3", "")
+	tags := registry.NewDefaultTag("2.0.3", "CSE")
+	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "DSFtestAppThree", tags)
 	assert.NoError(t, err)
 	assert.NotZero(t, len(instances))
 

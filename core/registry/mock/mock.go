@@ -103,8 +103,8 @@ func (m *DiscoveryMock) GetMicroServiceInstances(consumerID, providerID string) 
 }
 
 //FindMicroServiceInstances find micro-service instances
-func (m *DiscoveryMock) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
-	args := m.Called(consumerID, appID, microServiceName, version, env)
+func (m *DiscoveryMock) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
+	args := m.Called(consumerID, tags.AppID(), microServiceName, tags.Version(), "")
 	return args.Get(0).([]*registry.MicroServiceInstance), args.Error(1)
 }
 

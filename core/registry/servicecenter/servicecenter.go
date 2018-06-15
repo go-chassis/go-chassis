@@ -5,7 +5,6 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-
 	client "github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 )
@@ -311,22 +310,21 @@ func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID strin
 }
 
 // FindMicroServiceInstances find micro-service instances
-func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
-	key := microServiceName + ":" + version + ":" + appID
-
-	value, boo := registry.MicroserviceInstanceCache.Get(key)
+func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
+	appID := tags.AppID()
+	value, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, tags)
 	if !boo || value == nil {
-		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, key)
+		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, microServiceName)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
 			findVersionRule(microServiceName))
 		if err != nil {
-			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", key, err)
+			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", microServiceName, err)
 		}
 
-		filterRestore(providerInstances, microServiceName, appID)
-		value, boo = registry.MicroserviceInstanceCache.Get(key)
+		filterReIndex(providerInstances, microServiceName, appID)
+		value, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags)
 		if !boo || value == nil {
-			lager.Logger.Debugf("Find no microservice instances for %s from cache", key)
+			lager.Logger.Debugf("Find no microservice instances for %s from cache", microServiceName)
 			return nil, nil
 		}
 	}

@@ -79,8 +79,8 @@ func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID strin
 }
 
 // FindMicroServiceInstances find micro-service instances
-func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, appID, microServiceName, version, env string) ([]*registry.MicroServiceInstance, error) {
-	value, boo := registry.MicroserviceInstanceCache.Get(microServiceName)
+func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
+	value, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, nil)
 	if !boo || value == nil {
 		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, microServiceName)
 		hs, err := r.registryClient.GetServiceHosts(microServiceName)
@@ -90,7 +90,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, appID, microSer
 		}
 
 		filterRestore(hs.Hosts, microServiceName)
-		value, boo = registry.MicroserviceInstanceCache.Get(microServiceName)
+		value, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, nil)
 		if !boo || value == nil {
 			lager.Logger.Debugf("Find no microservice instances for %s from cache", microServiceName)
 			return nil, nil
@@ -118,6 +118,10 @@ func (r *ServiceDiscovery) Close() error {
 }
 
 func newDiscoveryService(options registry.Options) registry.ServiceDiscovery {
+	//TODO: now no tag information can obtain from SDS response
+	// tags should rebuild according to RDS requests
+	registry.MicroserviceInstanceIndex.SetIndexTags(nil)
+
 	c := &EnvoyDSClient{}
 	c.Initialize(Options{
 		Addrs:     options.Addrs,
