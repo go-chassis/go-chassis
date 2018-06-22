@@ -1,4 +1,4 @@
-FROM 10.162.197.95:5000/cse-base:latest
+FROM ubuntu
 
 ADD *.tar.gz /home
 COPY start.sh /home

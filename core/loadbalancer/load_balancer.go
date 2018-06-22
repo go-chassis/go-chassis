@@ -76,6 +76,7 @@ func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID st
 		lager.Logger.Error(lbErr.Error(), nil)
 		return nil, lbErr
 	}
+	// TODO: lb strategy for serviceKey should refactor to tags
 	serviceKey := strings.Join([]string{serviceName, version, app}, ":")
 	s.ReceiveData(instances, serviceKey, protocol, sessionID)
 	return s, nil

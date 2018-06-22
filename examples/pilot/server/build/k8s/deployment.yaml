@@ -2,8 +2,9 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: default
     version: v1
+    app: pilot
+    name: istioserver
   name: istioserver
   namespace: default
 spec:
@@ -12,7 +13,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: default
+      app: pilot
       version: v1
   strategy:
     rollingUpdate:
@@ -22,7 +23,7 @@ spec:
   template:
     metadata:
       labels:
-        app: default
+        app: pilot
         version: v1
     spec:
       containers:

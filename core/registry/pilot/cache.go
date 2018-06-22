@@ -9,7 +9,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 // constant values for default expiration time, and refresh interval
@@ -66,7 +65,6 @@ func (c *CacheManager) refreshCache() {
 			lager.Logger.Errorf(err, "Auto Update IP index failed.")
 		}
 	}
-
 }
 
 // MakeIPIndex make ip index
@@ -89,57 +87,33 @@ func (c *CacheManager) MakeIPIndex() error {
 
 // pullMicroserviceInstance pull micro-service instance
 func (c *CacheManager) pullMicroserviceInstance() error {
-	//Get Providers
-	services, err := c.registryClient.GetAllServices()
-	if err != nil {
-		lager.Logger.Errorf(err, "get Providers failed, sid = %s", config.SelfServiceID)
-		return err
-	}
+	old := registry.MicroserviceInstanceIndex.Items()
+	labels := registry.MicroserviceInstanceIndex.GetIndexTags()
 
-	// just auto clean cache
-	c.getServiceStore(services)
-
-	for _, service := range services {
-		filterRestore(service.Hosts, service.ServiceKey)
+	for serviceKey, store := range old {
+		for key := range store.Items() {
+			tags := pilotTags(labels, key)
+			hs, err := c.registryClient.GetHostsByKey(serviceKey, tags)
+			if err != nil {
+				continue
+			}
+			filterRestore(hs.Hosts, serviceKey, tags)
+		}
 	}
 	return nil
 }
 
-// getServiceStore returns service sets
-func (c *CacheManager) getServiceStore(exist []*Service) sets.String {
-	//get Provider's instances
-	serviceStore := sets.NewString()
-	for _, microservice := range exist {
-		if !serviceStore.Has(microservice.ServiceKey) {
-			serviceStore.Insert(microservice.ServiceKey)
-		}
-	}
-	c.autoClearCache(serviceStore)
-	return serviceStore
-}
-
-// autoClearCache clear cache for non exist service
-func (c *CacheManager) autoClearCache(exist sets.String) {
-	old := registry.MicroserviceInstanceIndex.Items()
-	delsets := sets.NewString()
-
-	for key := range old {
-		if !exist.Has(key) {
-			delsets.Insert(key)
-		}
-	}
-
-	for insKey := range delsets {
-		registry.MicroserviceInstanceIndex.Delete(insKey)
-	}
-}
-
 // filterRestore filter and restore instances to cache
-func filterRestore(hs []*Host, serviceName string) {
-	var store []*registry.MicroServiceInstance
-	for _, ins := range hs {
-		msi := ToMicroServiceInstance(ins)
+func filterRestore(hs []*Host, serviceKey string, tags registry.Tags) {
+	if len(hs) == 0 {
+		registry.MicroserviceInstanceIndex.Delete(serviceKey)
+		return
+	}
+
+	store := make([]*registry.MicroServiceInstance, 0, len(hs))
+	for _, host := range hs {
+		msi := ToMicroServiceInstance(host, tags)
 		store = append(store, msi)
 	}
-	registry.MicroserviceInstanceIndex.Set(serviceName, store)
+	registry.MicroserviceInstanceIndex.Set(serviceKey, store)
 }
