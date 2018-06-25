@@ -53,8 +53,8 @@ func (r *RestFulHello) SayJSON(b *rf.Context) {
 }
 
 //URLPatterns helps to respond for corresponding API calls
-func (r *RestFulHello) URLPatterns() []rf.Route {
-	return []rf.Route{
+func (r *RestFulHello) URLPatterns() []rf.RouteSpec {
+	return []rf.RouteSpec{
 		{http.MethodGet, "/sayhello/{userid}", "Sayhello"},
 		{http.MethodPost, "/sayhi", "Sayhi"},
 		{http.MethodPost, "/sayjson", "SayJSON"},
@@ -93,8 +93,8 @@ func (r *RestFulMessage) Sayerror(b *rf.Context) {
 }
 
 //URLPatterns helps to respond for corresponding API calls
-func (r *RestFulMessage) URLPatterns() []rf.Route {
-	return []rf.Route{
+func (r *RestFulMessage) URLPatterns() []rf.RouteSpec {
+	return []rf.RouteSpec{
 		{http.MethodGet, "/saymessage/{name}", "Saymessage"},
 		{http.MethodPost, "/sayhimessage", "Sayhi"},
 		{http.MethodGet, "/sayerror", "Sayerror"},

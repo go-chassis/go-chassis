@@ -52,8 +52,8 @@ func (s *HelloServer) SayHello(b *restful.Context) {
 	b.Write([]byte("Hello : Welcome to Go-Chassis."))
 }
 //Specify URL pattern
-func (s *HelloServer) URLPatterns() []restful.Route {
-	return []restful.Route{
+func (s *HelloServer) URLPatterns() []restful.RouteSpec {
+	return []restful.RouteSpec{
 		{http.MethodGet, "/sayhello", "SayHello"},
 	}
 }

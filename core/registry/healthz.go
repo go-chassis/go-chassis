@@ -206,5 +206,5 @@ func RefreshCache(service string, store []*MicroServiceInstance) {
 
 	lefts = append(lefts, news...)
 	MicroserviceInstanceIndex.Set(service, lefts)
-	lager.Logger.Infof("Cached [%d] Instances of service [%s]", len(lefts), service)
+	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(lefts), service)
 }

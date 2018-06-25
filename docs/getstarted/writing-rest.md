@@ -23,8 +23,8 @@ func (r *RestFulHello) Sayhello(b *restful.Context) {
 ```
 2.注册路由
 ```go
-func (s *RestFulHello) URLPatterns() []restful.Route {
-    return []restful.Route{
+func (s *RestFulHello) URLPatterns() []restful.RouteSpec {
+    return []restful.RouteSpec{
         {http.MethodGet, "/sayhello/{userid}", "Sayhello"},
     }
 }

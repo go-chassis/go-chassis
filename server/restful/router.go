@@ -5,8 +5,8 @@ import (
 	"reflect"
 )
 
-//Route is a struct
-type Route struct {
+//RouteSpec is a struct
+type RouteSpec struct {
 	// Method is one of the following: GET,PUT,POST,DELETE
 	Method string
 	// Path contains a path pattern
@@ -15,25 +15,25 @@ type Route struct {
 	ResourceFuncName string
 }
 
-//GetRoutes is a function used to respond to corresponding API calls
-func GetRoutes(schema interface{}) ([]Route, error) {
+//GetRouteSpecs is to return a rest API specification of a go struct
+func GetRouteSpecs(schema interface{}) ([]RouteSpec, error) {
 	rfValue := reflect.ValueOf(schema)
 	name := reflect.Indirect(rfValue).Type().Name()
 	urlPatternFunc := rfValue.MethodByName("URLPatterns")
 	if !urlPatternFunc.IsValid() {
-		return []Route{}, fmt.Errorf("<rest.RegisterResource> no 'URLPatterns' function in servant struct `%s`", name)
+		return []RouteSpec{}, fmt.Errorf("<rest.RegisterResource> no 'URLPatterns' function in servant struct `%s`", name)
 	}
 	vals := urlPatternFunc.Call([]reflect.Value{})
 	if len(vals) <= 0 {
-		return []Route{}, fmt.Errorf("<rest.RegisterResource> call URLPatterns function failed in struct `%s`", name)
+		return []RouteSpec{}, fmt.Errorf("<rest.RegisterResource> call URLPatterns function failed in struct `%s`", name)
 	}
 
 	if !rfValue.CanInterface() {
-		return []Route{}, fmt.Errorf("<rest.RegisterResource> result of 'URLPatterns' function not interface type in servant struct `%s`", name)
+		return []RouteSpec{}, fmt.Errorf("<rest.RegisterResource> result of 'URLPatterns' function not interface type in servant struct `%s`", name)
 	}
 
-	if routes, ok := vals[0].Interface().([]Route); ok {
+	if routes, ok := vals[0].Interface().([]RouteSpec); ok {
 		return routes, nil
 	}
-	return []Route{}, fmt.Errorf("<rest.RegisterResource> result of 'URLPatterns' function not []*Route type in servant struct `%s`", name)
+	return []RouteSpec{}, fmt.Errorf("<rest.RegisterResource> result of 'URLPatterns' function not []*RouteSpec type in servant struct `%s`", name)
 }

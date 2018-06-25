@@ -185,14 +185,18 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 	for key := range serviceStore {
 		service := strings.Split(key, ":")
 		if len(service) != 2 {
-			lager.Logger.Errorf(err, "Invalid servcieStore %s for providers %s", key, config.SelfServiceID)
+			lager.Logger.Errorf(err, "Invalid serviceStore %s for providers %s", key, config.SelfServiceID)
 			continue
 		}
 
 		providerInstances, err := c.registryClient.FindMicroServiceInstances(config.SelfServiceID, service[1],
 			service[0], findVersionRule(service[0]))
 		if err != nil {
-			lager.Logger.Errorf(err, "GetMicroServiceInstances failed")
+			if err == client.ErrNotModified {
+				lager.Logger.Debug(err.Error())
+				continue
+			}
+			lager.Logger.Error("Refresh local instance cache failed", err)
 			continue
 		}
 
