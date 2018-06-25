@@ -25,9 +25,9 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/ServiceComb/go-chassis/core/common"
 )
+
+const Size = "size"
 
 var pathReplacer *strings.Replacer
 
@@ -301,7 +301,7 @@ func initLogRotate(logFilePath string, lag *Lager) {
 			}
 		}()
 	} else {
-		if lag.RollingPolicy == common.Size {
+		if lag.RollingPolicy == Size {
 			go func() {
 				for {
 					LogRotate(filepath.Dir(logFilePath), lag.LogRotateSize, lag.LogBackupCount)
