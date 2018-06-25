@@ -109,19 +109,19 @@ const (
 
 //constant used
 const (
-	HTTP              = "http"
-	HTTPS             = "https"
-	JSON              = "application/json"
-	Create            = "CREATE"
-	Update            = "UPDATE"
-	Delete            = "DELETE"
-	Size              = "size"
-	Client            = "client"
-	File              = "File"
-	SessionID         = "sessionid"
-	DefaultTenant     = "default"
-	DefaultChainName  = "default"
-	RollingPolicySize = "size"
+	HTTP   = "http"
+	HTTPS  = "https"
+	JSON   = "application/json"
+	Create = "CREATE"
+	Update = "UPDATE"
+	Delete = "DELETE"
+
+	Client           = "client"
+	File             = "File"
+	SessionID        = "sessionid"
+	DefaultTenant    = "default"
+	DefaultChainName = "default"
+
 	FileRegistry      = "File"
 	DefaultUserName   = "default"
 	DefaultDomainName = "default"
