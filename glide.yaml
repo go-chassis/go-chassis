@@ -22,7 +22,7 @@ import:
   - sources/file-source
   - sources/memory-source
 - package: github.com/ServiceComb/go-cc-client
-  version: master
+  version: 649a050adfe8e63f426671cc365f228e29388b1c
   repo: https://github.com/ServiceComb/go-cc-client
   subpackages:
   - member-discovery
