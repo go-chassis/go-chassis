@@ -78,7 +78,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 		o(&opts)
 	}
 
-	routes, err := GetRoutes(schema)
+	routes, err := GetRouteSpecs(schema)
 	if err != nil {
 		return "", err
 	}
@@ -98,7 +98,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 			return "", fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
 		}
 
-		handle := func(req *restful.Request, rep *restful.Response) {
+		handler := func(req *restful.Request, rep *restful.Response) {
 			c, err := handler.GetChain(common.Provider, r.opts.ChainName)
 			if err != nil {
 				lager.Logger.Errorf(err, "Handler chain init err")
@@ -135,26 +135,31 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 
 		}
 
-		switch route.Method {
-		case http.MethodGet:
-			r.ws.Route(r.ws.GET(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodPost:
-			r.ws.Route(r.ws.POST(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodHead:
-			r.ws.Route(r.ws.HEAD(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodPut:
-			r.ws.Route(r.ws.PUT(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodPatch:
-			r.ws.Route(r.ws.PATCH(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodDelete:
-			r.ws.Route(r.ws.DELETE(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		default:
-			return "", errors.New("method do not support: " + route.Method)
+		if err := r.register2GoRestful(route, handler); err != nil {
+			return "", err
 		}
 	}
 	return reflect.TypeOf(schema).String(), nil
 }
-
+func (r *restfulServer) register2GoRestful(routeSpec RouteSpec, handler restful.RouteFunction) error {
+	switch routeSpec.Method {
+	case http.MethodGet:
+		r.ws.Route(r.ws.GET(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodPost:
+		r.ws.Route(r.ws.POST(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodHead:
+		r.ws.Route(r.ws.HEAD(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodPut:
+		r.ws.Route(r.ws.PUT(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodPatch:
+		r.ws.Route(r.ws.PATCH(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodDelete:
+		r.ws.Route(r.ws.DELETE(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	default:
+		return errors.New("method do not support: " + routeSpec.Method)
+	}
+	return nil
+}
 func (r *restfulServer) Start() error {
 	var err error
 	config := r.opts
