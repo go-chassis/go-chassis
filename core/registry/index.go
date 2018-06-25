@@ -69,7 +69,8 @@ func (hi *hashIndex) Set(k string, x interface{}) {
 	for label, m := range exist {
 		hi.cache[k].Set(label, m, 0)
 	}
-	hi.autoClearCache(k, exist)
+	// TODO: how to clear cache auto clear does not work
+	// hi.autoClearCache(k, exist)
 }
 
 func (hi *hashIndex) autoClearCache(k string, exist map[string][]*MicroServiceInstance) {

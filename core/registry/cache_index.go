@@ -21,7 +21,7 @@ func newNoIndexCache() *noIndexCache {
 }
 
 func (n *noIndexCache) SetIndexTags(tags sets.String)  {}
-func (b *noIndexCache) GetIndexTags() []string         { return nil }
+func (n *noIndexCache) GetIndexTags() []string         { return nil }
 func (n *noIndexCache) Items() map[string]*cache.Cache { return nil }
 func (n *noIndexCache) Delete(k string)                { n.cache.Delete(k); delete(n.latestV, k) }
 
@@ -81,6 +81,7 @@ type indexCache struct {
 func newIndexCache() *indexCache {
 	tags := sets.NewString(common.BuildinTagVersion, common.BuildinTagApp)
 	return &indexCache{
+		// no cache could remove from index cache
 		cache: newNoIndexCache(),
 		index: newHashIndex(tags),
 	}

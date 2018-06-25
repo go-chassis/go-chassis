@@ -84,7 +84,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	serviceKey := pilotServiceKey(microServiceName)
 	value, boo := registry.MicroserviceInstanceIndex.Get(serviceKey, tags)
 	if !boo || value == nil {
-		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, serviceKey)
+		lager.Logger.Warnf("%s Get instances from remote, key: %s, %v", consumerID, serviceKey, tags)
 		hs, err := r.registryClient.GetHostsByKey(serviceKey, tags)
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s",

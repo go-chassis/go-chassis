@@ -9,7 +9,8 @@ type RouterConfig struct {
 
 // Router define where rule comes from
 type Router struct {
-	Infra string `yaml:"infra"`
+	Infra   string `yaml:"infra"`
+	Address string `yaml:"address"`
 }
 
 // RouteRule is having route rule parameters

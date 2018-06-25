@@ -22,6 +22,7 @@ var useDefaultSslTag = sets.NewString(
 	"serviceDiscovery.Consumer.",
 	"registrator.Consumer.",
 	"contractDiscovery.Consumer.",
+	"router.Consumer",
 )
 
 func hasDefaultSslTag(tag string) bool {
@@ -197,4 +198,22 @@ func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *sec
 // IsSSLConfigNotExist check the status of ssl configurations
 func IsSSLConfigNotExist(e error) bool {
 	return e == errSSLConfigNotExist
+}
+
+// GetTLSConfig returns tls config from scheme and type
+func GetTLSConfig(scheme, t string) (*tls.Config, error) {
+	var tlsConfig *tls.Config
+	secure := scheme == common.HTTPS
+	if secure {
+		sslTag := t + "." + common.Consumer
+		tmpTLSConfig, _, err := GetTLSConfigByService(t, "", common.Consumer)
+		if err != nil {
+			if IsSSLConfigNotExist(err) {
+				return nil, fmt.Errorf("%s tls mode, but no ssl config", sslTag)
+			}
+			return nil, fmt.Errorf("Load %s TLS config failed", sslTag)
+		}
+		tlsConfig = tmpTLSConfig
+	}
+	return tlsConfig, nil
 }

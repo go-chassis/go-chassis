@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	POD_NAMESPACE = "POD_NAMESPACE"
-	DefaultSuffix = "svc.cluster.loca|http"
+	// PODNAMESPACE means pod's namespace
+	PODNAMESPACE = "POD_NAMESPACE"
+	// DefaultSuffix means suffix of service key of api v1
+	DefaultSuffix = "svc.cluster.local|http"
 )
 
 // Close : Close all connection.
@@ -36,7 +38,7 @@ func filterInstances(hs []*Host) []*registry.MicroServiceInstance {
 }
 
 func pilotServiceKey(service string) string {
-	ns := os.Getenv(POD_NAMESPACE)
+	ns := os.Getenv(PODNAMESPACE)
 	if ns == "" {
 		ns = "default"
 	}
@@ -54,7 +56,7 @@ func pilotQueryKey(serviceKey string, tags registry.Tags) string {
 		}
 		ss = append(ss, k+"="+v)
 	}
-	return "/" + serviceKey + "|" + strings.Join(ss, ";")
+	return "/" + serviceKey + "|" + strings.Join(ss, ",")
 }
 
 func pilotTags(labels []string, key string) map[string]string {

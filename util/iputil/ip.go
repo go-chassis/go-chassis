@@ -1,7 +1,9 @@
 package iputil
 
 import (
+	"fmt"
 	"net"
+	"net/url"
 	"os"
 	"strings"
 
@@ -54,4 +56,28 @@ func DefaultPort4Protocol(proto string) string {
 	default:
 		return "7000"
 	}
+}
+
+// URIs2Hosts returns hosts and schema
+func URIs2Hosts(uris []string) ([]string, string, error) {
+	hosts := make([]string, 0, len(uris))
+	var scheme string
+	for _, addr := range uris {
+		u, e := url.Parse(addr)
+		if e != nil {
+			//not uri. but still permitted, like zookeeper,file system
+			hosts = append(hosts, u.Host)
+			continue
+		}
+		if len(u.Host) == 0 {
+			continue
+		}
+		if len(scheme) != 0 && u.Scheme != scheme {
+			return nil, "", fmt.Errorf("inconsistent scheme found in registry address")
+		}
+		scheme = u.Scheme
+		hosts = append(hosts, u.Host)
+
+	}
+	return hosts, scheme, nil
 }

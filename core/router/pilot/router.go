@@ -1,50 +1,68 @@
-package cse
+package pilot
 
 import (
 	"fmt"
+	"sync"
+
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/router"
-	"sync"
 )
 
-//Router is cse router service
-type Router struct {
-}
+func init() { router.InstallRouterService("pilot", newPilotRouter) }
+
+func newPilotRouter() (router.Router, error) { return &PilotRouter{}, nil }
+
+//PilotRouter is pilot router service
+type PilotRouter struct{}
 
 //FetchRouteRule return all rules
-func (r *Router) FetchRouteRule() map[string][]*model.RouteRule {
+func (r *PilotRouter) FetchRouteRule() map[string][]*model.RouteRule {
 	return GetRouteRule()
 }
 
 //SetRouteRule set rules
-func (r *Router) SetRouteRule(rr map[string][]*model.RouteRule) {
+func (r *PilotRouter) SetRouteRule(rr map[string][]*model.RouteRule) {
 	SetRouteRule(rr)
 }
 
 //FetchRouteRuleByServiceName get rules for service
-func (r *Router) FetchRouteRuleByServiceName(service string) []*model.RouteRule {
+func (r *PilotRouter) FetchRouteRuleByServiceName(service string) []*model.RouteRule {
 	return GetRouteRuleByKey(service)
 }
 
 //Init init router config
-func (r *Router) Init(o router.Options) error {
+func (r *PilotRouter) Init(o router.Options) error {
+	// SetDestinations router destinations
+	for target := range config.GetRouterReference() {
+		SetRouteRuleByKey(target, nil)
+	}
 	// the manager use dests to init, so must init after dests
-	if err := initRouterManager(); err != nil {
+	if err := InitPilotFetcher(o); err != nil {
 		return err
 	}
 	return refresh()
 }
 
 // InitRouteRuleByKey init route rule by service key
-func (r *Router) InitRouteRuleByKey(k string) {}
+func (r *PilotRouter) InitRouteRuleByKey(k string) {
+	lock.RLock()
+	_, ok1 := dests[k]
+	lock.RUnlock()
 
-func newRouter() (router.Router, error) {
-	return &Router{}, nil
+	if !ok1 {
+		lock.Lock()
+		if _, ok2 := dests[k]; !ok2 {
+			dests[k] = nil
+			setChanForPilot(k)
+		}
+		lock.Unlock()
+	}
 }
 
 // refresh all the router config
 func refresh() error {
-	configs := routeRuleMgr.GetConfigurations()
+	configs := pilotfetcher.GetConfigurations()
 	d := make(map[string][]*model.RouteRule)
 	for k, v := range configs {
 		rules, ok := v.([]*model.RouteRule)
@@ -54,7 +72,6 @@ func refresh() error {
 		}
 		d[k] = rules
 	}
-
 	if router.ValidateRule(d) {
 		dests = d
 	}
@@ -94,10 +111,7 @@ func GetRouteRule() map[string][]*model.RouteRule {
 
 // SetRouteRule set route rule
 func SetRouteRule(rule map[string][]*model.RouteRule) {
-	lock.RLock()
-	defer lock.RUnlock()
+	lock.Lock()
+	defer lock.Unlock()
 	dests = rule
-}
-func init() {
-	router.InstallRouterService("cse", newRouter)
 }

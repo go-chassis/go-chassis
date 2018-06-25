@@ -96,6 +96,7 @@ func (c *EnvoyDSClient) GetServiceHosts(serviceName string) (*Hosts, error) {
 	return &response, nil
 }
 
+// GetHostsByKey returns Hosts using servicekey and tags
 func (c *EnvoyDSClient) GetHostsByKey(serviceKey string, tags registry.Tags) (*Hosts, error) {
 	apiURL := c.getAddress() + BaseRoot + pilotQueryKey(serviceKey, tags)
 	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
