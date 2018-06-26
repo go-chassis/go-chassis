@@ -79,6 +79,7 @@ func TestInitConfigCenterWithInvalidURI(t *testing.T) {
 	err := config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = "hdhhhd:njdj"
+	config.GlobalDefinition.Cse.Config.Client.Type = "config_center"
 	err = configcenter.InitConfigCenter()
 	t.Log("HEllo", err)
 }
@@ -90,6 +91,7 @@ func TestInitConfigCenterWithSSL(t *testing.T) {
 	err := config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = "https://127.0.0.1:8787"
+	config.GlobalDefinition.Cse.Config.Client.Type = "config_center"
 	err = configcenter.InitConfigCenter()
 	t.Log("HEllo", err)
 }
@@ -103,6 +105,7 @@ func TestInitConfigCenterWithInvalidName(t *testing.T) {
 	name := model.MicServiceStruct{Name: "qwertyuiopasdfghjklgsgdfsgdgafdggsahhhhh"}
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = "https://127.0.0.1:8787"
 	config.MicroserviceDefinition = &model.MicroserviceCfg{ServiceDescription: name}
+	config.GlobalDefinition.Cse.Config.Client.Type = "config_center"
 	err = configcenter.InitConfigCenter()
 	assert.Error(t, err)
 	t.Log("HEllo", err)

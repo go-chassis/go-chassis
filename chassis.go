@@ -41,6 +41,7 @@ import (
 	// highway package register the highway server plugin
 	_ "github.com/ServiceComb/go-chassis/server/highway"
 	// tcp package handles transport related things
+	"github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/metadata"
 )
@@ -135,6 +136,8 @@ func (c *chassis) initialize() error {
 	}
 
 	bootstrap.Bootstrap()
+
+	configcenter.InitConfigCenter()
 	// router needs get configs from config-center when init
 	// so it must init after bootstrap
 	err = router.Init()
