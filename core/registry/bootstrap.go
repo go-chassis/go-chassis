@@ -110,12 +110,16 @@ func refreshDependency(service *MicroService) error {
 // RegisterMicroserviceInstances register micro-service instances
 func RegisterMicroserviceInstances() error {
 	lager.Logger.Info("Start to register instance.", nil)
-	hostname, err := os.Hostname()
-	if err != nil {
-		lager.Logger.Error("Get hostname failed.", err)
-		return err
-	}
 	service := config.MicroserviceDefinition
+	var err error
+	if service.ServiceDescription.Hostname == "" {
+		service.ServiceDescription.Hostname, err = os.Hostname()
+		if err != nil {
+			lager.Logger.Error("Get hostname failed.", err)
+			return err
+		}
+	}
+
 	sid, err := DefaultServiceDiscoveryService.GetMicroServiceID(config.GlobalDefinition.AppID, service.ServiceDescription.Name, service.ServiceDescription.Version, service.ServiceDescription.Environment)
 	if err != nil {
 		lager.Logger.Errorf(err, "Get service failed, key: %s:%s:%s",
@@ -132,7 +136,7 @@ func RegisterMicroserviceInstances() error {
 
 	microServiceInstance := &MicroServiceInstance{
 		EndpointsMap: eps,
-		HostName:     hostname,
+		HostName:     service.ServiceDescription.Hostname,
 		Status:       common.DefaultStatus,
 		Metadata:     map[string]string{"nodeIP": config.NodeIP},
 	}

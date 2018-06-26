@@ -1,36 +1,43 @@
 # 微服务定义
 
-## 概述
-一个微服务需要通过microservice.yaml文件对自己进行定义。
-微服务与微服务实例概念：
-每个进程对应一个微服务实例，多个实例可能属于同一个微服务。
-比如：以程序为单位，编译打包后运行便产生了一个微服务实例，他们的代码是同源的，也就是说他们属于同一个微服务
+## Introduction
+Use microservice.yaml to describe your service
+
+Conceptions:
+- instance: one process is a micro service instance, instances belong to one micro service
+- service: service is a static information entity in storage, it has instances
+
+you can consider a project as an micro service, after compile,build and run, it became a micro service instance
 
 
-## 配置
+## Configurations
 
 **name**
-> *(required, string)* 微服务名称
+> *(required, string)* Micro service name
+
+**hostname**
+> *(optional, string)* hostname of host, it can be IP or hostname,default is hostname return by os.hostname()
 
 **APPLICATION_ID**
-> *(optional, string)* 所属应用 默认default
+> *(optional, string)* Application ID, default value is "default"
 
 **version**
-> *(optional, string)* 版本号 默认0.0.1
+> *(optional, string)* version number default is 0.0.1
 
 **properties**
-> *(optional, map)* 微服务元数据，通常在开发期就已经定死
+> *(optional, map)* micro service metadata ，usually it is defined in project, and never changed
 
 **instance_properties**
-> *(optional, map)* 微服务实例元数据，运行期每个实例的内容可能会根据运行环境而有差异
+> *(optional, map)* instance metadata, during runtime, if can be different based on environment 
 
-## 例子
+## Example
 
 ```yaml
 service_description:
   name: Server
+  hostname: 10.244.1.3
   properties:
-    project: test
+    project: X1
   instance_properties:
     nodeIP: 192.168.0.111
 ```
