@@ -13,6 +13,7 @@ type Index interface {
 	Set(k string, x interface{})
 	Get(k string, tags map[string]string) (interface{}, bool)
 	Delete(k string)
+	Items() map[string]*cache.Cache
 
 	//TODO: tags set to defaultTag with version and app now
 	// it can be set according to config
@@ -34,7 +35,9 @@ func newHashIndex(tags sets.String) Index {
 	return hi
 }
 
-func (hi *hashIndex) GetTags() []string { return hi.labels }
+func (hi *hashIndex) Items() map[string]*cache.Cache { return hi.cache }
+func (hi *hashIndex) GetTags() []string              { return hi.labels }
+
 func (hi *hashIndex) SetTags(tags sets.String) {
 	labels := make([]string, 0, len(tags))
 	for tag := range tags {
@@ -66,7 +69,8 @@ func (hi *hashIndex) Set(k string, x interface{}) {
 	for label, m := range exist {
 		hi.cache[k].Set(label, m, 0)
 	}
-	hi.autoClearCache(k, exist)
+	// TODO: how to clear cache auto clear does not work
+	// hi.autoClearCache(k, exist)
 }
 
 func (hi *hashIndex) autoClearCache(k string, exist map[string][]*MicroServiceInstance) {

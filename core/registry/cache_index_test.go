@@ -41,13 +41,6 @@ func TestNoIndexCache(t *testing.T) {
 	assert.Equal(t, len(m), 1)
 	assert.Equal(t, m[0].Metadata["version"], "0.1")
 	assert.Equal(t, m[0].Metadata["project"], "dev")
-
-	items := cache.Items()
-	assert.Equal(t, len(items), 1)
-
-	cache.Delete("TestServer")
-	items = cache.Items()
-	assert.Equal(t, len(items), 0)
 }
 
 func TestIndexCache(t *testing.T) {

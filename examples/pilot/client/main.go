@@ -3,14 +3,13 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/ServiceComb/go-chassis"
 	_ "github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/client/rest"
-	_ "github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"time"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder

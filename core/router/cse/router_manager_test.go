@@ -9,9 +9,9 @@ import (
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/lager"
-
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/model"
+	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/router"
 	"github.com/stretchr/testify/assert"
 )
@@ -261,6 +261,10 @@ func preInit(t *testing.T) {
 	c.ConfigFactory.AddSource(NewExternalConfigurationSource())
 }
 
+func initRouterDefinition() {
+	config.RouterDefinition = &model.RouterConfig{Router: model.Router{}}
+}
+
 func TestInitRouterManager(t *testing.T) {
 	preInit(t)
 	SetRouteRuleByKey(svcRoute, genSvcRouteRule())
@@ -268,6 +272,7 @@ func TestInitRouterManager(t *testing.T) {
 	SetRouteRuleByKey(svcRouteAndDarkLaunch, r)
 	NewExternalConfigurationSource().AddKeyValue(DarkLaunchPrefix+svcRouteAndDarkLaunch, s)
 	NewExternalConfigurationSource().AddKeyValue(DarkLaunchPrefix+svcDarkLaunch, genSvcDarkLaunchRule())
+	initRouterDefinition()
 	err := router.Init()
 	if err != nil {
 		t.Error(err)

@@ -2,6 +2,7 @@ package pilot
 
 import (
 	"fmt"
+
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 )
@@ -80,19 +81,20 @@ func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID strin
 
 // FindMicroServiceInstances find micro-service instances
 func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
-	value, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, nil)
+	serviceKey := pilotServiceKey(microServiceName)
+	value, boo := registry.MicroserviceInstanceIndex.Get(serviceKey, tags)
 	if !boo || value == nil {
-		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, microServiceName)
-		hs, err := r.registryClient.GetServiceHosts(microServiceName)
+		lager.Logger.Warnf("%s Get instances from remote, key: %s, %v", consumerID, serviceKey, tags)
+		hs, err := r.registryClient.GetHostsByKey(serviceKey, tags)
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s",
 				microServiceName, err)
 		}
 
-		filterRestore(hs.Hosts, microServiceName)
-		value, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, nil)
+		filterRestore(hs.Hosts, serviceKey, tags)
+		value, boo = registry.MicroserviceInstanceIndex.Get(serviceKey, tags)
 		if !boo || value == nil {
-			lager.Logger.Debugf("Find no microservice instances for %s from cache", microServiceName)
+			lager.Logger.Debugf("Find no microservice instances for %s from cache", serviceKey)
 			return nil, nil
 		}
 	}
@@ -120,7 +122,6 @@ func (r *ServiceDiscovery) Close() error {
 func newDiscoveryService(options registry.Options) registry.ServiceDiscovery {
 	//TODO: now no tag information can obtain from SDS response
 	// tags should rebuild according to RDS requests
-	registry.MicroserviceInstanceIndex.SetIndexTags(nil)
 
 	c := &EnvoyDSClient{}
 	c.Initialize(Options{

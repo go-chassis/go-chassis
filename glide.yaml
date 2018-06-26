@@ -1,5 +1,10 @@
 package: github.com/ServiceComb/go-chassis
 import:
+- package: github.com/envoyproxy/go-control-plane
+  version: bc01fbfcb66faf0bf61e1e98a7b189689a7066a1
+  repo: https://github.com/envoyproxy/go-control-plane
+  subpackages:
+  - envoy/api/v2
 - package: github.com/hashicorp/go-version
   version: 23480c0665776210b5fbbac6eaaee40e3e6a96b7
   repo: https://github.com/hashicorp/go-version

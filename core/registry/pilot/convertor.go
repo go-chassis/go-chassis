@@ -35,7 +35,7 @@ func ToMicroService(scs *Service) *registry.MicroService {
 }
 
 // ToMicroServiceInstance assign pilot host parameters to registry micro-service instance parameters
-func ToMicroServiceInstance(ins *Host) *registry.MicroServiceInstance {
+func ToMicroServiceInstance(ins *Host, tags registry.Tags) *registry.MicroServiceInstance {
 	ipPort := fmt.Sprintf("%s:%d", ins.Address, ins.Port)
 	msi := &registry.MicroServiceInstance{}
 	msi.InstanceID = strings.Replace(ipPort, ":", "_", 1)
@@ -50,6 +50,6 @@ func ToMicroServiceInstance(ins *Host) *registry.MicroServiceInstance {
 			AvailableZone: ins.Tags.AZ,
 		}
 	}
-
+	msi.Metadata = tags
 	return msi
 }

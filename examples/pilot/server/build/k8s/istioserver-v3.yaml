@@ -2,10 +2,10 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
+    version: v3
     app: pilot
-    version: v1
-    name: istioclient
-  name: istioclient
+    name: istioserver
+  name: istioserver-v3
   namespace: default
 spec:
   progressDeadlineSeconds: 600
@@ -13,8 +13,8 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: istioclient
-      version: v1
+      app: pilot
+      version: v3
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -23,13 +23,13 @@ spec:
   template:
     metadata:
       labels:
-        app: istioclient
-        version: v1
+        app: pilot
+        version: v3
     spec:
       containers:
-      - image: gosdk-istio-client:latest
+      - image: gosdk-istio-server:latest
         imagePullPolicy: Always
-        name: istioclient
+        name: istioserver-v3
         ports:
         - containerPort: 8084
           protocol: TCP

@@ -20,9 +20,10 @@ func newNoIndexCache() *noIndexCache {
 	}
 }
 
-func (n *noIndexCache) SetIndexTags(tags sets.String) {}
-func (n *noIndexCache) Items() map[string]cache.Item  { return n.cache.Items() }
-func (n *noIndexCache) Delete(k string)               { n.cache.Delete(k); delete(n.latestV, k) }
+func (n *noIndexCache) SetIndexTags(tags sets.String)  {}
+func (n *noIndexCache) GetIndexTags() []string         { return nil }
+func (n *noIndexCache) Items() map[string]*cache.Cache { return nil }
+func (n *noIndexCache) Delete(k string)                { n.cache.Delete(k); delete(n.latestV, k) }
 
 func (n *noIndexCache) Set(k string, x interface{}) {
 	latestV, _ := version.NewVersion("0.0.0")
@@ -65,7 +66,7 @@ func (n *noIndexCache) Get(k string, tags map[string]string) (interface{}, bool)
 }
 
 func (n *noIndexCache) setTagsBeforeQuery(k string, tags map[string]string) {
-	if v, ok := tags[common.BuildinTagVersion]; ok && v == common.LatestVersion {
+	if v, ok := tags[common.BuildinTagVersion]; ok && v == common.LatestVersion && n.latestV[k] != "" {
 		tags[common.BuildinTagVersion] = n.latestV[k]
 	}
 }
@@ -80,6 +81,7 @@ type indexCache struct {
 func newIndexCache() *indexCache {
 	tags := sets.NewString(common.BuildinTagVersion, common.BuildinTagApp)
 	return &indexCache{
+		// no cache could remove from index cache
 		cache: newNoIndexCache(),
 		index: newHashIndex(tags),
 	}
@@ -87,9 +89,10 @@ func newIndexCache() *indexCache {
 
 // TODO: if tags rebuild, indexers should autoclear to remove
 // index which is built from old tags
-func (b *indexCache) SetIndexTags(tags sets.String) { b.index.SetTags(tags) }
-func (b *indexCache) Items() map[string]cache.Item  { return b.cache.Items() }
-func (b *indexCache) Delete(k string)               { b.cache.Delete(k); b.index.Delete(k) }
+func (b *indexCache) GetIndexTags() []string         { return b.index.GetTags() }
+func (b *indexCache) SetIndexTags(tags sets.String)  { b.index.SetTags(tags) }
+func (b *indexCache) Items() map[string]*cache.Cache { return b.index.Items() }
+func (b *indexCache) Delete(k string)                { b.cache.Delete(k); b.index.Delete(k) }
 
 func (b *indexCache) Set(k string, x interface{}) {
 	b.cache.Set(k, x)

@@ -18,7 +18,8 @@ var Templates = make(map[string]*model.Match)
 
 //Router return route rule, you can also set custom route rule
 type Router interface {
-	Init() error
+	Init(Options) error
+	InitRouteRuleByKey(string)
 	SetRouteRule(map[string][]*model.RouteRule)
 	FetchRouteRule() map[string][]*model.RouteRule
 	FetchRouteRuleByServiceName(string) []*model.RouteRule
@@ -206,6 +207,7 @@ func isMatch(headers map[string]string, k string, v map[string]string) bool {
 
 // SortRules sort route rules
 func SortRules(name string) []*model.RouteRule {
+	DefaultRouter.InitRouteRuleByKey(name)
 	slice := DefaultRouter.FetchRouteRuleByServiceName(name)
 	return QuickSort(0, len(slice)-1, slice)
 }

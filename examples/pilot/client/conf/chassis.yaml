@@ -7,12 +7,13 @@ cse:
       # scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
       # address: http://istio-pilot:8080
       # #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
-      refeshInterval : 30s
+      refreshInterval: 10s
       # watch: true
       registrator:
         disabled: true
       serviceDiscovery:
         type: pilot
+        # refreshInterval: 30s
         address: http://istio-pilot.istio-system:8080
   protocols:
     rest:

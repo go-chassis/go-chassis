@@ -3,12 +3,14 @@ package pilot
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/http-client"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/http-client"
 )
 
 const (
@@ -92,6 +94,34 @@ func (c *EnvoyDSClient) GetServiceHosts(serviceName string) (*Hosts, error) {
 		response.Hosts = append(response.Hosts, service.Hosts...)
 	}
 	return &response, nil
+}
+
+// GetHostsByKey returns Hosts using servicekey and tags
+func (c *EnvoyDSClient) GetHostsByKey(serviceKey string, tags registry.Tags) (*Hosts, error) {
+	apiURL := c.getAddress() + BaseRoot + pilotQueryKey(serviceKey, tags)
+	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
+	}()
+	var body []byte
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("GetHostsByKey %s failed, %s", apiURL, err.Error())
+	}
+	if resp.StatusCode == http.StatusOK {
+		var response Hosts
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return nil, fmt.Errorf("GetHostsByKey %s failed, %s, response body: %s", apiURL, err.Error(), string(body))
+		}
+		return &response, nil
+	}
+	return nil, fmt.Errorf("GetHostsByKey %s failed, response StatusCode: %d, response body: %s",
+		apiURL, resp.StatusCode, string(body))
 }
 
 // Close is the function clean up client resources

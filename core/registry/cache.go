@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	cache "github.com/patrickmn/go-cache"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -39,10 +38,11 @@ func enableRegistryCache() {
 
 // CacheIndex defines interface for cache and index used by registry
 type CacheIndex interface {
+	GetIndexTags() []string
 	SetIndexTags(tags sets.String)
 	Get(k string, tags map[string]string) (interface{}, bool)
 	Set(k string, x interface{})
-	Items() map[string]cache.Item
+	Items() map[string]*cache.Cache
 	Delete(k string)
 }
 
@@ -50,12 +50,7 @@ type CacheIndex interface {
 func SetNoIndexCache() { MicroserviceInstanceIndex = newNoIndexCache() }
 
 // newCacheIndex returns index implemention according to config
-func newCacheIndex() CacheIndex {
-	if archaius.GetBool("cse.service.registry.cacheIndex", false) {
-		return newIndexCache()
-	}
-	return newNoIndexCache()
-}
+func newCacheIndex() CacheIndex { return newIndexCache() }
 
 // Tags defines query conditions
 type Tags map[string]string
