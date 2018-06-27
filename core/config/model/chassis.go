@@ -129,9 +129,10 @@ type MicroserviceCfg struct {
 	ServiceDescription MicServiceStruct `yaml:"service_description"`
 }
 
-// MicServiceStruct ServiceStruct 设置微服务的私有属性
+// MicServiceStruct 设置微服务的私有属性
 type MicServiceStruct struct {
 	Name               string            `yaml:"name"`
+	Hostname           string            `yaml:"hostname"`
 	Version            string            `yaml:"version"`
 	Environment        string            `yaml:"environment"`
 	Level              string            `yaml:"level"`
