@@ -35,6 +35,17 @@ func init() {
 	circuitBreakers = make(map[string]*CircuitBreaker)
 }
 
+// IsCircuitBreakerOpen returns whether a circuitBreaker is open for an interface
+func IsCircuitBreakerOpen(name string) bool {
+	circuitBreakersMutex.Lock()
+	defer circuitBreakersMutex.Unlock()
+	if c, ok := circuitBreakers[name]; ok {
+		return c.IsOpen()
+	} else {
+		return false
+	}
+}
+
 // GetCircuit returns the circuit for the given command and whether this call created it.
 func GetCircuit(name string) (*CircuitBreaker, bool, error) {
 	circuitBreakersMutex.RLock()
