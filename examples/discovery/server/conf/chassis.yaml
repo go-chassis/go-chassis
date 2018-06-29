@@ -26,10 +26,17 @@ cse:
   config:
     client:
 #      serverUri: http://127.0.0.1:30103
+      type: config_center			# config_center/apollo
+#      serverUri: https://cse.cn-north-1.myhwclouds.com:443
       refreshMode: 1
       refreshInterval: 30
       tenantName:  default
       autodiscovery: false
+      serviceName: XXXXXX			#Required only for Apollo
+      env: XXXXX				#Required only for Apollo
+      cluster: XXXX				#Required only for Apollo
+      namespace: XXXX				#Required only for Apollo
+      token: XXXXXXXXXXXXX			#Required only for Apollo
   protocols:
     highway:
       listenAddress: 127.0.0.1:8082

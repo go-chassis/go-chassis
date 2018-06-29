@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
@@ -16,12 +15,9 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 
-	// go-archaius package is imported for to initialize the config-center configurations
 	"github.com/ServiceComb/go-archaius"
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-archaius/sources/configcenter-source"
-	"github.com/ServiceComb/go-cc-client"
-	"github.com/ServiceComb/go-cc-client/member-discovery"
 )
 
 const (
@@ -29,6 +25,8 @@ const (
 	Name          = "configcenter"
 	maxValue      = 256
 	emptyDimeInfo = "Issue with regular expression or exceeded the max length"
+	//RefreshModeError is a error message
+	RefreshModeError = "refreshMode must be 0 or 1."
 )
 
 // InitConfigCenter initialize config center
@@ -163,65 +161,33 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != 0 && refreshMode != 1 {
-		err := errors.New(client.RefreshModeError)
-		lager.Logger.Error(client.RefreshModeError, err)
+		err := errors.New(RefreshModeError)
+		lager.Logger.Error(RefreshModeError, err)
 		return err
 	}
-	memDiscovery := memberdiscovery.NewConfiCenterInit(tlsConfig, tenantName, enableSSL)
 
-	configCenters := strings.Split(ccEndpoint, ",")
-	cCenters := make([]string, 0)
-	for _, value := range configCenters {
-		value = strings.Replace(value, " ", "", -1)
-		cCenters = append(cCenters, value)
+	configCenterSource, err := configcentersource.InitConfigCenter(ccEndpoint, dimensionInfo, tenantName, enableSSL, tlsConfig, refreshMode, config.GlobalDefinition.Cse.Config.Client.RefreshInterval, config.GlobalDefinition.Cse.Config.Client.Autodiscovery, config.GlobalDefinition.Cse.Config.Client.Type)
+
+	if err != nil {
+		return err
 	}
-
-	memDiscovery.ConfigurationInit(cCenters)
-
-	if enbledAutoDiscovery() {
-		refreshError := memDiscovery.RefreshMembers()
-		if refreshError != nil {
-			lager.Logger.Error(client.ConfigServerMemRefreshError, refreshError)
-			return errors.New(client.ConfigServerMemRefreshError)
-		}
+	if err := refreshGlobalConfig(); err != nil {
+		lager.Logger.Error("failed to refresh global config for lb and cb", err)
+		return err
 	}
-
-	configCenterSource := configcentersource.NewConfigCenterSource(
-		memDiscovery, dimensionInfo, tlsConfig, tenantName, refreshMode,
-		config.GlobalDefinition.Cse.Config.Client.RefreshInterval, enableSSL)
-
-	err := archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
+	err = archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
 	if err != nil {
 		lager.Logger.Error("failed to do add source operation!!", err)
 		return err
 	}
-
-	// Get the whole configuration
-	//config := factory.GetConfigurations()
-	//logger.Info("init config center %+v", config)
-
 	eventHandler := EventListener{
 		Name:    "EventHandler",
 		Factory: archaius.DefaultConf.ConfigFactory,
 	}
 
-	memberdiscovery.MemberDiscoveryService = memDiscovery
 	archaius.DefaultConf.ConfigFactory.RegisterListener(eventHandler, "a*")
 
-	if err := refreshGlobalConfig(); err != nil {
-		lager.Logger.Error("failed to refresh global config for lb and cb", err)
-		return err
-	}
-
 	return nil
-}
-
-func refreshGlobalConfig() error {
-	err := config.ReadHystrixFromArchaius()
-	if err != nil {
-		return err
-	}
-	return config.ReadLBFromArchaius()
 }
 
 //EventListener is a struct
@@ -236,14 +202,10 @@ func (e EventListener) Event(event *core.Event) {
 	lager.Logger.Infof("config value %s | %s", event.Key, value)
 }
 
-func enbledAutoDiscovery() bool {
-	if config.GlobalDefinition.Cse.Config.Client.Autodiscovery {
-		return true
+func refreshGlobalConfig() error {
+	err := config.ReadHystrixFromArchaius()
+	if err != nil {
+		return err
 	}
-
-	return false
-}
-func init() {
-	bootstrap.InstallPlugin("config_center",
-		bootstrap.BootstrapFunc(InitConfigCenter))
+	return config.ReadLBFromArchaius()
 }
