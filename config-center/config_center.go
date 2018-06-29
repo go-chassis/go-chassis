@@ -166,7 +166,11 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 		return err
 	}
 
-	configCenterSource, err := configcentersource.InitConfigCenter(ccEndpoint, dimensionInfo, tenantName, enableSSL, tlsConfig, refreshMode, config.GlobalDefinition.Cse.Config.Client.RefreshInterval, config.GlobalDefinition.Cse.Config.Client.Autodiscovery, config.GlobalDefinition.Cse.Config.Client.Type)
+	clientType := config.GlobalDefinition.Cse.Config.Client.Type
+	if clientType == "" {
+		clientType = "config_center"
+	}
+	configCenterSource, err := configcentersource.InitConfigCenter(ccEndpoint, dimensionInfo, tenantName, enableSSL, tlsConfig, refreshMode, config.GlobalDefinition.Cse.Config.Client.RefreshInterval, config.GlobalDefinition.Cse.Config.Client.Autodiscovery, clientType)
 
 	if err != nil {
 		return err
