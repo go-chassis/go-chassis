@@ -25,9 +25,12 @@ const (
 	Name          = "configcenter"
 	maxValue      = 256
 	emptyDimeInfo = "Issue with regular expression or exceeded the max length"
-	//RefreshModeError is a error message
-	RefreshModeError = "refreshMode must be 0 or 1."
+	//DefaultConfigCenter is config center
+	DefaultConfigCenter = "config_center"
 )
+
+//ErrRefreshMode means config is mis used
+var ErrRefreshMode = errors.New("refreshMode must be 0 or 1")
 
 // InitConfigCenter initialize config center
 func InitConfigCenter() error {
@@ -161,12 +164,17 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != 0 && refreshMode != 1 {
-		err := errors.New(RefreshModeError)
-		lager.Logger.Error(RefreshModeError, err)
-		return err
+		lager.Logger.Error(ErrRefreshMode.Error(), ErrRefreshMode)
+		return ErrRefreshMode
 	}
 
-	configCenterSource, err := configcentersource.InitConfigCenter(ccEndpoint, dimensionInfo, tenantName, enableSSL, tlsConfig, refreshMode, config.GlobalDefinition.Cse.Config.Client.RefreshInterval, config.GlobalDefinition.Cse.Config.Client.Autodiscovery, config.GlobalDefinition.Cse.Config.Client.Type)
+	clientType := config.GlobalDefinition.Cse.Config.Client.Type
+	if clientType == "" {
+		clientType = DefaultConfigCenter
+
+	}
+	configCenterSource, err := configcentersource.InitConfigCenter(ccEndpoint, dimensionInfo, tenantName, enableSSL, tlsConfig, refreshMode,
+		config.GlobalDefinition.Cse.Config.Client.RefreshInterval, config.GlobalDefinition.Cse.Config.Client.Autodiscovery, clientType)
 
 	if err != nil {
 		return err
