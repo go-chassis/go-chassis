@@ -39,14 +39,14 @@ func (e LBError) Error() string {
 }
 
 // BuildStrategy query instance list and give it to Strategy then return Strategy
-func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID string, fs []Filter, s Strategy, metadata interface{}) (Strategy, error) {
+func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID string, fs []string, s Strategy, metadata interface{}) (Strategy, error) {
 	if s == nil {
 		s = &RoundRobinStrategy{}
 	}
 
 	var isFilterExist = true
 	for _, filter := range fs {
-		if filter == nil {
+		if filter == "" {
 			isFilterExist = false
 		}
 
@@ -65,7 +65,16 @@ func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID st
 	}
 
 	if isFilterExist {
-		for _, filter := range fs {
+		filterFuncs := make([]Filter, 0)
+		//append filters in config
+		for _, fName := range fs {
+			f := Filters[fName]
+			if f != nil {
+				filterFuncs = append(filterFuncs, f)
+				continue
+			}
+		}
+		for _, filter := range filterFuncs {
 			instances = filter(instances, nil)
 		}
 

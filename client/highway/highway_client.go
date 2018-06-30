@@ -6,6 +6,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/invocation"
 )
 
 //const timeout
@@ -39,9 +40,17 @@ func NewHighwayClient(options client.Options) client.ProtocolClient {
 func (c *highwayClient) String() string {
 	return "highway_client"
 }
-
-func (c *highwayClient) Call(ctx context.Context, addr string, req *client.Request, rsp interface{}) error {
-	req.ID = int(GenerateMsgID())
+func invocation2Req(inv *invocation.Invocation) *HighwayRequest {
+	inv.ID = int(GenerateMsgID())
+	highwayReq := &HighwayRequest{}
+	highwayReq.MsgID = uint64(inv.ID)
+	highwayReq.MethodName = inv.OperationID
+	highwayReq.Schema = inv.SchemaID
+	highwayReq.Arg = inv.Args
+	highwayReq.SvcName = inv.MicroServiceName
+	return highwayReq
+}
+func (c *highwayClient) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
 	connParams := &ConnParams{}
 	connParams.TLSConfig = c.opts.TLSConfig
 	connParams.Addr = addr
@@ -51,12 +60,7 @@ func (c *highwayClient) Call(ctx context.Context, addr string, req *client.Reque
 		return err
 	}
 	tmpRsp := &HighwayRespond{0, Ok, "", 0, rsp, nil}
-	highwayReq := &HighwayRequest{}
-	highwayReq.MsgID = uint64(req.ID)
-	highwayReq.MethodName = req.Operation
-	highwayReq.Schema = req.Schema
-	highwayReq.Arg = req.Arg
-	highwayReq.SvcName = req.MicroServiceName
+	highwayReq := invocation2Req(inv)
 	//Current only twoway
 	highwayReq.TwoWay = true
 	highwayReq.Attachments = common.FromContext(ctx)

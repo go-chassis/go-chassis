@@ -19,6 +19,7 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 
+	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -78,16 +79,26 @@ func TestStart(t *testing.T) {
 
 	name = c.String()
 	log.Println("protocol name:", name)
-	req := client.NewRequest(msName, schema, "SayHello", arg)
-	log.Println("ms ", req.MicroServiceName, " send ", string(arg.Name))
-	err = c.Call(context.TODO(), addrHighway, req, reply)
+	inv := &invocation.Invocation{
+		MicroServiceName: msName,
+		SchemaID:         schema,
+		OperationID:      "SayHello",
+		Args:             arg,
+	}
+	log.Println("ms ", inv.MicroServiceName, " send ", string(arg.Name))
+	err = c.Call(context.TODO(), addrHighway, inv, reply)
 	log.Println("hello reply", reply)
 	assert.NoError(t, err)
 
 	//error scenario : Server2 microservice not exist
-	req = client.NewRequest("Server2", schema, "SayHello", arg)
-	log.Println("ms ", req.MicroServiceName, " send ", string(arg.Name))
-	err = c.Call(context.TODO(), addrHighway, req, reply)
+	inv = &invocation.Invocation{
+		MicroServiceName: "Server2",
+		SchemaID:         schema,
+		OperationID:      "SayHello",
+		Args:             arg,
+	}
+	log.Println("ms ", inv.MicroServiceName, " send ", string(arg.Name))
+	err = c.Call(context.TODO(), addrHighway, inv, reply)
 	log.Println("error is:", err)
 	assert.Error(t, err)
 

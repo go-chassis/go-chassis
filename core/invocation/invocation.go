@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ServiceComb/go-chassis/core/config"
-
-	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 )
 
 // constant values for consumer and provider
@@ -27,6 +25,7 @@ type ResponseCallBack func(*InvocationResponse) error
 //Invocation is the basic struct that used in go sdk to make client and transport layer transparent .
 //developer should implements a client which is able to  encode from invocation to there own request
 type Invocation struct {
+	ID int
 	//service's ip and port, it is decided in load balancer
 	Endpoint string
 	//specify rest,highway
@@ -50,9 +49,8 @@ type Invocation struct {
 	//just in local memory
 	Metadata map[string]interface{}
 	//loadbalancer stratery
-	//Strategy loadbalancer.Strategy
 	Strategy string
-	Filters  []loadbalancer.Filter
+	Filters  []string
 }
 
 // CreateInvocation create invocation

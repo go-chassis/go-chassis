@@ -36,21 +36,18 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		errNotNill(err, cb)
 	}
 
-	req := client.NewRequest(i.MicroServiceName, i.SchemaID, i.OperationID, i.Args)
-	req.Metadata = i.Metadata
-
 	r := &invocation.InvocationResponse{}
 
 	//taking the time elapsed to check for latency aware strategy
 	timeBefore := time.Now()
-	err = c.Call(i.Ctx, i.Endpoint, req, i.Reply)
+	err = c.Call(i.Ctx, i.Endpoint, i, i.Reply)
 
 	if err != nil {
 		r.Err = err
 		lager.Logger.Errorf(err, "Call got Error")
 		if i.Strategy == loadbalancer.StrategySessionStickiness {
-			ProcessSpecialProtocol(i, req)
-			ProcessSuccessiveFailure(i, req)
+			ProcessSpecialProtocol(i)
+			ProcessSuccessiveFailure(i)
 
 		}
 
@@ -64,7 +61,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	}
 
 	if i.Strategy == loadbalancer.StrategySessionStickiness {
-		ProcessSpecialProtocol(i, req)
+		ProcessSpecialProtocol(i)
 	}
 
 	r.Result = i.Reply
@@ -73,13 +70,13 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 }
 
 //ProcessSpecialProtocol handles special logic for protocol
-func ProcessSpecialProtocol(inv *invocation.Invocation, req *client.Request) {
+func ProcessSpecialProtocol(inv *invocation.Invocation) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
 		var reply *rest.Response
 		if inv.Reply != nil && inv.Args != nil {
 			reply = inv.Reply.(*rest.Response)
-			req := req.Arg.(*rest.Request)
+			req := inv.Args.(*rest.Request)
 			session.CheckForSessionID(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
 		}
 	case common.ProtocolHighway:
@@ -88,13 +85,13 @@ func ProcessSpecialProtocol(inv *invocation.Invocation, req *client.Request) {
 }
 
 //ProcessSuccessiveFailure handles special logic for protocol
-func ProcessSuccessiveFailure(i *invocation.Invocation, req *client.Request) {
+func ProcessSuccessiveFailure(i *invocation.Invocation) {
 	var cookie string
 	var reply *rest.Response
 
 	switch i.Protocol {
 	case common.ProtocolRest:
-		if i.Reply != nil && req.Arg != nil {
+		if i.Reply != nil && i.Args != nil {
 			reply = i.Reply.(*rest.Response)
 		}
 		cookie = session.GetSessionCookie(nil, reply.GetResponse())

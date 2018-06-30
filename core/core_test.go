@@ -44,7 +44,7 @@ func TestRestInvoker_ContextDo(t *testing.T) {
 	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest")
 	req.SetContentType("application/json")
 	//use the invoker like http client.
-	_, err := restinvoker.ContextDo(context.TODO(), req, core.WithEndpoint("0.0.0.0"), core.WithProtocol("rest"), core.WithFilters(nil))
+	_, err := restinvoker.ContextDo(context.TODO(), req, core.WithEndpoint("0.0.0.0"), core.WithProtocol("rest"), core.WithFilters(""))
 	assert.Error(t, err)
 }
 
@@ -65,7 +65,7 @@ func TestOptions(t *testing.T) {
 	inv = core.WithProtocol("0.0")
 	assert.NotEmpty(t, inv)
 
-	inv = core.WithFilters(nil)
+	inv = core.WithFilters("")
 	assert.NotEmpty(t, inv)
 
 	inv = core.WithStrategy("")

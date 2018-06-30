@@ -31,7 +31,7 @@ type Filter func([]*registry.MicroServiceInstance) []*registry.MicroServiceInsta
 
 ## 示例
 
-客户端实例过滤器Filter的使用支持用户通过API调用传入，并且可以一次传入多个Filter，对实例组进行层层条件筛选。客户端调用传入的方式是调用options的WithFilter方法。
+客户端实例过滤器Filter的使用支持用户通过API调用传入，并且可以一次传入多个Filter，
 
 ```go
 invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
@@ -40,8 +40,7 @@ invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
     core.WithProtocol("highway"),
     core.WithStrategy(loadbalance.StrategyRoundRobin),
     core.WithFilters(
-      loadbalance.FilterEndpoint("highway://127.0.0.1:8080"),
-      loadbalance.FilterProtocol("highway"),
+     "zoneaware"
     ),
 )
 ```
