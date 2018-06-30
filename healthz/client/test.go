@@ -7,6 +7,7 @@ import (
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/invocation"
 	"net/http"
 )
 
@@ -30,7 +31,7 @@ func restTest(ctx context.Context, endpoint string, expected Reply) (err error) 
 	}
 
 	arg, _ := rest.NewRequest(http.MethodGet, "cse://"+expected.ServiceName+"/healthz")
-	req := client.NewRequest("", "", "", arg)
+	req := &invocation.Invocation{Args: arg}
 	rsp := rest.NewResponse()
 	defer rsp.Close()
 	err = c.Call(ctx, endpoint, req, rsp)
@@ -57,8 +58,12 @@ func highwayTest(ctx context.Context, endpoint string, expected Reply) (err erro
 	if err != nil {
 		return
 	}
-
-	req := client.NewRequest(expected.ServiceName, "_chassis_highway_healthz", "HighwayCheck", &Request{})
+	req := &invocation.Invocation{
+		MicroServiceName: expected.ServiceName,
+		SchemaID:         "_chassis_highway_healthz",
+		OperationID:      "HighwayCheck",
+		Args:             &Request{},
+	}
 	var actual Reply
 	err = c.Call(ctx, endpoint, req, &actual)
 	if err != nil {

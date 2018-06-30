@@ -9,6 +9,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/invocation"
 	"net"
 	"time"
 )
@@ -113,12 +114,20 @@ func (c *Client) failure2Error(e error, r *Response, addr string) error {
 
 	return nil
 }
+func invocation2HttpRequest(inv *invocation.Invocation) (*Request, error) {
+	reqSend, ok := inv.Args.(*Request)
+	if !ok {
+		return nil, ErrInvalidReq
+	}
+	return reqSend, nil
+}
 
 //Call is a method which uses client struct object
-func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp interface{}) error {
-	reqSend, ok := req.Arg.(*Request)
-	if !ok {
-		return ErrInvalidReq
+func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
+	var err error
+	reqSend, err := invocation2HttpRequest(inv)
+	if err != nil {
+		return err
 	}
 
 	resp, ok := rsp.(*Response)
@@ -145,7 +154,6 @@ func (c *Client) Call(ctx context.Context, addr string, req *client.Request, rsp
 	errChan := make(chan error, 1)
 	go func() { errChan <- c.Do(reqSend, resp) }()
 
-	var err error
 	select {
 	case <-ctx.Done():
 		err = ErrCanceled

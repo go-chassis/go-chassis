@@ -15,7 +15,6 @@ import (
 
 	"github.com/ServiceComb/go-chassis/session"
 	"github.com/cenkalti/backoff"
-	"github.com/valyala/fasthttp"
 )
 
 // LBHandler loadbalancer handler struct
@@ -41,15 +40,10 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 				Message: "Get strategy [" + strategy + "] failed."}.Error())
 		}
 	}
-	//append filters in config
-	filters := config.GetServerListFilters()
-	for _, fName := range filters {
-		f := loadbalancer.Filters[fName]
-		if f != nil {
-			i.Filters = append(i.Filters, f)
-			continue
-		}
+	if len(i.Filters) == 0 {
+		i.Filters = config.GetServerListFilters()
 	}
+
 	var sessionID string
 	if i.Strategy == loadbalancer.StrategySessionStickiness {
 		sessionID = getSessionID(i)
@@ -179,13 +173,6 @@ func getSessionID(i *invocation.Invocation) string {
 		value := req.GetCookie(common.LBSessionID)
 		if value != "" {
 			metadata = value
-		}
-	case *fasthttp.Request:
-		req := i.Args.(*fasthttp.Request)
-		value := string(req.Header.Peek("Cookie"))
-		cookieKey := strings.Split(value, "=")
-		if value != "" && (cookieKey[0] == common.SessionID || cookieKey[0] == common.LBSessionID) {
-			metadata = cookieKey[1]
 		}
 	default:
 		value := session.GetContextMetadata(i.Ctx, common.LBSessionID)

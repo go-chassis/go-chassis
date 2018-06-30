@@ -31,6 +31,7 @@ const (
 	DefaultMetricPath = "metrics"
 	MimeFile          = "application/octet-stream"
 	MimeMult          = "multipart/form-data"
+	SessionID         = ""
 )
 
 func init() {
@@ -68,7 +69,29 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 		ws:        ws,
 	}
 }
-
+func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
+	cookie, err := req.Request.Cookie(common.LBSessionID)
+	if err != nil {
+		if err != http.ErrNoCookie {
+			lager.Logger.Errorf(err, "get cookie error")
+			return nil, err
+		}
+	}
+	inv := &invocation.Invocation{
+		MicroServiceName:   config.SelfServiceName,
+		SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
+		Args:               req,
+		Protocol:           common.ProtocolRest,
+		SchemaID:           schema,
+		OperationID:        operation,
+		URLPathFormat:      req.Request.URL.Path,
+		Metadata: map[string]interface{}{
+			common.RestMethod:  req.Request.Method,
+			common.LBSessionID: cookie,
+		},
+	}
+	return inv, nil
+}
 func (r *restfulServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
 	lager.Logger.Info("register rest server")
 	opts := server.RegisterOptions{}
@@ -106,23 +129,15 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 				rep.WriteErrorString(http.StatusInternalServerError, err.Error())
 				return
 			}
-			//todo: use it for hystric
-			inv := invocation.Invocation{
-				MicroServiceName:   config.SelfServiceName,
-				SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
-				Args:               req,
-				Protocol:           common.ProtocolRest,
-				SchemaID:           schemaName,
-				OperationID:        method.Name,
-				URLPathFormat:      req.Request.URL.Path,
-				Metadata: map[string]interface{}{
-					common.RestMethod: req.Request.Method,
-				},
+			inv, err := httpRequest2Invocation(req, schemaName, method.Name)
+			if err != nil {
+				lager.Logger.Errorf(err, "transfer http request to invocation failed")
+				return
 			}
 			bs := NewBaseServer(context.TODO())
 			bs.req = req
 			bs.resp = rep
-			c.Next(&inv, func(ir *invocation.InvocationResponse) error {
+			c.Next(inv, func(ir *invocation.InvocationResponse) error {
 				if ir.Err != nil {
 					return ir.Err
 				}

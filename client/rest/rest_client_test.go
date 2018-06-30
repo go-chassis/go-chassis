@@ -17,6 +17,7 @@ import (
 	"github.com/ServiceComb/go-chassis/examples/schemas"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 
+	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -68,12 +69,10 @@ func TestNewRestClient_Call(t *testing.T) {
 
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server/instances")
-	req := &client.Request{
+	req := &invocation.Invocation{
 		ID:               1,
 		MicroServiceName: "Server",
-		Schema:           "",
-		Operation:        "instances",
-		Arg:              arg,
+		Args:             arg,
 		Metadata:         nil,
 	}
 
@@ -129,12 +128,10 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server1/instances")
-	req := &client.Request{
+	req := &invocation.Invocation{
 		ID:               1,
 		MicroServiceName: "Server1",
-		Schema:           "",
-		Operation:        "instances",
-		Arg:              arg,
+		Args:             arg,
 		Metadata:         nil,
 	}
 
@@ -180,11 +177,10 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 		PoolSize: 3,
 	})
 	reply := rest.NewResponse()
-	req := &client.Request{
+	req := &invocation.Invocation{
 		ID:               1,
-		MicroServiceName: "Server2",
-		Operation:        "instances",
-		Arg:              "",
+		MicroServiceName: "Server",
+		Args:             "",
 		Metadata:         nil,
 	}
 
@@ -193,8 +189,4 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	err = c.Call(context.TODO(), "127.0.0.1:8092", req, reply)
 	log.Println("hellp reply", reply)
 	assert.Error(t, err)
-}
-func TestNewRequest(t *testing.T) {
-	i := client.NewRequest("service", "schemaid", "operationID", "arg")
-	assert.Equal(t, i.Operation, "operationID")
 }
