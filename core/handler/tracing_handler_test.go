@@ -61,7 +61,7 @@ type spanTestHandler struct {
 
 func (s *spanTestHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	s.Span = opentracing.SpanFromContext(i.Ctx)
-	cb(&invocation.InvocationResponse{
+	cb(&invocation.Response{
 		Err: nil,
 	})
 }
@@ -102,7 +102,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 		Protocol:         common.ProtocolHighway,
 	}
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -143,7 +143,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 	providerChain.AddHandler(providerSpanHandler)
 
 	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	providerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -180,7 +180,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 	s.clearSpans()
 	parentSpanID := providerZpSpanContext.SpanID
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -242,7 +242,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 		Args:             restClientSentReq,
 	}
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -298,7 +298,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	providerChain.AddHandler(providerSpanHandler)
 
 	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	providerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -338,7 +338,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	s.clearSpans()
 	parentSpanID := providerZpSpanContext.SpanID
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -391,7 +391,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 		Args:             fasthttpRequest,
 	}
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -447,7 +447,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 	providerChain.AddHandler(providerSpanHandler)
 
 	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	providerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -487,7 +487,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 	s.clearSpans()
 	parentSpanID := providerZpSpanContext.SpanID
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})

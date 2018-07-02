@@ -32,7 +32,7 @@ func (c *Chain) AddHandler(h Handler) {
 func (c *Chain) Next(i *invocation.Invocation, f invocation.ResponseCallBack) {
 	index := c.HandlerIndex
 	if index >= len(c.Handlers) {
-		r := &invocation.InvocationResponse{
+		r := &invocation.Response{
 			Err: nil,
 		}
 		f(r)

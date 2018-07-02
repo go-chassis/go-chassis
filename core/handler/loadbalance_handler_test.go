@@ -37,7 +37,7 @@ func (th *handler1) Name() string {
 
 func (th *handler1) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	callTimes++
-	cb(&invocation.InvocationResponse{})
+	cb(&invocation.Response{})
 }
 
 type handler2 struct {
@@ -49,14 +49,14 @@ func (h *handler2) Name() string {
 
 func (h *handler2) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	callTimes++
-	r := &invocation.InvocationResponse{
+	r := &invocation.Response{
 		Err: fmt.Errorf("A fake error from handler2"),
 	}
 	if callTimes < CallTimes {
 		cb(r)
 		return
 	}
-	cb(&invocation.InvocationResponse{})
+	cb(&invocation.Response{})
 }
 
 /*======================================================================================================================
@@ -222,7 +222,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 		//Filters:
 	}
 	t.Log(i.SourceServiceID)
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		//log.Println(r.Result)
 		return r.Err
@@ -276,7 +276,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 		SourceServiceID:  "selfServiceID",
 		//Filters:
 	}
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		return r.Err
 	})
@@ -335,7 +335,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Next(iv, func(r *invocation.InvocationResponse) error {
+		c.Next(iv, func(r *invocation.Response) error {
 			return r.Err
 		})
 		c.Reset()

@@ -149,7 +149,7 @@ service_description:
 		MicroServiceName: "ShoppingCart",
 	}
 
-	c.Next(inv, func(r *invocation.InvocationResponse) error {
+	c.Next(inv, func(r *invocation.Response) error {
 		assert.Error(t, errors.New("injecting abort and delay"), r.Err)
 		log.Println(r.Result)
 		return r.Err

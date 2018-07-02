@@ -49,11 +49,7 @@ func setLBCookie(key, value string) {
 func GetContextMetadata(ctx context.Context, key string) string {
 	md, ok := ctx.Value(common.ContextValueKey{}).(map[string]string)
 	if ok {
-		for k, v := range md {
-			if k == key {
-				return v
-			}
-		}
+		return md[key]
 	}
 	return ""
 }
@@ -83,8 +79,8 @@ func GetSessionFromResp(cookieKey string, resp *http.Response) string {
 	return ""
 }
 
-// CheckForSessionIDFromContext check session id
-func CheckForSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) context.Context {
+// SaveSessionIDFromContext check session id in response ctx and save it to session storage
+func SaveSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) context.Context {
 
 	timeValue := time.Duration(autoTimeout) * time.Second
 
@@ -152,8 +148,8 @@ func setCookie(resp *http.Response, value string) {
 	http.SetCookie(w, &c1)
 }
 
-// CheckForSessionID check session id
-func CheckForSessionID(ep string, autoTimeout int, resp *http.Response, req *http.Request) {
+// SaveSessionIDFromHTTP check session id
+func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req *http.Request) {
 	if resp == nil {
 		lager.Logger.Warnf("", ErrResponseNil)
 		return
