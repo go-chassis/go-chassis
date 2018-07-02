@@ -103,7 +103,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	// So the best way is that spans finish in the callback func, not after it.
 	// But server may respond in the callback func too, that we have to remove
 	// span finishing from callback func's inside to outside.
-	chain.Next(i, func(r *invocation.InvocationResponse) (err error) {
+	chain.Next(i, func(r *invocation.Response) (err error) {
 		err = cb(r)
 		switch i.Protocol {
 		case common.ProtocolRest:
@@ -215,7 +215,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	// So the best way is that spans finish in the callback func, not after it.
 	// But client may send req in the callback func too, that we have to remove
 	// span finishing from callback func's inside to outside.
-	chain.Next(i, func(r *invocation.InvocationResponse) (err error) {
+	chain.Next(i, func(r *invocation.Response) (err error) {
 		switch i.Protocol {
 		case common.ProtocolRest:
 			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])

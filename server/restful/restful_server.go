@@ -137,7 +137,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 			bs := NewBaseServer(context.TODO())
 			bs.req = req
 			bs.resp = rep
-			c.Next(inv, func(ir *invocation.InvocationResponse) error {
+			c.Next(inv, func(ir *invocation.Response) error {
 				if ir.Err != nil {
 					return ir.Err
 				}

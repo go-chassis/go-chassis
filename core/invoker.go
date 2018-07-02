@@ -40,7 +40,7 @@ func (ri *abstractInvoker) invoke(i *invocation.Invocation) error {
 		return err
 	}
 
-	c.Next(i, func(ir *invocation.InvocationResponse) error {
+	c.Next(i, func(ir *invocation.Response) error {
 		err = ir.Err
 		return err
 	})

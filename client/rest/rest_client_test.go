@@ -70,7 +70,6 @@ func TestNewRestClient_Call(t *testing.T) {
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server/instances")
 	req := &invocation.Invocation{
-		ID:               1,
 		MicroServiceName: "Server",
 		Args:             arg,
 		Metadata:         nil,
@@ -129,7 +128,6 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server1/instances")
 	req := &invocation.Invocation{
-		ID:               1,
 		MicroServiceName: "Server1",
 		Args:             arg,
 		Metadata:         nil,
@@ -178,7 +176,6 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	})
 	reply := rest.NewResponse()
 	req := &invocation.Invocation{
-		ID:               1,
 		MicroServiceName: "Server",
 		Args:             "",
 		Metadata:         nil,

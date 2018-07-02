@@ -40,7 +40,7 @@ func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
@@ -62,7 +62,7 @@ func TestBizKeeperProviderHandler_Handle(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
@@ -93,7 +93,7 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Next(inv, func(r *invocation.InvocationResponse) error {
+		c.Next(inv, func(r *invocation.Response) error {
 			assert.NoError(b, r.Err)
 			return r.Err
 		})

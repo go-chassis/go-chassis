@@ -32,13 +32,13 @@ func TestSessionStorage(t *testing.T) {
 	session.DeletingKeySuccessiveFailure(resp)
 	cookieValue = session.GetSessionFromResp("abc", resp)
 	assert.Equal(t, "", cookieValue)
-	session.CheckForSessionID("", 1, resp, new(http.Request))
+	session.SaveSessionIDFromHTTP("", 1, resp, new(http.Request))
 
 	ctx := context.Background()
 	ctx = session.SetContextMetadata(ctx, "key", "value")
 	val := session.GetContextMetadata(ctx, "key")
 	assert.Equal(t, val, "value")
-	ctx = session.CheckForSessionIDFromContext(ctx, "", 1)
+	ctx = session.SaveSessionIDFromContext(ctx, "", 1)
 	val = session.GetContextMetadata(ctx, "ServiceCombLB")
 	assert.NotEqual(t, val, "")
 }

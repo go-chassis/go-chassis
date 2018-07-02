@@ -52,7 +52,7 @@ type Handler interface {
 }
 
 func writeErr(err error, cb invocation.ResponseCallBack) {
-	r := &invocation.InvocationResponse{
+	r := &invocation.Response{
 		Err: err,
 	}
 	cb(r)

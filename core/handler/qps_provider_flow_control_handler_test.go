@@ -35,7 +35,7 @@ func TestProviderRateLimiterDisable(t *testing.T) {
 		OperationID:        "SayHello",
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 	}
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
@@ -58,7 +58,7 @@ func TestProviderRateLimiterHandler_Handle(t *testing.T) {
 		OperationID:      "SayHello",
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
@@ -80,7 +80,7 @@ func TestProviderRateLimiterHandler_Handle_SourceMicroService(t *testing.T) {
 		OperationID:        "SayHello",
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 	}
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
