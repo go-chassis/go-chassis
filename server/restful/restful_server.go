@@ -156,7 +156,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 	}
 	return reflect.TypeOf(schema).String(), nil
 }
-func (r *restfulServer) register2GoRestful(routeSpec RouteSpec, handler restful.RouteFunction) error {
+func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.RouteFunction) error {
 	switch routeSpec.Method {
 	case http.MethodGet:
 		r.ws.Route(r.ws.GET(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
@@ -171,7 +171,7 @@ func (r *restfulServer) register2GoRestful(routeSpec RouteSpec, handler restful.
 	case http.MethodDelete:
 		r.ws.Route(r.ws.DELETE(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
 	default:
-		return errors.New("method do not support: " + routeSpec.Method)
+		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
 	return nil
 }
