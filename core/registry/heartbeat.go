@@ -93,7 +93,7 @@ func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID st
 	if err != nil {
 		lager.Logger.Errorf(err, "Run Heartbeat fail")
 		s.RemoveTask(microServiceID, microServiceInstanceID)
-		s.RetryRegister(microServiceID)
+		s.RetryRegister(microServiceID, microServiceInstanceID)
 	}
 	s.RefreshTask(microServiceID, microServiceInstanceID)
 	s.toggleTask(microServiceID, microServiceInstanceID, false)
@@ -118,7 +118,7 @@ func (s *HeartbeatService) run() {
 }
 
 // RetryRegister retrying to register micro-service, and instance
-func (s *HeartbeatService) RetryRegister(sid string) error {
+func (s *HeartbeatService) RetryRegister(sid, iid string) error {
 	for {
 		time.Sleep(DefaultRetryTime)
 		lager.Logger.Infof("Try to re-register self")
@@ -130,7 +130,7 @@ func (s *HeartbeatService) RetryRegister(sid string) error {
 		if _, e := DefaultServiceDiscoveryService.GetMicroService(sid); e != nil {
 			err = s.ReRegisterSelfMSandMSI()
 		} else {
-			err = reRegisterSelfMSI(sid)
+			err = reRegisterSelfMSI(sid, iid)
 		}
 		if err == nil {
 			break
@@ -157,7 +157,7 @@ func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 }
 
 // reRegisterSelfMSI 只重新注册实例
-func reRegisterSelfMSI(sid string) error {
+func reRegisterSelfMSI(sid, iid string) error {
 	DefaultServiceDiscoveryService.AutoSync()
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -169,6 +169,7 @@ func reRegisterSelfMSI(sid string) error {
 		eps = InstanceEndpoints
 	}
 	microServiceInstance := &MicroServiceInstance{
+		InstanceID:   iid,
 		EndpointsMap: eps,
 		HostName:     hostname,
 		Status:       common.DefaultStatus,
