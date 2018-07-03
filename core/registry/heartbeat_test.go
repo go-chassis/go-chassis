@@ -42,7 +42,7 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 
 	heartBeatService := registry.HeartbeatService{}
 	heartBeatService.DoHeartBeat(sid, insID)
-	heartBeatService.RetryRegister(sid)
+	heartBeatService.RetryRegister(sid, insID)
 	err = heartBeatService.ReRegisterSelfMSandMSI()
 	assert.NoError(t, err)
 
