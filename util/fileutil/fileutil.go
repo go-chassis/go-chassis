@@ -38,6 +38,8 @@ const (
 	Tracing = "tracing.yaml"
 	//Router is constant of type string
 	Router = "router.yaml"
+	//Egress is constant of type string
+	Egress = "egress.yaml"
 )
 
 var configDir string
@@ -138,6 +140,11 @@ func PaasLagerDefinition() string {
 //RouterDefinition is a function used to join .yaml file name with configuration directory
 func RouterDefinition() string {
 	return filepath.Join(GetConfDir(), Router)
+}
+
+//EgressDefinition is a function used to join .yaml file name with configuration directory
+func EgressDefinition() string {
+	return filepath.Join(GetConfDir(), Egress)
 }
 
 //GetAuth is a function used to join .yaml file name with configuration directory

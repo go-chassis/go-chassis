@@ -14,6 +14,7 @@ import (
 	"github.com/ServiceComb/go-chassis/util/fileutil"
 
 	"gopkg.in/yaml.v2"
+
 )
 
 // GlobalDefinition is having the information about region, load balancing, service center, config center,
@@ -30,6 +31,9 @@ var PaasLagerDefinition *model.PassLagerCfg
 
 // RouterDefinition is route rule config
 var RouterDefinition *model.RouterConfig
+
+// EgressDefinition is Egress rule config
+var EgressDefinition *model.EgressConfig
 
 //HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystrixConfig *model.HystrixConfigWrapper
@@ -203,6 +207,16 @@ func parseRouterConfig(file string) error {
 	return err
 }
 
+// parseEgressConfig is unmarshal the paas lager configuration file(lager.yaml)
+func parseEgressConfig(file string) error {
+	EgressDefinition = &model.EgressConfig{}
+	err := unmarshalYamlFile(file, EgressDefinition)
+	if err != nil && !os.IsNotExist(err) {
+		return &pathError{Path: file, Err: err}
+	}
+	return err
+}
+
 func unmarshalYamlFile(file string, target interface{}) error {
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -305,6 +319,15 @@ func Init() error {
 			return err
 		}
 	}
+
+	if err = parseEgressConfig(fileutil.EgressDefinition()); err != nil {
+		if os.IsNotExist(err) {
+			lager.Logger.Infof("[%s] not exist", fileutil.EgressDefinition())
+		} else {
+			return err
+		}
+	}
+
 	err = archaius.Init()
 	if err != nil {
 		return err

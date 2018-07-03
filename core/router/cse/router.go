@@ -80,6 +80,7 @@ func DeleteRouteRuleByKey(k string) {
 
 // GetRouteRuleByKey get route rule by key
 func GetRouteRuleByKey(k string) []*model.RouteRule {
+
 	lock.RLock()
 	defer lock.RUnlock()
 	return dests[k]
