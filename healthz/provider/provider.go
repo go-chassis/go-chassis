@@ -51,8 +51,8 @@ func (hc *HealthCheck) HighwayCheck(_ context.Context, _ *client.Request) (*clie
 }
 
 // URLPatterns returns HealthCheck's routes
-func (hc *HealthCheck) URLPatterns() []rf.RouteSpec {
-	return []rf.RouteSpec{
+func (hc *HealthCheck) URLPatterns() []rf.Route {
+	return []rf.Route{
 		{http.MethodGet, "/healthz", "RestCheck"},
 	}
 }
