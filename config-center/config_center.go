@@ -179,10 +179,7 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 	if err != nil {
 		return err
 	}
-	if err := refreshGlobalConfig(); err != nil {
-		lager.Logger.Error("failed to refresh global config for lb and cb", err)
-		return err
-	}
+
 	err = archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
 	if err != nil {
 		lager.Logger.Error("failed to do add source operation!!", err)
@@ -195,6 +192,10 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 
 	archaius.DefaultConf.ConfigFactory.RegisterListener(eventHandler, "a*")
 
+	if err := refreshGlobalConfig(); err != nil {
+		lager.Logger.Error("failed to refresh global config for lb and cb", err)
+		return err
+	}
 	return nil
 }
 
