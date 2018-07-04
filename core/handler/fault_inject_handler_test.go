@@ -110,7 +110,7 @@ ssl:
   registry.consumer.certPwdFile:`
 
 func TestRestFaultHandler_Names(t *testing.T) {
-	restCon := handler.FaultHandle()
+	restCon := &handler.FaultHandler{}
 	conName := restCon.Name()
 	assert.Equal(t, "fault-inject", conName)
 
@@ -124,26 +124,30 @@ service_description:
   level: FRONT
   version: 0.1`
 
-	os.Setenv("CHASSIS_HOME", "/tmp")
+	os.Setenv("CHASSIS_HOME", "tmp")
 	defer os.Unsetenv("CHASSIS_HOME")
 	chassisConf := filepath.Join("/tmp/", "conf")
-	os.MkdirAll(chassisConf, 0600)
+	logConf := filepath.Join("/tmp/", "log")
+	err := os.MkdirAll(chassisConf, 0600)
+	assert.NoError(t, err)
+	err = os.MkdirAll(logConf, 0600)
+	assert.NoError(t, err)
 	chassisyaml := filepath.Join(chassisConf, "chassis.yaml")
 	microserviceyaml := filepath.Join(chassisConf, "microservice.yaml")
 	f1, _ := os.Create(chassisyaml)
 	f2, _ := os.Create(microserviceyaml)
 	io.WriteString(f1, yamlContent)
 	io.WriteString(f2, microContent)
-	config.Init()
-	archaius.Init()
-
+	err = config.Init()
+	assert.NoError(t, err)
+	err = archaius.Init()
+	assert.NoError(t, err)
 	c := handler.Chain{}
-	handler.RegisterHandler("fault-inject", handler.FaultHandle)
 	c.AddHandler(&handler.FaultHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer["fault-inject"] = "fault-inject"
+	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.FaultInject] = handler.FaultInject
 
 	inv := &invocation.Invocation{
 		MicroServiceName: "ShoppingCart",
