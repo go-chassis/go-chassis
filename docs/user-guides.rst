@@ -16,6 +16,7 @@ User guides
    user-guides/filter
    user-guides/dynamic-conf
    user-guides/router
+   user-guides/router-istio
    user-guides/rate-limiting
    user-guides/fault-tolerance
    user-guides/cb-and-fallback

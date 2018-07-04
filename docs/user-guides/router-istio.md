@@ -1,4 +1,4 @@
-# How to use istio to manage route
+# Use istio to manage route
 
 Instead of using CSE and route config to manage route, go-chassis supports istio as a control plane to set route rule and follows the envoy API reference to manage route. This page gives the examples to show how requests are routed between micro services.
 
