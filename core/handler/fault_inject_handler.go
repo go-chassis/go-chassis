@@ -23,14 +23,9 @@ const (
 // FaultHandler handler
 type FaultHandler struct{}
 
-// FaultHandle fault handle gives the object of FaultHandler
-func FaultHandle() Handler {
+// newFaultHandler fault handle gives the object of FaultHandler
+func newFaultHandler() Handler {
 	return &FaultHandler{}
-}
-
-// init is for to register the fault handler
-func init() {
-	RegisterHandler(FaultHandlerName, FaultHandle)
 }
 
 // Name function returns fault-inject string
