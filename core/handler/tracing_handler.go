@@ -10,8 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/tracing"
-	"github.com/ServiceComb/go-chassis/util/iputil"
-
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	"github.com/emicklei/go-restful"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
@@ -124,7 +123,7 @@ func (t *TracingProviderHandler) Name() string {
 }
 
 func (t *TracingProviderHandler) getTracer(i *invocation.Invocation) opentracing.Tracer {
-	caller := i.MicroServiceName + ":" + iputil.GetHostName()
+	caller := i.MicroServiceName + ":" + runtime.HostName
 	return tracing.GetTracer(caller)
 }
 
@@ -253,7 +252,7 @@ func (t *TracingConsumerHandler) Name() string {
 func (t *TracingConsumerHandler) getTracer(i *invocation.Invocation) opentracing.Tracer {
 	caller := common.DefaultValue
 	if c, ok := i.Metadata[common.CallerKey].(string); ok && c != "" {
-		caller = c + ":" + iputil.GetHostName()
+		caller = c + ":" + runtime.HostName
 	}
 	return tracing.GetTracer(caller)
 }

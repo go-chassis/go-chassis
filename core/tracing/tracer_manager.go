@@ -7,8 +7,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/util/iputil"
-
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 )
@@ -45,12 +44,12 @@ func Init() error {
 
 	// set default recorder
 	defaultCaller := common.DefaultKey
-	defaultRecorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", iputil.GetHostName())
+	defaultRecorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
 	recorderMap[defaultCaller] = defaultRecorder
 
 	// set recorder map
 	for _, msName := range microserviceNames {
-		caller := msName + ":" + iputil.GetHostName()
+		caller := msName + ":" + runtime.HostName
 		r := zipkin.NewRecorder(collector, false, "0.0.0.0:0", caller)
 		recorderMap[caller] = r
 	}
