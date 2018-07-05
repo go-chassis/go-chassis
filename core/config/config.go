@@ -193,7 +193,7 @@ func parsePaasLagerConfig(file string) error {
 	return err
 }
 
-// parseRouterConfig is unmarshal the paas lager configuration file(lager.yaml)
+// parseRouterConfig is unmarshal the router configuration file(router.yaml)
 func parseRouterConfig(file string) error {
 	RouterDefinition = &model.RouterConfig{}
 	err := unmarshalYamlFile(file, RouterDefinition)
