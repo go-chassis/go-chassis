@@ -1,13 +1,12 @@
 package registry
 
 import (
-	"os"
-
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/metadata"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 )
 
 // microServiceDependencies micro-service dependencies
@@ -112,13 +111,6 @@ func RegisterMicroserviceInstances() error {
 	lager.Logger.Info("Start to register instance.", nil)
 	service := config.MicroserviceDefinition
 	var err error
-	if service.ServiceDescription.Hostname == "" {
-		service.ServiceDescription.Hostname, err = os.Hostname()
-		if err != nil {
-			lager.Logger.Error("Get hostname failed.", err)
-			return err
-		}
-	}
 
 	sid, err := DefaultServiceDiscoveryService.GetMicroServiceID(config.GlobalDefinition.AppID, service.ServiceDescription.Name, service.ServiceDescription.Version, service.ServiceDescription.Environment)
 	if err != nil {
@@ -136,7 +128,7 @@ func RegisterMicroserviceInstances() error {
 
 	microServiceInstance := &MicroServiceInstance{
 		EndpointsMap: eps,
-		HostName:     service.ServiceDescription.Hostname,
+		HostName:     runtime.HostName,
 		Status:       common.DefaultStatus,
 		Metadata:     map[string]string{"nodeIP": config.NodeIP},
 	}

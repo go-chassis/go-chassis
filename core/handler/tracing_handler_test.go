@@ -15,10 +15,10 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/tracing"
-	//"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"github.com/ServiceComb/go-chassis/util/iputil"
+
 	"github.com/apache/thrift/lib/go/thrift"
 	//"github.com/emicklei/go-restful"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
@@ -79,7 +79,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 	// batch size it 1, send every span when once collector get it.
 	collector, err := zipkin.NewHTTPCollector(fmt.Sprintf("http://localhost:%d/api/v1/spans", port), zipkin.HTTPBatchSize(1))
 	assert.NoError(t, err)
-	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", iputil.GetHostName())
+	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
 	tracer, err := zipkin.NewTracer(
 		recorder,
 		zipkin.ClientServerSameSpan(true),

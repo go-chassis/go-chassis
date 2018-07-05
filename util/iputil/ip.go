@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/ServiceComb/go-chassis/core/common"
@@ -31,14 +30,6 @@ func GetLocalIP() string {
 		}
 	}
 	return ""
-}
-
-//GetHostName is function which returns hostname
-func GetHostName() string {
-	if hostName, err := os.Hostname(); err == nil {
-		return hostName
-	}
-	return "localhost"
 }
 
 // DefaultEndpoint4Protocol : To ensure consistency, we generate default addr for listenAddress and advertiseAddress by one method. To avoid unnecessary port allocation work, we allocate fixed port for user defined protocol.

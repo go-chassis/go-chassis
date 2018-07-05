@@ -51,7 +51,7 @@ var SelfMetadata map[string]string
 var SelfVersion string
 
 // ErrNoName is used to represent the service name missing error
-var ErrNoName = errors.New("Microservice name is missing in description file")
+var ErrNoName = errors.New("micro service name is missing in description file")
 
 // parse unmarshal configurations on respective structure
 func parse() error {

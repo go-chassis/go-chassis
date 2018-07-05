@@ -2,7 +2,6 @@ package registry
 
 import (
 	"fmt"
-	"os"
 	"sync"
 	"time"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 )
 
 // DefaultRetryTime default retry time
@@ -159,11 +159,6 @@ func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 // reRegisterSelfMSI 只重新注册实例
 func reRegisterSelfMSI(sid, iid string) error {
 	DefaultServiceDiscoveryService.AutoSync()
-	hostname, err := os.Hostname()
-	if err != nil {
-		lager.Logger.Errorf(err, "Get HostName failed, hostname:%s", hostname)
-		return err
-	}
 	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
 	if InstanceEndpoints != nil {
 		eps = InstanceEndpoints
@@ -171,7 +166,7 @@ func reRegisterSelfMSI(sid, iid string) error {
 	microServiceInstance := &MicroServiceInstance{
 		InstanceID:   iid,
 		EndpointsMap: eps,
-		HostName:     hostname,
+		HostName:     runtime.HostName,
 		Status:       common.DefaultStatus,
 	}
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
