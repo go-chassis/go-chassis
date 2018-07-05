@@ -101,8 +101,8 @@ func loadPaasAuth() error {
 		if r.Header == nil {
 			r.Header = make(http.Header)
 		}
-		for k := range headers {
-			r.Header.Set(k, headers.Get(k))
+		for k, v := range headers {
+			r.Header[k] = v
 		}
 		return nil
 	}
