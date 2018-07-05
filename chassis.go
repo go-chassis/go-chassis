@@ -42,6 +42,8 @@ import (
 	// highway package register the highway server plugin
 	_ "github.com/ServiceComb/go-chassis/server/highway"
 	// tcp package handles transport related things
+	_ "github.com/ServiceComb/go-cc-client/apollo-client"
+	_ "github.com/ServiceComb/go-cc-client/configcenter-client"
 	"github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/metadata"
