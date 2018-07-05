@@ -23,14 +23,9 @@ const (
 // FaultHandler handler
 type FaultHandler struct{}
 
-// FaultHandle fault handle gives the object of FaultHandler
-func FaultHandle() Handler {
+// newFaultHandler fault handle gives the object of FaultHandler
+func newFaultHandler() Handler {
 	return &FaultHandler{}
-}
-
-// init is for to register the fault handler
-func init() {
-	RegisterHandler(FaultHandlerName, FaultHandle)
 }
 
 // Name function returns fault-inject string
@@ -47,7 +42,7 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 	faultConfig.Fault[inv.Protocol] = faultStruct
 
 	faultInject, ok := fault.FaultInjectors[inv.Protocol]
-	r := &invocation.InvocationResponse{}
+	r := &invocation.Response{}
 	if !ok {
 		lager.Logger.Warnf("fault injection doesn't support for protocol ", errors.New(inv.Protocol))
 		r.Err = nil
@@ -85,7 +80,7 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 		return
 	}
 
-	chain.Next(inv, func(r *invocation.InvocationResponse) error {
+	chain.Next(inv, func(r *invocation.Response) error {
 		return cb(r)
 	})
 }

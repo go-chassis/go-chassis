@@ -115,7 +115,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb 
 	retryOnSame := config.GetRetryOnSame(i.SourceMicroService, i.MicroServiceName)
 	retryOnNext := config.GetRetryOnNext(i.SourceMicroService, i.MicroServiceName)
 	handlerIndex := chain.HandlerIndex
-	var invResp *invocation.InvocationResponse
+	var invResp *invocation.Response
 	for j := 0; j < retryOnNext+1; j++ {
 		// exchange and retry on the next server
 		ep, err := lb.getEndpoint(i)
@@ -135,7 +135,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb 
 			i.Endpoint = ep
 			var respErr error
 			chain.HandlerIndex = handlerIndex
-			chain.Next(i, func(r *invocation.InvocationResponse) error {
+			chain.Next(i, func(r *invocation.Response) error {
 				if r != nil {
 					invResp = r
 					respErr = invResp.Err
@@ -150,7 +150,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb 
 		}
 	}
 	if invResp == nil {
-		invResp = &invocation.InvocationResponse{}
+		invResp = &invocation.Response{}
 	}
 	cb(invResp)
 }

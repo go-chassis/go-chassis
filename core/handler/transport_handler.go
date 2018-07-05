@@ -21,7 +21,7 @@ func (th *TransportHandler) Name() string {
 	return "transport"
 }
 func errNotNill(err error, cb invocation.ResponseCallBack) {
-	r := &invocation.InvocationResponse{
+	r := &invocation.Response{
 		Err: err,
 	}
 	lager.Logger.Error("GetClient got Error", err)
@@ -36,7 +36,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		errNotNill(err, cb)
 	}
 
-	r := &invocation.InvocationResponse{}
+	r := &invocation.Response{}
 
 	//taking the time elapsed to check for latency aware strategy
 	timeBefore := time.Now()
@@ -77,10 +77,10 @@ func ProcessSpecialProtocol(inv *invocation.Invocation) {
 		if inv.Reply != nil && inv.Args != nil {
 			reply = inv.Reply.(*rest.Response)
 			req := inv.Args.(*rest.Request)
-			session.CheckForSessionID(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
+			session.SaveSessionIDFromHTTP(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
 		}
 	case common.ProtocolHighway:
-		inv.Ctx = session.CheckForSessionIDFromContext(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
+		inv.Ctx = session.SaveSessionIDFromContext(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
 	}
 }
 

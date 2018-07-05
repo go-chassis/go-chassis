@@ -5,6 +5,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	"github.com/ServiceComb/go-sc-client/model"
 	"github.com/stretchr/testify/assert"
@@ -18,10 +19,12 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	config.Init()
+	runtime.Init()
 	t.Log(os.Getenv("CHASSIS_HOME"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
+
 	testRegisterServiceAndInstance(t, registry.DefaultRegistrator, registry.DefaultServiceDiscoveryService)
 	sid := testGetMicroServiceID(t, "CSE", "DSFtestAppThree", "2.0.3", registry.DefaultServiceDiscoveryService)
 	t.Log("获取依赖的实例")
@@ -93,11 +96,5 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 func testGetMicroServiceID(t *testing.T, appID, microServiceName, version string, sd registry.ServiceDiscovery) string {
 	sid, err := sd.GetMicroServiceID(appID, microServiceName, version, "")
 	assert.Nil(t, err)
-	//sCenter := servicecenter.Servicecenter{}
-	//instances, err := sCenter.GetDependentMicroServiceInstances(appID, microServiceName, version)
-	//assert.NotZero(t, len(instances))
-	//assert.NoError(t, err)
-	//instances, err = sCenter.GetDependentMicroServiceInstances("fakeid", "fakename", "fakeversion")
-	//assert.Error(t, err)
 	return sid
 }

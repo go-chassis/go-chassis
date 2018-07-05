@@ -23,13 +23,14 @@ import (
 )
 
 const (
-	paasAuthPlugin  = "paas_auth.so"
-	keyAK           = "cse.credentials.accessKey"
-	keySK           = "cse.credentials.secretKey"
-	keyProject      = "cse.credentials.project"
-	cipherRootEnv   = "CIPHER_ROOT"
-	keytoolAkskFile = "certificate.yaml"
-	keytoolCipher   = "security"
+	paasAuthPlugin     = "paas_auth.so"
+	keyAK              = "cse.credentials.accessKey"
+	keySK              = "cse.credentials.secretKey"
+	keyProject         = "cse.credentials.project"
+	cipherRootEnv      = "CIPHER_ROOT"
+	keytoolAkskFile    = "certificate.yaml"
+	keytoolCipher      = "security"
+	paasProjectNameEnv = "PAAS_PROJECT_NAME"
 )
 
 var errAuthConfNotExist = errors.New("Auth config is not exist")
@@ -92,12 +93,15 @@ func loadPaasAuth() error {
 		return err
 	}
 
-	genAuthHeaders := f.(func() http.Header)
+	headers := f.(func() http.Header)()
+	if v := os.Getenv(paasProjectNameEnv); v != "" {
+		headers.Set(auth.HeaderServiceProject, v)
+	}
 	authFunc := func(r *http.Request) error {
 		if r.Header == nil {
 			r.Header = make(http.Header)
 		}
-		for k, v := range genAuthHeaders() {
+		for k, v := range headers {
 			r.Header[k] = v
 		}
 		return nil
@@ -177,9 +181,13 @@ func getAkskConfig() (*model.CredentialStruct, error) {
 		return nil, errors.New("One of ak and sk is empty")
 	}
 
-	// 1, use project in the credential config
-	// 2, use project in cse uri contain
-	// 3, use project "default"
+	// 1, use project of env PAAS_PROJECT_NAME
+	// 2, use project in the credential config
+	// 3, use project in cse uri contain
+	// 4, use project "default"
+	if v := os.Getenv(paasProjectNameEnv); v != "" {
+		c.Project = v
+	}
 	if c.Project == "" {
 		project, err := getProjectFromURI(config.GetRegistratorAddress())
 		if err != nil {

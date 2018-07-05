@@ -41,9 +41,8 @@ func (c *highwayClient) String() string {
 	return "highway_client"
 }
 func invocation2Req(inv *invocation.Invocation) *HighwayRequest {
-	inv.ID = int(GenerateMsgID())
 	highwayReq := &HighwayRequest{}
-	highwayReq.MsgID = uint64(inv.ID)
+	highwayReq.MsgID = uint64(int(GenerateMsgID()))
 	highwayReq.MethodName = inv.OperationID
 	highwayReq.Schema = inv.SchemaID
 	highwayReq.Arg = inv.Args

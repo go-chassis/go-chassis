@@ -34,9 +34,12 @@ func newProviderHandler() handler.Handler {
 func TestRegisterHandlerFunc(t *testing.T) {
 	t.Log("testing registration of a custom  handler")
 	config.Init()
-	e := handler.RegisterHandler("fake", newProviderHandler)
+	e := handler.RegisterHandler("fake3", newProviderHandler)
 	assert.NoError(t, e)
 	t.Log("testing registration of a custom handler against a name which is already registered")
+	e = handler.RegisterHandler("fake3", newProviderHandler)
+	assert.Equal(t, handler.ErrDuplicatedHandler, e)
+
 	e = handler.RegisterHandler(handler.Transport, newProviderHandler)
 	assert.Error(t, e)
 }
@@ -44,13 +47,13 @@ func TestRegisterHandlerFunc(t *testing.T) {
 func TestCreateHandler(t *testing.T) {
 	t.Log("testing creation of handler")
 	config.Init()
-	e := handler.RegisterHandler("fake", newProviderHandler)
+	e := handler.RegisterHandler("fake2", newProviderHandler)
 	assert.NoError(t, e)
 	e = handler.RegisterHandler(handler.Transport, newProviderHandler)
 	assert.Error(t, e)
 	_, err := handler.CreateHandler("123")
 	assert.Error(t, err)
-	handler, err := handler.CreateHandler("fake")
+	handler, err := handler.CreateHandler("fake3")
 	assert.NoError(t, err)
 	t.Log(handler)
 }

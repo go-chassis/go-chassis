@@ -15,9 +15,9 @@ func (bk *BizKeeperProviderHandler) Handle(chain *Chain, i *invocation.Invocatio
 	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Provider)
 	hystrix.ConfigureCommand(command, cmdConfig)
 
-	finish := make(chan *invocation.InvocationResponse, 1)
+	finish := make(chan *invocation.Response, 1)
 	err := hystrix.Do(command, func() (err error) {
-		chain.Next(i, func(resp *invocation.InvocationResponse) error {
+		chain.Next(i, func(resp *invocation.Response) error {
 			err = resp.Err
 			select {
 			case finish <- resp:

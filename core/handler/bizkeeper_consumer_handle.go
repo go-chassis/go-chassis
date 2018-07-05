@@ -48,9 +48,9 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Consumer)
 	hystrix.ConfigureCommand(command, cmdConfig)
 
-	finish := make(chan *invocation.InvocationResponse, 1)
+	finish := make(chan *invocation.Response, 1)
 	err := hystrix.Do(command, func() (err error) {
-		chain.Next(i, func(resp *invocation.InvocationResponse) error {
+		chain.Next(i, func(resp *invocation.Response) error {
 			err = resp.Err
 			select {
 			case finish <- resp:
@@ -72,7 +72,7 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 }
 
 // GetFallbackFun get fallback function
-func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invocation.InvocationResponse, isForce bool) func(error) error {
+func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invocation.Response, isForce bool) func(error) error {
 	enabled := config.GetFallbackEnabled(cmd, t)
 	if enabled || isForce {
 		return func(err error) error {
@@ -81,7 +81,7 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invoca
 				err.Error() == hystrix.ErrMaxConcurrency.Error() || err.Error() == hystrix.ErrTimeout.Error() {
 				// isolation happened, so lead to callback
 				lager.Logger.Errorf(err, fmt.Sprintf("fallback for %v", cmd))
-				resp := &invocation.InvocationResponse{}
+				resp := &invocation.Response{}
 
 				var code = http.StatusOK
 				if config.PolicyNull == config.GetPolicy(i.MicroServiceName, t) {

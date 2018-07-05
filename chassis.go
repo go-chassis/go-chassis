@@ -47,6 +47,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/metadata"
 	"github.com/ServiceComb/go-chassis/core/egress"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 )
 
 var goChassis *chassis
@@ -113,6 +114,9 @@ func (c *chassis) initialize() error {
 	err := config.Init()
 	if err != nil {
 		lager.Logger.Error("Failed to initialize conf,", err)
+		return err
+	}
+	if err := runtime.Init(); err != nil {
 		return err
 	}
 	auth.Init()

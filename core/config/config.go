@@ -55,7 +55,7 @@ var SelfMetadata map[string]string
 var SelfVersion string
 
 // ErrNoName is used to represent the service name missing error
-var ErrNoName = errors.New("Microservice name is missing in description file")
+var ErrNoName = errors.New("micro service name is missing in description file")
 
 // parse unmarshal configurations on respective structure
 func parse() error {
@@ -197,7 +197,7 @@ func parsePaasLagerConfig(file string) error {
 	return err
 }
 
-// parseRouterConfig is unmarshal the paas lager configuration file(lager.yaml)
+// parseRouterConfig is unmarshal the router configuration file(router.yaml)
 func parseRouterConfig(file string) error {
 	RouterDefinition = &model.RouterConfig{}
 	err := unmarshalYamlFile(file, RouterDefinition)

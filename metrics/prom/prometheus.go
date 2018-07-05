@@ -25,6 +25,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/metrics"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	"github.com/prometheus/client_golang/prometheus"
 	gometrics "github.com/rcrowley/go-metrics"
 )
@@ -114,8 +115,7 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 		metricName := extractMetricKey(name)
 		operationID := extractOperationID(name)
 		schemaID := extractSchemaID(name)
-		hostName, _ := os.Hostname()
-		promLabels := prometheus.Labels{"hostname": hostName, "service": config.SelfServiceName, "appID": config.GlobalDefinition.AppID, "version": config.SelfVersion, "schemaID": schemaID, "operationID": operationID}
+		promLabels := prometheus.Labels{"hostname": runtime.HostName, "service": config.SelfServiceName, "appID": config.GlobalDefinition.AppID, "version": config.SelfVersion, "schemaID": schemaID, "operationID": operationID}
 		switch metric := i.(type) {
 		case gometrics.Counter:
 			c.gaugeVecFromNameAndValue(metricName, float64(metric.Count()), promLabels)

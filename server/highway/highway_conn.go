@@ -184,7 +184,7 @@ func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.HighWayPro
 		svrConn.writeError(req, err)
 	}
 
-	c.Next(i, func(ir *invocation.InvocationResponse) error {
+	c.Next(i, func(ir *invocation.Response) error {
 		if ir.Err != nil {
 			svrConn.writeError(req, ir.Err)
 			return ir.Err

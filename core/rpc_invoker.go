@@ -37,7 +37,7 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 		opts.Protocol = common.ProtocolHighway
 	}
 
-	i := invocation.CreateInvocation()
+	i := invocation.CreateConsumerInvocation()
 	wrapInvocationWithOpts(i, opts)
 	i.MicroServiceName = microServiceName
 	i.SchemaID = schemaID

@@ -40,7 +40,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 
 	resp := rest.NewResponse()
 
-	inv := invocation.CreateInvocation()
+	inv := invocation.CreateConsumerInvocation()
 	wrapInvocationWithOpts(inv, opts)
 	inv.MicroServiceName = req.GetRequest().Host
 	// TODO load from openAPI schema

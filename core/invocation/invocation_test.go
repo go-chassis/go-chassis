@@ -1,6 +1,7 @@
 package invocation_test
 
 import (
+	"context"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"testing"
 )
@@ -19,7 +20,7 @@ type handler1 struct {
 
 func (h *handler1) Handle(c *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	//log.Println("执行1")
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		//log.Println("回调到起始")
 		//log.Println(r)
 		r.Err = errors.New("wrong")
@@ -40,7 +41,7 @@ func (h *handler2) Name() string {
 func (h *handler2) Handle(c *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	//log.Println("执行2")
 	i.Endpoint = "test"
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		//log.Println(r)
 		r.Status = 2
 		//log.Println("回调到1")
@@ -59,7 +60,7 @@ func (h *transportHandler) Name() string {
 }
 func (h *transportHandler) Handle(c *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	//log.Println("fake transport handler")
-	r := &invocation.InvocationResponse{Status:200, }
+	r := &invocation.Response{Status:200, }
 	cb(r)
 }
 func TestChain(t *testing.T) {
@@ -71,7 +72,7 @@ func TestChain(t *testing.T) {
 	i := &invocation.Invocation{}
 	c.Handlers = append(c.Handlers, &handler1{}, &handler2{}, &transportHandler{})
 	var err error
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		if r != nil {
 			err = r.Err
 			assert.Equal(t, "test", i.Endpoint)
@@ -108,7 +109,7 @@ func BenchmarkChainNext(b *testing.B) {
 	c.Handlers = append(c.Handlers, &handler1{}, &handler2{}, &transportHandler{})
 	var err error
 	for j := 0; j < b.N; j++ {
-		c.Next(i, func(r *invocation.InvocationResponse) error {
+		c.Next(i, func(r *invocation.Response) error {
 			if r != nil {
 				err = r.Err
 				return r.Err
@@ -119,3 +120,23 @@ func BenchmarkChainNext(b *testing.B) {
 	}
 
 }*/
+func BenchmarkConextMap(b *testing.B) {
+	ctx := context.WithValue(context.Background(), "test", map[string]string{
+		"test": "1",
+	})
+	for j := 0; j < b.N; j++ {
+		m := ctx.Value("test").(map[string]string)
+		_, _ = m["test"]
+
+	}
+
+}
+func BenchmarkMap(b *testing.B) {
+	m := make(map[string]string)
+	m["test"] = "1"
+	for j := 0; j < b.N; j++ {
+		_, _ = m["test"]
+
+	}
+
+}
