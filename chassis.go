@@ -15,6 +15,7 @@ import (
 	_ "github.com/ServiceComb/go-chassis/client/highway"
 	_ "github.com/ServiceComb/go-chassis/core/router/cse"
 	_ "github.com/ServiceComb/go-chassis/core/router/pilot"
+	_ "github.com/ServiceComb/go-chassis/core/egress/cse"
 	// rest package handle rest apis
 	_ "github.com/ServiceComb/go-chassis/client/rest"
 	// archaius package to get the conguration info fron diffent configuration sources
@@ -45,6 +46,7 @@ import (
 	"github.com/ServiceComb/go-chassis/config-center"
 	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/ServiceComb/go-chassis/core/metadata"
+	"github.com/ServiceComb/go-chassis/core/egress"
 	"github.com/ServiceComb/go-chassis/pkg/runtime"
 )
 
@@ -146,6 +148,11 @@ func (c *chassis) initialize() error {
 	// router needs get configs from config-center when init
 	// so it must init after bootstrap
 	err = router.Init()
+	if err != nil {
+		return err
+	}
+
+	err = egress.Init()
 	if err != nil {
 		return err
 	}

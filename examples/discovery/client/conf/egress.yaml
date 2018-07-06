@@ -1,0 +1,15 @@
+egressRule:
+  google-ext:
+    - hosts:
+        - "www.google.com"
+        - "*.yahoo.com"
+      ports:
+        - port: 80
+          protocol: HTTP
+  facebook-ext:
+    - hosts:
+        - "www.facebook.com"
+      ports:
+        - port: 80
+          protocol: HTTP
+

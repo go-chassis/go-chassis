@@ -1,0 +1,12 @@
+egressRule:
+  google:
+    - hosts:
+        - "*google.com"
+      ports:
+        - port: 80
+          protocol: HTTP
+  facebook:
+    - hosts:
+        - "www.facebook.com"
+      ports:
+        - port: 80
