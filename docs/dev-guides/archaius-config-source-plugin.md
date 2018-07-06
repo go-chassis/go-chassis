@@ -38,7 +38,7 @@ Based on this type you need to load the plugin in your init()
 
 ```go
  func init(){
- 	cc_client.InstallConfigClientPlugin("NameOfYourPLugin", InitConfigYourPlugin)
+ 	client.InstallConfigClientPlugin("NameOfYourPLugin", InitConfigYourPlugin)
  }
 
 ```
