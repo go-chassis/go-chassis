@@ -15,6 +15,7 @@ User guides
    user-guides/strategy
    user-guides/filter
    user-guides/dynamic-conf
+   user-guides/apollo-chassis
    user-guides/router
    user-guides/router-istio
    user-guides/rate-limiting
