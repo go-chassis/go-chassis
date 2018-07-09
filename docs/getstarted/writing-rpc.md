@@ -150,3 +150,6 @@ func main() {
     lager.Logger.Info(reply.Message)
 }
 ```
+
+**Notice**
+>> if conf folder is not under work dir, plz export CHASSIS_HOME=/path/to/conf/parent_folder or CHASSIS_CONF_DIR==/path/to/conf_folder

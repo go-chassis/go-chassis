@@ -23,7 +23,7 @@ func (r *RestFulHello) Sayhello(b *restful.Context) {
 ```
 2.注册路由
 ```go
-func (s *RestFulHello) URLPatterns() []restful.RouteSpec {
+func (s *RestFulHello) URLPatterns() []restful.Route {
     return []restful.RouteSpec{
         {http.MethodGet, "/sayhello/{userid}", "Sayhello"},
     }
@@ -31,14 +31,15 @@ func (s *RestFulHello) URLPatterns() []restful.RouteSpec {
 ```
 3.注册接口
 
-第一个参数表示你要向哪个协议注册，第三个为schema ID,会在调用中使用
+第一个参数表示你要向哪个协议注册，第三个为schema ID，为可选，会在调用中使用
 
 chassis.RegisterSchema("rest", &RestFulHello{}, server.WithSchemaId("RestHelloService"))
 说明:
 
 想注册的rest协议的接口，必须实现URLPatterns方法定义路由
 路由中暴露为API的方法都要入参均为*restful.Context
-3.修改配置文件chassis.yaml
+
+4.修改配置文件chassis.yaml
 ```yaml
 cse:
   service:
@@ -48,12 +49,12 @@ cse:
     rest:
       listenAddress: 127.0.0.1:5001
 ```
-4.修改microservice.yaml
+5.修改microservice.yaml, 为服务起名
 ```yaml
 service_description:
   name: RESTServer
 ```
-5.main.go中启动服务
+6.main.go中启动服务
 ```go
 func main() {
     //start all server you register in server/schemas.
@@ -90,7 +91,6 @@ service_description:
   name: RESTClient
 3.main中调用服务端，请求包括服务名，schema，operation及参数
 ```go
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
     //Init framework
     if err := chassis.Init(); err != nil {
@@ -108,3 +108,5 @@ func main() {
     lager.Logger.Info(string(resp.ReadBody()))
 }
 ```
+**Notice**
+>> if conf folder is not under work dir, plz export CHASSIS_HOME=/path/to/conf/parent_folder or CHASSIS_CONF_DIR==/path/to/conf_folder
