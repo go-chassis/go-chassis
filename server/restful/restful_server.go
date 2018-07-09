@@ -196,6 +196,9 @@ func (r *restfulServer) Start() error {
 			return err
 		}
 	}
+	swagger.LogInfo = func(format string, v ...interface{}) {
+		lager.Logger.Infof(format, v...)
+	}
 	swaggerConfig := swagger.Config{
 		WebServices:     r.container.RegisteredWebServices(),
 		WebServicesUrl:  config.Address,
