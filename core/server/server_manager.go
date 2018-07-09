@@ -10,7 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-	"github.com/ServiceComb/go-chassis/util/iputil"
+	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
 )
 
 //NewFunc returns a ProtocolServer
