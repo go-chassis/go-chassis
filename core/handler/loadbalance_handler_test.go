@@ -16,6 +16,7 @@ import (
 	mk "github.com/ServiceComb/go-chassis/core/registry/mock"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"os"
@@ -136,7 +137,7 @@ func (m *MockConfigurationFactory) AddByDimensionInfo(dimensionInfo string) (map
 func TestLBHandlerWithRetry(t *testing.T) {
 	t.Log("testing load balance handler with retry")
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	config.SelfServiceID = "selfServiceID"
+	runtime.ServiceID = "selfServiceID"
 	config.Init()
 	//config.GlobalDefinition = &chassisModel.GlobalCfg{}
 
@@ -218,7 +219,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 		Version:          "1.0",
 		Strategy:         loadbalancer.StrategyRoundRobin,
 		AppID:            "appID",
-		SourceServiceID:  config.SelfServiceID,
+		SourceServiceID:  runtime.ServiceID,
 		//Filters:
 	}
 	t.Log(i.SourceServiceID)
@@ -322,16 +323,16 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})
 	c.AddHandler(&handler1{})
-	config.SelfServiceID = sid
+	runtime.ServiceID = sid
 	iv := &invocation.Invocation{
 		MicroServiceName: "test2",
 		Version:          "1.0",
 		Protocol:         "highway",
 		Strategy:         loadbalancer.StrategyRoundRobin,
-		SourceServiceID:  config.SelfServiceID,
+		SourceServiceID:  runtime.ServiceID,
 	}
 
-	b.Log(config.SelfServiceID)
+	b.Log(runtime.ServiceID)
 	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

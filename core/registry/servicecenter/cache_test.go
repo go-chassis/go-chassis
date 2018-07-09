@@ -4,6 +4,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	"github.com/ServiceComb/go-sc-client/model"
 	"github.com/hashicorp/go-version"
@@ -22,7 +23,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
-	t.Log("持有id", config.SelfServiceID)
+	t.Log("持有id", runtime.ServiceID)
 	t.Log("同步sc节点")
 	time.Sleep(time.Second * 1)
 
@@ -106,7 +107,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("删除实例感知成功")
 	t.Log("测试EVT_DELETE操作")
 
-	t.Log("持有id", config.SelfServiceID)
+	t.Log("持有id", runtime.ServiceID)
 	t.Log("watch测试完成")
 
 }

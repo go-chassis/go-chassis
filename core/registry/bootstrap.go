@@ -52,7 +52,7 @@ func RegisterMicroservice() error {
 	lager.Logger.Infof("Micro service registered by [ %s ]", framework.Register)
 
 	sid, err := DefaultRegistrator.RegisterService(microservice)
-	config.SelfServiceID = sid
+	runtime.ServiceID = sid
 	if err != nil {
 		lager.Logger.Errorf(err, "Register [%s] failed", microservice.ServiceName)
 		return err
@@ -146,6 +146,9 @@ func RegisterMicroserviceInstances() error {
 		lager.Logger.Errorf(err, "Register instance failed, serviceID: %s.", sid)
 		return err
 	}
+	//Set to runtime
+	runtime.InstanceID = instanceID
+	runtime.InstanceStatus = runtime.StatusRunning
 	if service.ServiceDescription.InstanceProperties != nil {
 		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(sid, instanceID, service.ServiceDescription.InstanceProperties); err != nil {
 			lager.Logger.Errorf(nil, "UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", sid, instanceID)
