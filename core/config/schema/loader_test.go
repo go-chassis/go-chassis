@@ -2,7 +2,7 @@ package schema_test
 
 import (
 	"github.com/ServiceComb/go-chassis/core/config/schema"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
+	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"

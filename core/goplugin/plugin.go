@@ -4,7 +4,7 @@ import (
 	"os"
 	"plugin"
 
-	"github.com/ServiceComb/go-chassis/util/fileutil"
+	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
 )
 
 // LookupPlugin lookup plugin

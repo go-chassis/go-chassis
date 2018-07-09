@@ -34,14 +34,15 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/core/tracing"
 	"github.com/ServiceComb/go-chassis/eventlistener"
-	// aes package handles security related plugins
+	// metric plugin
 	_ "github.com/ServiceComb/go-chassis/metrics/prom"
+	// aes package handles security related plugins
 	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	_ "github.com/ServiceComb/go-chassis/server/restful"
 	// highway package register the highway server plugin
 	_ "github.com/ServiceComb/go-chassis/server/highway"
-	// tcp package handles transport related things
+	// import config center plugins
 	_ "github.com/ServiceComb/go-cc-client/apollo-client"
 	_ "github.com/ServiceComb/go-cc-client/configcenter-client"
 	"github.com/ServiceComb/go-chassis/config-center"

@@ -19,7 +19,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/server"
 	"github.com/ServiceComb/go-chassis/metrics"
 
-	"github.com/ServiceComb/go-chassis/util/fileutil"
+	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
 )

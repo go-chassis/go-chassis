@@ -7,7 +7,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/util/iputil"
+	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
 	"github.com/stretchr/testify/assert"
 )
 

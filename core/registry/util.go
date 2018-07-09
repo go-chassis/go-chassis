@@ -12,7 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-	"github.com/ServiceComb/go-chassis/util/iputil"
+	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
 	"github.com/cenkalti/backoff"
 )
 

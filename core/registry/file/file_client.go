@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
+	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
 
 	"github.com/ServiceComb/go-sc-client/model"
 )
