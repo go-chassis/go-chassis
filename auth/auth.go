@@ -93,16 +93,19 @@ func loadPaasAuth() error {
 		return err
 	}
 
-	headers := f.(func() http.Header)()
-	if v := os.Getenv(paasProjectNameEnv); v != "" {
-		headers.Set(auth.HeaderServiceProject, v)
-	}
+	genAuthHeaders := f.(func() http.Header)
+	projectFromEnv := os.Getenv(paasProjectNameEnv)
 	authFunc := func(r *http.Request) error {
 		if r.Header == nil {
 			r.Header = make(http.Header)
 		}
-		for k, v := range headers {
-			r.Header[k] = v
+		for k, vs := range genAuthHeaders() {
+			for _, v := range vs {
+				r.Header.Add(k, v)
+			}
+		}
+		if projectFromEnv != "" {
+			r.Header.Set(auth.HeaderServiceProject, projectFromEnv)
 		}
 		return nil
 	}
