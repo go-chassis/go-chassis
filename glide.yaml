@@ -17,7 +17,7 @@ import:
   version: master
   repo: https://github.com/ServiceComb/auth
 - package: github.com/ServiceComb/go-archaius
-  version: 44d89fbd0cc185c74202add2f82ec21c2e40f799
+  version: 561c7547733a283358a2a52f593764361f6ffbb3
   repo: https://github.com/ServiceComb/go-archaius
   subpackages:
   - core
@@ -27,7 +27,7 @@ import:
   - sources/file-source
   - sources/memory-source
 - package: github.com/ServiceComb/go-cc-client
-  version: 2c44fcf5dfa384072b0d76ab130db417d5fa07e2
+  version: b61161d7b0a0394c6fd189f047bbb7d3a96860a8
   repo: https://github.com/ServiceComb/go-cc-client
   subpackages:
   - member-discovery

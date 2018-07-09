@@ -34,36 +34,15 @@ cse:
     client:
       type: your_client_name   #config_center/apollo/your_client_name
 ```
-Based on this type you need to add the case for your custom plugin to load on Enable()
+Based on this type you need to load the plugin in your init()
+
 ```go
-//Enable enable config server client
-func Enable(clientType string) {
-	switch clientType {
-	case "apollo":
-		InstallConfigClientPlugin("apollo", InitConfigApollo)
-	case "config_center":
-		InstallConfigClientPlugin("config_center", InitConfigCenterNew)
-	default:
-		InstallConfigClientPlugin("config_center", InitConfigCenterNew)
-	}
-}
-
-//InitConfigApollo initialize the Apollo Client
-func InitConfigApollo(endpoint, serviceName, app, env, version string, tlsConfig *tls.Config) ConfigClient {
-	apolloClient := &apolloclient.ApolloClient{}
-	apolloClient.NewApolloClient()
-	return apolloClient
-}
-
-//InitConfigCenterNew initialize the Config-Center Client
-func InitConfigCenterNew(endpoint, serviceName, app, env, version string, tlsConfig *tls.Config) ConfigClient {
-	configSourceClient := &memberdiscovery.ConfigSourceClient{}
-	configSourceClient.Init()
-	return configSourceClient
-}
+ func init(){
+ 	client.InstallConfigClientPlugin("NameOfYourPLugin", InitConfigYourPlugin)
+ }
 
 ```
-Plugin gets loaded once the chassis.Init is successful. Once the plugin is loaded then you can pull configuration using the ConfigClient
+You need to import the package path in your application to Enable your plugin. Once the plugin is enabled then you can pull configuration using the ConfigClient
 
 ```go
 client.DefaultClient.PullConfigs(serviceName, versionName, appName, env)
