@@ -3,7 +3,7 @@ package invocation
 import (
 	"context"
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 )
 
 // constant values for consumer and provider
@@ -47,7 +47,7 @@ type Invocation struct {
 // CreateConsumerInvocation create invocation
 func CreateConsumerInvocation() *Invocation {
 	return &Invocation{
-		SourceServiceID: config.SelfServiceID,
+		SourceServiceID: runtime.ServiceID,
 		Metadata:        make(map[string]interface{}),
 	}
 }

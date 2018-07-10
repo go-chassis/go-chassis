@@ -37,10 +37,6 @@ var HystrixConfig *model.HystrixConfigWrapper
 // NodeIP gives the information of node ip
 var NodeIP string
 
-// SelfServiceID 单进程多微服务根本没法记录依赖关系，因为一个进程里有多个微服务，你在调用别的微服务时到底该怎么添加依赖关系？
-//只能随意赋值个id
-var SelfServiceID string
-
 // SelfServiceName is self micro service name
 var SelfServiceName string
 

@@ -10,6 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	runtime "github.com/ServiceComb/go-chassis/pkg/runtime"
 	"github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -36,9 +37,9 @@ type CacheManager struct {
 func (c *CacheManager) AutoSync() {
 	c.refreshCache()
 	if config.GetServiceDiscoveryWatch() {
-		err := c.registryClient.WatchMicroService(config.SelfServiceID, watch)
+		err := c.registryClient.WatchMicroService(runtime.ServiceID, watch)
 		if err != nil {
-			lager.Logger.Errorf(err, "Watch failed. Self Micro service Id:%s.", config.SelfServiceID)
+			lager.Logger.Errorf(err, "Watch failed. Self Micro service Id:%s.", runtime.ServiceID)
 		}
 		lager.Logger.Debugf("Watching Intances change events.")
 	}
@@ -175,9 +176,9 @@ func (c *CacheManager) MakeSchemaIndex() error {
 // pullMicroserviceInstance pull micro-service instance
 func (c *CacheManager) pullMicroserviceInstance() error {
 	//Get Providers
-	rsp, err := c.registryClient.GetProviders(config.SelfServiceID)
+	rsp, err := c.registryClient.GetProviders(runtime.ServiceID)
 	if err != nil {
-		lager.Logger.Errorf(err, "get Providers failed, sid = %s", config.SelfServiceID)
+		lager.Logger.Errorf(err, "get Providers failed, sid = %s", runtime.ServiceID)
 		return err
 	}
 
@@ -185,11 +186,11 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 	for key := range serviceStore {
 		service := strings.Split(key, ":")
 		if len(service) != 2 {
-			lager.Logger.Errorf(err, "Invalid serviceStore %s for providers %s", key, config.SelfServiceID)
+			lager.Logger.Errorf(err, "Invalid serviceStore %s for providers %s", key, runtime.ServiceID)
 			continue
 		}
 
-		providerInstances, err := c.registryClient.FindMicroServiceInstances(config.SelfServiceID, service[1],
+		providerInstances, err := c.registryClient.FindMicroServiceInstances(runtime.ServiceID, service[1],
 			service[0], findVersionRule(service[0]))
 		if err != nil {
 			if err == client.ErrNotModified {

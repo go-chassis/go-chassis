@@ -9,6 +9,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -83,8 +84,8 @@ func TestBuildStrategy(t *testing.T) {
 	loadbalancer.Enable()
 	registry.Enable()
 	registry.DoRegister()
-	config.SelfServiceID = sid
-	t.Log(config.SelfServiceID)
+	runtime.ServiceID = sid
+	t.Log(runtime.ServiceID)
 	time.Sleep(1 * time.Second)
 	s, err := loadbalancer.BuildStrategy(sid, "test1", "", common.LatestVersion, "", "", nil, nil, nil)
 	assert.NoError(t, err)
@@ -139,7 +140,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = loadbalancer.BuildStrategy(config.SelfServiceID, "test2", "", "1.0", "", "", nil, nil, nil)
+		_, _ = loadbalancer.BuildStrategy(runtime.ServiceID, "test2", "", "1.0", "", "", nil, nil, nil)
 	}
 
 }
