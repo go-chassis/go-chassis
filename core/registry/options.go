@@ -15,4 +15,5 @@ type Options struct {
 	Compressed bool
 	Verbose    bool
 	Version    string
+	ConfigPath string
 }

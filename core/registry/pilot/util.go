@@ -40,7 +40,7 @@ func filterInstances(hs []*Host) []*registry.MicroServiceInstance {
 func pilotServiceKey(service string) string {
 	ns := os.Getenv(PODNAMESPACE)
 	if ns == "" {
-		ns = "default"
+		ns = common.DefaultValue
 	}
 	return strings.Join([]string{service, ns, DefaultSuffix}, ".")
 }

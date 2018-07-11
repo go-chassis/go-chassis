@@ -26,6 +26,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/registry"
 	// file package for file based registration
 	_ "github.com/ServiceComb/go-chassis/core/registry/file"
+	// kube package handles kubernetes service discovery
+	_ "github.com/ServiceComb/go-chassis/core/registry/kube"
 	// servicecenter package handles service center api calls
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	// pilot package handles istio pilot SDS api calls
