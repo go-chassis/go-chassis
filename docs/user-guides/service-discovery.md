@@ -13,6 +13,8 @@ Service Discovery与Registry只能选择其一进行配置
 **type**
 > *(optional, string)* 对接服务中心插件类型，默认为servicecenter，另外可选择pilot以及kube
 
+**NOTE: 当使用kube registry时，发布的service需要指定port name为以下格式 [protocol]-[suffix]，目前protocol只支持rest和highway。**
+
 **address**
 > *(optional, bool)*服务中心地址 允许配置多个以逗号隔开，默认为空
 
