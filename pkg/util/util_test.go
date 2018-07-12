@@ -12,6 +12,12 @@ func TestParsePortName(t *testing.T) {
 	assert.Equal(t, "admin", n)
 	assert.NoError(t, err)
 
-	_, _, err = util.ParsePortName("httpadmin")
+	_, _, err = util.ParsePortName("http")
+	assert.NoError(t, err)
+
+	_, _, err = util.ParsePortName("")
+	assert.Error(t, err)
+
+	_, _, err = util.ParsePortName("http-admin-1")
 	assert.Error(t, err)
 }
