@@ -111,6 +111,7 @@ func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 	oSD.Addrs = hostsSD
 	oSD.Tenant = config.GetServiceDiscoveryTenant()
 	oSD.Version = config.GetServiceDiscoveryAPIVersion()
+	oSD.ConfigPath = config.GetServiceDiscoveryConfigPath()
 	oSD.TLSConfig, err = getTLSConfig(schemeSD, SDTag)
 	if err != nil {
 		return

@@ -193,12 +193,27 @@ import:
 - package: golang.org/x/sys
   version: 98b5b1e7e80eb60271c8dc4eba6521ec2c3e811e
   repo: https://github.com/golang/sys
+- package: golang.org/x/crypto
+  version: a49355c7e3f8fe157a85be2f77e6e269a0f89602
+  repo: https://github.com/golang/crypto
+- package: golang.org/x/time
+  version: fbb02b2291d28baffd63558aa44b4b56f178d650
+  repo: https://github.com/golang/time
 - package: google.golang.org/grpc
   version: 777daa17ff9b5daef1cfdf915088a2ada3332bf0
   repo: https://github.com/grpc/grpc-go
 - package: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
   repo: https://github.com/go-yaml/yaml
-- package: k8s.io/apimachinery/pkg/util/sets
-  version: 150d32b09b5966b39cb02d7945f0d1bc7b9f1a19
+- package: k8s.io/apimachinery
+  version: f534d624797b270e5e46104dc7e2c2d61edbb85d
   repo: https://github.com/kubernetes/apimachinery
+  subpackages:
+  - pkg/util/sets
+- package: k8s.io/client-go
+  version: 7c4d4e9c37e45f111d4ca76c6e38f7d65bd4a44e
+  repo: https://github.com/kubernetes/client-go
+  subpackages:
+  - kubernetes/fake
+  - kubernetes
+  - tools

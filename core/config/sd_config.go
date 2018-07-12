@@ -65,3 +65,14 @@ func GetServiceDiscoveryHealthCheck() bool {
 	}
 	return archaius.GetBool("cse.service.registry.healthCheck", false)
 }
+
+// DefaultConfigPath set the default config path
+const DefaultConfigPath = "/etc/.kube/config"
+
+// GetServiceDiscoveryConfigPath returns the configpath of SD registry
+func GetServiceDiscoveryConfigPath() string {
+	if GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.ConfigPath != "" {
+		return GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.ConfigPath
+	}
+	return DefaultConfigPath
+}

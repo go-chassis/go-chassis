@@ -8,6 +8,7 @@ User guides
    user-guides/microservice
    user-guides/registry
    user-guides/service-discovery
+   user-guides/kube-discovery
    user-guides/protocols
    user-guides/handler-chain
    user-guides/healthz
