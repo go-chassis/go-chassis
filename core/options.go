@@ -3,8 +3,8 @@ package core
 import (
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 )
 
 // Options is a struct to stores information about chain name, filters, and their invocation options
@@ -17,9 +17,7 @@ type Options struct {
 
 // InvokeOptions struct having information about microservice API call parameters
 type InvokeOptions struct {
-	//microservice version
-	Version string
-	Stream  bool
+	Stream bool
 	// Transport Dial Timeout
 	DialTimeout time.Duration
 	// Request/Response timeout
@@ -34,9 +32,10 @@ type InvokeOptions struct {
 	Filters      []string
 	URLPath      string
 	MethodType   string
-	AppID        string
 	// local data
 	Metadata map[string]interface{}
+	// tags for router
+	RouteTags utiltags.Tags
 }
 
 //TODO a lot of options
@@ -87,33 +86,12 @@ func WithEndpoint(ep string) InvocationOption {
 	}
 }
 
-// WithVersion is a request option
-func WithVersion(v string) InvocationOption {
-	return func(o *InvokeOptions) {
-		o.Version = v
-	}
-}
-
 // WithProtocol is a request option
 func WithProtocol(p string) InvocationOption {
 	return func(o *InvokeOptions) {
 		o.Protocol = p
 	}
 }
-
-// WithAppID is a request option
-func WithAppID(p string) InvocationOption {
-	return func(o *InvokeOptions) {
-		o.AppID = p
-	}
-}
-
-//Request Options
-/*func WithStrategy(s loadbalancer.Strategy) InvocationOption {
-	return func(o *InvokeOptions) {
-		o.StrategyFunc = s
-	}
-}*/
 
 // WithStrategy is a request option
 func WithStrategy(s string) InvocationOption {
@@ -136,14 +114,19 @@ func WithMetadata(h map[string]interface{}) InvocationOption {
 	}
 }
 
+// WithRouteTags is a request option
+func WithRouteTags(t map[string]string) InvocationOption {
+	return func(o *InvokeOptions) {
+		o.RouteTags.Label = utiltags.LabelOfTags(t)
+		o.RouteTags.KV = t
+	}
+}
+
 // getOpts is to get the options
 func getOpts(microservice string, options ...InvocationOption) InvokeOptions {
 	opts := InvokeOptions{}
 	for _, o := range options {
 		o(&opts)
-	}
-	if opts.Version == "" {
-		opts.Version = common.LatestVersion
 	}
 	return opts
 }
@@ -152,9 +135,8 @@ func getOpts(microservice string, options ...InvocationOption) InvokeOptions {
 func wrapInvocationWithOpts(i *invocation.Invocation, opts InvokeOptions) {
 	i.Endpoint = opts.Endpoint
 	i.Protocol = opts.Protocol
-	i.Version = opts.Version
 	i.Strategy = opts.StrategyFunc
 	i.Filters = opts.Filters
-	i.AppID = opts.AppID
 	i.Metadata = opts.Metadata
+	i.RouteTags = opts.RouteTags
 }

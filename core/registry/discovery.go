@@ -3,6 +3,7 @@ package registry
 import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 	"log"
 )
 
@@ -28,7 +29,7 @@ type ServiceDiscovery interface {
 	GetAllMicroServices() ([]*MicroService, error)
 	GetMicroService(microServiceID string) (*MicroService, error)
 	GetMicroServiceInstances(consumerID, providerID string) ([]*MicroServiceInstance, error)
-	FindMicroServiceInstances(consumerID, microServiceName string, tags Tags) ([]*MicroServiceInstance, error)
+	FindMicroServiceInstances(consumerID, microServiceName string, tags utiltags.Tags) ([]*MicroServiceInstance, error)
 	AutoSync()
 	Close() error
 }

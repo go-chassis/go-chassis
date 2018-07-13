@@ -1,18 +1,20 @@
 package servicecenter_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	"github.com/ServiceComb/go-sc-client/model"
-	"github.com/hashicorp/go-version"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
+	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
+	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/hashicorp/go-version"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCacheManager_AutoSync(t *testing.T) {
@@ -44,7 +46,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "event1", instanceID)
 	time.Sleep(time.Second * 1)
-	tags := registry.NewDefaultTag("0.1", "default")
+	tags := utiltags.NewDefaultTag("0.1", "default")
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "Server", tags)
 	assert.NotZero(t, len(instances))
 	assert.NoError(t, err)

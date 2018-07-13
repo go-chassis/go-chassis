@@ -1,8 +1,11 @@
 package servicecenter
 
 import (
+	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 	"github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 	"gopkg.in/yaml.v2"
@@ -67,4 +70,19 @@ func closeClient(r *client.RegistryClient) error {
 	}
 	lager.Logger.Debugf("Conn close success.")
 	return nil
+}
+
+func wrapTagsForServiceCenter(t utiltags.Tags) utiltags.Tags {
+	if t.KV != nil {
+		if v, ok := t.KV[common.BuildinTagVersion]; !ok || v == "" {
+			t.KV[common.BuildinTagVersion] = common.LatestVersion
+			t.Label += "|" + common.BuildinLabelVersion
+		}
+		if v, ok := t.KV[common.BuildinTagApp]; !ok || v == "" {
+			t.KV[common.BuildinTagApp] = config.GetGlobalAppID()
+			t.Label += "|" + common.BuildinTagApp + ":" + config.GetGlobalAppID()
+		}
+		return t
+	}
+	return utiltags.NewDefaultTag(common.LatestVersion, config.GetGlobalAppID())
 }

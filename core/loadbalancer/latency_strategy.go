@@ -10,6 +10,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 )
 
 // ByDuration is for calculating the duration
@@ -29,14 +30,14 @@ var (
 )
 
 //BuildKey return key of stats map
-func BuildKey(microServiceName, version, app, protocol string) string {
+func BuildKey(microServiceName, tags, protocol string) string {
 	//TODO add more data
-	return strings.Join([]string{microServiceName, protocol}, "/")
+	return strings.Join([]string{microServiceName, tags, protocol}, "/")
 }
 
 // SetLatency for a instance ,it only save latest 10 stats for instance's protocol
-func SetLatency(latency time.Duration, addr, microServiceName, version, app, protocol string) {
-	key := BuildKey(microServiceName, version, app, protocol)
+func SetLatency(latency time.Duration, addr, microServiceName string, tags utiltags.Tags, protocol string) {
+	key := BuildKey(microServiceName, tags.String(), protocol)
 
 	LatencyMapRWMutex.RLock()
 	stats, ok := ProtocolStatsMap[key]
@@ -139,8 +140,8 @@ func (r *WeightedResponseStrategy) Pick() (*registry.MicroServiceInstance, error
 	if rand.Intn(100) < 70 {
 		var instanceAddr string
 		LatencyMapRWMutex.RLock()
-		if len(ProtocolStatsMap[BuildKey(r.serviceName, "", "", r.protocol)]) != 0 {
-			instanceAddr = ProtocolStatsMap[BuildKey(r.serviceName, "", "", r.protocol)][0].Addr
+		if len(ProtocolStatsMap[BuildKey(r.serviceName, "", r.protocol)]) != 0 {
+			instanceAddr = ProtocolStatsMap[BuildKey(r.serviceName, "", r.protocol)][0].Addr
 		}
 		LatencyMapRWMutex.RUnlock()
 		for _, instance := range r.instances {

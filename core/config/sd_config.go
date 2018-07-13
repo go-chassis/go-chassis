@@ -76,3 +76,6 @@ func GetServiceDiscoveryConfigPath() string {
 	}
 	return DefaultConfigPath
 }
+
+// GetGlobalAppID returns appID of definition
+func GetGlobalAppID() string { return GlobalDefinition.AppID }

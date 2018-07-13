@@ -12,7 +12,6 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
-
 	"github.com/ServiceComb/go-chassis/session"
 	"github.com/cenkalti/backoff"
 )
@@ -53,12 +52,8 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 		metadata = i.MicroServiceName + "/" + i.Protocol
 	}
 
-	if i.Version == "" {
-		i.Version = common.LatestVersion
-	}
-
-	s, err := loadbalancer.BuildStrategy(i.SourceServiceID,
-		i.MicroServiceName, i.AppID, i.Version, i.Protocol, sessionID, i.Filters, strategyFun(), metadata)
+	s, err := loadbalancer.BuildStrategy(i.SourceServiceID, i.MicroServiceName, i.Protocol,
+		sessionID, i.Filters, strategyFun(), metadata, i.RouteTags)
 	if err != nil {
 		return "", err
 	}
@@ -83,7 +78,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 	ep, ok := ins.EndpointsMap[i.Protocol]
 	if !ok {
 		errStr := fmt.Sprintf("No available instance support ["+i.Protocol+"] protocol,"+
-			" msName: "+i.MicroServiceName+" %s %s %s", i.Version, i.AppID, ins.EndpointsMap)
+			" msName: "+i.MicroServiceName+" %v", ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
 		lager.Logger.Errorf(nil, lbErr.Error())
 		return "", lbErr

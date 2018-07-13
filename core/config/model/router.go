@@ -24,6 +24,7 @@ type RouteRule struct {
 type RouteTag struct {
 	Tags   map[string]string `yaml:"tags"`
 	Weight int               `yaml:"weight"`
+	Label  string
 }
 
 // Match is checking source, source tags, and http headers

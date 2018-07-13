@@ -2,6 +2,11 @@ package handler_test
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
 	"github.com/ServiceComb/go-archaius/core"
 	"github.com/ServiceComb/go-archaius/core/cast"
 	"github.com/ServiceComb/go-chassis/client/rest"
@@ -17,12 +22,9 @@ import (
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
 	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"os"
-	"path/filepath"
-	"testing"
-	"time"
 )
 
 const CallTimes = 15
@@ -216,16 +218,13 @@ func TestLBHandlerWithRetry(t *testing.T) {
 		SchemaID:         "schema1",
 		OperationID:      "SayHello",
 		Args:             req,
-		Version:          "1.0",
 		Strategy:         loadbalancer.StrategyRoundRobin,
-		AppID:            "appID",
+		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 		SourceServiceID:  runtime.ServiceID,
-		//Filters:
 	}
 	t.Log(i.SourceServiceID)
 	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
-		//log.Println(r.Result)
 		return r.Err
 	})
 
@@ -271,11 +270,9 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 		SchemaID:         "schema1",
 		OperationID:      "SayHello",
 		Args:             &helloworld.HelloRequest{Name: "peter"},
-		Version:          "1.0",
 		Strategy:         loadbalancer.StrategyRoundRobin,
-		AppID:            "appID",
 		SourceServiceID:  "selfServiceID",
-		//Filters:
+		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 	}
 	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
@@ -326,10 +323,10 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	runtime.ServiceID = sid
 	iv := &invocation.Invocation{
 		MicroServiceName: "test2",
-		Version:          "1.0",
 		Protocol:         "highway",
 		Strategy:         loadbalancer.StrategyRoundRobin,
 		SourceServiceID:  runtime.ServiceID,
+		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 	}
 
 	b.Log(runtime.ServiceID)

@@ -3,8 +3,10 @@ package servicecenter
 import (
 	"fmt"
 
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 	client "github.com/ServiceComb/go-sc-client"
 	"github.com/ServiceComb/go-sc-client/model"
 )
@@ -310,11 +312,14 @@ func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID strin
 }
 
 // FindMicroServiceInstances find micro-service instances
-func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
-	appID := tags.AppID()
-	value, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, tags)
+func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceName string, tags utiltags.Tags) ([]*registry.MicroServiceInstance, error) {
+	appID := config.GetGlobalAppID()
+	// TODO: wrap default tags for service center
+	// because sc need version and appID to generate tags
+	tags = wrapTagsForServiceCenter(tags)
+	value, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 	if !boo || value == nil {
-		lager.Logger.Warnf("%s Get instances from remote, key: %s", consumerID, microServiceName)
+		lager.Logger.Warnf("%s Get instances from remote, key: %s %s", consumerID, appID, microServiceName)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
 			findVersionRule(microServiceName))
 		if err != nil {
@@ -322,7 +327,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 		}
 
 		filterReIndex(providerInstances, microServiceName, appID)
-		value, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags)
+		value, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 		if !boo || value == nil {
 			lager.Logger.Debugf("Find no microservice instances for %s from cache", microServiceName)
 			return nil, nil

@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/config/model"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/registry"
@@ -58,28 +57,9 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 	for _, rule := range rules {
 		if Match(rule.Match, header, si) {
 			tag := FitRate(rule.Routes, inv.MicroServiceName)
-			if tag != nil {
-				inv.Version = tag.Tags[common.BuildinTagVersion]
-				if tag.Tags[common.BuildinTagApp] != "" {
-					inv.AppID = tag.Tags[common.BuildinTagApp]
-				}
-			}
+			inv.RouteTags = routeTagToTags(tag)
 			break
 		}
-	}
-	//Finally, must set app and version for a destination,
-	//because sc need those, But user don't need to care, if they don't want(means don't need to write any route rule configs)
-	//in server side discovery, kubernetes pod labels must be also empty
-	if inv.AppID == "" {
-		if si != nil {
-			inv.AppID = si.Tags[common.BuildinTagApp]
-		}
-		if inv.AppID == "" {
-			inv.AppID = common.DefaultApp
-		}
-	}
-	if inv.Version == "" {
-		inv.Version = common.LatestVersion
 	}
 	return nil
 }

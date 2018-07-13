@@ -83,6 +83,9 @@ const BuildinTagApp = "app"
 // BuildinTagVersion build tag version
 const BuildinTagVersion = "version"
 
+// BuildinLabelVersion build label for version
+const BuildinLabelVersion = BuildinTagVersion + ":" + LatestVersion
+
 // CallerKey caller key
 const CallerKey = "caller"
 

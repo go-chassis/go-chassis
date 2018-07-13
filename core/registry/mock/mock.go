@@ -2,7 +2,7 @@ package mock
 
 import (
 	"github.com/ServiceComb/go-chassis/core/registry"
-
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 	"github.com/ServiceComb/go-sc-client/model"
 	"github.com/stretchr/testify/mock"
 )
@@ -103,7 +103,7 @@ func (m *DiscoveryMock) GetMicroServiceInstances(consumerID, providerID string) 
 }
 
 //FindMicroServiceInstances find micro-service instances
-func (m *DiscoveryMock) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
+func (m *DiscoveryMock) FindMicroServiceInstances(consumerID, microServiceName string, tags utiltags.Tags) ([]*registry.MicroServiceInstance, error) {
 	args := m.Called(consumerID, tags.AppID(), microServiceName, tags.Version(), "")
 	return args.Get(0).([]*registry.MicroServiceInstance), args.Error(1)
 }

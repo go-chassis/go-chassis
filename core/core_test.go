@@ -34,7 +34,7 @@ func TestRPCInvoker_InvokeFailinChainInit(t *testing.T) {
 	config.GlobalDefinition.Cse.References = make(map[string]model.ReferencesStruct)
 	version := model.ReferencesStruct{Version: ""}
 	config.GlobalDefinition.Cse.References["Server"] = version
-	err := invoker.Invoke(ctx, "Server", "HelloServer", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, replyOne, core.WithAppID("0.2"),
+	err := invoker.Invoke(ctx, "Server", "HelloServer", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, replyOne,
 		core.WithMetadata(nil), core.WithStrategy(""), core.StreamingRequest())
 	assert.Error(t, err)
 }
@@ -49,7 +49,7 @@ func TestRestInvoker_ContextDo(t *testing.T) {
 }
 
 func TestOptions(t *testing.T) {
-	opt := core.InvokeOptions{Version: "0.1"}
+	opt := core.InvokeOptions{}
 	option := core.DefaultCallOptions(opt)
 	assert.NotEmpty(t, option)
 
@@ -57,9 +57,6 @@ func TestOptions(t *testing.T) {
 	assert.NotEmpty(t, inv)
 
 	inv = core.WithEndpoint("0.0.0.0")
-	assert.NotEmpty(t, inv)
-
-	inv = core.WithVersion("0.0")
 	assert.NotEmpty(t, inv)
 
 	inv = core.WithProtocol("0.0")

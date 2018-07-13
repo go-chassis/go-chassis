@@ -14,6 +14,9 @@ type RouterHandler struct{}
 
 // Handle is to handle the router related things
 func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	if i.RouteTags.KV != nil {
+		chain.Next(i, cb)
+	}
 
 	tags := map[string]string{}
 	for k, v := range i.Metadata {

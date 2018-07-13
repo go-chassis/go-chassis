@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 )
 
 // constant values for consumer and provider
@@ -30,8 +31,6 @@ type Invocation struct {
 	SourceServiceID    string
 	SourceMicroService string
 	MicroServiceName   string //Target micro service name
-	Version            string
-	AppID              string
 	SchemaID           string //correspond struct name
 	OperationID        string //correspond struct func name
 	Args               interface{}
@@ -39,8 +38,8 @@ type Invocation struct {
 	Reply              interface{}
 	Ctx                context.Context //ctx can save protocol header
 	Metadata           map[string]interface{}
-	RouteTags          map[string]string //route tags is decided in router handler
-	Strategy           string            //load balancing strategy
+	RouteTags          utiltags.Tags //route tags is decided in router handler
+	Strategy           string        //load balancing strategy
 	Filters            []string
 }
 

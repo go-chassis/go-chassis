@@ -1,11 +1,13 @@
 package pilot
 
 import (
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -38,7 +40,7 @@ func TestPilot_RegisterServiceAndInstance(t *testing.T) {
 	assert.Equal(t, "1.1.1.1_80", instances[0].InstanceID)
 	assert.Equal(t, "1.1.1.1:80", instances[0].EndpointsMap["rest"])
 
-	instances, err = sd.FindMicroServiceInstances("", "a", nil)
+	instances, err = sd.FindMicroServiceInstances("", "a", utiltags.Tags{})
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(instances))
 	assert.Equal(t, "1.1.1.1_80", instances[0].InstanceID)

@@ -90,6 +90,7 @@ func NewPool(routeTags ...*model.RouteTag) *Pool {
 			Tags: map[string]string{
 				common.BuildinTagVersion: common.LatestVersion,
 			},
+			Label: common.BuildinLabelVersion,
 		}
 		p.refreshGCD(&latestT)
 		p.tags = append(p.tags, latestT)
