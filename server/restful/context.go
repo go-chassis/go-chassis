@@ -90,3 +90,8 @@ func (bs *Context) ReadRequest() *http.Request {
 func (bs *Context) ReadResponseWriter() http.ResponseWriter {
 	return bs.resp.ResponseWriter
 }
+
+//Context return a ctx
+func (bs *Context) Context() context.Context {
+	return bs.ctx
+}

@@ -89,6 +89,7 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 			common.RestMethod:  req.Request.Method,
 			common.LBSessionID: cookie,
 		},
+		Ctx: context.Background(),
 	}
 	return inv, nil
 }
@@ -134,13 +135,13 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 				lager.Logger.Errorf(err, "transfer http request to invocation failed")
 				return
 			}
-			bs := NewBaseServer(context.TODO())
-			bs.req = req
-			bs.resp = rep
 			c.Next(inv, func(ir *invocation.Response) error {
 				if ir.Err != nil {
 					return ir.Err
 				}
+				bs := NewBaseServer(inv.Ctx)
+				bs.req = req
+				bs.resp = rep
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
 				if bs.resp.StatusCode() >= http.StatusBadRequest {
 					return fmt.Errorf("get err from http handle, get status: %d", bs.resp.StatusCode())

@@ -155,7 +155,12 @@ func (c *chassis) initialize() error {
 		return err
 	}
 
-	err = tracing.Init()
+	err = tracing.Init(&tracing.Option{
+		ServiceName:         config.SelfServiceName,
+		ProtocolEndpointMap: registry.MakeEndpointMap(config.GlobalDefinition.Cse.Protocols),
+		CollectorType:       config.GlobalDefinition.Tracing.CollectorType,
+		CollectorTarget:     config.GlobalDefinition.Tracing.CollectorTarget,
+	})
 	if err != nil {
 		return err
 	}
