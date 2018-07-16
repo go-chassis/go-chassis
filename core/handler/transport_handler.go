@@ -1,16 +1,16 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/client"
 	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
 	"github.com/ServiceComb/go-chassis/session"
-	"time"
-
-	"github.com/ServiceComb/go-chassis/core/config"
 )
 
 // TransportHandler transport handler
@@ -57,7 +57,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 
 	if i.Strategy == loadbalancer.StrategyLatency {
 		timeAfter := time.Since(timeBefore)
-		loadbalancer.SetLatency(timeAfter, i.Endpoint, i.MicroServiceName, i.Version, i.AppID, i.Protocol)
+		loadbalancer.SetLatency(timeAfter, i.Endpoint, i.MicroServiceName, i.RouteTags, i.Protocol)
 	}
 
 	if i.Strategy == loadbalancer.StrategySessionStickiness {

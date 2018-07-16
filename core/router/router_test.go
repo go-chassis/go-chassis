@@ -38,6 +38,7 @@ routeRule:
         weight: 80 #全重 80%到这里
       - tags:
           version: 2.0
+          app: HelloWorld
         weight: 20 #全重 20%到这里
       match:
         source: reviews.default.svc.cluster.local
@@ -53,6 +54,7 @@ routeRule:
         weight: 80 #全重 80%到这里
       - tags:
           version: 2.0
+          app: HelloWorld
         weight: 20 #全重 20%到这里
       match:
         refer: vmall-with-special-header
@@ -66,6 +68,7 @@ routeRule:
       route:
       - tags:
           version: v3
+          app: HelloWorld
         weight: 100
  `)
 var file2 = []byte(`
@@ -151,8 +154,7 @@ func TestRPCRoute(t *testing.T) {
 	inv.MicroServiceName = "RPCServer"
 	err := router.Route(header, si, inv)
 	assert.Nil(t, err, "")
-	assert.Equal(t, "default", inv.AppID)
-	assert.Equal(t, "v2", inv.Version)
+	assert.Equal(t, "v2", inv.RouteTags.Version())
 	assert.Equal(t, "RPCServer", inv.MicroServiceName)
 }
 
@@ -181,27 +183,24 @@ func TestRoute(t *testing.T) {
 
 	err := router.Route(header, si, inv)
 	assert.Nil(t, err, "")
-	assert.Equal(t, "HelloWorld", inv.AppID)
-	assert.Equal(t, "1.2", inv.Version)
+	assert.Equal(t, "HelloWorld", inv.RouteTags.AppID())
+	assert.Equal(t, "1.2", inv.RouteTags.Version())
 	assert.Equal(t, "ShoppingCart", inv.MicroServiceName)
 
 	si.Name = "source"
 	err = router.Route(header, si, inv)
-	assert.Equal(t, "v3", inv.Version)
-	assert.Equal(t, "HelloWorld", inv.AppID)
+	assert.Equal(t, "v3", inv.RouteTags.Version())
+	assert.Equal(t, "HelloWorld", inv.RouteTags.AppID())
 
-	inv.Version = ""
 	inv.MicroServiceName = "server"
 	header["test"] = "test"
 	si.Name = "reviews.default.svc.cluster.local"
 	err = router.Route(header, si, inv)
 	assert.Nil(t, err, "")
 
-	inv.Version = ""
-	inv.AppID = ""
 	inv.MicroServiceName = "notexist"
 	err = router.Route(header, nil, inv)
-	assert.Equal(t, common.LatestVersion, inv.Version)
+	assert.Nil(t, err, "")
 }
 
 func TestRoute2(t *testing.T) {
@@ -217,10 +216,10 @@ func TestRoute2(t *testing.T) {
 
 	err := router.Route(header, nil, inv)
 	assert.Nil(t, err, "")
-	t.Log(inv.AppID)
-	t.Log(inv.Version)
-	assert.Equal(t, "sockshop", inv.AppID)
-	assert.Equal(t, "0.0.1", inv.Version)
+	t.Log(inv.RouteTags.AppID())
+	t.Log(inv.RouteTags.Version())
+	assert.Equal(t, "sockshop", inv.RouteTags.AppID())
+	assert.Equal(t, "0.0.1", inv.RouteTags.Version())
 }
 
 func TestMatch(t *testing.T) {

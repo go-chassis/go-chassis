@@ -8,7 +8,6 @@ import (
 
 func TestChain(t *testing.T) {
 	var inv = new(invocation.Invocation)
-	inv.AppID = "1"
 	inv.Endpoint = "1.2.3.4"
 }
 

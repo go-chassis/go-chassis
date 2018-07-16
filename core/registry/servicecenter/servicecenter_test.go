@@ -1,17 +1,19 @@
 package servicecenter_test
 
 import (
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
 	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
 	"github.com/ServiceComb/go-sc-client/model"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
@@ -28,7 +30,7 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	testRegisterServiceAndInstance(t, registry.DefaultRegistrator, registry.DefaultServiceDiscoveryService)
 	sid := testGetMicroServiceID(t, "CSE", "DSFtestAppThree", "2.0.3", registry.DefaultServiceDiscoveryService)
 	t.Log("获取依赖的实例")
-	tags := registry.NewDefaultTag("2.0.3", "CSE")
+	tags := utiltags.NewDefaultTag("2.0.3", "CSE")
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "DSFtestAppThree", tags)
 	assert.NoError(t, err)
 	assert.NotZero(t, len(instances))
@@ -42,6 +44,7 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 }
 
 func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd registry.ServiceDiscovery) {
+	config.GlobalDefinition.AppID = "CSE"
 	microservice := &registry.MicroService{
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",

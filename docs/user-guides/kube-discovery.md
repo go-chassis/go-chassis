@@ -2,6 +2,14 @@
 
 Kube discovery is a registry choice, which leads go-chassis to do service discovery in kubernetes cluster according to Services. 
 
+## Import Path
+
+kube discovery is a registry plugin that should import in your application code explicitly.
+
+```go
+import _ "github.com/go-chassis/go-chassis-plugins/registry/kube"
+```
+
 ## Configurations
 
 If you set cse.service.Registry.serviceDiscovery.type as "kube", then "configPath" is necessary to comminucate with kubernetes cluster. The go-chassis consumer applications would find Endpoints and Services in cluster that provider applications deployed.
@@ -17,4 +25,4 @@ cse:
         configPath: /etc/.kube/config
 ```
 
-To see the detailed use case of how to use kube discovery with chassis please refer to this [example](https://github.com/ServiceComb/go-chassis/examples/kube).
+To see the detailed use case of how to use kube discovery with chassis please refer to this [example](https://github.com/ServiceComb/go-chassis/tree/master/examples/kube).

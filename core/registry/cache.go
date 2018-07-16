@@ -1,9 +1,7 @@
 package registry
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
 	cache "github.com/patrickmn/go-cache"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -52,20 +50,3 @@ func SetNoIndexCache() { MicroserviceInstanceIndex = newNoIndexCache() }
 
 // newCacheIndex returns index implemention according to config
 func newCacheIndex() CacheIndex { return newIndexCache() }
-
-// Tags defines query conditions
-type Tags map[string]string
-
-// NewDefaultTag returns Tags with version and appID
-func NewDefaultTag(version, appID string) Tags {
-	return Tags{common.BuildinTagVersion: version, common.BuildinTagApp: appID}
-}
-
-// AppID returns buildinTagApp of tags
-func (t Tags) AppID() string { return t[common.BuildinTagApp] }
-
-// Version returns buildinTagVersion of tags
-func (t Tags) Version() string { return t[common.BuildinTagVersion] }
-
-// ToLabelSelector returns selector
-func (t Tags) ToLabelSelector() labels.Selector { return labels.Set(t).AsSelector() }

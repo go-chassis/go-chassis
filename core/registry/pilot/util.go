@@ -45,7 +45,7 @@ func pilotServiceKey(service string) string {
 	return strings.Join([]string{service, ns, DefaultSuffix}, ".")
 }
 
-func pilotQueryKey(serviceKey string, tags registry.Tags) string {
+func pilotQueryKey(serviceKey string, tags map[string]string) string {
 	if tags == nil {
 		return "/" + serviceKey
 	}

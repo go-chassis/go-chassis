@@ -8,13 +8,14 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 )
 
 // GetEndpointFromServiceCenter is used to get the endpoint based on appID, microservice and version
 func GetEndpointFromServiceCenter(appID, microService, version string) (string, error) {
 	var endPoint string
 
-	tags := registry.NewDefaultTag(version, appID)
+	tags := utiltags.NewDefaultTag(version, appID)
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(runtime.ServiceID, microService, tags)
 	if err != nil {
 		lager.Logger.Warnf("Get service instance failed, for key: %s:%s:%s",

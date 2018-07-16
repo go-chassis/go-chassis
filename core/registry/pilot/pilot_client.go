@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/http-client"
 )
 
@@ -97,7 +96,7 @@ func (c *EnvoyDSClient) GetServiceHosts(serviceName string) (*Hosts, error) {
 }
 
 // GetHostsByKey returns Hosts using servicekey and tags
-func (c *EnvoyDSClient) GetHostsByKey(serviceKey string, tags registry.Tags) (*Hosts, error) {
+func (c *EnvoyDSClient) GetHostsByKey(serviceKey string, tags map[string]string) (*Hosts, error) {
 	apiURL := c.getAddress() + BaseRoot + pilotQueryKey(serviceKey, tags)
 	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
 	if err != nil {

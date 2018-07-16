@@ -5,7 +5,7 @@ import (
 
 	"github.com/ServiceComb/go-chassis/core/registry"
 	"github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 	"github.com/ServiceComb/go-sc-client/model"
 )
 
@@ -131,7 +131,7 @@ func (f *Discovery) AutoSync() {
 }
 
 // FindMicroServiceInstances find micro-service instances
-func (f *Discovery) FindMicroServiceInstances(consumerID, microServiceName string, tags registry.Tags) ([]*registry.MicroServiceInstance, error) {
+func (f *Discovery) FindMicroServiceInstances(consumerID, microServiceName string, tags utiltags.Tags) ([]*registry.MicroServiceInstance, error) {
 	providerInstances, err := f.registryClient.FindMicroServiceInstances(microServiceName)
 	if err != nil {
 		return nil, fmt.Errorf("FindMicroServiceInstances failed, err: %s", err)

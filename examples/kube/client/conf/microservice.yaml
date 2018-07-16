@@ -1,5 +1,4 @@
 ---
-#微服务的私有属性
+APPLICATION_ID: registry #optional
 service_description:
   name: kubeclient
-  app: registry

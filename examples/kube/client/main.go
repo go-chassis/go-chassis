@@ -5,10 +5,12 @@ import (
 	"time"
 
 	"github.com/ServiceComb/go-chassis"
-	_ "github.com/ServiceComb/go-chassis/bootstrap"
 	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core"
 	"github.com/ServiceComb/go-chassis/core/lager"
+
+	_ "github.com/ServiceComb/go-chassis/bootstrap"
+	_ "github.com/go-chassis/go-chassis-plugins/registry/kube"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/

@@ -11,6 +11,7 @@ import (
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
 	"github.com/ServiceComb/go-chassis/pkg/istio/client"
 	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 )
 
 // RouterTLS defines tls prefix
@@ -47,6 +48,7 @@ func ValidateRule(rules map[string][]*model.RouteRule) bool {
 		for _, route := range rule {
 			allWeight := 0
 			for _, routeTag := range route.Routes {
+				routeTag.Label = utiltags.LabelOfTags(routeTag.Tags)
 				allWeight += routeTag.Weight
 			}
 
@@ -92,4 +94,12 @@ func getSpecifiedOptions() (opts Options, err error) {
 		opts.EnableSSL = true
 	}
 	return
+}
+
+// routeTagToTags returns tags from a route tag
+func routeTagToTags(t *model.RouteTag) utiltags.Tags {
+	if t != nil {
+		return utiltags.Tags{KV: t.Tags, Label: t.Label}
+	}
+	return utiltags.Tags{}
 }

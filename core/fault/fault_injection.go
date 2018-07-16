@@ -106,7 +106,8 @@ func ValidateFaultDelay(fault *model.Fault) error {
 
 //ApplyFaultInjection abort/delay
 func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configuredPercent int, faultType string) error {
-	key := inv.MicroServiceName + "-" + inv.Version + "-" + inv.AppID
+	key := inv.MicroServiceName + inv.RouteTags.String()
+
 	if oldPercent, ok := percenStore[key]; ok && configuredPercent != oldPercent {
 		resetFaultKeyCount(key)
 	}

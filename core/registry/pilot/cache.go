@@ -104,7 +104,7 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 }
 
 // filterRestore filter and restore instances to cache
-func filterRestore(hs []*Host, serviceKey string, tags registry.Tags) {
+func filterRestore(hs []*Host, serviceKey string, tags map[string]string) {
 	if len(hs) == 0 {
 		registry.MicroserviceInstanceIndex.Delete(serviceKey)
 		return

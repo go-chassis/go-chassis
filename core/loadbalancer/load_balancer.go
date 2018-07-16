@@ -9,6 +9,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/config"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/ServiceComb/go-chassis/pkg/util/tags"
 )
 
 // constant strings for load balance variables
@@ -39,7 +40,8 @@ func (e LBError) Error() string {
 }
 
 // BuildStrategy query instance list and give it to Strategy then return Strategy
-func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID string, fs []string, s Strategy, metadata interface{}) (Strategy, error) {
+func BuildStrategy(consumerID, serviceName, protocol, sessionID string, fs []string,
+	s Strategy, metadata interface{}, tags utiltags.Tags) (Strategy, error) {
 	if s == nil {
 		s = &RoundRobinStrategy{}
 	}
@@ -52,11 +54,6 @@ func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID st
 
 	}
 
-	if app == "" {
-		app = config.GlobalDefinition.AppID
-	}
-
-	tags := registry.NewDefaultTag(version, app)
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(consumerID, serviceName, tags)
 	if err != nil {
 		lbErr := LBError{err.Error()}
@@ -77,16 +74,15 @@ func BuildStrategy(consumerID, serviceName, app, version, protocol, sessionID st
 		for _, filter := range filterFuncs {
 			instances = filter(instances, nil)
 		}
-
 	}
 
 	if len(instances) == 0 {
-		lbErr := LBError{fmt.Sprintf("No available instance, key: %s:%s:%s", app, serviceName, version)}
+		lbErr := LBError{fmt.Sprintf("No available instance, key: %s(%v)", serviceName, tags)}
 		lager.Logger.Error(lbErr.Error(), nil)
 		return nil, lbErr
 	}
-	// TODO: lb strategy for serviceKey should refactor to tags
-	serviceKey := strings.Join([]string{serviceName, version, app}, ":")
+
+	serviceKey := strings.Join([]string{serviceName, tags.String()}, "|")
 	s.ReceiveData(instances, serviceKey, protocol, sessionID)
 	return s, nil
 }
