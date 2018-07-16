@@ -13,6 +13,7 @@ Welcome to go-chassis's documentation!
    intro
    get-started
    user-guides
+   istio-guides
 
 
 .. toctree::
@@ -20,6 +21,8 @@ Welcome to go-chassis's documentation!
    :caption: Development Documentations
 
    dev-guides
+
+
 
 
 
