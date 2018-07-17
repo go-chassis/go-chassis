@@ -1,4 +1,4 @@
-# 微服务定义
+# Micro Service Definition 
 
 ## Introduction
 Use microservice.yaml to describe your service
@@ -7,7 +7,7 @@ Conceptions:
 - instance: one process is a micro service instance, instances belong to one micro service
 - service: service is a static information entity in storage, it has instances
 
-you can consider a project as an micro service, after compile,build and run, it became a micro service instance
+you can consider a project as an micro service, after compile, build and run, it became a micro service instance
 
 
 ## Configurations

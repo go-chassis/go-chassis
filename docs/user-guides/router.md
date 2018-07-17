@@ -182,8 +182,8 @@ match:
 > *(optional, string)* 本条规则的分发比重，配置为1-100的整数，表示百分比。 
 
 **tags**
-> *(optional, string)* 用于区分相同服务名的不同服务分组，
-支持的key值为：版本（version），默认值为0.0.1。应用（app），默认值为default。
+> *(optional, string)* 可定义任意多的tags，用于区分相同服务名的不同服务分组，可以基于version app进行路由，也可以基于微服务实例的元数据进行定义进行路由。比如元数据中定义了project=x,
+那么如果想要路由到带有遮个特定字段和值的实例中，只需要在tag中定义project等于x
 
 
 下面的例子表示75%的访问请求会被分流到具有“version：2.0”标签的服务实例中，其余25%的访问请求会被分发到1.0版本的实例中。
@@ -198,6 +198,28 @@ route:
       version: 1.0
 ```
 
+下面例子演示完整的元数据路由例子
+
+微服务定义中定义了元数据
+```yaml
+service_description:
+  name: Server
+  hostname: 10.244.1.3
+  instance_properties:
+    modelVersion: 1.1
+```
+
+那么可以定义路由规则进行分流
+
+```yaml
+route:
+  - weight: 75
+    tags:
+      modelVersion: 2.0
+  - weight: 25
+    tags:
+      modelVersion: 1.1
+```
 #### 定义匹配模板
 
 我们可以通过预定义源模板（模板中的结构为一个Match结构），并在match部分引用该模板来进行路由规则的匹配。在下面的例子中，“vmall-with-special-header”是一个预定义的源模板的Key值，并在Carts的请求匹配规则中被引用。
