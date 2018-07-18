@@ -5,6 +5,8 @@ Go-Chassis is a Software Development Kit(SDK) for rapid development of microserv
  
 Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable RPC framework
 
+
+
 # Features
  - **Pluggable registrator and discovery service**: Support Service center,istio pilot and file based registry by default
  - **Dynamic Configuration framework**:  you are able to develop a service which has hot-reconfiguration  feature easily
@@ -20,6 +22,8 @@ Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable
  - **Logger**: You can custom your own writer to sink log, by default support file and stdout
  - **Hot-reconfiguraion**: A lot of configuration can be reload in runtime, like loadbalancing, circuit breaker, rate limiting
  
+You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
+
 # Quick Start
 You can see documentations in [here](http://go-chassis.readthedocs.io/en/latest/)
 

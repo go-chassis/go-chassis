@@ -37,15 +37,11 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 
 #### RPC
 
-添加了2个具体调用选项，使用highway rpc，并使用roundrobin路由策略
 
 ```go
 invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
     &helloworld.HelloRequest{Name: "Peter"},
     reply,
-    core.WithProtocol("highway"),
-    core.WithStrategy(loadbalance.StrategyRoundRobin),
-    core.WithVersion("0.0.1"),
 
 )
 ```
