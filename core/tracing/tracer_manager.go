@@ -1,73 +1,96 @@
 package tracing
 
 import (
-	"fmt"
+	"errors"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/schema"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
+
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 )
 
-// TracerMap tracer map
-// key: caller name
-// val: tracer
-var TracerMap map[string]opentracing.Tracer
-
-// GetTracer get tracer
-func GetTracer(caller string) opentracing.Tracer {
-	if tracer, ok := TracerMap[caller]; ok {
-		return tracer
-	}
-	return TracerMap[common.DefaultKey]
+// Option is used to init tracing module
+type Option struct {
+	ServiceName         string
+	ProtocolEndpointMap map[string]string
+	CollectorType       string
+	CollectorTarget     string
 }
 
-func init() {
-	TracerMap = make(map[string]opentracing.Tracer)
+var defaultTracer opentracing.Tracer
+var protocolTracerMap map[string]opentracing.Tracer
+
+// GetTracer get tracer
+func DefaultTracer() opentracing.Tracer {
+	return defaultTracer
+}
+
+// ConsumerTracer get tracer for consumer
+func ConsumerTracer() opentracing.Tracer {
+	return defaultTracer
+}
+
+// ProviderTracer get tracer for provider
+func ProviderTracer(protocol string) (opentracing.Tracer, error) {
+	if t, ok := protocolTracerMap[protocol]; ok {
+		return t, nil
+	}
+	return nil, errors.New("no tracer for protocol: " + protocol)
 }
 
 // Init initialize the tracer
-func Init() error {
-	lager.Logger.Info("Tracing enabled. Start to init tracer map.", nil)
-	collector, err := NewCollector(config.GlobalDefinition.Tracing.CollectorType, config.GlobalDefinition.Tracing.CollectorTarget)
+func Init(opt *Option) error {
+	if opt == nil {
+		return errors.New("tracing init option is nil")
+	}
+	if opt.CollectorType == "" {
+		lager.Logger.Info("Collector type empty, use noop tracer")
+		return nil
+	}
+
+	collector, err := NewCollector(opt.CollectorType, opt.CollectorTarget)
 	if err != nil {
-		lager.Logger.Error(err.Error(), nil)
-		return fmt.Errorf("unable to create tracing collector: %+v", err)
+		return err
 	}
 
-	microserviceNames := schema.GetMicroserviceNames()
-	// key: caller name, val: recorder
-	recorderMap := make(map[string]zipkin.SpanRecorder, len(microserviceNames)+1)
-
-	// set default recorder
-	defaultCaller := common.DefaultKey
-	defaultRecorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
-	recorderMap[defaultCaller] = defaultRecorder
-
-	// set recorder map
-	for _, msName := range microserviceNames {
-		caller := msName + ":" + runtime.HostName
-		r := zipkin.NewRecorder(collector, false, "0.0.0.0:0", caller)
-		recorderMap[caller] = r
+	svcName := opt.ServiceName
+	if svcName == "" {
+		svcName = runtime.HostName
 	}
 
-	// set tracer map
-	for caller, recorder := range recorderMap {
-		// TODO more tracer configuration
-		tracer, err := zipkin.NewTracer(
-			recorder,
-			zipkin.ClientServerSameSpan(true),
-			zipkin.TraceID128Bit(true),
-		)
+	defaultRecorder := zipkin.NewRecorder(collector, false, iputil.GetLocalIP(), svcName)
+	if t, err := newZipkinTracer(defaultRecorder); err != nil {
+		return err
+	} else {
+		defaultTracer = t
+	}
+	if len(opt.ProtocolEndpointMap) == 0 {
+		lager.Logger.Debug("No protocol endpoint provided")
+		return nil
+	}
+	for proto, ep := range opt.ProtocolEndpointMap {
+		recorder := zipkin.NewRecorder(collector, false, ep, svcName)
+		t, err := newZipkinTracer(recorder)
 		if err != nil {
-			lager.Logger.Error(err.Error(), nil)
-			return fmt.Errorf("unable to create global tracer: %+v", err)
+			return err
 		}
-		TracerMap[caller] = tracer
+		protocolTracerMap[proto] = t
 	}
-
+	lager.Logger.Info("Tracing init success", nil)
 	return nil
+}
+
+func newZipkinTracer(r zipkin.SpanRecorder) (opentracing.Tracer, error) {
+	return zipkin.NewTracer(
+		r,
+		zipkin.ClientServerSameSpan(true),
+		zipkin.TraceID128Bit(true),
+	)
+}
+
+func init() {
+	defaultTracer = opentracing.NoopTracer{}
+	protocolTracerMap = make(map[string]opentracing.Tracer)
 }

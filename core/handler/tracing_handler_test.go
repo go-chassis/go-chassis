@@ -1,24 +1,25 @@
 package handler_test
 
 import (
-	//"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
-	//"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/handler"
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/tracing"
 
+	"github.com/ServiceComb/go-chassis/client/rest"
 	"github.com/apache/thrift/lib/go/thrift"
-	//"github.com/emicklei/go-restful"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/emicklei/go-restful"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
@@ -26,34 +27,8 @@ import (
 )
 
 const (
-	interval    = 200 * time.Millisecond
 	serverSleep = 100 * time.Millisecond
 )
-
-const (
-/*
-	prefixTracerState = "x-b3-" // we default to interop with non-opentracing zipkin tracers
-	prefixBaggage     = "ot-baggage-"
-
-	tracerStateFieldCount = 3 // not 5, X-B3-ParentSpanID is optional and we allow optional Sampled header
-	zipkinTraceID         = prefixTracerState + "traceid"
-	zipkinSpanID          = prefixTracerState + "spanid"
-	zipkinParentSpanID    = prefixTracerState + "parentspanid"
-	zipkinSampled         = prefixTracerState + "sampled"
-	zipkinFlags           = prefixTracerState + "flags"
-*/
-)
-
-type sleepHandler struct{}
-
-func (s *sleepHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	chain.Next(i, cb)
-	time.Sleep(interval)
-}
-
-func (s *sleepHandler) Name() string {
-	return "sleepHandler"
-}
 
 type spanTestHandler struct {
 	Span opentracing.Span
@@ -70,437 +45,98 @@ func (s *spanTestHandler) Name() string {
 	return "spanTestHandler"
 }
 
-func TestTracingHandler_Highway(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+func TestTracingHandler_Highway_Consumer(t *testing.T) {
+	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
 	// the port should be different from test cases
 	port := 30110
 	s := newHTTPServer(t, port)
-	// init tracer manager
-	// batch size it 1, send every span when once collector get it.
-	collector, err := zipkin.NewHTTPCollector(fmt.Sprintf("http://localhost:%d/api/v1/spans", port), zipkin.HTTPBatchSize(1))
-	assert.NoError(t, err)
-	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
-	tracer, err := zipkin.NewTracer(
-		recorder,
-		zipkin.ClientServerSameSpan(true),
-		zipkin.TraceID128Bit(true),
-	)
-	assert.NoError(t, err)
-	tracing.TracerMap[common.DefaultKey] = tracer
-
-	t.Log("========tracing [consumer] handler [highway]")
-
-	// set handler chain
-	consumerChain := handler.Chain{}
-	tracingConsumerHandler := &handler.TracingConsumerHandler{}
-	consumerSpanHandler := &spanTestHandler{}
-	consumerChain.AddHandler(&sleepHandler{})
-	consumerChain.AddHandler(tracingConsumerHandler)
-	consumerChain.AddHandler(consumerSpanHandler)
-	inv := &invocation.Invocation{
-		MicroServiceName: "test",
-		Protocol:         common.ProtocolHighway,
-	}
-
-	consumerChain.Next(inv, func(i *invocation.Response) error {
-		assert.NoError(t, i.Err)
-		return nil
+	tracing.Init(&tracing.Option{
+		ServiceName:     "test",
+		CollectorType:   tracing.TracingZipkinCollector,
+		CollectorTarget: fmt.Sprintf("http://localhost:%d/api/v1/spans", port),
+		ProtocolEndpointMap: map[string]string{
+			common.RestMethod:      "localhost:8000",
+			common.ProtocolHighway: "localhost:8001",
+		},
 	})
 
-	t.Log("====span should be stored in context after invoker")
-	assert.NotNil(t, consumerSpanHandler.Span)
-
-	t.Log("====spanContext stored in context should be the same with monitor received")
-	zipkinServerRecievedSpans := s.spans()
-	if len(zipkinServerRecievedSpans) == 0 {
-		return
-	}
-	assert.Equal(t, 1, len(zipkinServerRecievedSpans))
-	if t.Failed() {
-		return
-	}
-	assert.Equal(t, 2, len(zipkinServerRecievedSpans[0].Annotations))
-
-	localSpanContext := consumerSpanHandler.Span.Context()
-	consumerZpSpanContext, ok := localSpanContext.(zipkin.SpanContext)
-	assert.True(t, ok)
-
-	assert.Equal(t, uint64(zipkinServerRecievedSpans[0].TraceID), consumerZpSpanContext.TraceID.Low)
-	assert.Equal(t, (uint64)(*zipkinServerRecievedSpans[0].TraceIDHigh), consumerZpSpanContext.TraceID.High)
-	assert.Equal(t, (uint64)(zipkinServerRecievedSpans[0].ID), consumerZpSpanContext.SpanID)
-
-	assert.NotEqual(t, 0, consumerZpSpanContext.SpanID)
-	assert.Nil(t, consumerZpSpanContext.ParentSpanID)
-
-	t.Log("========tracing [provider] handler [highway]")
-
-	// set handler chain
-	providerChain := handler.Chain{}
-	tracingProviderHandler := &handler.TracingProviderHandler{}
-	providerSpanHandler := &spanTestHandler{}
-	providerChain.AddHandler(&sleepHandler{})
-	providerChain.AddHandler(tracingProviderHandler)
-	providerChain.AddHandler(providerSpanHandler)
-
-	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.Response) error {
-		assert.NoError(t, i.Err)
-		return nil
-	})
-
-	t.Log("====span should be stored in context after server receive")
-	assert.NotNil(t, providerSpanHandler.Span)
-
-	t.Log("====spanContext stored in context should be the same with monitor received")
-	zipkinServerRecievedSpans = s.spans()
-	assert.Equal(t, 1, len(zipkinServerRecievedSpans))
-	if t.Failed() {
-		return
-	}
-	assert.Equal(t, 2, len(zipkinServerRecievedSpans[0].Annotations))
-
-	localSpanContext = providerSpanHandler.Span.Context()
-	providerZpSpanContext, ok := localSpanContext.(zipkin.SpanContext)
-	assert.True(t, ok)
-
-	assert.Equal(t, uint64(zipkinServerRecievedSpans[0].TraceID), providerZpSpanContext.TraceID.Low)
-	assert.Equal(t, (uint64)(*zipkinServerRecievedSpans[0].TraceIDHigh), providerZpSpanContext.TraceID.High)
-	assert.Equal(t, (uint64)(zipkinServerRecievedSpans[0].ID), providerZpSpanContext.SpanID)
-
-	assert.NotEqual(t, 0, providerZpSpanContext.SpanID)
-	assert.Nil(t, providerZpSpanContext.ParentSpanID)
-
-	t.Log("====spanContext of consumer/provider should be the same")
-	assert.Equal(t, consumerZpSpanContext.TraceID, providerZpSpanContext.TraceID)
-	assert.Equal(t, consumerZpSpanContext.SpanID, providerZpSpanContext.SpanID)
-
-	t.Log("========tracing [consumer] handler [highway], with [parent]")
-
-	consumerChain.Reset()
-	s.clearSpans()
-	parentSpanID := providerZpSpanContext.SpanID
-
-	consumerChain.Next(inv, func(i *invocation.Response) error {
-		assert.NoError(t, i.Err)
-		return nil
-	})
-
-	t.Log("====the parent spanID shoud be last spanID")
-	localSpanContext = consumerSpanHandler.Span.Context()
-	consumerZpSpanContext, ok = localSpanContext.(zipkin.SpanContext)
-	assert.True(t, ok)
-
-	assert.Equal(t, parentSpanID, *consumerZpSpanContext.ParentSpanID)
-	assert.NotEqual(t, parentSpanID, consumerZpSpanContext.SpanID)
-
-	var tch *handler.TracingConsumerHandler = new(handler.TracingConsumerHandler)
-	str := tch.Name()
-	assert.Equal(t, "tracing-consumer", str)
-
-	var tph *handler.TracingProviderHandler = new(handler.TracingProviderHandler)
-	str = tph.Name()
-	assert.Equal(t, "tracing-provider", str)
+	testTracer(t, s, common.ProtocolHighway)
+	testTracer(t, s, common.ProtocolRest)
 }
 
-// TODO
-// Comment buggy test cases : Already raised an issue to trace this https://github.com/ServiceComb/go-chassis/issues/5
-/*
-func TestTracingHandler_Rest_RestRequest(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	// the port should be different from test cases
-	port := 30111
-	s := newHTTPServer(t, port)
-	// init tracer manager
-	// batch size it 1, send every span when once collector get it.
-	collector, err := zipkin.NewHTTPCollector(fmt.Sprintf("http://localhost:%d/api/v1/spans", port), zipkin.HTTPBatchSize(1))
-	assert.NoError(t, err)
-	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", iputil.GetHostName())
-	tracer, err := zipkin.NewTracer(
-		recorder,
-		zipkin.ClientServerSameSpan(true),
-		zipkin.TraceID128Bit(true),
-	)
-	assert.NoError(t, err)
-	tracing.TracerMap[common.DefaultKey] = tracer
-
-	t.Log("========tracing [consumer] handler [rest]")
-
+func testTracer(t *testing.T, s *httpServer, protocol string) {
+	baseSpanNum := len(s.spans())
 	// set handler chain
 	consumerChain := handler.Chain{}
-	tracingConsumerHandler := &handler.TracingConsumerHandler{}
-	consumerSpanHandler := &spanTestHandler{}
-	consumerChain.AddHandler(&sleepHandler{})
-	consumerChain.AddHandler(tracingConsumerHandler)
-	consumerChain.AddHandler(consumerSpanHandler)
+	spanHandler := &spanTestHandler{}
+	consumerChain.AddHandler(&handler.TracingConsumerHandler{})
+	consumerChain.AddHandler(spanHandler)
+	consumerParentOp, consumerInv := generateOpAndInv(t, protocol, common.Consumer, "parent", nil)
 
-	restClientSentReq, err := rest.NewRequest("GET", "cse://Server/hello")
-	assert.NoError(t, err)
-
-	inv := &invocation.Invocation{
-		MicroServiceName: "test",
-		Protocol:         common.ProtocolRest,
-		Args:             restClientSentReq,
-	}
-
-	consumerChain.Next(inv, func(i *invocation.Response) error {
+	t.Logf("[%s] consumer create parent span", protocol)
+	consumerChain.Next(consumerInv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
-
-	t.Log("====span should be stored in context after invoker")
-	assert.NotNil(t, consumerSpanHandler.Span)
-
-	t.Log("====spanContext stored in context should be the same with monitor received")
-	zipkinServerRecievedSpans := s.spans()
-	assert.Equal(t, 1, len(zipkinServerRecievedSpans))
-	if t.Failed() {
-		return
-	}
-	assert.Equal(t, 2, len(zipkinServerRecievedSpans[0].Annotations))
-
-	localSpanContext := consumerSpanHandler.Span.Context()
-	consumerZpSpanContext, ok := localSpanContext.(zipkin.SpanContext)
-	assert.True(t, ok)
-
-	assert.Equal(t, uint64(zipkinServerRecievedSpans[0].TraceID), consumerZpSpanContext.TraceID.Low)
-	assert.Equal(t, (uint64)(*zipkinServerRecievedSpans[0].TraceIDHigh), consumerZpSpanContext.TraceID.High)
-	assert.Equal(t, (uint64)(zipkinServerRecievedSpans[0].ID), consumerZpSpanContext.SpanID)
-
-	assert.NotEqual(t, 0, consumerZpSpanContext.SpanID)
-	assert.Nil(t, consumerZpSpanContext.ParentSpanID)
-
-	t.Log("========tracing [provider] handler [rest]")
-
-	// copy header from rest client to rest server
-	httpReq, err := http.NewRequest("GET", "cse://Server/hello", bytes.NewReader(make([]byte, 0)))
+	time.Sleep(2 * time.Second)
+	assert.True(t, len(s.spans()) == baseSpanNum+1)
+	consumerParentSpanFromZipkin, err := filterSpanByOperationName(consumerParentOp, s.spans()...)
 	assert.NoError(t, err)
-	restServerReceivedReq := &restful.Request{
-		Request: httpReq,
-	}
-	httpHeadersCarrier := (opentracing.HTTPHeadersCarrier)(restServerReceivedReq.Request.Header)
+	consumerParentSpanContext, ok := spanHandler.Span.Context().(zipkin.SpanContext)
 	assert.True(t, ok)
+	assert.Equal(t, uint64(consumerParentSpanFromZipkin.ID), consumerParentSpanContext.SpanID)
 
-	httpHeadersCarrier.Set(zipkinTraceID, restClientSentReq.GetHeader(zipkinTraceID))
-	httpHeadersCarrier.Set(zipkinSpanID, restClientSentReq.GetHeader(zipkinSpanID))
-	// parentID is empty, do not set it
-	httpHeadersCarrier.Set(zipkinSampled, restClientSentReq.GetHeader(zipkinSampled))
-	httpHeadersCarrier.Set(zipkinFlags, restClientSentReq.GetHeader(zipkinFlags))
+	t.Log("====span should stored in ctx")
+	assert.NotNil(t, opentracing.SpanFromContext(consumerInv.Ctx))
 
-	// set args to be restServerReceivedReq
-	inv.Args = restServerReceivedReq
-
-	// set handler chain
+	t.Logf("[%s] provider create span from carrier", protocol)
 	providerChain := handler.Chain{}
-	tracingProviderHandler := &handler.TracingProviderHandler{}
 	providerSpanHandler := &spanTestHandler{}
-	providerChain.AddHandler(&sleepHandler{})
-	providerChain.AddHandler(tracingProviderHandler)
+	providerChain.AddHandler(&handler.TracingProviderHandler{})
 	providerChain.AddHandler(providerSpanHandler)
-
-	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.Response) error {
+	providerFromCarrierOp, providerInv := generateOpAndInv(t, protocol, common.Provider, "fromcarrier", consumerInv)
+	providerChain.Next(providerInv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
-
-	t.Log("====span should be stored in context after server receive")
-	assert.NotNil(t, providerSpanHandler.Span)
-
-	t.Log("====spanContext stored in context should be the same with monitor received")
-	zipkinServerRecievedSpans = s.spans()
-	assert.Equal(t, 1, len(zipkinServerRecievedSpans))
-	if t.Failed() {
-		return
-	}
-	assert.Equal(t, 2, len(zipkinServerRecievedSpans[0].Annotations))
-
-	localSpanContext = providerSpanHandler.Span.Context()
-	providerZpSpanContext, ok := localSpanContext.(zipkin.SpanContext)
+	time.Sleep(2 * time.Second)
+	assert.True(t, len(s.spans()) == baseSpanNum+2)
+	providerFromCarrierSpanFromZipkin, err := filterSpanByOperationName(providerFromCarrierOp, s.spans()...)
+	assert.NoError(t, err)
+	providerFromCarrierSpanContext, ok := providerSpanHandler.Span.Context().(zipkin.SpanContext)
 	assert.True(t, ok)
+	assert.Equal(t, uint64(providerFromCarrierSpanFromZipkin.ID), providerFromCarrierSpanContext.SpanID)
+	assert.Equal(t, providerFromCarrierSpanContext.SpanID, consumerParentSpanContext.SpanID)
 
-	assert.Equal(t, uint64(zipkinServerRecievedSpans[0].TraceID), providerZpSpanContext.TraceID.Low)
-	assert.Equal(t, (uint64)(*zipkinServerRecievedSpans[0].TraceIDHigh), providerZpSpanContext.TraceID.High)
-	assert.Equal(t, (uint64)(zipkinServerRecievedSpans[0].ID), providerZpSpanContext.SpanID)
-
-	assert.NotEqual(t, 0, providerZpSpanContext.SpanID)
-	assert.Nil(t, providerZpSpanContext.ParentSpanID)
-
-	t.Log("====spanContext of consumer/provider should be the same")
-	assert.Equal(t, consumerZpSpanContext.TraceID, providerZpSpanContext.TraceID)
-	assert.Equal(t, consumerZpSpanContext.SpanID, providerZpSpanContext.SpanID)
-
-	t.Log("========tracing [consumer] handler [rest], with [parent]")
-
-	// set args to be restServerReceivedReq
-	inv.Args = restClientSentReq
-
+	t.Logf("[%s] consumer create child span", protocol)
+	childOp, consumerInv := generateOpAndInv(t, protocol, common.Consumer, "child", providerInv)
 	consumerChain.Reset()
-	s.clearSpans()
-	parentSpanID := providerZpSpanContext.SpanID
-
-	consumerChain.Next(inv, func(i *invocation.Response) error {
+	consumerChain.Next(consumerInv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
+	time.Sleep(2 * time.Second)
+	assert.True(t, len(s.spans()) == baseSpanNum+3)
+	consumerChildSpanFromZipkin, err := filterSpanByOperationName(childOp, s.spans()...)
+	assert.NoError(t, err)
+	assert.Equal(t, consumerParentSpanFromZipkin.ID, *consumerChildSpanFromZipkin.ParentID)
 
-	t.Log("====the parent spanID shoud be last spanID")
-	localSpanContext = consumerSpanHandler.Span.Context()
-	consumerZpSpanContext, ok = localSpanContext.(zipkin.SpanContext)
+	t.Logf("[%s] provider create new span", protocol)
+	providerNewOp, providerInv := generateOpAndInv(t, protocol, common.Provider, "new", nil)
+	providerChain.Reset()
+	providerChain.Next(providerInv, func(i *invocation.Response) error {
+		assert.NoError(t, i.Err)
+		return nil
+	})
+	time.Sleep(2 * time.Second)
+	assert.True(t, len(s.spans()) == baseSpanNum+4)
+	providerNewSpanFromZipkin, err := filterSpanByOperationName(providerNewOp, s.spans()...)
+	assert.NoError(t, err)
+	providerNewSpanContext, ok := providerSpanHandler.Span.Context().(zipkin.SpanContext)
 	assert.True(t, ok)
-
-	assert.Equal(t, parentSpanID, *consumerZpSpanContext.ParentSpanID)
-	assert.NotEqual(t, parentSpanID, consumerZpSpanContext.SpanID)
+	assert.Equal(t, uint64(providerNewSpanFromZipkin.ID), providerNewSpanContext.SpanID)
+	assert.NotEqual(t, providerNewSpanContext.TraceID, consumerParentSpanContext.TraceID)
 }
-
-func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	// the port should be different from test cases
-	port := 30112
-	s := newHTTPServer(t, port)
-	// init tracer manager
-	// batch size it 1, send every span when once collector get it.
-	collector, err := zipkin.NewHTTPCollector(fmt.Sprintf("http://localhost:%d/api/v1/spans", port), zipkin.HTTPBatchSize(1))
-	assert.NoError(t, err)
-	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", iputil.GetHostName())
-	tracer, err := zipkin.NewTracer(
-		recorder,
-		zipkin.ClientServerSameSpan(true),
-		zipkin.TraceID128Bit(true),
-	)
-	assert.NoError(t, err)
-	tracing.TracerMap[common.DefaultKey] = tracer
-
-	t.Log("========tracing [consumer] handler [rest]")
-
-	// set handler chain
-	consumerChain := handler.Chain{}
-	tracingConsumerHandler := &handler.TracingConsumerHandler{}
-	consumerSpanHandler := &spanTestHandler{}
-	consumerChain.AddHandler(&sleepHandler{})
-	consumerChain.AddHandler(tracingConsumerHandler)
-	consumerChain.AddHandler(consumerSpanHandler)
-
-	fasthttpRequest := fasthttp.AcquireRequest()
-	fasthttpRequest.Header.SetMethod("GET")
-	fasthttpRequest.Header.SetRequestURI("cse://Server/hello")
-	assert.NoError(t, err)
-
-	inv := &invocation.Invocation{
-		MicroServiceName: "test",
-		Protocol:         common.ProtocolRest,
-		Args:             fasthttpRequest,
-	}
-
-	consumerChain.Next(inv, func(i *invocation.Response) error {
-		assert.NoError(t, i.Err)
-		return nil
-	})
-
-	t.Log("====span should be stored in context after invoker")
-	assert.NotNil(t, consumerSpanHandler.Span)
-
-	t.Log("====spanContext stored in context should be the same with monitor received")
-	zipkinServerRecievedSpans := s.spans()
-	assert.Equal(t, 1, len(zipkinServerRecievedSpans))
-	if t.Failed() {
-		return
-	}
-	assert.Equal(t, 2, len(zipkinServerRecievedSpans[0].Annotations))
-
-	localSpanContext := consumerSpanHandler.Span.Context()
-	consumerZpSpanContext, ok := localSpanContext.(zipkin.SpanContext)
-	assert.True(t, ok)
-
-	assert.Equal(t, uint64(zipkinServerRecievedSpans[0].TraceID), consumerZpSpanContext.TraceID.Low)
-	assert.Equal(t, (uint64)(*zipkinServerRecievedSpans[0].TraceIDHigh), consumerZpSpanContext.TraceID.High)
-	assert.Equal(t, (uint64)(zipkinServerRecievedSpans[0].ID), consumerZpSpanContext.SpanID)
-
-	assert.NotEqual(t, 0, consumerZpSpanContext.SpanID)
-	assert.Nil(t, consumerZpSpanContext.ParentSpanID)
-
-	t.Log("========tracing [provider] handler [rest]")
-
-	// copy header from rest client to rest server
-	httpReq, err := http.NewRequest("GET", "cse://Server/hello", bytes.NewReader(make([]byte, 0)))
-	assert.NoError(t, err)
-	restServerReceivedReq := &restful.Request{
-		Request: httpReq,
-	}
-	httpHeadersCarrier := (opentracing.HTTPHeadersCarrier)(restServerReceivedReq.Request.Header)
-	assert.True(t, ok)
-
-	httpHeadersCarrier.Set(zipkinTraceID, string(fasthttpRequest.Header.Peek(zipkinTraceID)))
-	httpHeadersCarrier.Set(zipkinSpanID, string(fasthttpRequest.Header.Peek(zipkinSpanID)))
-	// parentID is empty, do not set it
-	httpHeadersCarrier.Set(zipkinSampled, string(fasthttpRequest.Header.Peek(zipkinSampled)))
-	httpHeadersCarrier.Set(zipkinFlags, string(fasthttpRequest.Header.Peek(zipkinFlags)))
-
-	// set args to be restServerReceivedReq
-	inv.Args = restServerReceivedReq
-
-	// set handler chain
-	providerChain := handler.Chain{}
-	tracingProviderHandler := &handler.TracingProviderHandler{}
-	providerSpanHandler := &spanTestHandler{}
-	providerChain.AddHandler(&sleepHandler{})
-	providerChain.AddHandler(tracingProviderHandler)
-	providerChain.AddHandler(providerSpanHandler)
-
-	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.Response) error {
-		assert.NoError(t, i.Err)
-		return nil
-	})
-
-	t.Log("====span should be stored in context after server receive")
-	assert.NotNil(t, providerSpanHandler.Span)
-
-	t.Log("====spanContext stored in context should be the same with monitor received")
-	zipkinServerRecievedSpans = s.spans()
-	assert.Equal(t, 1, len(zipkinServerRecievedSpans))
-	if t.Failed() {
-		return
-	}
-	assert.Equal(t, 2, len(zipkinServerRecievedSpans[0].Annotations))
-
-	localSpanContext = providerSpanHandler.Span.Context()
-	providerZpSpanContext, ok := localSpanContext.(zipkin.SpanContext)
-	assert.True(t, ok)
-
-	assert.Equal(t, uint64(zipkinServerRecievedSpans[0].TraceID), providerZpSpanContext.TraceID.Low)
-	assert.Equal(t, (uint64)(*zipkinServerRecievedSpans[0].TraceIDHigh), providerZpSpanContext.TraceID.High)
-	assert.Equal(t, (uint64)(zipkinServerRecievedSpans[0].ID), providerZpSpanContext.SpanID)
-
-	assert.NotEqual(t, 0, providerZpSpanContext.SpanID)
-	assert.Nil(t, providerZpSpanContext.ParentSpanID)
-
-	t.Log("====spanContext of consumer/provider should be the same")
-	assert.Equal(t, consumerZpSpanContext.TraceID, providerZpSpanContext.TraceID)
-	assert.Equal(t, consumerZpSpanContext.SpanID, providerZpSpanContext.SpanID)
-
-	t.Log("========tracing [consumer] handler [rest], with [parent]")
-
-	// set args to be restServerReceivedReq
-	inv.Args = fasthttpRequest
-
-	consumerChain.Reset()
-	s.clearSpans()
-	parentSpanID := providerZpSpanContext.SpanID
-
-	consumerChain.Next(inv, func(i *invocation.Response) error {
-		assert.NoError(t, i.Err)
-		return nil
-	})
-
-	t.Log("====the parent spanID shoud be last spanID")
-	localSpanContext = consumerSpanHandler.Span.Context()
-	consumerZpSpanContext, ok = localSpanContext.(zipkin.SpanContext)
-	assert.True(t, ok)
-
-	assert.Equal(t, parentSpanID, *consumerZpSpanContext.ParentSpanID)
-	assert.NotEqual(t, parentSpanID, consumerZpSpanContext.SpanID)
-}
-*/
 
 type httpServer struct {
 	t            *testing.T
@@ -540,9 +176,9 @@ func newHTTPServer(t *testing.T, port int) *httpServer {
 		mutex:       sync.RWMutex{},
 	}
 
-	handler := http.NewServeMux()
+	h := http.NewServeMux()
 
-	handler.HandleFunc("/api/v1/spans", func(w http.ResponseWriter, r *http.Request) {
+	h.HandleFunc("/api/v1/spans", func(w http.ResponseWriter, r *http.Request) {
 		contextType := r.Header.Get("Content-Type")
 		if contextType != "application/x-thrift" {
 			t.Fatalf(
@@ -591,17 +227,82 @@ func newHTTPServer(t *testing.T, port int) *httpServer {
 		defer server.mutex.Unlock()
 		server.zipkinSpans = append(server.zipkinSpans, spans...)
 		server.zipkinHeader = headers
+		log.Printf("Get %d new spans", len(spans))
 	})
 
-	handler.HandleFunc("/api/v1/sleep", func(w http.ResponseWriter, r *http.Request) {
+	h.HandleFunc("/api/v1/sleep", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(serverSleep)
 	})
 
 	var err error
 	go func() {
-		err = http.ListenAndServe(fmt.Sprintf(":%d", port), handler)
+		err = http.ListenAndServe(fmt.Sprintf(":%d", port), h)
 	}()
 	assert.NoError(t, err)
 
 	return server
+}
+
+func filterSpanByOperationName(o string, span ...*zipkincore.Span) (*zipkincore.Span, error) {
+	for _, s := range span {
+		if s.Name == o {
+			return s, nil
+		}
+	}
+	return nil, errors.New("no matched span")
+}
+
+func generateOpAndInv(t *testing.T, proto, serviceType, op string, old *invocation.Invocation) (name string, inv *invocation.Invocation) {
+	switch proto {
+	case common.ProtocolRest:
+		baseUri := "http://localhost:8000"
+		name = strings.Join([]string{"", proto, serviceType, op}, "/")
+		inv = &invocation.Invocation{
+			MicroServiceName: "test",
+			Protocol:         proto,
+		}
+		switch serviceType {
+		case common.Consumer:
+			req, err := rest.NewRequest("Get", baseUri+name)
+			assert.NoError(t, err)
+			inv.Args = req
+			inv.URLPathFormat = req.Req.URL.Path
+			// this means consumer needs inherit old's ctx
+			if old != nil {
+				inv.Ctx = old.Ctx
+			} else {
+				inv.Ctx = common.NewContext(nil)
+			}
+		default:
+			tmpReq, err := rest.NewRequest("GET", baseUri+name)
+			assert.NoError(t, err)
+			if old != nil {
+				req, ok := old.Args.(*rest.Request)
+				assert.True(t, ok)
+				if !ok {
+					t.FailNow()
+				}
+				tmpReq.Req.Header = req.Req.Header
+			}
+			providerFromCarrierReq := restful.NewRequest(tmpReq.Req)
+			inv.Args = providerFromCarrierReq
+			inv.URLPathFormat = providerFromCarrierReq.Request.URL.Path
+			inv.Ctx = common.NewContext(nil)
+		}
+	default:
+		strings.Join([]string{proto, serviceType, op}, ".")
+		name = strings.Join([]string{proto, serviceType, op}, ".")
+		inv = &invocation.Invocation{
+			MicroServiceName: "test",
+			Protocol:         proto,
+			OperationID:      name,
+		}
+		if old != nil {
+			inv.Ctx = old.Ctx
+		}
+	}
+	if inv.Ctx == nil {
+		inv.Ctx = common.NewContext(nil)
+	}
+	return
 }

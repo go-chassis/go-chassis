@@ -1,33 +1,60 @@
 package tracing_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
+	"testing"
+
+	"github.com/ServiceComb/go-chassis/core/common"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/tracing"
+
+	"github.com/opentracing/opentracing-go"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestTracerManager(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	config.GlobalDefinition = &model.GlobalCfg{}
-
-	config.GlobalDefinition.Tracing.CollectorType = tracing.TracingZipkinCollector
-	config.GlobalDefinition.Tracing.CollectorTarget = "localhost:9441/v1/spans"
-	err := tracing.Init()
-	assert.NoError(t, err)
-	err = tracing.Init()
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(tracing.TracerMap))
-}
-
-func TestTracerManagerError(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Tracing.CollectorType = "errortype"
-	config.GlobalDefinition.Tracing.CollectorTarget = "localhost:9441/v1/spans"
-	tracing.GetTracer("calltracer")
-	err := tracing.Init()
+	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
+	// use nil option to init
+	err := tracing.Init(nil)
 	assert.Error(t, err)
+
+	// when no config is provided should do nothing
+	err = tracing.Init(&tracing.Option{})
+	assert.NoError(t, err)
+	_, ok := tracing.ConsumerTracer().(opentracing.NoopTracer)
+	assert.True(t, ok)
+
+	// when collector is invalid, should return err and do nothing
+	err = tracing.Init(&tracing.Option{
+		CollectorType:   "invalidType",
+		CollectorTarget: "target",
+	})
+	assert.Error(t, err)
+	_, ok = tracing.ConsumerTracer().(opentracing.NoopTracer)
+	assert.True(t, ok)
+
+	// when collector is valid and protocol endpoint is nil,
+	// only consumer tracer should init
+	err = tracing.Init(&tracing.Option{
+		CollectorType:   "zipkin",
+		CollectorTarget: "http://localhost:9411/api/v1/spans",
+	})
+	assert.NoError(t, err)
+	_, ok = tracing.ConsumerTracer().(opentracing.NoopTracer)
+	assert.False(t, ok)
+	_, err = tracing.ProviderTracer(common.ProtocolRest)
+	assert.Error(t, err)
+
+	// when provide collector and protocol endpoint,
+	// provider tracer should init
+	err = tracing.Init(&tracing.Option{
+		CollectorType:   "zipkin",
+		CollectorTarget: "http://localhost:9411/api/v1/spans",
+		ServiceName:     "test",
+		ProtocolEndpointMap: map[string]string{
+			common.ProtocolRest: "0.0.0.0:0",
+		},
+	})
+	assert.NoError(t, err)
+	_, err = tracing.ProviderTracer(common.ProtocolRest)
+	assert.NoError(t, err)
 }
