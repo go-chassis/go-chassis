@@ -26,7 +26,7 @@ func main() {
 	// new response object
 	reply := &helloworld.HelloReply{}
 	// create context with metadata
-	ctx := context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
+	ctx := context.WithValue(context.Background(), common.ContextHeaderKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 	err := invoker.Invoke(ctx, "SimpleServer", "HelloService", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, reply, core.WithEndpoint("127.0.0.1:9901"), core.WithProtocol("highway"))

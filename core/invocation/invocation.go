@@ -36,10 +36,10 @@ type Invocation struct {
 	Args               interface{}
 	URLPathFormat      string
 	Reply              interface{}
-	Ctx                context.Context //ctx can save protocol header
-	Metadata           map[string]interface{}
-	RouteTags          utiltags.Tags //route tags is decided in router handler
-	Strategy           string        //load balancing strategy
+	Ctx                context.Context        //ctx can save protocol header
+	Metadata           map[string]interface{} //local scope data
+	RouteTags          utiltags.Tags          //route tags is decided in router handler
+	Strategy           string                 //load balancing strategy
 	Filters            []string
 }
 
@@ -59,5 +59,11 @@ func (inv *Invocation) GetSessionID() string {
 
 //SetSessionID set session id to invocation
 func (inv *Invocation) SetSessionID(value string) {
-	inv.Metadata[common.LBSessionID] = value
+	headers := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+	headers[common.LBSessionID] = value
+}
+
+//SetMetadata local scope params
+func (inv *Invocation) SetMetadata(key string, value interface{}) {
+	inv.Metadata[key] = value
 }

@@ -31,7 +31,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 			h[k] = req.Req.Header.Get(k)
 		}
 	} else if i.Ctx != nil {
-		at, ok := i.Ctx.Value(common.ContextValueKey{}).(map[string]string)
+		at, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 		if ok {
 			h = map[string]string(at)
 		}

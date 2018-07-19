@@ -1,0 +1,6 @@
+---
+#微服务的私有属性
+#APPLICATION_ID: CSE #optional
+service_description:
+  name: Server
+  #version: 0.1 #optional

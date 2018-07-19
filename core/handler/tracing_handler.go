@@ -69,7 +69,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 			lager.Logger.Debug("No metadata found in Invocation.Ctx")
 			break
 		}
-		at, ok := i.Ctx.Value(common.ContextValueKey{}).(map[string]string)
+		at, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 		if !ok {
 			lager.Logger.Debug("No metadata found in Invocation.Ctx")
 			break
@@ -191,10 +191,10 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	default:
 		// header stored in context
 		var header map[string]string
-		attachments, ok := i.Ctx.Value(common.ContextValueKey{}).(map[string]string)
+		attachments, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 		if !ok {
 			header = make(map[string]string)
-			i.Ctx = context.WithValue(i.Ctx, common.ContextValueKey{}, header)
+			i.Ctx = context.WithValue(i.Ctx, common.ContextHeaderKey{}, header)
 		} else {
 			header = attachments
 		}
@@ -206,7 +206,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		); err != nil {
 			lager.Logger.Errorf(err, "Inject span failed")
 		} else {
-			i.Ctx = context.WithValue(i.Ctx, common.ContextValueKey{}, header)
+			i.Ctx = context.WithValue(i.Ctx, common.ContextHeaderKey{}, header)
 		}
 	}
 

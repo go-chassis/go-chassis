@@ -77,6 +77,7 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 			return nil, err
 		}
 	}
+
 	inv := &invocation.Invocation{
 		MicroServiceName:   config.SelfServiceName,
 		SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
@@ -86,9 +87,14 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 		OperationID:        operation,
 		URLPathFormat:      req.Request.URL.Path,
 		Metadata: map[string]interface{}{
-			common.RestMethod:  req.Request.Method,
-			common.LBSessionID: cookie,
+			common.RestMethod: req.Request.Method,
 		},
+		Ctx: context.WithValue(context.Background(), common.ContextHeaderKey{},
+			map[string]string{}), //set headers, do not consider about protocol in handlers
+	}
+	if cookie != nil {
+		headers := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+		headers[common.LBSessionID] = cookie.Value
 	}
 	return inv, nil
 }
@@ -141,6 +147,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 				if ir.Err != nil {
 					return ir.Err
 				}
+				transfer(inv, req)
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
 				if bs.resp.StatusCode() >= http.StatusBadRequest {
 					return fmt.Errorf("get err from http handle, get status: %d", bs.resp.StatusCode())
@@ -155,6 +162,12 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 		}
 	}
 	return reflect.TypeOf(schema).String(), nil
+}
+func transfer(inv *invocation.Invocation, req *restful.Request) {
+	for k, v := range inv.Metadata {
+		req.SetAttribute(k, v.(string))
+	}
+
 }
 func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.RouteFunction) error {
 	switch routeSpec.Method {
