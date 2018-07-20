@@ -140,7 +140,8 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 				lager.Logger.Errorf(err, "transfer http request to invocation failed")
 				return
 			}
-			bs := NewBaseServer(context.TODO())
+			//give inv.ctx to user handlers, user may inject headers in handler chain
+			bs := NewBaseServer(inv.Ctx)
 			bs.req = req
 			bs.resp = rep
 			c.Next(inv, func(ir *invocation.Response) error {

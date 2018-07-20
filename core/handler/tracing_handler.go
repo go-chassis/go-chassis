@@ -251,9 +251,12 @@ func (t *TracingConsumerHandler) Name() string {
 
 func (t *TracingConsumerHandler) getTracer(i *invocation.Invocation) opentracing.Tracer {
 	caller := common.DefaultValue
-	if c, ok := i.Metadata[common.CallerKey].(string); ok && c != "" {
-		caller = c + ":" + runtime.HostName
+	if i.Metadata != nil {
+		if c, ok := i.Metadata[common.CallerKey].(string); ok && c != "" {
+			caller = c + ":" + runtime.HostName
+		}
 	}
+
 	return tracing.GetTracer(caller)
 }
 
