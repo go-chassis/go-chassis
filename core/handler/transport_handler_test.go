@@ -48,7 +48,7 @@ func TestTransportHandler_Handle(t *testing.T) {
 	c := &handler.Chain{}
 	i := &invocation.Invocation{}
 	i.Reply = &helloworld.HelloReply{}
-	i.Ctx = context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
+	i.Ctx = context.WithValue(context.Background(), common.ContextHeaderKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 	i.Protocol = "highway"

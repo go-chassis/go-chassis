@@ -27,7 +27,7 @@ func TestRPCInvoker_InvokeFailinChainInit(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{}
 	invoker := core.NewRPCInvoker(core.ChainName(""))
 	replyOne := &helloworld.HelloReply{}
-	ctx := context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
+	ctx := context.WithValue(context.Background(), common.ContextHeaderKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 

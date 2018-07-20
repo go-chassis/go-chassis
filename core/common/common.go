@@ -136,28 +136,28 @@ const (
 	DefaultRefreshMode = 1
 )
 
-//ContextValueKey is the key of value in context
-type ContextValueKey struct{}
+//ContextHeaderKey is the key of header value in context
+type ContextHeaderKey struct{}
 
 // NewContext transforms a metadata to context object
 func NewContext(m map[string]string) context.Context {
 	if m == nil {
-		return context.WithValue(context.Background(), ContextValueKey{}, make(map[string]string, 0))
+		return context.WithValue(context.Background(), ContextHeaderKey{}, make(map[string]string, 0))
 	}
-	return context.WithValue(context.Background(), ContextValueKey{}, m)
+	return context.WithValue(context.Background(), ContextHeaderKey{}, m)
 }
 
 // WithContext sets the KV and returns the context object
 func WithContext(ctx context.Context, key, val string) context.Context {
 	if ctx == nil {
-		return context.WithValue(context.Background(), ContextValueKey{}, map[string]string{
+		return context.WithValue(context.Background(), ContextHeaderKey{}, map[string]string{
 			key: val,
 		})
 	}
 
-	at, ok := ctx.Value(ContextValueKey{}).(map[string]string)
+	at, ok := ctx.Value(ContextHeaderKey{}).(map[string]string)
 	if !ok {
-		return context.WithValue(ctx, ContextValueKey{}, map[string]string{
+		return context.WithValue(ctx, ContextHeaderKey{}, map[string]string{
 			key: val,
 		})
 	}
@@ -170,7 +170,7 @@ func FromContext(ctx context.Context) map[string]string {
 	if ctx == nil {
 		return make(map[string]string, 0)
 	}
-	at, ok := ctx.Value(ContextValueKey{}).(map[string]string)
+	at, ok := ctx.Value(ContextHeaderKey{}).(map[string]string)
 	if !ok {
 		return make(map[string]string, 0)
 	}

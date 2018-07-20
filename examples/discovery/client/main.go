@@ -43,7 +43,7 @@ func call(invoker *core.RPCInvoker) {
 	replyOne := &helloworld.HelloReply{}
 	replyTwo := &employ.EmployResponse{}
 	// create context with attachments
-	ctx := context.WithValue(context.Background(), common.ContextValueKey{}, map[string]string{
+	ctx := context.WithValue(context.Background(), common.ContextHeaderKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 	err := invoker.Invoke(ctx, "Server", "HelloServer", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, replyOne)

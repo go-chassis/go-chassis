@@ -86,6 +86,11 @@ func (bs *Context) ReadRequest() *http.Request {
 	return bs.req.Request
 }
 
+//ReadRestfulRequest return a native  go-restful request
+func (bs *Context) ReadRestfulRequest() *restful.Request {
+	return bs.req
+}
+
 //ReadResponseWriter return a native net/http ResponseWriter
 func (bs *Context) ReadResponseWriter() http.ResponseWriter {
 	return bs.resp.ResponseWriter

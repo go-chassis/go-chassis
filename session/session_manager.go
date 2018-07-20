@@ -47,7 +47,7 @@ func setLBCookie(key, value string) {
 
 // GetContextMetadata gets data from context
 func GetContextMetadata(ctx context.Context, key string) string {
-	md, ok := ctx.Value(common.ContextValueKey{}).(map[string]string)
+	md, ok := ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 	if ok {
 		return md[key]
 	}
@@ -56,7 +56,7 @@ func GetContextMetadata(ctx context.Context, key string) string {
 
 // SetContextMetadata sets data to context
 func SetContextMetadata(ctx context.Context, key string, value string) context.Context {
-	md, ok := ctx.Value(common.ContextValueKey{}).(map[string]string)
+	md, ok := ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 	if !ok {
 		md = make(map[string]string)
 	}
@@ -66,7 +66,7 @@ func SetContextMetadata(ctx context.Context, key string, value string) context.C
 	}
 
 	md[key] = value
-	return context.WithValue(ctx, common.ContextValueKey{}, md)
+	return context.WithValue(ctx, common.ContextHeaderKey{}, md)
 }
 
 //GetSessionFromResp return session uuid in resp if there is
