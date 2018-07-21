@@ -86,9 +86,10 @@ cse:
       address: http://127.0.0.1:30100
 ```
 2.修改microservice.yaml
-
+```yaml
 service_description:
   name: RESTClient
+```
 3.main中调用服务端，请求包括服务名，schema，operation及参数
 ```go
 func main() {
