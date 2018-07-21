@@ -3,12 +3,20 @@ package invocation_test
 import (
 	"context"
 	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestChain(t *testing.T) {
 	var inv = new(invocation.Invocation)
 	inv.Endpoint = "1.2.3.4"
+}
+func TestInvocation_Headers(t *testing.T) {
+	inv := invocation.New(context.TODO())
+	inv.SetMetadata("a", "1")
+	inv.SetHeader("asd", "123")
+	assert.Equal(t, "123", inv.Headers()["asd"])
+	assert.Equal(t, "1", inv.Metadata["a"])
 }
 
 /*

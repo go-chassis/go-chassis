@@ -40,7 +40,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 
 	resp := rest.NewResponse()
 
-	inv := invocation.CreateConsumerInvocation()
+	inv := invocation.New(ctx)
 	wrapInvocationWithOpts(inv, opts)
 	inv.MicroServiceName = req.GetRequest().Host
 	// TODO load from openAPI schema
@@ -48,13 +48,9 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 	// inv.OperationID = operationID
 	inv.Args = req
 	inv.Reply = resp
-	inv.Ctx = ctx
 	inv.URLPathFormat = req.Req.URL.Path
 
-	if inv.Metadata == nil {
-		inv.Metadata = make(map[string]interface{})
-	}
-	inv.Metadata[common.RestMethod] = req.GetMethod()
+	inv.SetMetadata(common.RestMethod, req.GetMethod())
 
 	err := ri.invoke(inv)
 	return resp, err

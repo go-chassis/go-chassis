@@ -95,3 +95,8 @@ func (bs *Context) ReadRestfulRequest() *restful.Request {
 func (bs *Context) ReadResponseWriter() http.ResponseWriter {
 	return bs.resp.ResponseWriter
 }
+
+//ReadRestfulResponse return a native go-restful Response
+func (bs *Context) ReadRestfulResponse() *restful.Response {
+	return bs.resp
+}

@@ -36,19 +36,20 @@ type Invocation struct {
 	Args               interface{}
 	URLPathFormat      string
 	Reply              interface{}
-	Ctx                context.Context        //ctx can save protocol header
+	Ctx                context.Context        //ctx can save protocol headers
 	Metadata           map[string]interface{} //local scope data
 	RouteTags          utiltags.Tags          //route tags is decided in router handler
 	Strategy           string                 //load balancing strategy
 	Filters            []string
 }
 
-// CreateConsumerInvocation create invocation
-func CreateConsumerInvocation() *Invocation {
-	return &Invocation{
+// New create invocation
+func New(ctx context.Context) *Invocation {
+	inv := &Invocation{
 		SourceServiceID: runtime.ServiceID,
-		Metadata:        make(map[string]interface{}),
+		Ctx:             ctx,
 	}
+	return inv
 }
 
 //GetSessionID return session id
@@ -65,5 +66,23 @@ func (inv *Invocation) SetSessionID(value string) {
 
 //SetMetadata local scope params
 func (inv *Invocation) SetMetadata(key string, value interface{}) {
+	if inv.Metadata == nil {
+		inv.Metadata = make(map[string]interface{})
+	}
 	inv.Metadata[key] = value
+}
+
+//SetHeader set headers, the client and server plugins should use them in protocol headers
+func (inv *Invocation) SetHeader(k, v string) {
+	if inv.Ctx.Value(common.ContextHeaderKey{}) == nil {
+		inv.Ctx = context.WithValue(inv.Ctx, common.ContextHeaderKey{}, map[string]string{})
+	}
+	m := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+
+	m[k] = v
+}
+
+//Headers return a map that protocol plugin should deliver in transport
+func (inv *Invocation) Headers() map[string]string {
+	return inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 }

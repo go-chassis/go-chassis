@@ -137,6 +137,9 @@ func wrapInvocationWithOpts(i *invocation.Invocation, opts InvokeOptions) {
 	i.Protocol = opts.Protocol
 	i.Strategy = opts.StrategyFunc
 	i.Filters = opts.Filters
-	i.Metadata = opts.Metadata
+	if opts.Metadata != nil {
+		i.Metadata = opts.Metadata
+	}
+
 	i.RouteTags = opts.RouteTags
 }
