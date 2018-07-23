@@ -22,6 +22,11 @@ Welcome to go-chassis's documentation!
 
    dev-guides
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Design Documentations
+
+   design-guides
 
 
 
