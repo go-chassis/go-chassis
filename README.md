@@ -25,9 +25,8 @@ Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
 # Quick Start
-You can see documentations in [here](http://go-chassis.readthedocs.io/en/latest/)
+You can see more documentations in [here](http://go-chassis.readthedocs.io/en/latest/)
 
-## Installation
 1. Install [go 1.8+](https://golang.org/doc/install)
 
 2. Clone the project
@@ -36,7 +35,7 @@ You can see documentations in [here](http://go-chassis.readthedocs.io/en/latest/
 git clone git@github.com:ServiceComb/go-chassis.git
 ```
 
-3. Use [glide](https://github.com/Masterminds/glide) to download deps
+3. Use [glide](https://github.com/Masterminds/glide) to download dependencies
 
 ```sh
 cd go-chassis 
@@ -45,52 +44,9 @@ glide intall
 
 4. Install ServiceComb [service-center](https://github.com/ServiceComb/service-center/releases)
 
-## Write a http service provider
+5. [Write your first http micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
 
-<b>Step 1:</b>
-Define your Schema and your business logic.
 
-```go
-//API
-func (s *HelloServer) SayHello(b *restful.Context) {
-	b.Write([]byte("Hello : Welcome to Go-Chassis."))
-}
-//Specify URL pattern
-func (s *HelloServer) URLPatterns() []restful.Route {
-	return []restful.RouteSpec{
-		{http.MethodGet, "/sayhello", "SayHello"},
-	}
-}
-```
-
-<b>Step 2:</b>
-Register your Schema to go-chassis
-```go
-chassis.RegisterSchema("rest", &HelloServer{},server.WithSchemaID("HelloServer"))
-```
-
-<b>Step 3:</b>
-Start the Chassis as a Server
-```go
-chassis.Init()
-chassis.Run()
-```
-
-## Write a Http Consumer
-
-<b>Step 1:</b>
-Initialize your Chassis
-```go
-chassis.Init()
-
-```
-<b>Step 2:</b>
-Use Rest Invoker to call the provider
-```go
-restInvoker := core.NewRestInvoker()
-req, _ := rest.NewRequest("GET", "cse://"+providerName+"/sayhello")
-resp1, err := restInvoker.ContextDo(context.TODO(), req)
-```
 
 # Examples
 You can check examples [here](examples)

@@ -1,7 +1,10 @@
 Writing Rest service
 ==========================
-服务端
-1个工程或者go package，推荐结构如下
+Checkout full example in [here](https://github.com/ServiceComb/go-chassis/tree/master/examples/rest)
+### Provider
+this section show you how to write a http server
+
+Create 1 project or go package as recommended 
 
 server/
 
@@ -13,7 +16,7 @@ server/
 
 └── main.go
 
-1.编写接口
+1.Write a struct to hold http logic and url patterns
 ```go
 type RestFulHello struct {}
 
@@ -21,7 +24,7 @@ func (r *RestFulHello) Sayhello(b *restful.Context) {
     b.Write([]byte("get user id: " + b.ReadPathParameter("userid")))
 }
 ```
-2.注册路由
+2.Write your url patterns
 ```go
 func (s *RestFulHello) URLPatterns() []restful.Route {
     return []restful.RouteSpec{
@@ -29,32 +32,33 @@ func (s *RestFulHello) URLPatterns() []restful.Route {
     }
 }
 ```
-3.注册接口
+3.Register this struct
 
-第一个参数表示你要向哪个协议注册，第三个为schema ID，为可选，会在调用中使用
+the first params means which server you want to register your struct to.
+```go
+chassis.RegisterSchema("rest", &RestFulHello{})
+```
 
-chassis.RegisterSchema("rest", &RestFulHello{}, server.WithSchemaId("RestHelloService"))
-说明:
+**Notice**
+>>Must implement URLPatterns, and for other functions must use \*restful.Context as the only input, 
+and certainly the method name must start with uppercase
 
-想注册的rest协议的接口，必须实现URLPatterns方法定义路由
-路由中暴露为API的方法都要入参均为*restful.Context
-
-4.修改配置文件chassis.yaml
+4.Modify chassis.yaml 
 ```yaml
 cse:
   service:
     registry:
-      address: http://127.0.0.1:30100
-  protocols:
-    rest:
+      address: http://127.0.0.1:30100 
+  protocols: # what kind of server you want to launch
+    rest: #launch a http server
       listenAddress: 127.0.0.1:5001
 ```
-5.修改microservice.yaml, 为服务起名
+5.Modify microservice.yaml
 ```yaml
 service_description:
-  name: RESTServer
+  name: RESTServer # name your provider
 ```
-6.main.go中启动服务
+6.In main.go init and start the chassis 
 ```go
 func main() {
     //start all server you register in server/schemas.
@@ -65,8 +69,10 @@ func main() {
     chassis.Run()
 }
 ```
-客户端
-1个工程或者go package，推荐结构如下
+### Consumer
+this section show you how to write a http client
+
+Create 1 project or go package as recommended 
 
 client/
 
@@ -78,19 +84,19 @@ client/
 
 └── main.go
 
-1.修改配置文件chassis.yaml
+1. modify chassis.yaml
 ```yaml
 cse:
   service:
     registry:
       address: http://127.0.0.1:30100
 ```
-2.修改microservice.yaml
+2. modify microservice.yaml
 ```yaml
 service_description:
-  name: RESTClient
+  name: RESTClient #name your consumer
 ```
-3.main中调用服务端，请求包括服务名，schema，operation及参数
+3.in main.go call your service
 ```go
 func main() {
     //Init framework
