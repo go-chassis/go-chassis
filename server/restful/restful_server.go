@@ -227,7 +227,7 @@ func (r *restfulServer) Start() error {
 		}
 		if err != nil {
 			lager.Logger.Error("Can't start http server", err)
-			server.ServerErr <- err
+			server.ErrRuntime <- err
 		}
 
 	}()
