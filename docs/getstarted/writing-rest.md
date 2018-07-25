@@ -32,18 +32,7 @@ func (s *RestFulHello) URLPatterns() []restful.Route {
     }
 }
 ```
-3.Register this struct
-
-the first params means which server you want to register your struct to.
-```go
-chassis.RegisterSchema("rest", &RestFulHello{})
-```
-
-**Notice**
->>Must implement URLPatterns, and for other functions must use \*restful.Context as the only input, 
-and certainly the method name must start with uppercase
-
-4.Modify chassis.yaml 
+3.Modify chassis.yaml to describe the server you need
 ```yaml
 cse:
   service:
@@ -53,6 +42,19 @@ cse:
     rest: #launch a http server
       listenAddress: 127.0.0.1:5001
 ```
+
+4.Register this struct
+
+the first params means which server you want to register your struct to. Be aware API can separate by different server and ports
+```go
+chassis.RegisterSchema("rest", &RestFulHello{})
+```
+
+**Notice**
+>>Must implement URLPatterns, and for other functions must use \*restful.Context as the only input, 
+and certainly the method name must start with uppercase
+
+
 5.Modify microservice.yaml
 ```yaml
 service_description:

@@ -1,27 +1,37 @@
-# 通信协议
+# Protocol Servers
 
-## 概述
-go-chassis支持不同协议扩展，不同的协议都可以接入到统一的微服务管理，控制，监控中。
-目前支持HTTP1/2与RPC协议highway
+## Introduction
+you can extend your own protocol in go chassis, currently support rest(http) and highway
 
-## 配置
+## Configurations
 
-**protocols.{protocol_name}**
-> *(required, string)* 协议名，目前内置rest与highway
+**protocols.{protocol_server_name}**
+> *(required, string)* the name of the protocol server, it must be protocol name or consist of protocol name and a suffix.
+ the suffix and protocol is connect with hyphen "-" like <protocol>-{suffix}
 
-**protocols.{protocol_name}.advertiseAddress**
-> *(optional, string)* 协议广播地址，也就是向注册中心注册时的地址，在发现后进行通信时使用的网络地址
+**protocols.{protocol_server_name}.advertiseAddress**
+> *(optional, string)* server advertise address, if you use registry like service center, 
+this address will be registered in registry, so that other service can discover your address
 
-**protocols.{protocol_name}.listenAddress**
-> *(required, string)* 协议监听地址，建议配置为0.0.0.0:{port}，
-go chassis会自动为你计算advertiseAddress，无需手动填写，适合运行在容器中的场景，因为ip地址无法确定。
+**protocols.{protocol_server_name}.listenAddress**
+> *(required, string)* server listen address, recommend to use 0.0.0.0:{port}, 
+then go chassis will automatically generate advertise address, it is convenience to run in container
+ because the internal IP is not sure until container runs
 
-## 例子
+
+
+
+
+## Example
+this config will launch 2 http server and 1 highway server
+
 ```
 cse:
   protocols:
     rest:
       listenAddress: 0.0.0.0:5000
+    rest-admin:
+      listenAddress: 0.0.0.0:5001
     highway:
       listenAddress: 0.0.0.0:6000
 ```

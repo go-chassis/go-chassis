@@ -10,6 +10,8 @@ import (
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/registry"
 	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
+	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/ServiceComb/go-chassis/pkg/util"
 	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
 )
 
@@ -48,12 +50,11 @@ func GetServers() map[string]ProtocolServer {
 	return servers
 }
 
-//ServerErr server error
-var ServerErr = make(chan error)
+//ErrRuntime is an error channel, if it receive any signal will cause graceful shutdown of go chassis, process will exit
+var ErrRuntime = make(chan error)
 
 //StartServer starting the server
 func StartServer() error {
-
 	for name, server := range servers {
 		lager.Logger.Info("starting server " + name + "...")
 		err := server.Start()
@@ -70,23 +71,10 @@ func StartServer() error {
 
 //UnRegistrySelfInstances this function removes the self instance
 func UnRegistrySelfInstances() error {
-	microserviceIDs := registry.SelfInstancesCache.Items()
-	for mid := range microserviceIDs {
-		value, ok := registry.SelfInstancesCache.Get(mid)
-		if !ok {
-			lager.Logger.Warnf("StartServer() get SelfInstancesCache failed, mid: %s", mid)
-		}
-		instanceIDs, ok := value.([]string)
-		if !ok {
-			lager.Logger.Warnf("StartServer() type asserts failed, mid: %s", mid)
-		}
-		for _, iid := range instanceIDs {
-			err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(mid, iid)
-			if err != nil {
-				lager.Logger.Errorf(err, "StartServer() UnregisterMicroServiceInstance failed, mid/iid: %s/%s", mid, iid)
-				return err
-			}
-		}
+	if err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(runtime.ServiceID, runtime.InstanceID); err != nil {
+		lager.Logger.Errorf(err, "StartServer() UnregisterMicroServiceInstance failed, sid/iid: %s/%s",
+			runtime.ServiceID, runtime.InstanceID)
+		return err
 	}
 	return nil
 }
@@ -94,31 +82,25 @@ func UnRegistrySelfInstances() error {
 //Init initializes
 func Init() error {
 	var err error
-	err = initialGlobal()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func initialGlobal() error {
-	var err error
 	for k, v := range config.GlobalDefinition.Cse.Protocols {
-
-		if err = initialSingle(config.GlobalDefinition.Cse.Handler.Chain.Provider, v, k); err != nil {
+		if err = initialServer(config.GlobalDefinition.Cse.Handler.Chain.Provider, v, k); err != nil {
 			log.Println(err)
 			return err
 		}
 	}
 	return nil
+
 }
 
-func initialSingle(providerMap map[string]string, p model.Protocol, name string) error {
-	lager.Logger.Debugf("Init server of protocol [%s]", name)
-	f, err := GetServerFunc(name)
+func initialServer(providerMap map[string]string, p model.Protocol, name string) error {
+	protocolName, _, err := util.ParsePortName(name)
 	if err != nil {
-		return fmt.Errorf("Do not support [%s] server", name)
+		return err
+	}
+	lager.Logger.Debugf("Init server [%s], protocol is [%s]", name, protocolName)
+	f, err := GetServerFunc(protocolName)
+	if err != nil {
+		return fmt.Errorf("do not support [%s] server", name)
 	}
 
 	sslTag := name + "." + common.Provider

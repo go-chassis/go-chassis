@@ -69,9 +69,9 @@ type chassis struct {
 
 // Schema struct for to represent schema info
 type Schema struct {
-	protocol string
-	schema   interface{}
-	opts     []server.RegisterOption
+	serverName string
+	schema     interface{}
+	opts       []server.RegisterOption
 }
 
 func (c *chassis) initChains(chainType string) error {
@@ -163,11 +163,11 @@ func (c *chassis) initialize() error {
 	return nil
 }
 
-func (c *chassis) registerSchema(protocol string, structPtr interface{}, opts ...server.RegisterOption) {
+func (c *chassis) registerSchema(serverName string, structPtr interface{}, opts ...server.RegisterOption) {
 	schema := &Schema{
-		protocol: protocol,
-		schema:   structPtr,
-		opts:     opts,
+		serverName: serverName,
+		schema:     structPtr,
+		opts:       opts,
 	}
 	c.mu.Lock()
 	c.schemas = append(c.schemas, schema)
@@ -183,7 +183,7 @@ func (c *chassis) start() error {
 		if v == nil {
 			continue
 		}
-		s, err := server.GetServer(v.protocol)
+		s, err := server.GetServer(v.serverName)
 		if err != nil {
 			return err
 		}
@@ -199,10 +199,10 @@ func (c *chassis) start() error {
 	return nil
 }
 
-//RegisterSchema Register a API service to specific protocol
+//RegisterSchema Register a API service to specific server by name
 //You must register API first before Call Init
-func RegisterSchema(protocol string, structPtr interface{}, opts ...server.RegisterOption) {
-	goChassis.registerSchema(protocol, structPtr, opts...)
+func RegisterSchema(serverName string, structPtr interface{}, opts ...server.RegisterOption) {
+	goChassis.registerSchema(serverName, structPtr, opts...)
 }
 
 //SetDefaultConsumerChains your custom chain map for Consumer,if there is no config, this default chain will take affect
@@ -233,7 +233,7 @@ func Run() {
 	select {
 	case s := <-c:
 		lager.Logger.Info("got os signal " + s.String())
-	case err := <-server.ServerErr:
+	case err := <-server.ErrRuntime:
 		lager.Logger.Info("got Server Error " + err.Error())
 	}
 	for name, s := range server.GetServers() {
