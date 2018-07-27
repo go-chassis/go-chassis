@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	//"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/tracing"
+	//"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/tracing"
 
 	"github.com/apache/thrift/lib/go/thrift"
 	//"github.com/emicklei/go-restful"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
@@ -203,7 +203,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 }
 
 // TODO
-// Comment buggy test cases : Already raised an issue to trace this https://github.com/ServiceComb/go-chassis/issues/5
+// Comment buggy test cases : Already raised an issue to trace this https://github.com/go-chassis/go-chassis/issues/5
 /*
 func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)

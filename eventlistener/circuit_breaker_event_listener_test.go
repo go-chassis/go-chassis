@@ -5,12 +5,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/eventlistener"
-	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/eventlistener"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
-	"github.com/ServiceComb/go-archaius/core"
+	"github.com/go-chassis/go-archaius/core"
 	"github.com/stretchr/testify/assert"
 )
 

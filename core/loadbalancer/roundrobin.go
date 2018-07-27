@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/registry"
 )
 
 // RoundRobinStrategy is strategy

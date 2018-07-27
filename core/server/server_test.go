@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/core/registry/mock"
-	"github.com/ServiceComb/go-chassis/core/server"
-	_ "github.com/ServiceComb/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/registry/mock"
+	"github.com/go-chassis/go-chassis/core/server"
+	_ "github.com/go-chassis/go-chassis/server/restful"
 	cache "github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 )
@@ -40,7 +40,7 @@ const MockError = "movk error"
 func TestSrcMgr(t *testing.T) {
 
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	//config.Init()
 
 	err := config.Init()
@@ -118,7 +118,7 @@ func TestSrcMgr(t *testing.T) {
 func TestSrcMgrErr(t *testing.T) {
 
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	//config.Init()
 
 	err := config.Init()

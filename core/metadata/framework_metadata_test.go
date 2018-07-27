@@ -1,8 +1,8 @@
 package metadata_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"

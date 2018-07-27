@@ -15,7 +15,7 @@ cd go-chassis
 glide intall
 ```
 
-4. Install ServiceComb [service-center](https://github.com/ServiceComb/service-center/releases)
+4. Install ServiceComb [service-center](https://github.com/go-chassis/service-center/releases)
 
 
 Use RPC communication

@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/config/model"
 )
 
 // DarkLaunchRule2RouteRule translates dark launch rule to route rule

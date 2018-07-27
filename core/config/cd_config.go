@@ -1,6 +1,6 @@
 package config
 
-import "github.com/ServiceComb/go-chassis/core/archaius"
+import "github.com/go-chassis/go-chassis/core/archaius"
 
 // GetContractDiscoveryType returns the Type of contract discovery registry
 func GetContractDiscoveryType() string {

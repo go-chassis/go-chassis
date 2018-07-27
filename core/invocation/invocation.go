@@ -2,9 +2,9 @@ package invocation
 
 import (
 	"context"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
-	"github.com/ServiceComb/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
 )
 
 // constant values for consumer and provider

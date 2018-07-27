@@ -3,8 +3,8 @@ package core
 import (
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
 )
 
 // Options is a struct to stores information about chain name, filters, and their invocation options

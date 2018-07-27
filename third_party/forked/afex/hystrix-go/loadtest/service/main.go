@@ -11,9 +11,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/plugins"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/plugins"
 	"github.com/cactus/go-statsd-client/statsd"
 )
 

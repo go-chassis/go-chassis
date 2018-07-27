@@ -2,9 +2,9 @@ package pilot
 
 import (
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/metadata"
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/core/registry"
 	"strings"
 )
 

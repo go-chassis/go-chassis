@@ -9,10 +9,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/client/highway/pb"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/provider"
-	"github.com/ServiceComb/go-chassis/core/util/string"
+	"github.com/go-chassis/go-chassis/client/highway/pb"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/provider"
+	"github.com/go-chassis/go-chassis/core/util/string"
 	"github.com/golang/protobuf/proto"
 	"io"
 )

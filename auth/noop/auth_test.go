@@ -1,7 +1,7 @@
 package noop_test
 
 import (
-	"github.com/ServiceComb/go-chassis/auth"
+	"github.com/go-chassis/go-chassis/auth"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

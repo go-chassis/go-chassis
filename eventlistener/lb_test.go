@@ -1,12 +1,12 @@
 package eventlistener_test
 
 import (
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalancer"
-	"github.com/ServiceComb/go-chassis/eventlistener"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/eventlistener"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -14,7 +14,7 @@ import (
 
 func TestLbEventError(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
@@ -34,7 +34,7 @@ func TestLbEventError(t *testing.T) {
 
 func TestLbEvent(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
 	config.Init()
 	loadbalancer.Enable()

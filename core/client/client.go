@@ -3,7 +3,7 @@ package client
 
 import (
 	"context"
-	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/invocation"
 )
 
 // ProtocolClient is the interface to communicate with one kind of ProtocolServer, it is used in transport handler

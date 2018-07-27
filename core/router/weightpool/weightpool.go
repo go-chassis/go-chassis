@@ -3,8 +3,8 @@ package weightpool
 import (
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config/model"
 )
 
 var weightPool *SafePool
