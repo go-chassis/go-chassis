@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/http-client"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/http-client"
 )
 
 const (

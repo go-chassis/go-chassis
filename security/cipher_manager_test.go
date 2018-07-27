@@ -1,9 +1,9 @@
 package security_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/security"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/security"
+	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

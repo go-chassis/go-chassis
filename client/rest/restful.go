@@ -2,7 +2,7 @@ package rest
 
 import (
 	"bytes"
-	"github.com/ServiceComb/go-chassis/core/client"
+	"github.com/go-chassis/go-chassis/core/client"
 	"io"
 	"io/ioutil"
 	"net/http"

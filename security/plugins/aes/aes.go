@@ -3,9 +3,9 @@ package aes
 import (
 	"os"
 
-	"github.com/ServiceComb/go-chassis/core/goplugin"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/security"
+	"github.com/go-chassis/go-chassis/core/goplugin"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/security"
 )
 
 const cipherPlugin = "cipher_plugin.so"

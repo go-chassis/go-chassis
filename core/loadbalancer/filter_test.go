@@ -1,10 +1,10 @@
 package loadbalancer_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/loadbalancer"
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -14,7 +14,7 @@ import (
 func TestFilterAvailableZoneAffinity(t *testing.T) {
 	t.Log("testing filter with specified region and zone ")
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	config.Init()
 	t.Log(config.GlobalDefinition)
 	var datacenter *registry.DataCenterInfo = new(registry.DataCenterInfo)

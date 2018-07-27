@@ -16,7 +16,7 @@
 // Package plain created on 2017/6/22
 package plain
 
-import "github.com/ServiceComb/go-chassis/security"
+import "github.com/go-chassis/go-chassis/security"
 
 //DefaultCipher is a struct
 type DefaultCipher struct {

@@ -21,7 +21,7 @@ const (
 
 // constant for micro service environment parameters
 const (
-	Env = "ServiceComb_ENV"
+	Env = "go-chassis_ENV"
 
 	EnvNodeIP      = "HOSTING_SERVER_IP"
 	EnvSchemaRoot  = "SCHEMA_ROOT"
@@ -68,7 +68,7 @@ const (
 const (
 	ProtocolRest    = "rest"
 	ProtocolHighway = "highway"
-	LBSessionID     = "ServiceCombLB"
+	LBSessionID     = "go-chassisLB"
 )
 
 // DefaultKey default key

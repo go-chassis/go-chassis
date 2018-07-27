@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/lager"
 
 	"go.uber.org/ratelimit"
 )

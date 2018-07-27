@@ -3,7 +3,7 @@ package highway
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/lager"
 	"net"
 	"sync"
 	"time"

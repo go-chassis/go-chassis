@@ -5,14 +5,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	runtime "github.com/ServiceComb/go-chassis/pkg/runtime"
-	"github.com/ServiceComb/go-sc-client"
-	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	runtime "github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-sc-client/model"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 

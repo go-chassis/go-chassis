@@ -9,46 +9,46 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/ServiceComb/go-chassis/auth"
-	"github.com/ServiceComb/go-chassis/bootstrap"
+	"github.com/go-chassis/go-chassis/auth"
+	"github.com/go-chassis/go-chassis/bootstrap"
 	// highway package handles remote procedure calls
-	_ "github.com/ServiceComb/go-chassis/client/highway"
-	_ "github.com/ServiceComb/go-chassis/core/router/cse"
-	_ "github.com/ServiceComb/go-chassis/core/router/pilot"
+	_ "github.com/go-chassis/go-chassis/client/highway"
+	_ "github.com/go-chassis/go-chassis/core/router/cse"
+	_ "github.com/go-chassis/go-chassis/core/router/pilot"
 	// rest package handle rest apis
-	_ "github.com/ServiceComb/go-chassis/client/rest"
+	_ "github.com/go-chassis/go-chassis/client/rest"
 	// archaius package to get the conguration info fron diffent configuration sources
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalancer"
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/registry"
 	// file package for file based registration
-	_ "github.com/ServiceComb/go-chassis/core/registry/file"
+	_ "github.com/go-chassis/go-chassis/core/registry/file"
 	// servicecenter package handles service center api calls
-	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	// pilot package handles istio pilot SDS api calls
-	_ "github.com/ServiceComb/go-chassis/core/registry/pilot"
-	"github.com/ServiceComb/go-chassis/core/router"
-	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/core/tracing"
-	"github.com/ServiceComb/go-chassis/eventlistener"
+	_ "github.com/go-chassis/go-chassis/core/registry/pilot"
+	"github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/core/tracing"
+	"github.com/go-chassis/go-chassis/eventlistener"
 	// metric plugin
-	_ "github.com/ServiceComb/go-chassis/metrics/prom"
+	_ "github.com/go-chassis/go-chassis/metrics/prom"
 	// aes package handles security related plugins
-	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	_ "github.com/ServiceComb/go-chassis/server/restful"
+	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/server/restful"
 	// highway package register the highway server plugin
-	_ "github.com/ServiceComb/go-chassis/server/highway"
+	_ "github.com/go-chassis/go-chassis/server/highway"
 	// import config center plugins
-	_ "github.com/ServiceComb/go-cc-client/apollo-client"
-	_ "github.com/ServiceComb/go-cc-client/configcenter-client"
-	"github.com/ServiceComb/go-chassis/config-center"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/metadata"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	_ "github.com/go-chassis/go-cc-client/apollo-client"
+	_ "github.com/go-chassis/go-cc-client/configcenter-client"
+	"github.com/go-chassis/go-chassis/config-center"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
 
 var goChassis *chassis

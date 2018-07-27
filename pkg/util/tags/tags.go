@@ -3,7 +3,7 @@ package utiltags
 import (
 	"sort"
 
-	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/common"
 )
 
 // Tags set tags and label

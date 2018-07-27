@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
 	"github.com/cenkalti/backoff"
+	"github.com/go-chassis/go-chassis/core/archaius"
 	"strings"
 	"sync"
 	"time"

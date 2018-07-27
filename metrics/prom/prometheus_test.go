@@ -14,9 +14,9 @@ package prom
 // Forked from github.com/deathowl
 // Some parts of this file have been modified to make it functional in this package
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	m "github.com/ServiceComb/go-chassis/metrics"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	m "github.com/go-chassis/go-chassis/metrics"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stretchr/testify/assert"
 	"testing"

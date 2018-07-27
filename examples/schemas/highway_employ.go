@@ -3,7 +3,7 @@ package schemas
 import (
 	"context"
 
-	"github.com/ServiceComb/go-chassis/examples/schemas/employ"
+	"github.com/go-chassis/go-chassis/examples/schemas/employ"
 )
 
 //EmployServer is a struct

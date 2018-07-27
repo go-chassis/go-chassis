@@ -7,14 +7,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ServiceComb/auth"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
+	"github.com/go-chassis/auth"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	"github.com/go-chassis/http-client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -69,8 +70,8 @@ func testLoadAkskAuth(t *testing.T) {
 func testCheckAkAndProject(t *testing.T, ak, project string) {
 	req, err := http.NewRequest("GET", "http://127.0.0.1:8080", nil)
 	assert.NoError(t, err)
-	err = auth.AddAuthInfo(req)
 	assert.NoError(t, err)
+	httpclient.SignRequest(req)
 	assert.Equal(t, req.Header.Get(auth.HeaderServiceAk), ak)
 	assert.Equal(t, req.Header.Get(auth.HeaderServiceProject), project)
 }
@@ -78,8 +79,8 @@ func testCheckAkAndProject(t *testing.T, ak, project string) {
 func testAuthNotLoaded(t *testing.T) {
 	r, err := http.NewRequest("GET", "http://127.0.0.1:8080", nil)
 	assert.NoError(t, err)
+	httpclient.SignRequest(r)
 	assert.Equal(t, 0, len(r.Header))
-	err = auth.AddAuthInfo(r)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(r.Header))
 }
@@ -137,7 +138,7 @@ func Test_loadAkskAuth(t *testing.T) {
 	testCheckAkAndProject(t, ak, project)
 
 	t.Log("One of ak and sk is empty")
-	auth.SetAuthFunc(func(*http.Request) error { return nil })
+	httpclient.SignRequest = func(*http.Request) error { return nil }
 	ak, sk, project, cipherName = "a2", "", "p2", ""
 	testWriteFile(t, credentialFilePath, ak, sk, project, cipherName)
 	err = loadAkskAuth()
@@ -146,7 +147,7 @@ func Test_loadAkskAuth(t *testing.T) {
 	testAuthNotLoaded(t)
 
 	t.Log("Ak sk not exists")
-	auth.SetAuthFunc(func(*http.Request) error { return nil })
+	httpclient.SignRequest = func(*http.Request) error { return nil }
 	ak, sk, project, cipherName = "", "", "p3", ""
 	testWriteFile(t, credentialFilePath, ak, sk, project, cipherName)
 	err = loadAkskAuth()
@@ -161,7 +162,7 @@ func Test_loadAkskAuth(t *testing.T) {
 	testCheckAkAndProject(t, ak, project)
 
 	t.Log("AkskCustomCipher not exists")
-	auth.SetAuthFunc(func(*http.Request) error { return nil })
+	httpclient.SignRequest = func(*http.Request) error { return nil }
 	ak, sk, project, cipherName = "a5", "s5", "p5", "c5"
 	testWriteFile(t, credentialFilePath, ak, sk, project, cipherName)
 	err = loadAkskAuth()
@@ -176,7 +177,7 @@ func Test_loadAkskAuth(t *testing.T) {
 	testCheckAkAndProject(t, ak, "cn-north-1")
 
 	t.Log("Cse uri invalid")
-	auth.SetAuthFunc(func(*http.Request) error { return nil })
+	httpclient.SignRequest = func(*http.Request) error { return nil }
 	ak, sk, project, cipherName = "a7", "s7", "", ""
 	testWriteFile(t, credentialFilePath, ak, sk, project, cipherName)
 	config.GlobalDefinition.Cse.Service.Registry.Address = ":://a+b"

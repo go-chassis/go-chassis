@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/ServiceComb/go-chassis"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/server"
-	_ "github.com/ServiceComb/go-chassis/examples/plugin/handler"
-	"github.com/ServiceComb/go-chassis/examples/schemas"
+	"github.com/go-chassis/go-chassis"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/server"
+	_ "github.com/go-chassis/go-chassis/examples/plugin/handler"
+	"github.com/go-chassis/go-chassis/examples/schemas"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/communication/server/

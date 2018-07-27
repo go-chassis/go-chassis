@@ -8,16 +8,16 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
+	"github.com/go-chassis/go-chassis/core/lager"
+	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 
-	"github.com/ServiceComb/go-archaius"
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/configcenter-source"
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-archaius/sources/configcenter-source"
 )
 
 const (

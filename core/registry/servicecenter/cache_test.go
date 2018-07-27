@@ -6,20 +6,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
-	"github.com/ServiceComb/go-chassis/pkg/util/tags"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	"github.com/go-chassis/go-sc-client/model"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCacheManager_AutoSync(t *testing.T) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test cache.go")
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)

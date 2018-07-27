@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/provider"
-	"github.com/ServiceComb/go-chassis/examples/schemas"
-	pb "github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/provider"
+	"github.com/go-chassis/go-chassis/examples/schemas"
+	pb "github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -28,7 +28,7 @@ func (s *HelloServerfk1) sayHello(ctx context.Context, in *pb.HelloRequest) (*pb
 func TestRegister(t *testing.T) {
 	t.Log("testing registeration of a schema")
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
@@ -39,7 +39,7 @@ func TestRegister(t *testing.T) {
 
 func TestRegister2(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
@@ -67,7 +67,7 @@ func TestRegister2(t *testing.T) {
 
 func TestProvider_Invoke(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}
@@ -88,7 +88,7 @@ func TestProvider_Invoke(t *testing.T) {
 
 func TestDefaultProvider_GetOperation(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}
@@ -103,7 +103,7 @@ func TestDefaultProvider_GetOperation(t *testing.T) {
 
 func TestDefaultProvider_Exist(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}
@@ -120,7 +120,7 @@ func TestDefaultProvider_Exist(t *testing.T) {
 
 func BenchmarkDefaultProvider_GetOperation(b *testing.B) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}

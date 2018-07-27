@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/pkg/istio/util"
 	envoy_api "github.com/envoyproxy/go-control-plane/envoy/api/v2"
 	envoy_api_core "github.com/envoyproxy/go-control-plane/envoy/api/v2/core"
 	xds "github.com/envoyproxy/go-control-plane/envoy/service/discovery/v2"
+	"github.com/go-chassis/go-chassis/pkg/istio/util"
 	"google.golang.org/grpc"
 )
 

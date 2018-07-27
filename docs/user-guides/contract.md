@@ -20,7 +20,7 @@ schema目录位于：
 包路径
 
 ```go
-import "github.com/ServiceComb/go-chassis/core/config/schema"
+import "github.com/go-chassis/go-chassis/core/config/schema"
 ```
 
 契约字典，key值为契约文件名，value为契约文件内容

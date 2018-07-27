@@ -1,8 +1,8 @@
 package loadbalancer
 
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/registry"
 )
 
 // constant string for zoneaware
