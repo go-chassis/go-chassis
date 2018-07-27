@@ -21,13 +21,27 @@ func main() {
 		return
 	}
 	for {
-		req, err := rest.NewRequest("GET", "cse://kubeserver/sayhello/world")
+		req, err := rest.NewRequest("GET", "cse://kubeserver/hello")
 		if err != nil {
 			lager.Logger.Error("new request failed.", err)
 		}
 		defer req.Close()
 
 		resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
+		if err != nil {
+			lager.Logger.Error("do request failed.", err)
+		}
+		defer resp.Close()
+		lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
+		time.Sleep(1 * time.Second)
+
+		req, err = rest.NewRequest("GET", "cse://kubeserver:legacy/legacy")
+		if err != nil {
+			lager.Logger.Error("new request failed.", err)
+		}
+		defer req.Close()
+
+		resp, err = core.NewRestInvoker().ContextDo(context.TODO(), req)
 		if err != nil {
 			lager.Logger.Error("do request failed.", err)
 		}

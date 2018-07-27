@@ -32,4 +32,19 @@ func main() {
 	}
 	defer resp.Close()
 	lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
+
+	req, err = rest.NewRequest("GET", "cse://RESTServer:legacy/legacy")
+	if err != nil {
+		lager.Logger.Error("new request failed.", err)
+		return
+	}
+	defer req.Close()
+
+	resp, err = core.NewRestInvoker().ContextDo(context.TODO(), req)
+	if err != nil {
+		lager.Logger.Error("do request failed.", err)
+		return
+	}
+	defer resp.Close()
+	lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
 }

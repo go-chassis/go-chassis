@@ -11,6 +11,9 @@ cse:
     rest:
       listenAddress: 127.0.0.1:5001
       advertiseAddress: 127.0.0.1:5001
+    rest-legacy:
+      listenAddress: 127.0.0.1:5002
+      advertiseAddress: 127.0.0.1:5002
   handler:
     chain:
       Provider:

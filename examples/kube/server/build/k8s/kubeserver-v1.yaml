@@ -32,9 +32,6 @@ spec:
       - image: ninokop/gosdk-kube-server:latest
         imagePullPolicy: Always
         name: kubeserver-v1
-        ports:
-        - containerPort: 8084
-          protocol: TCP
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
