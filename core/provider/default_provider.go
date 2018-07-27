@@ -11,8 +11,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
 )
 
 // Copyright 2009 The Go Authors. All rights reserved.

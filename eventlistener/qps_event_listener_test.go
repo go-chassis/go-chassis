@@ -1,17 +1,17 @@
 package eventlistener_test
 
 import (
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/eventlistener"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/eventlistener"
 	"os"
 	"testing"
 )
 
 func TestQpsEvent(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
 	t.Log("Test qps_event_listener.go")
 	config.Init()

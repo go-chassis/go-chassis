@@ -17,7 +17,7 @@ go-chassis默认不会主动注册服务端的健康检查接口，需要用户�
 
 ```go
 // 注册健康检查接口
-import _ "github.com/ServiceComb/go-chassis/healthz/provider"
+import _ "github.com/go-chassis/go-chassis/healthz/provider"
 ```
 
 加入上述代码片段后，go-chassis会按照暴露的服务协议类型对应注册健康检查接口，接口描述如下

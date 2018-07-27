@@ -3,10 +3,10 @@ package file
 import (
 	"fmt"
 
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-	"github.com/ServiceComb/go-chassis/pkg/util/tags"
-	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-sc-client/model"
 )
 
 // constant string for file

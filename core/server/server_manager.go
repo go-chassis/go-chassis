@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
-	"github.com/ServiceComb/go-chassis/pkg/util"
-	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 )
 
 //NewFunc returns a ProtocolServer

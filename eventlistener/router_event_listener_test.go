@@ -4,13 +4,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/memory-source"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/router"
-	"github.com/ServiceComb/go-chassis/core/router/cse"
-	"github.com/ServiceComb/go-chassis/eventlistener"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-archaius/sources/memory-source"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/core/router/cse"
+	"github.com/go-chassis/go-chassis/eventlistener"
 
 	"github.com/stretchr/testify/assert"
 )

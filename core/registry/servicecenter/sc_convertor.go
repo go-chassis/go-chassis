@@ -1,10 +1,10 @@
 package servicecenter
 
 import (
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/registry"
 
-	"github.com/ServiceComb/go-sc-client"
-	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-sc-client/model"
 )
 
 // ToMicroService assign sc micro-service to go chassis micro-service

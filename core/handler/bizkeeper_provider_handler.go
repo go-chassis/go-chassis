@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/invocation"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 
 // BizKeeperProviderHandler bizkeeper provider handler

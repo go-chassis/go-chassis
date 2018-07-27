@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/qpslimiter"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/qpslimiter"
 )
 
 // ProviderRateLimiterHandler provider rate limiter handler

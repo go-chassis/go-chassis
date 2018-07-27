@@ -5,19 +5,19 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCBInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()

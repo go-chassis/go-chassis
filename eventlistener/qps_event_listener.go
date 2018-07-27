@@ -3,10 +3,10 @@ package eventlistener
 import (
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/qpslimiter"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/qpslimiter"
 
-	"github.com/ServiceComb/go-archaius/core"
+	"github.com/go-chassis/go-archaius/core"
 )
 
 const (

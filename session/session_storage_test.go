@@ -2,8 +2,8 @@ package session_test
 
 import (
 	"context"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/session"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/session"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"

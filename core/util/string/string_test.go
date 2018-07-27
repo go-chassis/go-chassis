@@ -2,7 +2,7 @@ package stringutil_test
 
 import (
 	"container/list"
-	"github.com/ServiceComb/go-chassis/core/util/string"
+	"github.com/go-chassis/go-chassis/core/util/string"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"

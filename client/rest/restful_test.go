@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/stretchr/testify/assert"
 )
 

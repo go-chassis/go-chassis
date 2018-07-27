@@ -1,8 +1,8 @@
 package metrics_test
 
 import (
-	"github.com/ServiceComb/go-chassis/metrics"
-	"github.com/ServiceComb/go-chassis/metrics/prom"
+	"github.com/go-chassis/go-chassis/metrics"
+	"github.com/go-chassis/go-chassis/metrics/prom"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

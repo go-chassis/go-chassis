@@ -7,17 +7,17 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	_ "github.com/ServiceComb/go-chassis/core/loadbalancer"
-	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/examples/schemas"
-	_ "github.com/ServiceComb/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/client"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	_ "github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/examples/schemas"
+	_ "github.com/go-chassis/go-chassis/server/restful"
 
-	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/stretchr/testify/assert"
 )
 

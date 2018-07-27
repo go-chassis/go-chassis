@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
-	"github.com/ServiceComb/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
 )
 
 // GetEndpointFromServiceCenter is used to get the endpoint based on appID, microservice and version

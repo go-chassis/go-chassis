@@ -2,7 +2,7 @@ package schemas
 
 import (
 	"errors"
-	rf "github.com/ServiceComb/go-chassis/server/restful"
+	rf "github.com/go-chassis/go-chassis/server/restful"
 	"io"
 	"net/http"
 	"os"

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"fmt"
-	rf "github.com/ServiceComb/go-chassis/server/restful"
+	rf "github.com/go-chassis/go-chassis/server/restful"
 	"math/rand"
 )
 

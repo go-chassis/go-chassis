@@ -3,8 +3,8 @@ package weightpool_test
 import (
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	wp "github.com/ServiceComb/go-chassis/core/router/weightpool"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
 	"github.com/stretchr/testify/assert"
 )
 

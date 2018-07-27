@@ -3,7 +3,7 @@ package provider
 import (
 	"reflect"
 
-	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/invocation"
 )
 
 // Provider is the interface for schema methods

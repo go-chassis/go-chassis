@@ -1,10 +1,10 @@
 package servicecenter_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	client "github.com/ServiceComb/go-sc-client"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	client "github.com/go-chassis/go-sc-client"
 	"github.com/stretchr/testify/assert"
 	"net/url"
 	"os"

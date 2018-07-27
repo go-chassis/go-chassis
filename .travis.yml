@@ -5,10 +5,10 @@ go:
 install: true
 
 before_script:
-  - mkdir -p $HOME/gopath/src/github.com/ServiceComb/go-chassis
-  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/ServiceComb/go-chassis/
-  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/ServiceComb/go-chassis
-  - cd $HOME/gopath/src/github.com/ServiceComb/go-chassis
+  - mkdir -p $HOME/gopath/src/github.com/go-chassis/go-chassis
+  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/go-chassis/go-chassis/
+  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/go-chassis/go-chassis
+  - cd $HOME/gopath/src/github.com/go-chassis/go-chassis
 
 jobs:
   include:

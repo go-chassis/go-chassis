@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/stretchr/testify/assert"
 )
 

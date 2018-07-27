@@ -142,7 +142,7 @@ For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go(Forked from g
    limitations under the License.
 
 ==========================================
-For vendor/github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager(Forked from github.com/cloudfoundry/lager)
+For vendor/github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager(Forked from github.com/cloudfoundry/lager)
 
 Copyright (c) 2015-Present CloudFoundry.org Foundation, Inc. All Rights Reserved.
 
@@ -167,13 +167,13 @@ as noted in the LICENSE file.
 
 
 ==========================================
-For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go(Forked from github.com/afex/hystrix-go/hystrix)
+For third_party/forked/afex/hystrix-go,vendor/github.com/go-chassis/cse-collector/cse_collector.go(Forked from github.com/afex/hystrix-go/hystrix)
 The MIT License (MIT)
 
 Copyright (c) 2013 keith
 
 ==========================================
-For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws(Forked from github.com/datastream/aws)
+For vendor/github.com/go-chassis/auth/third_party/forked/datastream/aws(Forked from github.com/datastream/aws)
 
 Copyright (c) 2014, Xianjie
 All rights reserved.

@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	secCommon "github.com/ServiceComb/go-chassis/security/common"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	secCommon "github.com/go-chassis/go-chassis/security/common"
 
 	"k8s.io/apimachinery/pkg/util/sets"
 )

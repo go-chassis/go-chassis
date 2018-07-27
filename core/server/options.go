@@ -3,7 +3,7 @@ package server
 import (
 	"crypto/tls"
 
-	"github.com/ServiceComb/go-chassis/core/provider"
+	"github.com/go-chassis/go-chassis/core/provider"
 )
 
 //Options is the options for service initiating

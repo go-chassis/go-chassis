@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/lager"
 )
 
 // plugin name and schemas map

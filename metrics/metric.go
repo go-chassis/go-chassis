@@ -8,7 +8,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/lager"
 
 	"github.com/emicklei/go-restful"
 	"github.com/prometheus/client_golang/prometheus"

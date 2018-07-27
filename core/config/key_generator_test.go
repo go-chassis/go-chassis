@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/stretchr/testify/assert"
 )
 
