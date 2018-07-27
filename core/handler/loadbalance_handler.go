@@ -12,6 +12,7 @@ import (
 	"github.com/ServiceComb/go-chassis/core/invocation"
 	"github.com/ServiceComb/go-chassis/core/lager"
 	"github.com/ServiceComb/go-chassis/core/loadbalancer"
+	"github.com/ServiceComb/go-chassis/pkg/util"
 	"github.com/ServiceComb/go-chassis/session"
 	"github.com/cenkalti/backoff"
 )
@@ -75,7 +76,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 			break
 		}
 	}
-	ep, ok := ins.EndpointsMap[i.Protocol]
+	ep, ok := ins.EndpointsMap[util.GenProtoEndPoint(i.Protocol, i.Port)]
 	if !ok {
 		errStr := fmt.Sprintf("No available instance support ["+i.Protocol+"] protocol,"+
 			" msName: "+i.MicroServiceName+" %v", ins.EndpointsMap)
