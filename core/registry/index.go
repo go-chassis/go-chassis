@@ -3,7 +3,7 @@ package registry
 import (
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/common"
 	cache "github.com/patrickmn/go-cache"
 	"k8s.io/apimachinery/pkg/util/sets"
 )

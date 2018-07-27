@@ -2,8 +2,8 @@ package cse
 
 import (
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/router"
 	"sync"
 )
 

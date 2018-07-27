@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis"
-	_ "github.com/ServiceComb/go-chassis/bootstrap"
-	"github.com/ServiceComb/go-chassis/client/rest"
-	_ "github.com/ServiceComb/go-chassis/config-center"
-	"github.com/ServiceComb/go-chassis/core"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/examples/schemas/employ"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis"
+	_ "github.com/go-chassis/go-chassis/bootstrap"
+	"github.com/go-chassis/go-chassis/client/rest"
+	_ "github.com/go-chassis/go-chassis/config-center"
+	"github.com/go-chassis/go-chassis/core"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/examples/schemas/employ"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 )
 
 var wg sync.WaitGroup

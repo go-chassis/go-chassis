@@ -1,17 +1,17 @@
 basic:
   build:
-  - github.com/ServiceComb/go-chassis
+  - github.com/go-chassis/go-chassis
   install: 
-  - github.com/ServiceComb/go-chassis/internal/cmd/dsfconfcheck
-  - github.com/ServiceComb/go-chassis/internal/cmd/dsferr
+  - github.com/go-chassis/go-chassis/internal/cmd/dsfconfcheck
+  - github.com/go-chassis/go-chassis/internal/cmd/dsferr
   test:
-  - github.com/ServiceComb/go-chassis/internal/...
-  - github.com/ServiceComb/go-chassis
-  - github.com/ServiceComb/go-chassis/api/errorcode
+  - github.com/go-chassis/go-chassis/internal/...
+  - github.com/go-chassis/go-chassis
+  - github.com/go-chassis/go-chassis/api/errorcode
   sttest:
 advance:
   conf:
-  - package: github.com/ServiceComb/go-chassis/conf
+  - package: github.com/go-chassis/go-chassis/conf
     to: conf
     exclude: 
     include: 

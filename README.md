@@ -1,5 +1,5 @@
 # Go-Chassis  
-[![Build Status](https://travis-ci.org/ServiceComb/go-chassis.svg?branch=master)](https://travis-ci.org/ServiceComb/go-chassis)  [![Coverage Status](https://coveralls.io/repos/github/ServiceComb/go-chassis/badge.svg)](https://coveralls.io/github/ServiceComb/go-chassis) [![Go Report Card](https://goreportcard.com/badge/github.com/ServiceComb/go-chassis)](https://goreportcard.com/report/github.com/ServiceComb/go-chassis) [![GoDoc](https://godoc.org/github.com/ServiceComb/go-chassis?status.svg)](https://godoc.org/github.com/ServiceComb/go-chassis) [![HitCount](http://hits.dwyl.io/ServiceComb/go-chassis.svg)](http://hits.dwyl.io/ServiceComb/go-chassis)  [![Join Slack](https://img.shields.io/badge/Join-Slack-orange.svg)](https://join.slack.com/t/go-chassis/shared_invite/enQtMzk0MzAyMjEzNzEyLTRjOWE3NzNmN2IzOGZhMzZkZDFjODM1MDc5ZWI0YjcxYjM1ODNkY2RkNmIxZDdlOWI3NmQ0MTg3NzBkNGExZGU)      
+[![Build Status](https://travis-ci.org/go-chassis/go-chassis.svg?branch=master)](https://travis-ci.org/go-chassis/go-chassis)  [![Coverage Status](https://coveralls.io/repos/github/go-chassis/go-chassis/badge.svg)](https://coveralls.io/github/go-chassis/go-chassis) [![Go Report Card](https://goreportcard.com/badge/github.com/go-chassis/go-chassis)](https://goreportcard.com/report/github.com/go-chassis/go-chassis) [![GoDoc](https://godoc.org/github.com/go-chassis/go-chassis?status.svg)](https://godoc.org/github.com/go-chassis/go-chassis) [![HitCount](http://hits.dwyl.io/go-chassis/go-chassis.svg)](http://hits.dwyl.io/go-chassis/go-chassis)  [![Join Slack](https://img.shields.io/badge/Join-Slack-orange.svg)](https://join.slack.com/t/go-chassis/shared_invite/enQtMzk0MzAyMjEzNzEyLTRjOWE3NzNmN2IzOGZhMzZkZDFjODM1MDc5ZWI0YjcxYjM1ODNkY2RkNmIxZDdlOWI3NmQ0MTg3NzBkNGExZGU)      
 
 Go-Chassis is a Software Development Kit(SDK) for rapid development of microservices in Go
  
@@ -32,7 +32,7 @@ You can see more documentations in [here](http://go-chassis.readthedocs.io/en/la
 2. Clone the project
 
 ```sh
-git clone git@github.com:ServiceComb/go-chassis.git
+git clone git@github.com:go-chassis/go-chassis.git
 ```
 
 3. Use [glide](https://github.com/Masterminds/glide) to download dependencies
@@ -42,7 +42,7 @@ cd go-chassis
 glide intall
 ```
 
-4. Install ServiceComb [service-center](https://github.com/ServiceComb/service-center/releases)
+4. Install go-chassis [service-center](https://github.com/go-chassis/service-center/releases)
 
 5. [Write your first http micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
 

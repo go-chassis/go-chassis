@@ -3,8 +3,8 @@ package client
 import (
 	"errors"
 
-	"github.com/ServiceComb/go-chassis/pkg/istio/util"
 	xdsapi "github.com/envoyproxy/go-control-plane/envoy/api/v2"
+	"github.com/go-chassis/go-chassis/pkg/istio/util"
 )
 
 // GetRouteConfiguration returns routeconfiguration from discovery response

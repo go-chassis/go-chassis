@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/client"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"net"
 	"time"
 )

@@ -1,13 +1,13 @@
 package registry_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -16,7 +16,7 @@ import (
 
 func TestServicecenter_Heartbeat(t *testing.T) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	config.Init()
 	runtime.Init()
@@ -52,7 +52,7 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 
 func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	config.Init()
 	var ins = map[string]string{"type": "test"}

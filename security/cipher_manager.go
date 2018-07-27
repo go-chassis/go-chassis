@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ServiceComb/go-chassis/core/goplugin"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/goplugin"
+	"github.com/go-chassis/go-chassis/core/lager"
 )
 
 const pluginSuffix = ".so"

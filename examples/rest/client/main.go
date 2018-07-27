@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 
-	"github.com/ServiceComb/go-chassis"
-	_ "github.com/ServiceComb/go-chassis/bootstrap"
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis"
+	_ "github.com/go-chassis/go-chassis/bootstrap"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core"
+	"github.com/go-chassis/go-chassis/core/lager"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/

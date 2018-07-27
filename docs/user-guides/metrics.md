@@ -21,7 +21,7 @@ Metrics用于度量服务性能指标。开发者可通过配置文件来将框�
 包路径
 
 ```go
-import "github.com/ServiceComb/go-chassis/metrics"
+import "github.com/go-chassis/go-chassis/metrics"
 ```
 
 获取go-chassis的metrics registry，用户定制的metrics，可以通过这个registry来添加，最终也会自动导出到API的返回中

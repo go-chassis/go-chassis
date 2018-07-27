@@ -4,10 +4,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -20,7 +20,7 @@ func check(e error) {
 func TestInit(t *testing.T) {
 	t.Log("testing config initialization")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	//config.Init()
 
 	err := config.Init()
@@ -133,7 +133,7 @@ cse:
 func TestInit4(t *testing.T) {
 	t.Log("EnvCSEEndpoint has highest priority")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	//config.Init()
 	os.Setenv(common.EnvCSEEndpoint, "123")
 	os.Setenv(common.CseRegistryAddress, "1243234234")

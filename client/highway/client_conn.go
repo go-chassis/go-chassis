@@ -3,8 +3,8 @@ package highway
 import (
 	"bufio"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/client/highway/pb"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/client/highway/pb"
+	"github.com/go-chassis/go-chassis/core/lager"
 	"net"
 	"sync"
 )

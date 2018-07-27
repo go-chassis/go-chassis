@@ -1,12 +1,12 @@
 package metrics
 
 import (
-	//"github.com/ServiceComb/auth"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+	//"github.com/go-chassis/auth"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	//"net/http"
 	"os"
@@ -16,7 +16,7 @@ import (
 )
 
 func initialize() {
-	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server")
+	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
 	os.Setenv("CHASSIS_HOME", p)
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)

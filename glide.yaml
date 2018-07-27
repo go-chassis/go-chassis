@@ -1,4 +1,4 @@
-package: github.com/ServiceComb/go-chassis
+package: github.com/go-chassis/go-chassis
 ignore:
 - github.com/go-chassis/go-chassis-plugins
 import:
@@ -15,12 +15,12 @@ import:
   repo: https://github.com/DataDog/datadog-go
   subpackages:
   - statsd
-- package: github.com/ServiceComb/auth
+- package: github.com/huaweicse/auth
   version: master
-  repo: https://github.com/ServiceComb/auth
-- package: github.com/ServiceComb/go-archaius
-  version: 561c7547733a283358a2a52f593764361f6ffbb3
-  repo: https://github.com/ServiceComb/go-archaius
+  repo: https://github.com/huaweicse/auth
+- package: github.com/go-chassis/go-archaius
+  version: master
+  repo: https://github.com/go-chassis/go-archaius
   subpackages:
   - core
   - core/config-manager
@@ -28,22 +28,22 @@ import:
   - sources/configcenter-source
   - sources/file-source
   - sources/memory-source
-- package: github.com/ServiceComb/go-cc-client
-  version: b92c97d78e6e13e17f8b148309dce8756cb1b929
-  repo: https://github.com/ServiceComb/go-cc-client
+- package: github.com/go-chassis/go-cc-client
+  version: master
+  repo: https://github.com/go-chassis/go-cc-client
   subpackages:
   - member-discovery
-- package: github.com/ServiceComb/go-sc-client
+- package: github.com/go-chassis/go-sc-client
   version: master
-  repo: https://github.com/ServiceComb/go-sc-client
+  repo: https://github.com/go-chassis/go-sc-client
   subpackages:
   - model
-- package: github.com/ServiceComb/http-client
+- package: github.com/go-chassis/http-client
   version: master
-  repo: https://github.com/ServiceComb/http-client
-- package: github.com/ServiceComb/paas-lager
+  repo: https://github.com/go-chassis/http-client
+- package: github.com/go-chassis/paas-lager
   version: master
-  repo: https://github.com/ServiceComb/paas-lager
+  repo: https://github.com/go-chassis/paas-lager
   subpackages:
   - third_party/forked/cloudfoundry/lager
 - package: github.com/Shopify/sarama

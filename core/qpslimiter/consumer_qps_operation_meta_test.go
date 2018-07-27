@@ -2,9 +2,9 @@ package qpslimiter_test
 
 import (
 	//"fmt"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/qpslimiter"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/qpslimiter"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -111,7 +111,7 @@ service_description:
 }
 func TestInitError(t *testing.T) {
 	t.Log("Testing chassis Init function for errors")
-	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "communication/client")
+	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "communication/client")
 	os.Setenv("CHASSIS_HOME", p)
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 }

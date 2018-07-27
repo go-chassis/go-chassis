@@ -1,7 +1,7 @@
 package tracing
 
 import (
-	"github.com/ServiceComb/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/client/rest"
 )
 
 const (

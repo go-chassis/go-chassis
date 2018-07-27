@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/lager"
 
 	"context"
 	cache "github.com/patrickmn/go-cache"

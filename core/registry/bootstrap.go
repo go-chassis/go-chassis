@@ -1,12 +1,12 @@
 package registry
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/schema"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/metadata"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
 
 // microServiceDependencies micro-service dependencies

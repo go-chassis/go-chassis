@@ -1,7 +1,7 @@
 package lager
 
 import (
-	//"github.com/ServiceComb/go-chassis/core/config"
+	//"github.com/go-chassis/go-chassis/core/config"
 	"os"
 	"path/filepath"
 	"testing"
@@ -10,9 +10,9 @@ import (
 
 func TestInitialize1(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 
-	logdir := path + "/src/github.com/ServiceComb/go-chassis/examples/discovery/server/log"
+	logdir := path + "/src/github.com/go-chassis/go-chassis/examples/discovery/server/log"
 	os.RemoveAll(logdir)
 
 	t.Log("Initializing lager")
@@ -32,7 +32,7 @@ func TestInitialize1(t *testing.T) {
 
 func TestInitialize2(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb",
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis",
 		"go-chassis", "examples", "discovery", "server"))
 
 	//initializing config for to initialize PassLagerDefinition variable
@@ -42,7 +42,7 @@ func TestInitialize2(t *testing.T) {
 	//	log.Printf("Failed to initialize conf, err=%s\n", err)
 	//}
 
-	logdir := path + "/src/github.com/ServiceComb/go-chassis/examples/discovery/server/log"
+	logdir := path + "/src/github.com/go-chassis/go-chassis/examples/discovery/server/log"
 	os.RemoveAll(logdir)
 
 	//Initializing lager

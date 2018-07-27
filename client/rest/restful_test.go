@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -59,7 +59,7 @@ func TestNewRestRequest(t *testing.T) {
 	assert.NoError(t, err)
 
 	testHeaderKey := "hello"
-	testHeaderValue := "ServiceComb"
+	testHeaderValue := "go-chassis"
 	req.Req.Header.Add(testHeaderKey, testHeaderValue)
 	req.Req.AddCookie(c1)
 	newRequest := req.Copy()

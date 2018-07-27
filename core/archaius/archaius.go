@@ -4,13 +4,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
-	"github.com/ServiceComb/go-archaius"
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/file-source"
-	"github.com/ServiceComb/go-archaius/sources/memory-source"
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-archaius/sources/file-source"
+	"github.com/go-chassis/go-archaius/sources/memory-source"
 )
 
 // Config is the struct of configuration files, and configuration factory

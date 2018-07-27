@@ -20,12 +20,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/metrics"
-	"github.com/ServiceComb/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/metrics"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/prometheus/client_golang/prometheus"
 	gometrics "github.com/rcrowley/go-metrics"
 )

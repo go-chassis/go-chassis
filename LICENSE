@@ -217,7 +217,7 @@ For third_party/forked/go-micro:
 See licenses/LICENSE-go-micro
 
 ========================================================================
-For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go:
+For third_party/forked/afex/hystrix-go,vendor/github.com/go-chassis/cse-collector/cse_collector.go:
 ========================================================================
 
 See licenses/LICENSE-hystrix-go
@@ -241,13 +241,13 @@ For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go:
 See licenses/LICENSE-prometheusmetrics
 
 ========================================================================
-For vendor/github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager:
+For vendor/github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager:
 ========================================================================
 
 See licenses/LICENSE-cloudfoundry-lager
 
 ========================================================================
-For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws:
+For vendor/github.com/go-chassis/auth/third_party/forked/datastream/aws:
 ========================================================================
 
 See licenses/LICENSE-datastream-aws

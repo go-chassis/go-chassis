@@ -1,6 +1,6 @@
 package noop
 
-import "github.com/ServiceComb/go-chassis/auth"
+import "github.com/go-chassis/go-chassis/auth"
 
 // Auth has no operations
 type Auth struct {

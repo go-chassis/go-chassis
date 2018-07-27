@@ -2,8 +2,8 @@ package session_test
 
 import (
 	"context"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/session"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/session"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -39,6 +39,6 @@ func TestSessionStorage(t *testing.T) {
 	val := session.GetContextMetadata(ctx, "key")
 	assert.Equal(t, val, "value")
 	ctx = session.SaveSessionIDFromContext(ctx, "", 1)
-	val = session.GetContextMetadata(ctx, "ServiceCombLB")
+	val = session.GetContextMetadata(ctx, "go-chassisLB")
 	assert.NotEqual(t, val, "")
 }

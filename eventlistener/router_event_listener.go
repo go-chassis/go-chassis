@@ -3,9 +3,9 @@ package eventlistener
 import (
 	"strings"
 
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/router/cse"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/router/cse"
 )
 
 // constants for dark launch key and prefix

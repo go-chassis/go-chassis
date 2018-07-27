@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
 	"github.com/stretchr/testify/assert"
 )

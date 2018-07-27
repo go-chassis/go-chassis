@@ -1,8 +1,8 @@
 package iputil_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/pkg/util/iputil"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -5,7 +5,7 @@ Minimize Installation
 2. Clone the project
 
 ```sh
-git clone git@github.com:ServiceComb/go-chassis.git
+git clone git@github.com:go-chassis/go-chassis.git
 ```
 
 3. Use [glide](https://github.com/Masterminds/glide) to download dependencies
@@ -15,7 +15,7 @@ cd go-chassis
 glide intall
 ```
 
-4. Install ServiceComb [service-center](https://github.com/ServiceComb/service-center/releases)
+4. Install go-chassis [service-center](https://github.com/go-chassis/service-center/releases)
 
 
 Use RPC communication

@@ -3,8 +3,8 @@ package tracing_test
 import (
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/tracing"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/stretchr/testify/assert"
 )
 

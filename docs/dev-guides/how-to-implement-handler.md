@@ -39,8 +39,8 @@ cse:
 ```go
 package handler
 import (
-    "github.com/ServiceComb/go-chassis/core/handler"
-    "github.com/ServiceComb/go-chassis/core/invocation"
+    "github.com/go-chassis/go-chassis/core/handler"
+    "github.com/go-chassis/go-chassis/core/invocation"
     "log"
 )
 const Name = "fake-handler"

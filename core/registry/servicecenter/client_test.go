@@ -1,10 +1,10 @@
 package servicecenter_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	client "github.com/ServiceComb/go-sc-client"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	client "github.com/go-chassis/go-sc-client"
 	"github.com/stretchr/testify/assert"
 	"net/url"
 	"os"
@@ -15,7 +15,7 @@ import (
 
 func TestRegistryClient_Health(t *testing.T) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registryClient := &client.RegistryClient{}

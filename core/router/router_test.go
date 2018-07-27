@@ -1,15 +1,15 @@
 package router_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	router "github.com/ServiceComb/go-chassis/core/router"
-	_ "github.com/ServiceComb/go-chassis/core/router/cse"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	router "github.com/go-chassis/go-chassis/core/router"
+	_ "github.com/go-chassis/go-chassis/core/router/cse"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -117,7 +117,7 @@ routeRule:
 
 func TestBuildRouter(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 
 	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
 	config.Init()

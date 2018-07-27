@@ -5,13 +5,13 @@ import (
 	"net"
 	"sync"
 
-	highwayclient "github.com/ServiceComb/go-chassis/client/highway"
-	"github.com/ServiceComb/go-chassis/client/highway/pb"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/provider"
+	highwayclient "github.com/go-chassis/go-chassis/client/highway"
+	"github.com/go-chassis/go-chassis/client/highway/pb"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/provider"
 	"io"
 )
 

@@ -1,13 +1,13 @@
 package endpoint_test
 
 import (
-	"github.com/ServiceComb/go-chassis"
-	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis"
+	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
+	"github.com/go-chassis/go-chassis/core/registry"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/ServiceComb/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/common"
 	"os"
 	"testing"
 	"time"
@@ -16,7 +16,7 @@ import (
 func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 	t.Log("Testing GetEndpointFromServiceCenter function")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	chassis.Init()
 	registry.Enable()
 	_, err := endpoint.GetEndpointFromServiceCenter("default", "test", "0.1")
@@ -25,7 +25,7 @@ func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 
 func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
@@ -45,7 +45,7 @@ func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 
 func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
@@ -70,7 +70,7 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 
 func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
@@ -95,7 +95,7 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 
 func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",

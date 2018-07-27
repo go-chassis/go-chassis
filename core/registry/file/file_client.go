@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
-	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client/model"
 )
 
 const (

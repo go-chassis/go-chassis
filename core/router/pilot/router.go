@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/router"
 )
 
 func init() { router.InstallRouterService("pilot", newPilotRouter) }
