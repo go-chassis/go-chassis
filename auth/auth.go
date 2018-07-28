@@ -1,21 +1,5 @@
 package auth
 
-import (
-	"errors"
-)
-
-const (
-	paasAuthPlugin     = "paas_auth.so"
-	keyAK              = "cse.credentials.accessKey"
-	keySK              = "cse.credentials.secretKey"
-	keyProject         = "cse.credentials.project"
-	cipherRootEnv      = "CIPHER_ROOT"
-	keytoolAkskFile    = "certificate.yaml"
-	keytoolCipher      = "security"
-	paasProjectNameEnv = "PAAS_PROJECT_NAME"
-)
-
-var errAuthConfNotExist = errors.New("auth config is not exist")
 var authPlugin = make(map[string]func(role, service string, props map[string]string) Auth)
 
 //InstallPlugin install auth plugin
