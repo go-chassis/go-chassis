@@ -10,3 +10,4 @@ Development guides
     dev-guides/archaius-config-source-plugin
     dev-guides/how-to-write-cipher
     dev-guides/how-to-extend-protocol
+    dev-guides/bootstrap
