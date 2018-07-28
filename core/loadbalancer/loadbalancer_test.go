@@ -89,7 +89,7 @@ func TestBuildStrategy(t *testing.T) {
 	runtime.ServiceID = sid
 	t.Log(runtime.ServiceID)
 	time.Sleep(1 * time.Second)
-	s, err := loadbalancer.BuildStrategy(sid, "test1", "", common.LatestVersion, nil, nil, nil, utiltags.Tags{})
+	s, err := loadbalancer.BuildStrategy(sid, "test1", "", common.LatestVersion, nil, nil, utiltags.Tags{})
 	assert.NoError(t, err)
 	ins, err := s.Pick()
 	t.Log(ins.EndpointsMap)
@@ -97,7 +97,7 @@ func TestBuildStrategy(t *testing.T) {
 	ins, err = s.Pick()
 	assert.NoError(t, err)
 	t.Log(ins.EndpointsMap)
-	s, err = loadbalancer.BuildStrategy(sid, "fake", "", "0.1", nil, nil, nil, utiltags.Tags{})
+	s, err = loadbalancer.BuildStrategy(sid, "fake", "", "0.1", nil, nil, utiltags.Tags{})
 	assert.Error(t, err)
 	t.Log(err)
 	switch err.(type) {
@@ -142,7 +142,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = loadbalancer.BuildStrategy(runtime.ServiceID, "test2", "", "1.0", nil, nil, nil, utiltags.Tags{})
+		_, _ = loadbalancer.BuildStrategy(runtime.ServiceID, "test2", "", "1.0", nil, nil, utiltags.Tags{})
 	}
 
 }

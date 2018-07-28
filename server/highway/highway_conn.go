@@ -93,13 +93,13 @@ func (svrConn *HighwayConnection) Close() {
 func (svrConn *HighwayConnection) Hello() error {
 	var err error
 	rdBuf := bufio.NewReaderSize(svrConn.baseConn, highwayclient.DefaultReadBufferSize)
-	protoObj := &highwayclient.HighWayProtocalObject{}
+	protoObj := &highwayclient.ProtocolObject{}
 	protoObj.DeSerializeFrame(rdBuf)
 	if err != nil {
 		return err
 	}
 
-	req := &highwayclient.HighwayRequest{}
+	req := &highwayclient.Request{}
 	req.Arg = &highway.LoginRequest{}
 	err = protoObj.DeSerializeReq(req)
 	if err != nil {
@@ -109,7 +109,7 @@ func (svrConn *HighwayConnection) Hello() error {
 	if loginRequest, ok := req.Arg.(*highway.LoginRequest); ok {
 		if loginRequest.UseProtobufMapCodec == true {
 			wBuf := bufio.NewWriterSize(svrConn.baseConn, highwayclient.DefaultWriteBufferSize)
-			protoObj.SerializelLoginRsp(req.MsgID, wBuf)
+			protoObj.SerializeLoginRap(req.MsgID, wBuf)
 			err := wBuf.Flush()
 			if err != nil {
 				return err
@@ -127,7 +127,7 @@ func (svrConn *HighwayConnection) msgRecvLoop() {
 	}
 	rdBuf := bufio.NewReaderSize(svrConn.baseConn, highwayclient.DefaultReadBufferSize)
 	for {
-		protoObj := &highwayclient.HighWayProtocalObject{}
+		protoObj := &highwayclient.ProtocolObject{}
 		err := protoObj.DeSerializeFrame(rdBuf)
 		if err != nil {
 			if err != io.EOF {
@@ -142,11 +142,11 @@ func (svrConn *HighwayConnection) msgRecvLoop() {
 }
 
 //send error msg
-func (svrConn *HighwayConnection) writeError(req *highwayclient.HighwayRequest, err error) {
+func (svrConn *HighwayConnection) writeError(req *highwayclient.Request, err error) {
 	if req.TwoWay {
-		protoObj := &highwayclient.HighWayProtocalObject{}
+		protoObj := &highwayclient.ProtocolObject{}
 		wBuf := bufio.NewWriterSize(svrConn.baseConn, highwayclient.DefaultWriteBufferSize)
-		rsp := &highwayclient.HighwayRespond{}
+		rsp := &highwayclient.Response{}
 		rsp.Result = nil
 		rsp.MsgID = req.MsgID
 		rsp.Err = err.Error()
@@ -160,9 +160,9 @@ func (svrConn *HighwayConnection) writeError(req *highwayclient.HighwayRequest, 
 	}
 }
 
-func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.HighWayProtocalObject) error {
+func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.ProtocolObject) error {
 	var err error
-	req := &highwayclient.HighwayRequest{}
+	req := &highwayclient.Request{}
 	err = protoObj.DeSerializeReq(req)
 	if err != nil {
 		lager.Logger.Errorf(err, "DeSerializeReq failed")
@@ -201,7 +201,7 @@ func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.HighWayPro
 		}
 		if req.TwoWay {
 			wBuf := bufio.NewWriterSize(svrConn.baseConn, highwayclient.DefaultWriteBufferSize)
-			rsp := &highwayclient.HighwayRespond{}
+			rsp := &highwayclient.Response{}
 			rsp.Result = r
 			rsp.Status = highwayclient.Ok
 			rsp.MsgID = req.MsgID

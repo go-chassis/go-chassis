@@ -40,8 +40,8 @@ func NewHighwayClient(options client.Options) client.ProtocolClient {
 func (c *highwayClient) String() string {
 	return "highway_client"
 }
-func invocation2Req(inv *invocation.Invocation) *HighwayRequest {
-	highwayReq := &HighwayRequest{}
+func invocation2Req(inv *invocation.Invocation) *Request {
+	highwayReq := &Request{}
 	highwayReq.MsgID = uint64(int(GenerateMsgID()))
 	highwayReq.MethodName = inv.OperationID
 	highwayReq.Schema = inv.SchemaID
@@ -58,7 +58,7 @@ func (c *highwayClient) Call(ctx context.Context, addr string, inv *invocation.I
 	if err != nil {
 		return err
 	}
-	tmpRsp := &HighwayRespond{0, Ok, "", 0, rsp, nil}
+	tmpRsp := &Response{0, Ok, "", 0, rsp, nil}
 	highwayReq := invocation2Req(inv)
 	//Current only twoway
 	highwayReq.TwoWay = true

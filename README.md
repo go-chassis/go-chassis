@@ -9,11 +9,10 @@ Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable
 
 # Features
  - **Pluggable registrator and discovery service**: Support Service center,istio pilot and file based registry by default
- - **Dynamic Configuration framework**:  you are able to develop a service which has hot-reconfiguration  feature easily
- - **Pluggable Protocol**: You can custom your own protocol,by default support http and highway(RPC)
+ - **Pluggable Protocol**: You can custom your own protocol, by default support http and highway(RPC)
  - **Circuit breaker**: Protect your service in runtime or on-demand
  - **Routing management**: Able to route to different service based on weight and match rule to achieve Canary Release easily
- - **Load balancing**: Add custom strategy and filter
+ - **Load balancing**: Able to custom strategy and filter
  - **Rate limiting**: Both client side and server side rate limiting
  - **Pluggable Cipher**: Able to custom your own cipher for AKSK and TLS certs
  - **Handler Chain**: Able to add your own code during service calling for client and server side
@@ -21,6 +20,8 @@ Go-chassis is based on [Go-Micro](https://github.com/micro/go-micro) A pluggable
  - **Tracing**: Integrate with Zipkin and namedpipe to sink tracing data
  - **Logger**: You can custom your own writer to sink log, by default support file and stdout
  - **Hot-reconfiguraion**: A lot of configuration can be reload in runtime, like loadbalancing, circuit breaker, rate limiting
+ - **Dynamic Configuration framework**:  you are able to develop a service which has hot-reconfiguration feature easily
+ - **Fault Injection**: In consumer side, chassis support you to inject faults 
  
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
@@ -42,7 +43,7 @@ cd go-chassis
 glide intall
 ```
 
-4. Install go-chassis [service-center](https://github.com/go-chassis/service-center/releases)
+4. Install [service-center](https://github.com/go-chassis/service-center/releases)
 
 5. [Write your first http micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
 

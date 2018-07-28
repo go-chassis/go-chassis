@@ -17,13 +17,13 @@ type ConnParams struct {
 	ConnNum   int
 }
 
-//HighwayBaseClient highway base client
-type HighwayBaseClient struct {
+//BaseClient highway base client
+type BaseClient struct {
 	addr          string
 	mtx           sync.Mutex
 	mapMutex      sync.Mutex
 	msgWaitRspMap map[uint64]*InvocationContext
-	highwayConns  []*HighwayClientConnection
+	highwayConns  []*ClientConnection
 	closed        bool
 	connParams    *ConnParams
 }
@@ -37,8 +37,8 @@ func init() {
 
 //InvocationContext Highway context
 type InvocationContext struct {
-	Req  *HighwayRequest
-	Rsp  *HighwayRespond
+	Req  *Request
+	Rsp  *Response
 	Wait *chan int
 }
 
@@ -50,17 +50,17 @@ func (ctx *InvocationContext) Done() {
 //ClientMgr client manage
 type ClientMgr struct {
 	mapMutex sync.Mutex
-	clients  map[string]*HighwayBaseClient
+	clients  map[string]*BaseClient
 }
 
 func newClientMgr() *ClientMgr {
 	tmp := new(ClientMgr)
-	tmp.clients = make(map[string]*HighwayBaseClient)
+	tmp.clients = make(map[string]*BaseClient)
 	return tmp
 }
 
 //GetClient Obtain  client
-func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, error) {
+func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*BaseClient, error) {
 	mgr.mapMutex.Lock()
 	defer mgr.mapMutex.Unlock()
 	if tmp, ok := mgr.clients[connParmas.Addr]; ok {
@@ -82,8 +82,8 @@ func (mgr *ClientMgr) GetClient(connParmas *ConnParams) (*HighwayBaseClient, err
 
 }
 
-func newHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
-	tmp := &HighwayBaseClient{}
+func newHighwayBaseClient(connParmas *ConnParams) *BaseClient {
+	tmp := &BaseClient{}
 	tmp.addr = connParmas.Addr
 	tmp.closed = true
 	tmp.connParams = connParmas
@@ -92,11 +92,11 @@ func newHighwayBaseClient(connParmas *ConnParams) *HighwayBaseClient {
 }
 
 //GetAddr Obtain the address
-func (baseClient *HighwayBaseClient) GetAddr() string {
+func (baseClient *BaseClient) GetAddr() string {
 	return baseClient.addr
 }
 
-func (baseClient *HighwayBaseClient) makeConnection() (*HighwayClientConnection, error) {
+func (baseClient *BaseClient) makeConnection() (*ClientConnection, error) {
 	var baseConn net.Conn
 	var errDial error
 
@@ -120,12 +120,12 @@ func (baseClient *HighwayBaseClient) makeConnection() (*HighwayClientConnection,
 	return highwayConn, nil
 }
 
-func (baseClient *HighwayBaseClient) initConns() error {
+func (baseClient *BaseClient) initConns() error {
 	if baseClient.connParams.ConnNum == 0 {
 		baseClient.connParams.ConnNum = 4
 	}
 
-	baseClient.highwayConns = make([]*HighwayClientConnection, baseClient.connParams.ConnNum)
+	baseClient.highwayConns = make([]*ClientConnection, baseClient.connParams.ConnNum)
 	for i := 0; i < baseClient.connParams.ConnNum; i++ {
 		higwayConn, err := baseClient.makeConnection()
 		if err != nil {
@@ -137,7 +137,7 @@ func (baseClient *HighwayBaseClient) initConns() error {
 }
 
 //Open  client
-func (baseClient *HighwayBaseClient) Open() error {
+func (baseClient *BaseClient) Open() error {
 	baseClient.mtx.Lock()
 	defer baseClient.mtx.Unlock()
 	err := baseClient.initConns()
@@ -150,14 +150,14 @@ func (baseClient *HighwayBaseClient) Open() error {
 }
 
 //Close client
-func (baseClient *HighwayBaseClient) Close() {
+func (baseClient *BaseClient) Close() {
 	baseClient.mtx.Lock()
 	defer baseClient.mtx.Unlock()
 	baseClient.close()
 }
 
 //close client, no mutex
-func (baseClient *HighwayBaseClient) close() {
+func (baseClient *BaseClient) close() {
 	if baseClient.closed {
 		return
 	}
@@ -171,7 +171,7 @@ func (baseClient *HighwayBaseClient) close() {
 	baseClient.closed = true
 }
 
-func (baseClient *HighwayBaseClient) clearConns() {
+func (baseClient *BaseClient) clearConns() {
 	for i := 0; i < baseClient.connParams.ConnNum; i++ {
 		conn := baseClient.highwayConns[i]
 		if conn != nil {
@@ -182,7 +182,7 @@ func (baseClient *HighwayBaseClient) clearConns() {
 }
 
 //AddWaitMsg add wait msg
-func (baseClient *HighwayBaseClient) AddWaitMsg(msgID uint64, result *InvocationContext) {
+func (baseClient *BaseClient) AddWaitMsg(msgID uint64, result *InvocationContext) {
 	baseClient.mapMutex.Lock()
 	if baseClient.msgWaitRspMap != nil {
 		baseClient.msgWaitRspMap[msgID] = result
@@ -191,7 +191,7 @@ func (baseClient *HighwayBaseClient) AddWaitMsg(msgID uint64, result *Invocation
 }
 
 //RemoveWaitMsg remove wait msg
-func (baseClient *HighwayBaseClient) RemoveWaitMsg(msgID uint64) {
+func (baseClient *BaseClient) RemoveWaitMsg(msgID uint64) {
 	baseClient.mapMutex.Lock()
 	if baseClient.msgWaitRspMap != nil {
 		delete(baseClient.msgWaitRspMap, msgID)
@@ -200,7 +200,7 @@ func (baseClient *HighwayBaseClient) RemoveWaitMsg(msgID uint64) {
 }
 
 //Send send msg
-func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespond, timeout time.Duration) error {
+func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Duration) error {
 	if baseClient.closed {
 		baseClient.mtx.Lock()
 		if baseClient.closed {
@@ -268,7 +268,7 @@ func (baseClient *HighwayBaseClient) Send(req *HighwayRequest, rsp *HighwayRespo
 }
 
 //GetWaitMsg get wait message
-func (baseClient *HighwayBaseClient) GetWaitMsg(msgID uint64) *InvocationContext {
+func (baseClient *BaseClient) GetWaitMsg(msgID uint64) *InvocationContext {
 	baseClient.mapMutex.Lock()
 	defer baseClient.mapMutex.Unlock()
 
@@ -279,6 +279,6 @@ func (baseClient *HighwayBaseClient) GetWaitMsg(msgID uint64) *InvocationContext
 }
 
 //Closed  client status
-func (baseClient *HighwayBaseClient) Closed() bool {
+func (baseClient *BaseClient) Closed() bool {
 	return baseClient.closed
 }

@@ -3,8 +3,8 @@ package aes
 import (
 	"os"
 
-	"github.com/go-chassis/go-chassis/core/goplugin"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/goplugin"
 	"github.com/go-chassis/go-chassis/security"
 )
 

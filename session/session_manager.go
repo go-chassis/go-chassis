@@ -19,11 +19,11 @@ import (
 // ErrResponseNil used for to represent the error response, when it is nil
 var ErrResponseNil = errors.New("can not set session, resp is nil")
 
-// SessionCache session cache variable
-var SessionCache *cache.Cache
+// Cache session cache variable
+var Cache *cache.Cache
 
 func init() {
-	SessionCache = initCache()
+	Cache = initCache()
 	cookieMap = make(map[string]string)
 }
 func initCache() *cache.Cache {
@@ -95,7 +95,7 @@ func SaveSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) c
 	ClearExpired()
 	var sessBool bool
 	if sessionIDStr != "" {
-		_, sessBool = SessionCache.Get(sessionIDStr)
+		_, sessBool = Cache.Get(sessionIDStr)
 	}
 
 	if sessionIDStr != "" && sessBool {
@@ -168,7 +168,7 @@ func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req 
 	ClearExpired()
 	var sessBool bool
 	if sessionIDStr != "" {
-		_, sessBool = SessionCache.Get(sessionIDStr)
+		_, sessBool = Cache.Get(sessionIDStr)
 	}
 
 	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
@@ -208,7 +208,7 @@ func generateCookieSessionID() string {
 
 // DeletingKeySuccessiveFailure deleting key successes and failures
 func DeletingKeySuccessiveFailure(resp *http.Response) {
-	SessionCache.DeleteExpired()
+	Cache.DeleteExpired()
 	if resp == nil {
 		valueChassisLb := getLBCookie(common.LBSessionID)
 		if string(valueChassisLb) != "" {

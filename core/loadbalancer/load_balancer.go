@@ -41,7 +41,7 @@ func (e LBError) Error() string {
 
 // BuildStrategy query instance list and give it to Strategy then return Strategy
 func BuildStrategy(consumerID, serviceName, protocol, sessionID string, fs []string,
-	s Strategy, metadata interface{}, tags utiltags.Tags) (Strategy, error) {
+	s Strategy, tags utiltags.Tags) (Strategy, error) {
 	if s == nil {
 		s = &RoundRobinStrategy{}
 	}

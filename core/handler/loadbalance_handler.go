@@ -20,11 +20,9 @@ import (
 type LBHandler struct{}
 
 func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
-	var metadata interface{}
-	strategy := i.Strategy
 	var strategyFun func() loadbalancer.Strategy
 	var err error
-	if strategy == "" {
+	if i.Strategy == "" {
 		strategyName := config.GetStrategyName(i.SourceMicroService, i.MicroServiceName)
 		i.Strategy = strategyName
 		strategyFun, err = loadbalancer.GetStrategyPlugin(strategyName)
@@ -33,10 +31,10 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 				Message: "Get strategy [" + strategyName + "] failed."}.Error())
 		}
 	} else {
-		strategyFun, err = loadbalancer.GetStrategyPlugin(strategy)
+		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
 			lager.Logger.Errorf(err, loadbalancer.LBError{
-				Message: "Get strategy [" + strategy + "] failed."}.Error())
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error())
 		}
 	}
 	if len(i.Filters) == 0 {
@@ -48,18 +46,13 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 		sessionID = getSessionID(i)
 	}
 
-	if i.Strategy == loadbalancer.StrategyLatency {
-		metadata = i.MicroServiceName + "/" + i.Protocol
-	}
-
 	s, err := loadbalancer.BuildStrategy(i.SourceServiceID, i.MicroServiceName, i.Protocol,
-		sessionID, i.Filters, strategyFun(), metadata, i.RouteTags)
+		sessionID, i.Filters, strategyFun(), i.RouteTags)
 	if err != nil {
 		return "", err
 	}
 
 	ins, err := s.Pick()
-
 	if err != nil {
 		lbErr := loadbalancer.LBError{Message: err.Error()}
 		return "", lbErr
