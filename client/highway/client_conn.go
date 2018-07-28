@@ -15,18 +15,18 @@ const (
 	DefaultWriteBufferSize = 1024
 )
 
-//HighwayClientConnection Highway client connection
-type HighwayClientConnection struct {
+//ClientConnection Highway client connection
+type ClientConnection struct {
 	remoteAddr string
 	baseConn   net.Conn
-	client     *HighwayBaseClient
+	client     *BaseClient
 	mtx        sync.Mutex
 	closed     bool
 }
 
 //NewHighwayClientConnection creat Highway client connection
-func NewHighwayClientConnection(conn net.Conn, client *HighwayBaseClient) *HighwayClientConnection {
-	tmp := new(HighwayClientConnection)
+func NewHighwayClientConnection(conn net.Conn, client *BaseClient) *ClientConnection {
+	tmp := new(ClientConnection)
 	//conn.SetKeepAlive(true)
 	tmp.baseConn = conn
 	tmp.client = client
@@ -35,7 +35,7 @@ func NewHighwayClientConnection(conn net.Conn, client *HighwayBaseClient) *Highw
 }
 
 //Open Init Highway client connection
-func (hwClientConn *HighwayClientConnection) Open() error {
+func (hwClientConn *ClientConnection) Open() error {
 	err := hwClientConn.Hello()
 	if err != nil {
 		hwClientConn.Close()
@@ -46,16 +46,16 @@ func (hwClientConn *HighwayClientConnection) Open() error {
 }
 
 //Hello Highway handshake
-func (hwClientConn *HighwayClientConnection) Hello() error {
+func (hwClientConn *ClientConnection) Hello() error {
 	wBuf := bufio.NewWriterSize(hwClientConn.baseConn, DefaultWriteBufferSize)
-	protoObj := &HighWayProtocalObject{}
+	protoObj := &ProtocolObject{}
 	protoObj.SerializeHelloReq(wBuf)
 	err := wBuf.Flush()
 	if err != nil {
 		return err
 	}
 	rdBuf := bufio.NewReaderSize(hwClientConn.baseConn, DefaultReadBufferSize)
-	rsp := &HighwayRespond{}
+	rsp := &Response{}
 	rsp.Result = &highway.LoginResponse{}
 	protoObj.DeSerializeFrame(rdBuf)
 	if err != nil {
@@ -70,7 +70,7 @@ func (hwClientConn *HighwayClientConnection) Hello() error {
 }
 
 //Close the connection
-func (hwClientConn *HighwayClientConnection) Close() {
+func (hwClientConn *ClientConnection) Close() {
 	hwClientConn.mtx.Lock()
 	defer hwClientConn.mtx.Unlock()
 	if hwClientConn.closed {
@@ -80,10 +80,10 @@ func (hwClientConn *HighwayClientConnection) Close() {
 	hwClientConn.baseConn.Close()
 }
 
-func (hwClientConn *HighwayClientConnection) msgRecvLoop() {
+func (hwClientConn *ClientConnection) msgRecvLoop() {
 	rdBuf := bufio.NewReaderSize(hwClientConn.baseConn, DefaultReadBufferSize)
 	for {
-		protoObj := &HighWayProtocalObject{}
+		protoObj := &ProtocolObject{}
 		err := protoObj.DeSerializeFrame(rdBuf)
 		if err != nil {
 			break
@@ -93,7 +93,7 @@ func (hwClientConn *HighwayClientConnection) msgRecvLoop() {
 	hwClientConn.Close()
 }
 
-func (hwClientConn *HighwayClientConnection) processMsg(protoObj *HighWayProtocalObject) {
+func (hwClientConn *ClientConnection) processMsg(protoObj *ProtocolObject) {
 	ctx := hwClientConn.client.GetWaitMsg(protoObj.FrHead.MsgID)
 	if ctx != nil {
 		protoObj.DeSerializeRsp(ctx.Rsp)
@@ -104,9 +104,9 @@ func (hwClientConn *HighwayClientConnection) processMsg(protoObj *HighWayProtoca
 }
 
 //AsyncSendMsg Highway send message
-func (hwClientConn *HighwayClientConnection) AsyncSendMsg(ctx *InvocationContext) error {
+func (hwClientConn *ClientConnection) AsyncSendMsg(ctx *InvocationContext) error {
 	wBuf := bufio.NewWriterSize(hwClientConn.baseConn, DefaultWriteBufferSize)
-	protoObj := &HighWayProtocalObject{}
+	protoObj := &ProtocolObject{}
 	protoObj.SerializeReq(ctx.Req, wBuf)
 	err := wBuf.Flush()
 	if err != nil {
@@ -117,16 +117,16 @@ func (hwClientConn *HighwayClientConnection) AsyncSendMsg(ctx *InvocationContext
 }
 
 //PostMsg Highway post message,	 Respond  is  needless
-func (hwClientConn *HighwayClientConnection) PostMsg(req *HighwayRequest) error {
+func (hwClientConn *ClientConnection) PostMsg(req *Request) error {
 
 	wBuf := bufio.NewWriterSize(hwClientConn.baseConn, DefaultWriteBufferSize)
-	protoObj := &HighWayProtocalObject{}
+	protoObj := &ProtocolObject{}
 	protoObj.SerializeReq(req, wBuf)
 	return wBuf.Flush()
 }
 
 /*
-func (this *HighwayClientConnection) SyncSendMsg(req *client.Request, rsp *client.Response) error {
+func (this *ClientConnection) SyncSendMsg(req *client.Request, rsp *client.Response) error {
 	wBuf := bufio.NewWriterSize(this.baseConn, 1024)
 	protoObj := &HighWayProtocalObject_10{}
 	protoObj.SerializeReq(req, wBuf)
@@ -154,6 +154,6 @@ func (this *HighwayClientConnection) SyncSendMsg(req *client.Request, rsp *clien
 */
 
 //Closed Highway connection status
-func (hwClientConn *HighwayClientConnection) Closed() bool {
+func (hwClientConn *ClientConnection) Closed() bool {
 	return hwClientConn.closed
 }

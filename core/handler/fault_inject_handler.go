@@ -41,7 +41,7 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 	faultConfig.Fault = make(map[string]model.Fault)
 	faultConfig.Fault[inv.Protocol] = faultStruct
 
-	faultInject, ok := fault.FaultInjectors[inv.Protocol]
+	faultInject, ok := fault.Injectors[inv.Protocol]
 	r := &invocation.Response{}
 	if !ok {
 		lager.Logger.Warnf("fault injection doesn't support for protocol ", errors.New(inv.Protocol))

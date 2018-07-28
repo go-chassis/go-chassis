@@ -73,14 +73,14 @@ func (s *highwayServer) Start() error {
 	}
 
 	if lisErr != nil {
-		lager.Logger.Error("listening falied, reason:", lisErr)
+		lager.Logger.Error("listening failed, reason:", lisErr)
 		return lisErr
 	}
-	go s.AcceptLoop(listener)
+	go s.acceptLoop(listener)
 	return nil
 }
 
-func (s *highwayServer) AcceptLoop(l net.Listener) {
+func (s *highwayServer) acceptLoop(l net.Listener) {
 	for {
 		conn, err := l.Accept()
 		if err != nil {

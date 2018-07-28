@@ -36,13 +36,13 @@ var msgIDMtx sync.Mutex
 //GenerateMsgID generate message ID
 func GenerateMsgID() uint64 {
 	msgIDMtx.Lock()
-	defer msgIDMtx.Unlock()
 	gCurMSGID++
+	msgIDMtx.Unlock()
 	return gCurMSGID
 }
 
-//HighwayRequest Highway request
-type HighwayRequest struct {
+//Request Highway request
+type Request struct {
 	MsgID       uint64
 	MsgType     int
 	TwoWay      bool
@@ -53,8 +53,8 @@ type HighwayRequest struct {
 	Attachments map[string]string
 }
 
-//HighwayRespond Highway respond
-type HighwayRespond struct {
+//Response Highway response
+type Response struct {
 	MsgID       uint64
 	Status      int
 	Err         string
@@ -102,19 +102,19 @@ func newHeadFrame(msgID uint64) *highwayFrameHead {
 	return &highwayFrameHead{magicID, msgID, 0, 0}
 }
 
-//HighWayProtocalObject highway Protocal
-type HighWayProtocalObject struct {
+//ProtocolObject highway Protocal
+type ProtocolObject struct {
 	FrHead  highwayFrameHead
 	payLoad []byte
 }
 
-//ProtocalName protocal name
-func (msgObj *HighWayProtocalObject) ProtocalName() string {
+//ProtocolName protocal name
+func (msgObj *ProtocolObject) ProtocolName() string {
 	return "Highway"
 }
 
 //SerializeReq Serialize request
-func (msgObj *HighWayProtocalObject) SerializeReq(req *HighwayRequest, wBuf *bufio.Writer) {
+func (msgObj *ProtocolObject) SerializeReq(req *Request, wBuf *bufio.Writer) {
 	frHead := newHeadFrame(uint64(req.MsgID))
 	//flags:Indicates whether compression , temporarily not to use
 	reqHeader := highway.RequestHeader{
@@ -143,7 +143,7 @@ func (msgObj *HighWayProtocalObject) SerializeReq(req *HighwayRequest, wBuf *buf
 }
 
 //SerializeRsp Serialize frame
-func (msgObj *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *bufio.Writer) {
+func (msgObj *ProtocolObject) SerializeRsp(rsp *Response, wBuf *bufio.Writer) {
 	frHead := newHeadFrame(uint64(rsp.MsgID))
 	//todo parse meta
 	//flags:Indicates whether compression , temporarily not to use
@@ -177,7 +177,7 @@ func (msgObj *HighWayProtocalObject) SerializeRsp(rsp *HighwayRespond, wBuf *buf
 }
 
 //DeSerializeFrame Deserialize frame
-func (msgObj *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
+func (msgObj *ProtocolObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 	var err error
 	var count int
 	//Parse frame head
@@ -217,7 +217,7 @@ func (msgObj *HighWayProtocalObject) DeSerializeFrame(rdBuf *bufio.Reader) error
 }
 
 //DeSerializeRsp Deserialize rsp
-func (msgObj *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
+func (msgObj *ProtocolObject) DeSerializeRsp(rsp *Response) error {
 	var err error
 	rsp.MsgID = msgObj.FrHead.MsgID
 	respHeader := &highway.ResponseHeader{}
@@ -244,7 +244,7 @@ func (msgObj *HighWayProtocalObject) DeSerializeRsp(rsp *HighwayRespond) error {
 }
 
 //DeSerializeReq Deserialize req
-func (msgObj *HighWayProtocalObject) DeSerializeReq(req *HighwayRequest) error {
+func (msgObj *ProtocolObject) DeSerializeReq(req *Request) error {
 	var err error
 	req.MsgID = msgObj.FrHead.MsgID
 	reqHeader := &highway.RequestHeader{}
@@ -292,7 +292,7 @@ func (msgObj *HighWayProtocalObject) DeSerializeReq(req *HighwayRequest) error {
 }
 
 //SerializeHelloReq Serialize hello req
-func (msgObj *HighWayProtocalObject) SerializeHelloReq(wBuf *bufio.Writer) error {
+func (msgObj *ProtocolObject) SerializeHelloReq(wBuf *bufio.Writer) error {
 	frHead := newHeadFrame(GenerateMsgID())
 	reqHeader := highway.RequestHeader{
 		MsgType:          highway.MsgTypeLogin,
@@ -327,8 +327,8 @@ func (msgObj *HighWayProtocalObject) SerializeHelloReq(wBuf *bufio.Writer) error
 	return nil
 }
 
-//SerializelLoginRsp Serialize hello req
-func (msgObj *HighWayProtocalObject) SerializelLoginRsp(msgID uint64, wBuf *bufio.Writer) error {
+//SerializeLoginRap Serialize hello req
+func (msgObj *ProtocolObject) SerializeLoginRap(msgID uint64, wBuf *bufio.Writer) error {
 	frHead := newHeadFrame(msgID)
 	reqHeader := &highway.ResponseHeader{
 		Flags:      int32(0),

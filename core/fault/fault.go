@@ -8,8 +8,8 @@ import (
 // InjectFault inject fault
 type InjectFault func(model.Fault, *invocation.Invocation) error
 
-// FaultInjectors fault injectors
-var FaultInjectors = make(map[string]InjectFault)
+// Injectors fault injectors
+var Injectors = make(map[string]InjectFault)
 
 //FaultError fault injection error
 type FaultError struct {
@@ -22,7 +22,7 @@ func (e FaultError) Error() string {
 
 // InstallFaultInjectionPlugin install fault injection plugin
 func InstallFaultInjectionPlugin(name string, f InjectFault) {
-	FaultInjectors[name] = f
+	Injectors[name] = f
 }
 
 func init() {
