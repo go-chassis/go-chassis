@@ -9,7 +9,6 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/go-chassis/go-chassis/auth"
 	"github.com/go-chassis/go-chassis/bootstrap"
 	// highway package handles remote procedure calls
 	_ "github.com/go-chassis/go-chassis/client/highway"
@@ -121,7 +120,6 @@ func (c *chassis) initialize() error {
 	if err := runtime.Init(); err != nil {
 		return err
 	}
-	auth.Init()
 
 	err = c.initHandler()
 	if err != nil {
