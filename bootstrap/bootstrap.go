@@ -2,10 +2,15 @@ package bootstrap
 
 import (
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/metrics"
 )
 
-var bootstrapPlugins map[string]BootstrapPlugin
+var bootstrapPlugins = make([]*PluginItem, 0)
+
+//PluginItem include name and plugin implementation
+type PluginItem struct {
+	Name   string
+	Plugin BootstrapPlugin
+}
 
 //BootstrapPlugin is a interface which declares Init method
 type BootstrapPlugin interface {
@@ -20,30 +25,21 @@ func (b BootstrapFunc) Init() error {
 	return b()
 }
 
-//InstallPlugin is a function which installs plugin
+//InstallPlugin is a function which installs plugin,
+// during initiating of go chassis, plugins will be executed
 func InstallPlugin(name string, plugin BootstrapPlugin) {
-	bootstrapPlugins[name] = plugin
+	bootstrapPlugins = append(bootstrapPlugins, &PluginItem{
+		Name:   name,
+		Plugin: plugin,
+	})
 }
 
-//Bootstrap is a function which logs message
+//Bootstrap will boot plugins in orders
 func Bootstrap() {
-	if _, ok := bootstrapPlugins["EE"]; ok {
-
-	} /*else if _, ok := bootstrapPlugins["CE"]; ok {
-		lager.Logger.Info("Bootstrap Huawei Community Edition.")
-	}*/
-
-	for name, p := range bootstrapPlugins {
-		lager.Logger.Info("Bootstrap " + name)
-		if err := p.Init(); err != nil {
-			lager.Logger.Errorf(err, "Failed to init %s.", name)
+	for _, bp := range bootstrapPlugins {
+		lager.Logger.Info("Bootstrap " + bp.Name)
+		if err := bp.Plugin.Init(); err != nil {
+			lager.Logger.Errorf(err, "Failed to init %s.", bp.Name)
 		}
-
 	}
-}
-
-func init() {
-	bootstrapPlugins = make(map[string]BootstrapPlugin)
-
-	InstallPlugin("metric", BootstrapFunc(metrics.Init))
 }

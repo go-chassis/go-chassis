@@ -48,6 +48,7 @@ import (
 	"github.com/go-chassis/go-chassis/config-center"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
 
@@ -148,16 +149,16 @@ func (c *chassis) initialize() error {
 	configcenter.InitConfigCenter()
 	// router needs get configs from config-center when init
 	// so it must init after bootstrap
-	err = router.Init()
-	if err != nil {
+	if err = router.Init(); err != nil {
 		return err
 	}
 
-	err = tracing.Init()
-	if err != nil {
+	if err = tracing.Init(); err != nil {
 		return err
 	}
-
+	if err = metrics.Init(); err != nil {
+		return err
+	}
 	eventlistener.Init()
 	c.Initialized = true
 	return nil
