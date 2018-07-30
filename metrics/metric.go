@@ -5,7 +5,6 @@
 package metrics
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -15,8 +14,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rcrowley/go-metrics"
 )
-
-var errMonitoringFail = errors.New("can not report metrics to CSE monitoring service")
 
 // constants for header parameters
 const (
