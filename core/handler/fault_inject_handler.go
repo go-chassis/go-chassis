@@ -2,15 +2,17 @@ package handler
 
 import (
 	"errors"
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/fault"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"net/http"
 	"strings"
+
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/fault"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+
+	"github.com/valyala/fasthttp"
 )
 
 // constant for fault handler name
@@ -21,14 +23,9 @@ const (
 // FaultHandler handler
 type FaultHandler struct{}
 
-// FaultHandle fault handle gives the object of FaultHandler
-func FaultHandle() Handler {
+// newFaultHandler fault handle gives the object of FaultHandler
+func newFaultHandler() Handler {
 	return &FaultHandler{}
-}
-
-// init is for to register the fault handler
-func init() {
-	RegisterHandler(FaultHandlerName, FaultHandle)
 }
 
 // Name function returns fault-inject string
@@ -44,10 +41,10 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 	faultConfig.Fault = make(map[string]model.Fault)
 	faultConfig.Fault[inv.Protocol] = faultStruct
 
-	faultInject, ok := fault.FaultInjectors[inv.Protocol]
-	r := &invocation.InvocationResponse{}
+	faultInject, ok := fault.Injectors[inv.Protocol]
+	r := &invocation.Response{}
 	if !ok {
-		lager.Logger.Warn("fault injection doesn't support for protocol ", errors.New(inv.Protocol))
+		lager.Logger.Warnf("fault injection doesn't support for protocol ", errors.New(inv.Protocol))
 		r.Err = nil
 		cb(r)
 		return
@@ -78,12 +75,12 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 			r.Status = http.StatusBadRequest
 		}
 
-		r.Err = err
+		r.Err = fault.FaultError{Message: err.Error()}
 		cb(r)
 		return
 	}
 
-	chain.Next(inv, func(r *invocation.InvocationResponse) error {
+	chain.Next(inv, func(r *invocation.Response) error {
 		return cb(r)
 	})
 }
@@ -92,10 +89,10 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 func GetFaultConfig(protocol, microServiceName, schemaID, operationID string) model.Fault {
 
 	faultStruct := model.Fault{}
-	faultStruct.Abort.Percent = archaius.GetAbortPercent(protocol, microServiceName, schemaID, operationID)
-	faultStruct.Abort.HTTPStatus = archaius.GetAbortStatus(protocol, microServiceName, schemaID, operationID)
-	faultStruct.Delay.Percent = archaius.GetDelayPercent(protocol, microServiceName, schemaID, operationID)
-	faultStruct.Delay.FixedDelay = archaius.GetFixedDelay(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Abort.Percent = config.GetAbortPercent(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Abort.HTTPStatus = config.GetAbortStatus(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Delay.Percent = config.GetDelayPercent(protocol, microServiceName, schemaID, operationID)
+	faultStruct.Delay.FixedDelay = config.GetFixedDelay(protocol, microServiceName, schemaID, operationID)
 
 	return faultStruct
 }

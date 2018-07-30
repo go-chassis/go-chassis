@@ -2,8 +2,9 @@ package provider
 
 import (
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/lager"
 	"log"
+
+	"github.com/go-chassis/go-chassis/core/lager"
 )
 
 // plugin name and schemas map
@@ -40,7 +41,7 @@ func RegisterProvider(pluginName string, microserviceName string) Provider {
 // RegisterCustomProvider register customer provider
 func RegisterCustomProvider(microserviceName string, p Provider) {
 	if providers[microserviceName] != nil {
-		lager.Logger.Warnf(nil, "Can not replace Provider,since it is not nil")
+		lager.Logger.Warnf("Can not replace Provider,since it is not nil")
 		return
 	}
 	providers[microserviceName] = p

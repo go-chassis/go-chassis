@@ -18,7 +18,6 @@ package lager
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/common"
 	"io"
 	"os"
 	"path/filepath"
@@ -300,7 +299,7 @@ func initLogRotate(logFilePath string, lag *Lager) {
 			}
 		}()
 	} else {
-		if lag.RollingPolicy == common.Size {
+		if lag.RollingPolicy == RollingPolicySize {
 			go func() {
 				for {
 					LogRotate(filepath.Dir(logFilePath), lag.LogRotateSize, lag.LogBackupCount)

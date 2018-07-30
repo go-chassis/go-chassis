@@ -2,179 +2,59 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"strings"
-	"time"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/selector"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
 	"github.com/cenkalti/backoff"
-)
-
-const (
-	lbPrefix                                 = "cse.loadbalance"
-	propertyStrategyName                     = "strategy.name"
-	propertySessionStickinessRuleTimeout     = "SessionStickinessRule.sessionTimeoutInSeconds"
-	propertySessionStickinessRuleFailedTimes = "SessionStickinessRule.successiveFailedTimes"
-	propertyRetryEnabled                     = "retryEnabled"
-	propertyRetryOnNext                      = "retryOnNext"
-	propertyRetryOnSame                      = "retryOnSame"
-	propertyBackoffKind                      = "backoff.kind"
-	propertyBackoffMinMs                     = "backoff.minMs"
-	propertyBackoffMaxMs                     = "backoff.maxMs"
-
-	backoffJittered = "jittered"
-	backoffConstant = "constant"
-	backoffZero     = "zero"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/session"
 )
 
 // LBHandler loadbalancer handler struct
 type LBHandler struct{}
 
-// StrategyName strategy name
-func StrategyName(i *invocation.Invocation) string {
-
-	global := archaius.GetString(genKey(lbPrefix, propertyStrategyName), loadbalance.StrategyRoundRobin)
-	ms := archaius.GetString(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyStrategyName), global)
-	return ms
-}
-
-// StrategySessionTimeout strategy session timeout
-func StrategySessionTimeout(i *invocation.Invocation) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertySessionStickinessRuleTimeout), 30)
-	ms := archaius.GetInt(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertySessionStickinessRuleTimeout), global)
-
-	return ms
-}
-
-// StrategySuccessiveFailedTimes strategy successive failed times
-func StrategySuccessiveFailedTimes(i *invocation.Invocation) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertySessionStickinessRuleFailedTimes), 5)
-	ms := archaius.GetInt(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertySessionStickinessRuleFailedTimes), global)
-
-	return ms
-}
-
-// retryEnabled retry enabled
-func (lb *LBHandler) retryEnabled(i *invocation.Invocation) bool {
-	global := archaius.GetBool(genKey(lbPrefix, propertyRetryEnabled), false)
-	ms := archaius.GetBool(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyRetryEnabled), global)
-	return ms
-}
-
-func (lb *LBHandler) retryOnNext(i *invocation.Invocation) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertyRetryOnNext), 0)
-	ms := archaius.GetInt(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyRetryOnNext), global)
-	return ms
-}
-
-func (lb *LBHandler) retryOnSame(i *invocation.Invocation) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertyRetryOnSame), 0)
-	ms := archaius.GetInt(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyRetryOnSame), global)
-	return ms
-}
-
-func (lb *LBHandler) backoffKind(i *invocation.Invocation) string {
-	global := archaius.GetString(genKey(lbPrefix, propertyBackoffKind), backoffZero)
-	ms := archaius.GetString(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyBackoffKind), global)
-	return ms
-}
-
-func (lb *LBHandler) backoffMinMs(i *invocation.Invocation) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertyBackoffMinMs), 0)
-	ms := archaius.GetInt(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyBackoffMinMs), global)
-	return ms
-}
-
-func (lb *LBHandler) backoffMaxMs(i *invocation.Invocation) int {
-	global := archaius.GetInt(genKey(lbPrefix, propertyBackoffMaxMs), 0)
-	ms := archaius.GetInt(genMsKey(lbPrefix, i.SourceMicroService, i.MicroServiceName, propertyBackoffMaxMs), global)
-	return ms
-}
-
-func (lb *LBHandler) getBackOff(i *invocation.Invocation) backoff.BackOff {
-	backoffKind := lb.backoffKind(i)
-	backMin := lb.backoffMinMs(i)
-	backMax := lb.backoffMaxMs(i)
-	switch backoffKind {
-	case backoffJittered:
-		return &backoff.ExponentialBackOff{
-			InitialInterval:     time.Duration(backMin) * time.Millisecond,
-			RandomizationFactor: backoff.DefaultRandomizationFactor,
-			Multiplier:          backoff.DefaultMultiplier,
-			MaxInterval:         time.Duration(backMax) * time.Millisecond,
-			MaxElapsedTime:      0,
-			Clock:               backoff.SystemClock,
-		}
-	case backoffConstant:
-		return backoff.NewConstantBackOff(time.Duration(backMin) * time.Millisecond)
-	case backoffZero:
-		return &backoff.ZeroBackOff{}
-	default:
-		lager.Logger.Errorf(nil, "Not support backoff kind: %s, reset to: zero.", backoffKind)
-		return &backoff.ZeroBackOff{}
-	}
-}
-
-func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.ResponseCallBack) (string, error) {
-	var metadata interface{}
-	strategy := i.Strategy
-	var strategyFun selector.Strategy
+func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
+	var strategyFun func() loadbalancer.Strategy
 	var err error
-	if strategy == "" {
-		strategyName := StrategyName(i)
+	if i.Strategy == "" {
+		strategyName := config.GetStrategyName(i.SourceMicroService, i.MicroServiceName)
 		i.Strategy = strategyName
-		strategyFun, err = loadbalance.GetStrategyPlugin(strategyName)
+		strategyFun, err = loadbalancer.GetStrategyPlugin(strategyName)
 		if err != nil {
-			lager.Logger.Errorf(err, selector.LBError{
+			lager.Logger.Errorf(err, loadbalancer.LBError{
 				Message: "Get strategy [" + strategyName + "] failed."}.Error())
 		}
 	} else {
-		strategyFun, err = loadbalance.GetStrategyPlugin(strategy)
+		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			lager.Logger.Errorf(err, selector.LBError{
-				Message: "Get strategy [" + strategy + "] failed."}.Error())
+			lager.Logger.Errorf(err, loadbalancer.LBError{
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error())
 		}
 	}
-	//append filters in config
-	filters := archaius.GetServerListFilters()
-	for _, fName := range filters {
-		f := loadbalance.Filters[fName]
-		if f != nil {
-			i.Filters = append(i.Filters, f)
-			continue
-		}
+	if len(i.Filters) == 0 {
+		i.Filters = config.GetServerListFilters()
 	}
 
-	if i.Strategy == loadbalance.StrategySessionStickiness {
-		metadata = getSessionID(i)
+	var sessionID string
+	if i.Strategy == loadbalancer.StrategySessionStickiness {
+		sessionID = getSessionID(i)
 	}
 
-	if i.Strategy == loadbalance.StrategyLatency {
-		metadata = i.MicroServiceName + "/" + i.Protocol
-	}
-
-	next, err := loadbalance.DefaultSelector.Select(
-		i.MicroServiceName, i.Version,
-		selector.WithStrategy(strategyFun),
-		selector.WithFilter(i.Filters),
-		selector.WithAppID(i.AppID),
-		selector.WithConsumerID(i.SourceServiceID),
-		selector.WithMetadata(metadata))
+	s, err := loadbalancer.BuildStrategy(i.SourceServiceID, i.MicroServiceName, i.Protocol,
+		sessionID, i.Filters, strategyFun(), i.RouteTags)
 	if err != nil {
-		writeErr(err, cb)
 		return "", err
 	}
 
-	ins, err := next()
+	ins, err := s.Pick()
 	if err != nil {
-		lbErr := selector.LBError{Message: err.Error()}
-		writeErr(lbErr, cb)
+		lbErr := loadbalancer.LBError{Message: err.Error()}
 		return "", lbErr
 	}
 
@@ -190,10 +70,10 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 	}
 	ep, ok := ins.EndpointsMap[i.Protocol]
 	if !ok {
-		errStr := "No available instance support [" + i.Protocol + "] protocol, msName: " + i.MicroServiceName
-		lbErr := selector.LBError{Message: errStr}
+		errStr := fmt.Sprintf("No available instance support ["+i.Protocol+"] protocol,"+
+			" msName: "+i.MicroServiceName+" %v", ins.EndpointsMap)
+		lbErr := loadbalancer.LBError{Message: errStr}
 		lager.Logger.Errorf(nil, lbErr.Error())
-		writeErr(lbErr, cb)
 		return "", lbErr
 	}
 	return ep, nil
@@ -201,7 +81,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, cb invocation.Respons
 
 // Handle to handle the load balancing
 func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	if !lb.retryEnabled(i) {
+	if !config.RetryEnabled(i.SourceMicroService, i.MicroServiceName) {
 		lb.handleWithNoRetry(chain, i, cb)
 	} else {
 		lb.handleWithRetry(chain, i, cb)
@@ -209,71 +89,70 @@ func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocatio
 }
 
 func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	ep, err := lb.getEndpoint(i, cb)
+	ep, err := lb.getEndpoint(i)
 	if err != nil {
 		writeErr(err, cb)
 		return
 	}
 
 	i.Endpoint = ep
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		return cb(r)
-	})
+	chain.Next(i, cb)
 }
 
 func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	retryOnSame := lb.retryOnSame(i)
-	retryOnNext := lb.retryOnNext(i)
+	retryOnSame := config.GetRetryOnSame(i.SourceMicroService, i.MicroServiceName)
+	retryOnNext := config.GetRetryOnNext(i.SourceMicroService, i.MicroServiceName)
 	handlerIndex := chain.HandlerIndex
+	var invResp *invocation.Response
 	for j := 0; j < retryOnNext+1; j++ {
-
 		// exchange and retry on the next server
-		ep, err := lb.getEndpoint(i, cb)
+		ep, err := lb.getEndpoint(i)
 		if err != nil {
+			// if get endpoint failed, no need to retry
 			writeErr(err, cb)
 			return
 		}
 		// retry on the same server
-		lbBackoff := lb.getBackOff(i)
+		lbBackoff := config.GetBackOff(i.SourceMicroService, i.MicroServiceName)
 		callTimes := 0
 		operation := func() error {
 			if callTimes == retryOnSame+1 {
-				return backoff.Permanent(errors.New("Retry time expires"))
+				return backoff.Permanent(errors.New("retry times expires"))
 			}
 			callTimes++
 			i.Endpoint = ep
 			var respErr error
-			var callbackErr error
 			chain.HandlerIndex = handlerIndex
-			chain.Next(i, func(r *invocation.InvocationResponse) error {
-				respErr = r.Err
-				callbackErr = cb(r)
-				return callbackErr
+			chain.Next(i, func(r *invocation.Response) error {
+				if r != nil {
+					invResp = r
+					respErr = invResp.Err
+					return invResp.Err
+				}
+				return nil
 			})
-			if respErr != nil {
-				return respErr
-			}
-			if callbackErr != nil {
-				return callbackErr
-			}
-			return nil
+			return respErr
 		}
 		if err = backoff.Retry(operation, lbBackoff); err == nil {
-			return
+			break
 		}
 	}
+	if invResp == nil {
+		invResp = &invocation.Response{}
+	}
+	cb(invResp)
 }
 
-// Name returns loadbalance string
+// Name returns loadbalancer string
 func (lb *LBHandler) Name() string {
-	return "loadbalance"
+	return "loadbalancer"
 }
 
 func newLBHandler() Handler {
 	return &LBHandler{}
 }
 
-func getSessionID(i *invocation.Invocation) interface{} {
+func getSessionID(i *invocation.Invocation) string {
 	var metadata interface{}
 
 	switch i.Args.(type) {
@@ -283,16 +162,21 @@ func getSessionID(i *invocation.Invocation) interface{} {
 		if value != "" {
 			metadata = value
 		}
-	case *fasthttp.Request:
-		req := i.Args.(*fasthttp.Request)
-		value := string(req.Header.Peek("Cookie"))
-		cookieKey := strings.Split(value, "=")
-		if value != "" && (cookieKey[0] == common.SessionID || cookieKey[0] == common.LBSessionID) {
-			metadata = cookieKey[1]
+	default:
+		value := session.GetContextMetadata(i.Ctx, common.LBSessionID)
+		if value != "" {
+			cookieKey := strings.Split(string(value), "=")
+			if len(cookieKey) > 1 {
+				metadata = cookieKey[1]
+			}
 		}
 	}
 
-	return metadata
+	if metadata == nil {
+		metadata = ""
+	}
+
+	return metadata.(string)
 }
 
 func genKey(s ...string) string {

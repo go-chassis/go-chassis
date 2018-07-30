@@ -3,27 +3,22 @@ package endpoint
 import (
 	"errors"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
 	"strings"
+
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
 )
 
 // GetEndpointFromServiceCenter is used to get the endpoint based on appID, microservice and version
 func GetEndpointFromServiceCenter(appID, microService, version string) (string, error) {
-	var (
-		endPoint string
-	)
+	var endPoint string
 
-	if registry.RegistryService == nil {
-		err := errors.New("RegistryService is not initialized")
-		lager.Logger.Error("GetEndpointFromServiceCenter cannot proceed", err)
-		return "", err
-	}
-
-	instances, err := registry.RegistryService.FindMicroServiceInstances(config.SelfServiceID, appID, microService, version)
+	tags := utiltags.NewDefaultTag(version, appID)
+	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(runtime.ServiceID, microService, tags)
 	if err != nil {
-		lager.Logger.Errorf(err, "Get service instance failed, for key: %s:%s:%s",
+		lager.Logger.Warnf("Get service instance failed, for key: %s:%s:%s",
 			appID, microService, version)
 		return "", err
 	}

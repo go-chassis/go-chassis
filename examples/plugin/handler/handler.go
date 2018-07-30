@@ -1,15 +1,15 @@
 package handler
 
 import (
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
 )
 
-// constants of bizkeeper fake and loadbalance fake
+// constants of bizkeeper fake and loadbalancer fake
 const (
 	//BIZKEEPERFAKE & LOADBALANCEFAKE are variables of type string
 	BIZKEEPERFAKE   = "bizkeeper-fake"
-	LOADBALANCEFAKE = "loadbalance-fake"
+	LOADBALANCEFAKE = "loadbalancer-fake"
 )
 
 // BizkeeperFakeHandler fake handler for bizkeeper
@@ -24,7 +24,7 @@ func (bizkeeperfhandler *BizkeeperFakeHandler) Name() string {
 func (bizkeeperfhandler *BizkeeperFakeHandler) Handle(c *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	// 调用Chain.Next(i *invocation.Invocation, f invocation.ResponseCallBack)方法，
 	// 执行Chain的下一个handler
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		return cb(r)
 	})
 }
@@ -46,7 +46,7 @@ func (lbfakehandler *LoadbalanceHandlerFake) Name() string {
 func (lbfakehandler *LoadbalanceHandlerFake) Handle(c *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	// 调用Chain.Next(i *invocation.Invocation, f invocation.ResponseCallBack)方法，
 	// 执行Chain的下一个handler
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		return cb(r)
 	})
 }

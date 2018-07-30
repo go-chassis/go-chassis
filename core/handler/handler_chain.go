@@ -2,15 +2,15 @@ package handler
 
 import (
 	"errors"
-
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
 	"strings"
+
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
 )
 
-var errEmptyChain = errors.New("Chain can not be empty")
+var errEmptyChain = errors.New("chain can not be empty")
 
 // ChainMap just concurrent read
 var ChainMap = make(map[string]*Chain)
@@ -32,7 +32,7 @@ func (c *Chain) AddHandler(h Handler) {
 func (c *Chain) Next(i *invocation.Invocation, f invocation.ResponseCallBack) {
 	index := c.HandlerIndex
 	if index >= len(c.Handlers) {
-		r := &invocation.InvocationResponse{
+		r := &invocation.Response{
 			Err: nil,
 		}
 		f(r)
@@ -44,7 +44,6 @@ func (c *Chain) Next(i *invocation.Invocation, f invocation.ResponseCallBack) {
 
 // Reset for to reset the handler index
 func (c *Chain) Reset() {
-	lager.Logger.Debugf("reset chain")
 	c.HandlerIndex = 0
 }
 
@@ -107,7 +106,7 @@ func CreateChain(serviceType string, chainName string, handlerNames ...string) (
 	}
 
 	if len(c.Handlers) == 0 {
-		lager.Logger.Warn("Chain "+chainName+" is Empty", errEmptyChain)
+		lager.Logger.Warnf("Chain "+chainName+" is Empty", errEmptyChain)
 		return c, nil
 	}
 	return c, nil
@@ -131,7 +130,7 @@ func GetChain(serviceType string, name string) (*Chain, error) {
 	c := &Chain{}
 	origin, ok := ChainMap[serviceType+name]
 	if !ok {
-		return nil, fmt.Errorf("get chain fail, chain: %s do not exist", serviceType+name)
+		return nil, fmt.Errorf("get chain [%s] failed", serviceType+name)
 	}
 	*c = *origin
 	return c, nil

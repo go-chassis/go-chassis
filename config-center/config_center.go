@@ -8,21 +8,16 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ServiceComb/go-archaius"
-	// go-archaius package is imported for to initialize the config-center configurations
-	_ "github.com/ServiceComb/go-archaius"
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/configcenter-source"
-	"github.com/ServiceComb/go-cc-client"
-	"github.com/ServiceComb/go-cc-client/member-discovery"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/endpoint-discovery"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	chassisTLS "github.com/ServiceComb/go-chassis/core/tls"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
+	"github.com/go-chassis/go-chassis/core/lager"
+	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 
-	"github.com/ServiceComb/go-chassis/bootstrap"
-	"github.com/ServiceComb/go-chassis/core/archaius"
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-archaius/sources/configcenter-source"
 )
 
 const (
@@ -30,7 +25,12 @@ const (
 	Name          = "configcenter"
 	maxValue      = 256
 	emptyDimeInfo = "Issue with regular expression or exceeded the max length"
+	//DefaultConfigCenter is config center
+	DefaultConfigCenter = "config_center"
 )
+
+//ErrRefreshMode means config is mis used
+var ErrRefreshMode = errors.New("refreshMode must be 0 or 1")
 
 // InitConfigCenter initialize config center
 func InitConfigCenter() error {
@@ -76,7 +76,7 @@ func InitConfigCenter() error {
 		return err
 	}
 
-	lager.Logger.Warnf(nil, "config center init success")
+	lager.Logger.Warnf("config center init success")
 	return nil
 }
 
@@ -85,7 +85,7 @@ func isConfigCenter() (string, error) {
 	if configCenterURL == "" {
 		ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
 		if err != nil {
-			lager.Logger.Errorf(err, "empty config center endpoint, please provide the config center endpoint")
+			lager.Logger.Warnf("empty config center endpoint in service center %s", err.Error())
 			return "", err
 		}
 
@@ -104,7 +104,7 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 		lager.Logger.Error("Error occurred while parsing config center Server Uri", err)
 		return nil, err
 	}
-	if ccURL.Scheme == "http" {
+	if ccURL.Scheme == common.HTTP {
 		return nil, nil
 	}
 
@@ -116,7 +116,7 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 		}
 		return nil, err
 	}
-	lager.Logger.Warnf(nil, "%s TLS mode, verify peer: %t, cipher plugin: %s.",
+	lager.Logger.Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
 		sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 
 	return tlsConfig, nil
@@ -161,56 +161,41 @@ func getUniqueIDForDimInfo() string {
 }
 
 func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bool, tlsConfig *tls.Config) error {
-	var err error
 
-	if (config.GlobalDefinition.Cse.Config.Client.RefreshMode != 0) &&
-		(config.GlobalDefinition.Cse.Config.Client.RefreshMode != 1) {
-		err := errors.New(client.RefreshModeError)
-		lager.Logger.Error(client.RefreshModeError, err)
+	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
+	if refreshMode != 0 && refreshMode != 1 {
+		lager.Logger.Error(ErrRefreshMode.Error(), ErrRefreshMode)
+		return ErrRefreshMode
+	}
+
+	clientType := config.GlobalDefinition.Cse.Config.Client.Type
+	if clientType == "" {
+		clientType = DefaultConfigCenter
+
+	}
+	configCenterSource, err := configcentersource.InitConfigCenter(ccEndpoint, dimensionInfo, tenantName, enableSSL, tlsConfig, refreshMode,
+		config.GlobalDefinition.Cse.Config.Client.RefreshInterval, config.GlobalDefinition.Cse.Config.Client.Autodiscovery, clientType)
+
+	if err != nil {
 		return err
 	}
-
-	memDiscovery := memberdiscovery.NewConfiCenterInit(tlsConfig, tenantName, enableSSL)
-
-	configCenters := strings.Split(ccEndpoint, ",")
-	cCenters := make([]string, 0)
-	for _, value := range configCenters {
-		value = strings.Replace(value, " ", "", -1)
-		cCenters = append(cCenters, value)
-	}
-
-	memDiscovery.ConfigurationInit(cCenters)
-
-	if enbledAutoDiscovery() {
-		refreshError := memDiscovery.RefreshMembers()
-		if refreshError != nil {
-			lager.Logger.Error(client.ConfigServerMemRefreshError, refreshError)
-			return errors.New(client.ConfigServerMemRefreshError)
-		}
-	}
-
-	configCenterSource := configcentersource.NewConfigCenterSource(memDiscovery,
-		dimensionInfo, tlsConfig, tenantName, config.GlobalDefinition.Cse.Config.Client.RefreshMode,
-		config.GlobalDefinition.Cse.Config.Client.RefreshInterval, enableSSL)
 
 	err = archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
 	if err != nil {
 		lager.Logger.Error("failed to do add source operation!!", err)
 		return err
 	}
-
-	// Get the whole configuration
-	//config := factory.GetConfigurations()
-	//logger.Info("init config center %+v", config)
-
 	eventHandler := EventListener{
 		Name:    "EventHandler",
 		Factory: archaius.DefaultConf.ConfigFactory,
 	}
 
-	memberdiscovery.MemberDiscoveryService = memDiscovery
-
 	archaius.DefaultConf.ConfigFactory.RegisterListener(eventHandler, "a*")
+
+	if err := refreshGlobalConfig(); err != nil {
+		lager.Logger.Error("failed to refresh global config for lb and cb", err)
+		return err
+	}
 	return nil
 }
 
@@ -226,14 +211,10 @@ func (e EventListener) Event(event *core.Event) {
 	lager.Logger.Infof("config value %s | %s", event.Key, value)
 }
 
-func enbledAutoDiscovery() bool {
-	if config.GlobalDefinition.Cse.Config.Client.Autodiscovery {
-		return true
+func refreshGlobalConfig() error {
+	err := config.ReadHystrixFromArchaius()
+	if err != nil {
+		return err
 	}
-
-	return false
-}
-func init() {
-	bootstrap.InstallPlugin("config_center",
-		bootstrap.BootstrapFunc(InitConfigCenter))
+	return config.ReadLBFromArchaius()
 }

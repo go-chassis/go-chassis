@@ -1,28 +1,31 @@
 package servicecenter_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	"github.com/ServiceComb/go-sc-client/model"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	"github.com/go-chassis/go-sc-client/model"
+	"github.com/hashicorp/go-version"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCacheManager_AutoSync(t *testing.T) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test cache.go")
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
-	t.Log("持有id", config.SelfServiceID)
+	t.Log("持有id", runtime.ServiceID)
 	t.Log("同步sc节点")
 	time.Sleep(time.Second * 1)
 
@@ -34,17 +37,17 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		Level:       "FRONT",
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
+		EndpointsMap: map[string]string{"rest": "10.146.207.197:5080"},
 		InstanceID:   "event1",
 		HostName:     "event_test",
 		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
 	}
-	sid, instanceID, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	sid, instanceID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
 	assert.Equal(t, "event1", instanceID)
 	time.Sleep(time.Second * 1)
-	instances, err := registry.RegistryService.FindMicroServiceInstances(sid, "default", "Server", "0.1")
+	tags := utiltags.NewDefaultTag("0.1", "default")
+	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "Server", tags)
 	assert.NotZero(t, len(instances))
 	assert.NoError(t, err)
 	var ok = false
@@ -62,7 +65,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	var exist = false
 	pro := make(map[string]string)
 	pro["attr1"] = "b"
-	err = registry.RegistryService.UpdateMicroServiceInstanceProperties(sid, "event1", pro)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceProperties(sid, "event1", pro)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -73,7 +76,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_UPDATE操作")
 
 	exist = false
-	err = registry.RegistryService.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSIinstanceDown)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSIinstanceDown)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -84,7 +87,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_DELETE操作")
 
 	exist = false
-	err = registry.RegistryService.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSInstanceUP)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSInstanceUP)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -95,7 +98,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_DELETE操作")
 
 	exist = false
-	err = registry.RegistryService.UnregisterMicroServiceInstance(sid, "event1")
+	err = registry.DefaultRegistrator.UnRegisterMicroServiceInstance(sid, "event1")
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -106,7 +109,21 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("删除实例感知成功")
 	t.Log("测试EVT_DELETE操作")
 
-	t.Log("持有id", config.SelfServiceID)
+	t.Log("持有id", runtime.ServiceID)
 	t.Log("watch测试完成")
+
+}
+
+func TestServiceDiscovery_AutoSync(t *testing.T) {
+	v1, _ := version.NewVersion("1.2.1")
+	v2, _ := version.NewVersion("1.10.1")
+	v3, _ := version.NewVersion("1.21.1")
+	v4, err := version.NewVersion("0.0.0")
+	v5, err := version.NewVersion("0.0.1")
+	assert.NoError(t, err)
+	assert.True(t, v1.LessThan(v2))
+	assert.True(t, v1.LessThan(v3))
+	assert.True(t, v4.LessThan(v1))
+	assert.True(t, v4.LessThan(v5))
 
 }

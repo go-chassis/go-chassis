@@ -1,0 +1,28 @@
+---
+cse:
+  isolation:
+    Consumer:
+      timeout:
+        enabled: true
+      timeoutInMilliseconds: 10
+      maxConcurrentRequests: 100
+    Provider:
+      timeout:
+        enabled: false
+      timeoutInMilliseconds: 20
+      maxConcurrentRequests: 200
+  circuitBreaker:
+    Consumer:
+      enabled: true
+      forceOpen: false
+      forceClose: false
+      sleepWindowInMilliseconds: 10000
+      requestVolumeThreshold: 20
+      errorThresholdPercentage: 50
+  fallback:
+    Consumer:
+      enabled: true
+      maxConcurrentRequests: 20
+  fallbackpolicy:
+    Consumer:
+      policy: throwexception

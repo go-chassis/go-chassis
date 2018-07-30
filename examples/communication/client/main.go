@@ -1,22 +1,22 @@
 package main
 
 import (
+	"context"
 	"log"
 
-	"github.com/ServiceComb/go-chassis"
-	"github.com/ServiceComb/go-chassis/core"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/examples/schemas"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"golang.org/x/net/context"
+	"github.com/go-chassis/go-chassis"
+	"github.com/go-chassis/go-chassis/core"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/examples/schemas"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
+//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/communication/client/
 func main() {
 	// just init client
-	chassis.RegisterSchema("highway", &schemas.HelloServer{}, serverOption.WithSchemaID("HelloService"))
+	chassis.RegisterSchema("highway", &schemas.HelloServer{}, server.WithSchemaID("HelloService"))
 	if err := chassis.Init(); err != nil {
 		lager.Logger.Error("Init failed.", err)
 		return
@@ -26,7 +26,7 @@ func main() {
 	// new response object
 	reply := &helloworld.HelloReply{}
 	// create context with metadata
-	ctx := metadata.NewContext(context.Background(), map[string]string{
+	ctx := context.WithValue(context.Background(), common.ContextHeaderKey{}, map[string]string{
 		"X-User": "tianxiaoliang",
 	})
 	err := invoker.Invoke(ctx, "SimpleServer", "HelloService", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, reply, core.WithEndpoint("127.0.0.1:9901"), core.WithProtocol("highway"))

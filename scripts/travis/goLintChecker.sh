@@ -1,4 +1,4 @@
-diff -u <(echo -n) <(golint ./... | grep -v vendor | grep -v third_party | grep -v stutters | grep -v _test)
+diff -u <(echo -n) <(golint ./... | grep -v vendor | grep -v third_party | grep -v stutters | grep -v _test | grep -v examples)
 if [ $? == 0 ]; then
 	echo "No GoLint warnings found"
 	exit 0

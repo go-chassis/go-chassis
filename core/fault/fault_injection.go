@@ -3,9 +3,10 @@ package fault
 import (
 	"errors"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/invocation"
 	"time"
+
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/invocation"
 )
 
 var (
@@ -105,7 +106,8 @@ func ValidateFaultDelay(fault *model.Fault) error {
 
 //ApplyFaultInjection abort/delay
 func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configuredPercent int, faultType string) error {
-	key := inv.MicroServiceName + "-" + inv.Version + "-" + inv.AppID
+	key := inv.MicroServiceName + inv.RouteTags.String()
+
 	if oldPercent, ok := percenStore[key]; ok && configuredPercent != oldPercent {
 		resetFaultKeyCount(key)
 	}

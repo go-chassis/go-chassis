@@ -1,8 +1,8 @@
 package registry
 
 import (
-	client "github.com/ServiceComb/go-sc-client"
 	cache "github.com/patrickmn/go-cache"
+	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 const (
@@ -10,8 +10,8 @@ const (
 	DefaultExpireTime = 0
 )
 
-//MicroserviceInstanceCache key: ServiceName:Version:AppID, value: []instance
-var MicroserviceInstanceCache *cache.Cache
+//MicroserviceInstanceIndex key: ServiceName, value: []instance
+var MicroserviceInstanceIndex CacheIndex
 
 //SelfInstancesCache key: serviceID, value: []instanceID
 var SelfInstancesCache *cache.Cache
@@ -25,21 +25,28 @@ var SchemaInterfaceIndexedCache *cache.Cache
 //SchemaServiceIndexedCache key: schema service name value: []*microservice
 var SchemaServiceIndexedCache *cache.Cache
 
-//CacheManager cache manager struct
-type CacheManager struct {
-	registryClient *client.RegistryClient
-}
+func initCache() *cache.Cache { return cache.New(DefaultExpireTime, 0) }
 
-func initCache() *cache.Cache {
-	var value *cache.Cache
-	value = cache.New(DefaultExpireTime, 0)
-	return value
-}
-
-func init() {
-	MicroserviceInstanceCache = initCache()
+func enableRegistryCache() {
+	MicroserviceInstanceIndex = newCacheIndex()
 	SelfInstancesCache = initCache()
 	IPIndexedCache = initCache()
 	SchemaServiceIndexedCache = initCache()
 	SchemaInterfaceIndexedCache = initCache()
 }
+
+// CacheIndex defines interface for cache and index used by registry
+type CacheIndex interface {
+	GetIndexTags() []string
+	SetIndexTags(tags sets.String)
+	Get(k string, tags map[string]string) (interface{}, bool)
+	Set(k string, x interface{})
+	Items() map[string]*cache.Cache
+	Delete(k string)
+}
+
+// SetNoIndexCache reset microservie instance index to no index cache
+func SetNoIndexCache() { MicroserviceInstanceIndex = newNoIndexCache() }
+
+// newCacheIndex returns index implemention according to config
+func newCacheIndex() CacheIndex { return newIndexCache() }

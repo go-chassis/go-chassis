@@ -1,0 +1,3 @@
+router:
+  infra: pilot # router rule comes from where
+  address: http://istio-pilot.istio-system:15010

@@ -1,8 +1,9 @@
 package qpslimiter
 
 import (
-	"github.com/ServiceComb/go-chassis/core/invocation"
 	"strings"
+
+	"github.com/go-chassis/go-chassis/core/invocation"
 )
 
 // OperationMeta operation meta struct

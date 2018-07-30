@@ -1,10 +1,11 @@
 package rest_test
 
 import (
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/stretchr/testify/assert"
 )
 
 var req *rest.Request
@@ -22,8 +23,13 @@ func TestNewRestRequest(t *testing.T) {
 	assert.Equal(t, uri, "cse://example/:id")
 
 	req.SetBody([]byte("hello"))
-	req.SetHeader("Content-Type", "application/json")
-	value := req.GetHeader("Content-Type")
+
+	req.SetHeader("a", "1")
+	value := req.GetHeader("a")
+	assert.Equal(t, value, "1")
+
+	req.SetContentType("application/json")
+	value = req.GetContentType()
 	assert.Equal(t, value, "application/json")
 
 	req.SetMethod("POST")
@@ -35,24 +41,31 @@ func TestNewRestRequest(t *testing.T) {
 	assert.Empty(t, body)
 
 	header := resp.GetHeader()
-	assert.NotEmpty(t, header)
+	assert.Empty(t, header)
 
 	_ = resp.GetStatusCode()
 
-	var c1 *fasthttp.Cookie
-	c1 = new(fasthttp.Cookie)
-	c1.SetKey("test")
+	c1 := new(http.Cookie)
+	c1.Name = "test"
 
 	sessionIDValue := "abcdefg"
-	c1.SetValue(sessionIDValue)
+	c1.Value = sessionIDValue
 
 	resp.SetCookie(c1)
 	val := resp.GetCookie("test")
-	assert.Equal(t, c1.Cookie(), val)
+	assert.Equal(t, c1.Value, string(val))
 
 	req, err = rest.NewRequest("GET", "cse://hello")
 	assert.NoError(t, err)
-	_ = req.Copy()
+
+	testHeaderKey := "hello"
+	testHeaderValue := "go-chassis"
+	req.Req.Header.Add(testHeaderKey, testHeaderValue)
+	req.Req.AddCookie(c1)
+	newRequest := req.Copy()
+	assert.Equal(t, newRequest.Req.Header.Get(testHeaderKey), testHeaderValue)
+	assert.Equal(t, newRequest.GetCookie(c1.Name), c1.Value)
+
 	req.Close()
 	resp.Close()
 }

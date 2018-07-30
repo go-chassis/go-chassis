@@ -7,14 +7,23 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	secCommon "github.com/ServiceComb/go-chassis/security/common"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	secCommon "github.com/go-chassis/go-chassis/security/common"
+
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 var errSSLConfigNotExist = errors.New("No SSL config")
-var useDefaultSslTag = sets.NewString("registry.Consumer.", "configcenter.Consumer.", "monitor.Consumer.")
+var useDefaultSslTag = sets.NewString(
+	"registry.Consumer.",
+	"configcenter.Consumer.",
+	"monitor.Consumer.",
+	"serviceDiscovery.Consumer.",
+	"registrator.Consumer.",
+	"contractDiscovery.Consumer.",
+	"router.Consumer",
+)
 
 func hasDefaultSslTag(tag string) bool {
 	if len(tag) == 0 {
@@ -189,4 +198,22 @@ func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *sec
 // IsSSLConfigNotExist check the status of ssl configurations
 func IsSSLConfigNotExist(e error) bool {
 	return e == errSSLConfigNotExist
+}
+
+// GetTLSConfig returns tls config from scheme and type
+func GetTLSConfig(scheme, t string) (*tls.Config, error) {
+	var tlsConfig *tls.Config
+	secure := scheme == common.HTTPS
+	if secure {
+		sslTag := t + "." + common.Consumer
+		tmpTLSConfig, _, err := GetTLSConfigByService(t, "", common.Consumer)
+		if err != nil {
+			if IsSSLConfigNotExist(err) {
+				return nil, fmt.Errorf("%s tls mode, but no ssl config", sslTag)
+			}
+			return nil, fmt.Errorf("Load %s TLS config failed", sslTag)
+		}
+		tlsConfig = tmpTLSConfig
+	}
+	return tlsConfig, nil
 }

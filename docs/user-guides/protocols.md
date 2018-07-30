@@ -1,0 +1,37 @@
+# Protocol Servers
+
+## Introduction
+you can extend your own protocol in go chassis, currently support rest(http) and highway
+
+## Configurations
+
+**protocols.{protocol_server_name}**
+> *(required, string)* the name of the protocol server, it must be protocol name or consist of protocol name and a suffix.
+ the suffix and protocol is connect with hyphen "-" like <protocol>-{suffix}
+
+**protocols.{protocol_server_name}.advertiseAddress**
+> *(optional, string)* server advertise address, if you use registry like service center, 
+this address will be registered in registry, so that other service can discover your address
+
+**protocols.{protocol_server_name}.listenAddress**
+> *(required, string)* server listen address, recommend to use 0.0.0.0:{port}, 
+then go chassis will automatically generate advertise address, it is convenience to run in container
+ because the internal IP is not sure until container runs
+
+
+
+
+
+## Example
+this config will launch 2 http server and 1 highway server
+
+```
+cse:
+  protocols:
+    rest:
+      listenAddress: 0.0.0.0:5000
+    rest-admin:
+      listenAddress: 0.0.0.0:5001
+    highway:
+      listenAddress: 0.0.0.0:6000
+```

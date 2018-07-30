@@ -1,19 +1,19 @@
 package common
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
 
-	"crypto/tls"
-	"crypto/x509"
-	"encoding/pem"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/util/string"
-	"github.com/ServiceComb/go-chassis/security"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/util/string"
+	"github.com/go-chassis/go-chassis/security"
 	//this import used for plain cipher
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 )
 
 //SSLConfig struct stores the necessary info for SSL configuration

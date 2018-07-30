@@ -3,15 +3,14 @@ package handler
 import (
 	"time"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/session"
-	clientOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/client"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/session"
 )
 
 // TransportHandler transport handler
@@ -22,7 +21,7 @@ func (th *TransportHandler) Name() string {
 	return "transport"
 }
 func errNotNill(err error, cb invocation.ResponseCallBack) {
-	r := &invocation.InvocationResponse{
+	r := &invocation.Response{
 		Err: err,
 	}
 	lager.Logger.Error("GetClient got Error", err)
@@ -37,70 +36,86 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 		errNotNill(err, cb)
 	}
 
-	req := c.NewRequest(i.MicroServiceName, i.SchemaID, i.OperationID, i.Args)
-	r := &invocation.InvocationResponse{}
+	r := &invocation.Response{}
 
 	//taking the time elapsed to check for latency aware strategy
 	timeBefore := time.Now()
-	err = c.Call(i.Ctx, i.Endpoint, req, i.Reply,
-		clientOption.WithContentType(i.ContentType),
-		clientOption.WithUrlPath(i.URLPathFormat),
-		clientOption.WithMethodType(i.MethodType))
+	err = c.Call(i.Ctx, i.Endpoint, i, i.Reply)
 
 	if err != nil {
 		r.Err = err
 		lager.Logger.Errorf(err, "Call got Error")
-		if i.Protocol == common.ProtocolRest && i.Strategy == loadbalance.StrategySessionStickiness {
-			var reply *rest.Response
-			reply = i.Reply.(*rest.Response)
-			if i.Reply != nil && req.Arg != nil {
-				reply = i.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(i, StrategySessionTimeout(i), reply.GetResponse(), req.GetRequest())
-			}
+		if i.Strategy == loadbalancer.StrategySessionStickiness {
+			ProcessSpecialProtocol(i)
+			ProcessSuccessiveFailure(i)
 
-			cookie := session.GetSessionCookie(reply.GetResponse())
-			if cookie != "" {
-				loadbalance.IncreaseSuccessiveFailureCount(cookie)
-				errCount := loadbalance.GetSuccessiveFailureCount(cookie)
-				//loadbalance.IncreaseSuccessiveFailureCount(i.Endpoint)
-				if errCount == StrategySuccessiveFailedTimes(i) {
-					session.DeletingKeySuccessiveFailure(reply.GetResponse())
-					loadbalance.DeleteSuccessiveFailureCount(cookie)
-				}
-			}
 		}
 
 		cb(r)
 		return
 	}
 
-	if i.Strategy == loadbalance.StrategyLatency {
+	if i.Strategy == loadbalancer.StrategyLatency {
 		timeAfter := time.Since(timeBefore)
-		loadbalance.SetLatency(timeAfter, i.Endpoint, req.MicroServiceName+"/"+i.Protocol)
+		loadbalancer.SetLatency(timeAfter, i.Endpoint, i.MicroServiceName, i.RouteTags, i.Protocol)
+	}
+
+	if i.Strategy == loadbalancer.StrategySessionStickiness {
+		ProcessSpecialProtocol(i)
 	}
 
 	r.Result = i.Reply
-	ProcessSpecialProtocol(i, req)
 
 	cb(r)
 }
 
 //ProcessSpecialProtocol handles special logic for protocol
-func ProcessSpecialProtocol(inv *invocation.Invocation, req *microClient.Request) {
+func ProcessSpecialProtocol(inv *invocation.Invocation) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
-		if inv.Strategy == loadbalance.StrategySessionStickiness {
-			var reply *rest.Response
-			if inv.Reply != nil && inv.Args != nil {
-				reply = inv.Reply.(*rest.Response)
-				req := req.Arg.(*rest.Request)
-				session.CheckForSessionID(inv, StrategySessionTimeout(inv), reply.GetResponse(), req.GetRequest())
-			}
+		var reply *rest.Response
+		if inv.Reply != nil && inv.Args != nil {
+			reply = inv.Reply.(*rest.Response)
+			req := inv.Args.(*rest.Request)
+			session.SaveSessionIDFromHTTP(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
+		}
+	case common.ProtocolHighway:
+		inv.Ctx = session.SaveSessionIDFromContext(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
+	}
+}
 
+//ProcessSuccessiveFailure handles special logic for protocol
+func ProcessSuccessiveFailure(i *invocation.Invocation) {
+	var cookie string
+	var reply *rest.Response
+
+	switch i.Protocol {
+	case common.ProtocolRest:
+		if i.Reply != nil && i.Args != nil {
+			reply = i.Reply.(*rest.Response)
+		}
+		cookie = session.GetSessionCookie(nil, reply.GetResponse())
+		if cookie != "" {
+			loadbalancer.IncreaseSuccessiveFailureCount(cookie)
+			errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
+			if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
+				session.DeletingKeySuccessiveFailure(reply.GetResponse())
+				loadbalancer.DeleteSuccessiveFailureCount(cookie)
+			}
+		}
+	default:
+		cookie = session.GetSessionCookie(i.Ctx, nil)
+		if cookie != "" {
+			loadbalancer.IncreaseSuccessiveFailureCount(cookie)
+			errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
+			if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
+				session.DeletingKeySuccessiveFailure(nil)
+				loadbalancer.DeleteSuccessiveFailureCount(cookie)
+			}
 		}
 	}
 }
+
 func newTransportHandler() Handler {
 	return &TransportHandler{}
 }

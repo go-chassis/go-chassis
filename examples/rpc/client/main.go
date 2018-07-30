@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/ServiceComb/go-chassis"
-	_ "github.com/ServiceComb/go-chassis/bootstrap"
-	"github.com/ServiceComb/go-chassis/core"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"golang.org/x/net/context"
+	"context"
+
+	"github.com/go-chassis/go-chassis"
+	_ "github.com/go-chassis/go-chassis/bootstrap"
+	"github.com/go-chassis/go-chassis/core"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
+//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rpc/client/
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {

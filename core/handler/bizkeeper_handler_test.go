@@ -1,49 +1,31 @@
 package handler_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
-	"path/filepath"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/stretchr/testify/assert"
 )
 
-func initialize() {
-	os.Setenv("CHASSIS_HOME", "/tmp/")
-	chassisConf := filepath.Join("/tmp/", "conf")
-	os.MkdirAll(chassisConf, 0600)
-	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
-	os.Create(filepath.Join(chassisConf, "microservice.yaml"))
-}
+func TestCBInit(t *testing.T) {
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
-func TestNewHystrixCmd(t *testing.T) {
-	t.Log("testing hystrix command with various parameter")
-	cmd := handler.NewHystrixCmd("vmall", common.Consumer, "Carts", "cartService", "get")
-	assert.Equal(t, "vmall.Consumer.Carts", cmd)
-	cmd = handler.NewHystrixCmd("", common.Consumer, "Carts", "cartService", "get")
-	assert.Equal(t, "Consumer.Carts", cmd)
-	cmd = handler.NewHystrixCmd("", common.Consumer, "Carts", "cartService", "")
-	assert.Equal(t, "Consumer.Carts", cmd)
-	cmd = handler.NewHystrixCmd("", common.Consumer, "Carts", "", "")
-	assert.Equal(t, "Consumer.Carts", cmd)
-	cmd = handler.NewHystrixCmd("", common.Consumer, "", "", "")
-	assert.Equal(t, "Consumer", cmd)
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	config.Init()
+	archaius.Init()
 }
 
 func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 	t.Log("testing bizkeeper consumer handler")
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	initialize()
-	config.Init()
-	archaius.Init()
 
 	c := handler.Chain{}
 	c.AddHandler(&handler.BizKeeperConsumerHandler{})
@@ -58,7 +40,7 @@ func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
@@ -66,10 +48,6 @@ func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 }
 func TestBizKeeperProviderHandler_Handle(t *testing.T) {
 	t.Log("testing bizkeeper provider handler")
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-
-	config.Init()
-	archaius.Init()
 
 	c := handler.Chain{}
 	c.AddHandler(&handler.BizKeeperProviderHandler{})
@@ -84,7 +62,7 @@ func TestBizKeeperProviderHandler_Handle(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
@@ -100,4 +78,25 @@ func TestBizKeeperHandler_Names(t *testing.T) {
 	conName := bizCon.Name()
 	assert.Equal(t, "bizkeeper-consumer", conName)
 
+}
+
+func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
+	b.Log("benchmark for bizkeeper consumer handler")
+	c := handler.Chain{}
+	c.AddHandler(&handler.BizKeeperConsumerHandler{})
+
+	inv := &invocation.Invocation{
+		MicroServiceName: "fakeService",
+		SchemaID:         "schema",
+		OperationID:      "SayHello",
+		Args:             &helloworld.HelloRequest{Name: "peter"},
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		c.Next(inv, func(r *invocation.Response) error {
+			assert.NoError(b, r.Err)
+			return r.Err
+		})
+		c.Reset()
+	}
 }

@@ -1,13 +1,13 @@
 package handler_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/provider"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/provider"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -34,9 +34,12 @@ func newProviderHandler() handler.Handler {
 func TestRegisterHandlerFunc(t *testing.T) {
 	t.Log("testing registration of a custom  handler")
 	config.Init()
-	e := handler.RegisterHandler("fake", newProviderHandler)
+	e := handler.RegisterHandler("fake3", newProviderHandler)
 	assert.NoError(t, e)
 	t.Log("testing registration of a custom handler against a name which is already registered")
+	e = handler.RegisterHandler("fake3", newProviderHandler)
+	assert.Equal(t, handler.ErrDuplicatedHandler, e)
+
 	e = handler.RegisterHandler(handler.Transport, newProviderHandler)
 	assert.Error(t, e)
 }
@@ -44,13 +47,13 @@ func TestRegisterHandlerFunc(t *testing.T) {
 func TestCreateHandler(t *testing.T) {
 	t.Log("testing creation of handler")
 	config.Init()
-	e := handler.RegisterHandler("fake", newProviderHandler)
+	e := handler.RegisterHandler("fake2", newProviderHandler)
 	assert.NoError(t, e)
 	e = handler.RegisterHandler(handler.Transport, newProviderHandler)
 	assert.Error(t, e)
 	_, err := handler.CreateHandler("123")
 	assert.Error(t, err)
-	handler, err := handler.CreateHandler("fake")
+	handler, err := handler.CreateHandler("fake3")
 	assert.NoError(t, err)
 	t.Log(handler)
 }
@@ -77,14 +80,14 @@ func TestGetChain(t *testing.T) {
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 	handler.RegisterHandler(BIZKEEPERFAKE, createBizkeeperFakeHandler)
-	handler.RegisterHandler("loadbalance-fake", createBizkeeperFakeHandler)
+	handler.RegisterHandler("loadbalancer-fake", createBizkeeperFakeHandler)
 	handler.CreateChains(common.Provider, config.GlobalDefinition.Cse.Handler.Chain.Provider)
 	handler.CreateChains(common.Consumer, config.GlobalDefinition.Cse.Handler.Chain.Consumer)
 	c, err := handler.GetChain(common.Consumer, "custom")
@@ -123,15 +126,15 @@ func TestGetChain(t *testing.T) {
 }
 func BenchmarkPool_GetChain(b *testing.B) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "client"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.Init()
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
-		"default": "bizkeeper-fake,loadbalance-fake",
+		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 

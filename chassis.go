@@ -9,37 +9,46 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/ServiceComb/go-chassis/auth"
-	"github.com/ServiceComb/go-chassis/bootstrap"
+	"github.com/go-chassis/go-chassis/bootstrap"
 	// highway package handles remote procedure calls
-	_ "github.com/ServiceComb/go-chassis/client/highway"
+	_ "github.com/go-chassis/go-chassis/client/highway"
+	_ "github.com/go-chassis/go-chassis/core/router/cse"
+	_ "github.com/go-chassis/go-chassis/core/router/pilot"
 	// rest package handle rest apis
-	_ "github.com/ServiceComb/go-chassis/client/rest"
+	_ "github.com/go-chassis/go-chassis/client/rest"
 	// archaius package to get the conguration info fron diffent configuration sources
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/registry"
 	// file package for file based registration
-	_ "github.com/ServiceComb/go-chassis/core/registry/file"
+	_ "github.com/go-chassis/go-chassis/core/registry/file"
 	// servicecenter package handles service center api calls
-	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-	"github.com/ServiceComb/go-chassis/core/route"
-	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/core/tracing"
-	"github.com/ServiceComb/go-chassis/eventlistener"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	// pilot package handles istio pilot SDS api calls
+	_ "github.com/go-chassis/go-chassis/core/registry/pilot"
+	"github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/core/tracing"
+	"github.com/go-chassis/go-chassis/eventlistener"
+	// metric plugin
+	_ "github.com/go-chassis/go-chassis/metrics/prom"
 	// aes package handles security related plugins
-	_ "github.com/ServiceComb/go-chassis/security/plugins/aes"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	_ "github.com/ServiceComb/go-chassis/server/restful"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
+	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/server/restful"
 	// highway package register the highway server plugin
-	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server/highway"
-	// tcp package handles transport related things
-	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
+	_ "github.com/go-chassis/go-chassis/server/highway"
+	// import config center plugins
+	_ "github.com/go-chassis/go-cc-client/apollo-client"
+	_ "github.com/go-chassis/go-cc-client/configcenter-client"
+	"github.com/go-chassis/go-chassis/config-center"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/metrics"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
 
 var goChassis *chassis
@@ -60,9 +69,9 @@ type chassis struct {
 
 // Schema struct for to represent schema info
 type Schema struct {
-	protocol string
-	schema   interface{}
-	opts     []serverOption.RegisterOption
+	serverName string
+	schema     interface{}
+	opts       []server.RegisterOption
 }
 
 func (c *chassis) initChains(chainType string) error {
@@ -108,9 +117,9 @@ func (c *chassis) initialize() error {
 		lager.Logger.Error("Failed to initialize conf,", err)
 		return err
 	}
-	router.Init(config.GetRouterConfig().Destinations, config.GetRouterConfig().SourceTemplates)
-
-	auth.Init()
+	if err := runtime.Init(); err != nil {
+		return err
+	}
 
 	err = c.initHandler()
 	if err != nil {
@@ -128,28 +137,36 @@ func (c *chassis) initialize() error {
 		if err != nil {
 			return err
 		}
-		if err := loadbalance.Enable(); err != nil {
+		if err := loadbalancer.Enable(); err != nil {
 			return err
 		}
 	}
 
 	bootstrap.Bootstrap()
 
-	err = tracing.Init()
-	if err != nil {
+	configcenter.InitConfigCenter()
+	// router needs get configs from config-center when init
+	// so it must init after bootstrap
+	if err = router.Init(); err != nil {
 		return err
 	}
 
+	if err = tracing.Init(); err != nil {
+		return err
+	}
+	if err = metrics.Init(); err != nil {
+		return err
+	}
 	eventlistener.Init()
 	c.Initialized = true
 	return nil
 }
 
-func (c *chassis) registerSchema(protocol string, structPtr interface{}, opts ...serverOption.RegisterOption) {
+func (c *chassis) registerSchema(serverName string, structPtr interface{}, opts ...server.RegisterOption) {
 	schema := &Schema{
-		protocol: protocol,
-		schema:   structPtr,
-		opts:     opts,
+		serverName: serverName,
+		schema:     structPtr,
+		opts:       opts,
 	}
 	c.mu.Lock()
 	c.schemas = append(c.schemas, schema)
@@ -165,7 +182,7 @@ func (c *chassis) start() error {
 		if v == nil {
 			continue
 		}
-		s, err := server.GetServer(v.protocol)
+		s, err := server.GetServer(v.serverName)
 		if err != nil {
 			return err
 		}
@@ -181,10 +198,10 @@ func (c *chassis) start() error {
 	return nil
 }
 
-//RegisterSchema Register a API service to specific protocol
+//RegisterSchema Register a API service to specific server by name
 //You must register API first before Call Init
-func RegisterSchema(protocol string, structPtr interface{}, opts ...serverOption.RegisterOption) {
-	goChassis.registerSchema(protocol, structPtr, opts...)
+func RegisterSchema(serverName string, structPtr interface{}, opts ...server.RegisterOption) {
+	goChassis.registerSchema(serverName, structPtr, opts...)
 }
 
 //SetDefaultConsumerChains your custom chain map for Consumer,if there is no config, this default chain will take affect
@@ -203,7 +220,7 @@ func Run() {
 	if err != nil {
 		lager.Logger.Error("run chassis fail:", err)
 	}
-	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+	if !config.GetRegistratorDisable() {
 		//Register instance after Server started
 		if err := registry.DoRegister(); err != nil {
 			lager.Logger.Error("register instance fail:", err)
@@ -215,7 +232,7 @@ func Run() {
 	select {
 	case s := <-c:
 		lager.Logger.Info("got os signal " + s.String())
-	case err := <-server.ServerErr:
+	case err := <-server.ErrRuntime:
 		lager.Logger.Info("got Server Error " + err.Error())
 	}
 	for name, s := range server.GetServers() {
@@ -226,7 +243,7 @@ func Run() {
 		}
 		lager.Logger.Info(name + " server stop success")
 	}
-	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+	if !config.GetRegistratorDisable() {
 		if err = server.UnRegistrySelfInstances(); err != nil {
 			lager.Logger.Errorf(err, "servers failed to unregister")
 		}
@@ -263,6 +280,6 @@ func Init() error {
 		log.Println("Init chassis fail:", err)
 		return err
 	}
-	lager.Logger.Infof("Init chassis success")
+	lager.Logger.Infof("Init chassis success, Version is %s", metadata.SdkVersion)
 	return nil
 }

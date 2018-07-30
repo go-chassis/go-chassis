@@ -1,116 +1,38 @@
 package server_test
 
 import (
-	"crypto/tls"
 	"errors"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/provider"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/core/registry/mock"
-	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/core/transport"
-	_ "github.com/ServiceComb/go-chassis/server/restful"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	microTransport "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport"
-	_ "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/registry/mock"
+	"github.com/go-chassis/go-chassis/core/server"
+	_ "github.com/go-chassis/go-chassis/server/restful"
+	cache "github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestWithOptions(t *testing.T) {
 	t.Log("setting various parameter to Server Option ")
-	var cmap map[string]codec.Codec = make(map[string]codec.Codec)
-	var val codec.Codec
 
-	var o *serverOption.Options = new(serverOption.Options)
-	o.ID = "1"
+	var o = new(server.Options)
 	o.ChainName = "fakechain"
-
-	cmap["firstcodec"] = val
-
-	var t1 microTransport.Transport
-
-	var p provider.Provider
 
 	var md = make(map[string]string)
 	md["abc"] = "abc"
 
-	var t2 = time.Second
-
-	var t3 = new(tls.Config)
-
-	c1 := serverOption.WithCodecs(cmap)
-	c1(o)
-	assert.Equal(t, cmap, o.Codecs)
-
-	c1 = serverOption.Name("abc")
-	c1(o)
-	assert.Equal(t, "abc", o.Name)
-
-	c1 = serverOption.ID("id")
-	c1(o)
-	assert.Equal(t, "id", o.ID)
-
-	c1 = serverOption.Version("version")
-	c1(o)
-	assert.Equal(t, "version", o.Version)
-
-	c1 = serverOption.Address("address")
-	c1(o)
-	assert.Equal(t, "address", o.Address)
-
-	c1 = serverOption.Advertise("advertise")
-	c1(o)
-	assert.Equal(t, "advertise", o.Advertise)
-
-	c1 = serverOption.ChainName("chainname")
-	c1(o)
-	assert.Equal(t, "chainname", o.ChainName)
-
-	c1 = serverOption.Transport(t1)
-	c1(o)
-	assert.Equal(t, t1, o.Transport)
-
-	c1 = serverOption.Provider(p)
-	c1(o)
-	assert.Equal(t, p, o.Provider)
-
-	c1 = serverOption.Metadata(md)
-	c1(o)
-	assert.Equal(t, md, o.Metadata)
-
-	c1 = serverOption.TLSConfig(t3)
-	c1(o)
-	assert.Equal(t, t3, o.TLSConfig)
-
-	c1 = serverOption.RegisterTTL(t2)
-	c1(o)
-	assert.Equal(t, t2, o.RegisterTTL)
-
 	t.Log("setting various parameter to server register Option")
-	var rego *serverOption.RegisterOptions = new(serverOption.RegisterOptions)
+	var rego *server.RegisterOptions = new(server.RegisterOptions)
 
-	c2 := serverOption.WithMicroServiceName("ms")
-	c2(rego)
-	assert.Equal(t, "ms", rego.MicroServiceName)
-
-	c2 = serverOption.WithSchemaID("schemaid")
+	c2 := server.WithSchemaID("schemaid")
 	c2(rego)
 	assert.Equal(t, "schemaid", rego.SchemaID)
 
-	c2 = serverOption.WithGrpcRegister("grpcreg")
-	c2(rego)
-	assert.Equal(t, "grpcreg", rego.GrpcRegister)
-
-	c2 = serverOption.WithServiceProvider(p)
-	c2(rego)
-	assert.Equal(t, p, rego.Provider)
 }
 
 const MockError = "movk error"
@@ -118,7 +40,7 @@ const MockError = "movk error"
 func TestSrcMgr(t *testing.T) {
 
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	//config.Init()
 
 	err := config.Init()
@@ -128,6 +50,7 @@ func TestSrcMgr(t *testing.T) {
 
 	var arr = []string{"127.0.0.1", "hgfghfff"}
 
+	registry.SelfInstancesCache = cache.New(0, 0)
 	registry.SelfInstancesCache.Set("abc", arr, time.Second*30)
 	/*a:=func(...transport.Option) transport.Transport{
 		//var t transport.Transport
@@ -144,9 +67,9 @@ func TestSrcMgr(t *testing.T) {
 	}
 	server.InstallPlugin("rest",f)*/
 
-	testRegistryObj := new(mock.RegistryMock)
-	registry.RegistryService = testRegistryObj
-	testRegistryObj.On("UnregisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(nil)
+	testRegistryObj := new(mock.RegistratorMock)
+	registry.DefaultRegistrator = testRegistryObj
+	testRegistryObj.On("UnRegisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(nil)
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -195,7 +118,7 @@ func TestSrcMgr(t *testing.T) {
 func TestSrcMgrErr(t *testing.T) {
 
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	//config.Init()
 
 	err := config.Init()
@@ -204,7 +127,7 @@ func TestSrcMgrErr(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	var arr = []string{"127.0.0.1", "hgfghfff"}
-
+	registry.SelfInstancesCache = cache.New(0, 0)
 	registry.SelfInstancesCache.Set("abc", arr, time.Second*30)
 	registry.SelfInstancesCache.Set("def", "def", time.Second*30)
 
@@ -214,18 +137,10 @@ func TestSrcMgrErr(t *testing.T) {
 	}
 	server.InstallPlugin("protocol",f)*/
 
-	a := func(...microTransport.Option) microTransport.Transport {
-		var tp microTransport.Transport
-		//tp :=tcp.NewTransport()
-		return tp
-	}
-
-	transport.InstallPlugin("abc", a)
-
-	testRegistryObj := new(mock.RegistryMock)
-	registry.RegistryService = testRegistryObj
+	testRegistryObj := new(mock.RegistratorMock)
+	registry.DefaultRegistrator = testRegistryObj
 	//testRegistryObj.On("UnregisterMicroServiceInstance","microServiceID", "microServiceInstanceID").Return(nil)
-	testRegistryObj.On("UnregisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
+	testRegistryObj.On("UnRegisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""

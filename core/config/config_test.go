@@ -4,9 +4,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -16,11 +17,10 @@ func check(e error) {
 		panic(e)
 	}
 }
-
 func TestInit(t *testing.T) {
 	t.Log("testing config initialization")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/ServiceComb/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	//config.Init()
 
 	err := config.Init()
@@ -52,14 +52,14 @@ cse:
     Consumer:
       enabled: true
       forceOpen: false
-      forceClose: true
+      forceClosed: true
       sleepWindowInMilliseconds: 10000
       requestVolumeThreshold: 20
       errorThresholdPercentage: 50
       Server:
         enabled: true
         forceOpen: false
-        forceClose: true
+        forceClosed: true
         sleepWindowInMilliseconds: 10000
         requestVolumeThreshold: 20
         errorThresholdPercentage: 50
@@ -67,7 +67,7 @@ cse:
       Server:
         enabled: true
         forceOpen: false
-        forceClose: true
+        forceClosed: true
         sleepWindowInMilliseconds: 10000
         requestVolumeThreshold: 20
         errorThresholdPercentage: 50
@@ -88,6 +88,7 @@ cse:
 	assert.Equal(t, true, c.HystrixConfig.IsolationProperties.Consumer.TimeoutEnable.Enabled)
 	assert.Equal(t, "throwexception", c.HystrixConfig.FallbackPolicyProperties.Consumer.Policy)
 	assert.Equal(t, 50, c.HystrixConfig.CircuitBreakerProperties.Consumer.AnyService["Server"].ErrorThresholdPercentage)
+	assert.NotEqual(t, nil, config.GetHystrixConfig())
 }
 
 func TestGetLoadBalancing(t *testing.T) {
@@ -96,8 +97,8 @@ cse:
   loadbalance: 
     TargetService: 
       backoff: 
-        MaxMs: 400
-        MinMs: 200
+        maxMs: 400
+        minMs: 200
         kind: constant
       retryEnabled: false
       retryOnNext: 2
@@ -106,8 +107,8 @@ cse:
       strategy: 
         name: WeightedResponse
     backoff: 
-      MaxMs: 400
-      MinMs: 200
+      maxMs: 400
+      minMs: 200
       kind: constant
     retryEnabled: false
     retryOnNext: 2
@@ -121,9 +122,25 @@ cse:
 	err := yaml.Unmarshal(lbBytes, lbConfig)
 	assert.NoError(t, err)
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.Strategy["name"])
-	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
+	assert.Equal(t, loadbalancer.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
 	t.Log(lbConfig.Prefix.LBConfig.AnyService)
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
 
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.Strategy["name"])
+	assert.NotEqual(t, nil, config.GetLoadBalancing())
+}
+
+func TestInit4(t *testing.T) {
+	t.Log("EnvCSEEndpoint has highest priority")
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	//config.Init()
+	os.Setenv(common.EnvCSEEndpoint, "123")
+	os.Setenv(common.CseRegistryAddress, "1243234234")
+	err := config.Init()
+	assert.NoError(t, err)
+
+	config.Init()
+	assert.Equal(t, "123", config.GlobalDefinition.Cse.Service.Registry.Address)
+	assert.Equal(t, "123", config.GlobalDefinition.Cse.Config.Client.ServerURI)
 }

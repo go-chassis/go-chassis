@@ -1,11 +1,11 @@
 package session_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/session"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
+	"context"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/session"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 	"time"
 )
@@ -20,15 +20,25 @@ func TestSessionStorage(t *testing.T) {
 	assert.Equal(t, false, ok)
 	assert.Equal(t, nil, addr)
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	cookieValue := session.GetSessionCookie(nil)
+	cookieValue := session.GetSessionCookie(nil, nil)
 	assert.Equal(t, "", cookieValue)
-	var resp *fasthttp.Response
-	resp = new(fasthttp.Response)
-	cookieValue = session.GetSessionCookie(resp)
+
+	resp := &http.Response{
+		Header: http.Header{},
+	}
+	cookieValue = session.GetSessionCookie(nil, resp)
 	assert.Equal(t, "", cookieValue)
 	session.DeletingKeySuccessiveFailure(nil)
 	session.DeletingKeySuccessiveFailure(resp)
 	cookieValue = session.GetSessionFromResp("abc", resp)
 	assert.Equal(t, "", cookieValue)
-	session.CheckForSessionID(new(invocation.Invocation), 1, resp, new(fasthttp.Request))
+	session.SaveSessionIDFromHTTP("", 1, resp, new(http.Request))
+
+	ctx := context.Background()
+	ctx = session.SetContextMetadata(ctx, "key", "value")
+	val := session.GetContextMetadata(ctx, "key")
+	assert.Equal(t, val, "value")
+	ctx = session.SaveSessionIDFromContext(ctx, "", 1)
+	val = session.GetContextMetadata(ctx, "go-chassisLB")
+	assert.NotEqual(t, val, "")
 }

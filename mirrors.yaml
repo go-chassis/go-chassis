@@ -1,0 +1,19 @@
+repos:
+- original: golang.org/x/crypto
+  repo: github.com/golang/crypto
+  vcs: git
+- original: golang.org/x/crypto/ssh/terminal
+  repo: github.com/golang/crypto/ssh/terminal
+  vcs: git
+- original: golang.org/x/time
+  repo: github.com/golang/time
+  vcs: git
+- original: golang.org/x/time/rate
+  repo: github.com/golang/time/rate
+  vcs: git
+- original: https://golang.org/x/tools
+  repo: https://github.com/golang/tools
+  vcs: git
+- original: https://google.golang.org/genproto
+  repo: https://github.com/google/go-genproto
+  vcs: git

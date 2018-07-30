@@ -1,32 +1,31 @@
 package rest_test
 
 import (
-	"errors"
+	"context"
 	"log"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	_ "github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/examples/schemas"
-	_ "github.com/ServiceComb/go-chassis/server/restful"
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	serverOption "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/transport/tcp"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/client"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	_ "github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/examples/schemas"
+	_ "github.com/go-chassis/go-chassis/server/restful"
+
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
 )
 
 var addrRest = "127.0.0.1:8039"
 
 func initEnv() {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("CHASSIS_HOME"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
@@ -38,11 +37,8 @@ func initEnv() {
 
 func TestNewRestClient_Call(t *testing.T) {
 	initEnv()
-	msName := "Server"
+	config.SelfServiceName = "Server"
 	schema := "schema2"
-
-	trServer := tcp.NewTransport()
-	trClient := tcp.NewTransport()
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -56,38 +52,31 @@ func TestNewRestClient_Call(t *testing.T) {
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
 	s := f(
-		serverOption.Transport(trServer),
-		serverOption.Address(addrRest),
-		serverOption.ChainName("default"))
+		server.Options{
+			Address:   addrRest,
+			ChainName: "default",
+		})
 	_, err = s.Register(&schemas.RestFulHello{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(
-		microClient.Transport(trClient),
-		microClient.ContentType("application/protobuf"))
+	c := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
 
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server/instances")
-	req := &microClient.Request{
-		ID:               1,
+	req := &invocation.Invocation{
 		MicroServiceName: "Server",
-		Struct:           "",
-		Method:           "instances",
-		Arg:              arg,
+		Args:             arg,
 		Metadata:         nil,
 	}
 
 	name := c.String()
 	log.Println("protocol name:", name)
-	options := c.Options()
-	log.Println("options are :", options)
 	err = c.Call(context.TODO(), addrRest, req, reply)
 	if err != nil {
 		assert.Error(t, err)
@@ -101,7 +90,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	cancel()
 
 	err = c.Call(ctx, addrRest, req, reply)
-	expectedError := errors.New("Request Cancelled")
+	expectedError := rest.ErrCanceled
 	if assert.Error(t, err) {
 		assert.Equal(t, expectedError, err)
 	}
@@ -110,11 +99,8 @@ func TestNewRestClient_Call(t *testing.T) {
 func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	t.Log("Testing NewRestClient function for parse duration failed scenario")
 	initEnv()
-	msName := "Server1"
+	config.SelfServiceName = "Server1"
 	schema := "schema2"
-
-	trServer := tcp.NewTransport()
-	trClient := tcp.NewTransport()
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -124,39 +110,31 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Transport(trServer),
-		serverOption.Address("127.0.0.1:8040"),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   "127.0.0.1:8040",
+		ChainName: "default",
+	})
 	_, err = s.Register(&schemas.RestFulHello{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(
-		microClient.Transport(trClient),
-		microClient.ContentType("application/protobuf"))
+	c := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
 
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "cse://Server1/instances")
-	req := &microClient.Request{
-		ID:               1,
+	req := &invocation.Invocation{
 		MicroServiceName: "Server1",
-		Struct:           "",
-		Method:           "instances",
-		Arg:              arg,
+		Args:             arg,
 		Metadata:         nil,
 	}
 
 	name := c.String()
 	log.Println("protocol name:", name)
-	options := c.Options()
-	log.Println("options are :", options)
 	err = c.Call(context.TODO(), "127.0.0.1:8040", req, reply)
 	log.Println("hellp reply", reply)
 	if err != nil {
@@ -170,11 +148,8 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	t.Log("Testing NewRestClient call function for error scenarios")
 	initEnv()
-	msName := "Server2"
+	config.SelfServiceName = "Server2"
 	schema := "schema2"
-
-	trServer := tcp.NewTransport()
-	trClient := tcp.NewTransport()
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -184,43 +159,31 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
-	s := f(
-		serverOption.Transport(trServer),
-		serverOption.Address("127.0.0.1:8092"),
-		serverOption.ChainName("default"))
+	s := f(server.Options{
+		Address:   "127.0.0.1:8092",
+		ChainName: "default",
+	})
 	_, err = s.Register(&schemas.RestFulHello{},
-		serverOption.WithMicroServiceName(msName),
-		serverOption.WithSchemaID(schema))
+		server.WithSchemaID(schema))
 	assert.NoError(t, err)
 	err = s.Start()
 	assert.NoError(t, err)
 	fail := make(map[string]bool)
 	fail["something"] = false
-	c := rest.NewRestClient(
-		microClient.Transport(trClient),
-		microClient.WithFailure(fail),
-		microClient.PoolSize(3))
-	c.Init(microClient.ContentType("application/json"))
+	c := rest.NewRestClient(client.Options{
+		Failure:  fail,
+		PoolSize: 3,
+	})
 	reply := rest.NewResponse()
-	req := &microClient.Request{
-		ID:               1,
-		MicroServiceName: "Server2",
-		Struct:           "",
-		Method:           "instances",
-		Arg:              "",
+	req := &invocation.Invocation{
+		MicroServiceName: "Server",
+		Args:             "",
 		Metadata:         nil,
 	}
 
 	name := c.String()
 	log.Println("protocol name:", name)
-	options := c.Options()
-	log.Println("options are :", options)
-	err = c.Call(context.TODO(), "127.0.0.1:8092", req, reply, microClient.WithContentType("application/protobuf"))
+	err = c.Call(context.TODO(), "127.0.0.1:8092", req, reply)
 	log.Println("hellp reply", reply)
 	assert.Error(t, err)
-}
-func TestNewRequest(t *testing.T) {
-	var cl *rest.Client = new(rest.Client)
-	i := cl.NewRequest("service", "schemaid", "operationID", "arg")
-	assert.Equal(t, i.Method, "operationID")
 }

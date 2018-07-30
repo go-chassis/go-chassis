@@ -1,11 +1,11 @@
 package tracing_test
 
 import (
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/tracing"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/tracing"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRestClientHeaderWriter(t *testing.T) {
@@ -23,12 +23,12 @@ func TestRestClientHeaderWriter(t *testing.T) {
 	assert.Equal(t, val, restClientHeader.GetHeader(key))
 }
 
-func TestFasthttpHeaderCarrier(t *testing.T) {
+func TestHeaderCarrier(t *testing.T) {
 	key := "x-b3-traceid"
 	val := "abc"
-	carrier := &tracing.FasthttpHeaderCarrier{&fasthttp.RequestHeader{}}
-	carrier.Set(key, val)
-	assert.Equal(t, val, string(carrier.Peek(key)))
+	headerMap := make(map[string]string)
+	headerMap[key] = val
+	carrier := &tracing.HeaderCarrier{Header: headerMap}
 
 	containsZipkinHeader := false
 	handlerFunc := func(k, v string) error {

@@ -4,14 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
+	"os"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/config/schema"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -24,21 +25,17 @@ var lbConfig *model.LBWrapper
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
 
-// PassLagerDefinition is having the information about loging
-var PassLagerDefinition *model.PassLagerCfg
+// PaasLagerDefinition is having the information about loging
+var PaasLagerDefinition *model.PassLagerCfg
 
-//HystricConfig is having info about isolation, circuit breaker, fallback properities of the micro service
-var HystricConfig *model.HystrixConfigWrapper
+// RouterDefinition is route rule config
+var RouterDefinition *model.RouterConfig
 
-// Stage gives the information of environment stage
-var Stage string
+//HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
+var HystrixConfig *model.HystrixConfigWrapper
 
 // NodeIP gives the information of node ip
 var NodeIP string
-
-// SelfServiceID 单进程多微服务根本没法记录依赖关系，因为一个进程里有多个微服务，你在调用别的微服务时到底该怎么添加依赖关系？
-//只能随意赋值个id
-var SelfServiceID string
 
 // SelfServiceName is self micro service name
 var SelfServiceName string
@@ -50,14 +47,7 @@ var SelfMetadata map[string]string
 var SelfVersion string
 
 // ErrNoName is used to represent the service name missing error
-var ErrNoName = errors.New("Microservice name is missing in description file")
-
-// constant environment keys service center, config center, monitor server addresses
-const (
-	CseRegistryAddress     = "CSE_REGISTRY_ADDR"
-	CseConfigCenterAddress = "CSE_CONFIG_CENTER_ADDR"
-	CseMonitorServer       = "CSE_MONITOR_SERVER_ADDR"
-)
+var ErrNoName = errors.New("micro service name is missing in description file")
 
 // parse unmarshal configurations on respective structure
 func parse() error {
@@ -65,12 +55,12 @@ func parse() error {
 	if err != nil {
 		return err
 	}
-	err = readLBConfigFile()
+	err = ReadLBFromArchaius()
 	if err != nil {
 		return err
 	}
 
-	err = readHystrixConfigFile()
+	err = ReadHystrixFromArchaius()
 	if err != nil {
 		return err
 	}
@@ -83,22 +73,37 @@ func parse() error {
 	populateConfigCenterAddress()
 	populateServiceRegistryAddress()
 	populateMonitorServerAddress()
+	populateServiceEnvironment()
+	populateServiceName()
+	populateVersion()
+	populateTenant()
+
 	return nil
 }
 
 // populateServiceRegistryAddress populate service registry address
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
-	registryAddrFromEnv := archaius.GetString(CseRegistryAddress, "")
+	registryAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+	if registryAddrFromEnv == "" {
+		registryAddrFromEnv = archaius.GetString(common.CseRegistryAddress, "")
+	}
 	if registryAddrFromEnv != "" {
+		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
+		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
+		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
 	}
+
 }
 
 // populateConfigCenterAddress populate config center address
 func populateConfigCenterAddress() {
 	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := archaius.GetString(CseConfigCenterAddress, "")
+	configCenterAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+	if configCenterAddrFromEnv == "" {
+		configCenterAddrFromEnv = archaius.GetString(common.CseConfigCenterAddress, "")
+	}
 	if configCenterAddrFromEnv != "" {
 		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
 	}
@@ -107,9 +112,37 @@ func populateConfigCenterAddress() {
 // populateMonitorServerAddress populate monitor server address
 func populateMonitorServerAddress() {
 	//Monitor Center Address , higher priority for environment variable
-	monitorServerAddrFromEnv := archaius.GetString(CseMonitorServer, "")
+	monitorServerAddrFromEnv := archaius.GetString(common.CseMonitorServer, "")
 	if monitorServerAddrFromEnv != "" {
 		GlobalDefinition.Cse.Monitor.Client.ServerURI = monitorServerAddrFromEnv
+	}
+}
+
+// populateServiceEnvironment populate service environment
+func populateServiceEnvironment() {
+	if e := archaius.GetString(common.Env, ""); e != "" {
+		MicroserviceDefinition.ServiceDescription.Environment = e
+	}
+}
+
+// populateServiceName populate service name
+func populateServiceName() {
+	if e := archaius.GetString(common.ServiceName, ""); e != "" {
+		MicroserviceDefinition.ServiceDescription.Name = e
+	}
+}
+
+// populateVersion populate version
+func populateVersion() {
+	if e := archaius.GetString(common.Version, ""); e != "" {
+		MicroserviceDefinition.ServiceDescription.Version = e
+	}
+}
+
+// populateTenant populate tenant
+func populateTenant() {
+	if GlobalDefinition.Cse.Service.Registry.Tenant == "" {
+		GlobalDefinition.Cse.Service.Registry.Tenant = common.DefaultApp
 	}
 }
 
@@ -125,8 +158,10 @@ func readGlobalConfigFile() error {
 	return nil
 }
 
-// readGlobalConfigFile for to unmarshal the global config file(chassis.yaml) information
-func readLBConfigFile() error {
+// ReadLBFromArchaius for to unmarshal the global config file(chassis.yaml) information
+func ReadLBFromArchaius() error {
+	lbMutex.Lock()
+	defer lbMutex.Unlock()
 	lbDef := model.LBWrapper{}
 	err := archaius.UnmarshalConfig(&lbDef)
 	if err != nil {
@@ -137,31 +172,51 @@ func readLBConfigFile() error {
 	return nil
 }
 
-// readPassLagerConfigFile is unmarshal the paas lager configuration file(lager.yaml)
-func readPassLagerConfigFile(lagerFile string) error {
-	passLagerDef := model.PassLagerCfg{}
-	yamlFile, err := ioutil.ReadFile(lagerFile)
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(yamlFile, &passLagerDef)
-	if err != nil {
-		log.Printf("Unmarshal: %v", err)
-	}
-	PassLagerDefinition = &passLagerDef
-
-	return nil
+type pathError struct {
+	Path string
+	Err  error
 }
 
-// readHystrixConfigFile is unmarshal hystrix configuration file(circuit_breaker.yaml)
-func readHystrixConfigFile() error {
+func (e *pathError) Error() string { return e.Path + ": " + e.Err.Error() }
+
+// parsePaasLagerConfig unmarshals the paas lager configuration file(lager.yaml)
+func parsePaasLagerConfig(file string) error {
+	PaasLagerDefinition = &model.PassLagerCfg{}
+	err := unmarshalYamlFile(file, PaasLagerDefinition)
+	if err != nil && !os.IsNotExist(err) {
+		return &pathError{Path: file, Err: err}
+	}
+	return err
+}
+
+// parseRouterConfig is unmarshal the router configuration file(router.yaml)
+func parseRouterConfig(file string) error {
+	RouterDefinition = &model.RouterConfig{}
+	err := unmarshalYamlFile(file, RouterDefinition)
+	if err != nil && !os.IsNotExist(err) {
+		return &pathError{Path: file, Err: err}
+	}
+	return err
+}
+
+func unmarshalYamlFile(file string, target interface{}) error {
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	return yaml.Unmarshal(content, target)
+}
+
+// ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
+func ReadHystrixFromArchaius() error {
+	cbMutex.RLock()
+	defer cbMutex.RUnlock()
 	hystrixCnf := model.HystrixConfigWrapper{}
 	err := archaius.UnmarshalConfig(&hystrixCnf)
 	if err != nil {
 		return err
 	}
-	HystricConfig = &hystrixCnf
-
+	HystrixConfig = &hystrixCnf
 	return nil
 }
 
@@ -179,7 +234,7 @@ func readMicroserviceConfigFiles() error {
 		}
 		msName := microserviceNames[0]
 		msDefPath := fileutil.MicroserviceDefinition(msName)
-		lager.Logger.Warnf(nil, fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
+		lager.Logger.Warnf(fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
 		data, err := ioutil.ReadFile(msDefPath)
 		if err != nil {
 			return fmt.Errorf("Missing microservice description file: %s", err.Error())
@@ -210,33 +265,48 @@ func ReadMicroserviceConfigFromBytes(data []byte) error {
 
 //GetLoadBalancing return lb config
 func GetLoadBalancing() *model.LoadBalancing {
-	return lbConfig.Prefix.LBConfig
+	if lbConfig != nil {
+		return lbConfig.Prefix.LBConfig
+	}
+	return nil
+}
+
+//GetHystrixConfig return cb config
+func GetHystrixConfig() *model.HystrixConfig {
+	return HystrixConfig.HystrixConfig
 }
 
 // Init is initialize the configuration directory, lager, archaius, route rule, and schema
 func Init() error {
-
-	lagerFile := fileutil.PassLagerDefinition()
-
-	err := readPassLagerConfigFile(lagerFile)
+	err := parsePaasLagerConfig(fileutil.PaasLagerDefinition())
+	//initialize log in any case
 	if err != nil {
-		log.Println("WARN:lager.yaml does not exist,use the default configuration")
+		lager.Initialize("", "", "", "", true, 1, 10, 7)
+		if os.IsNotExist(err) {
+			lager.Logger.Infof("[%s] not exist", fileutil.PaasLagerDefinition())
+		} else {
+			return err
+		}
+	} else {
+		lager.Initialize(PaasLagerDefinition.Writers, PaasLagerDefinition.LoggerLevel,
+			PaasLagerDefinition.LoggerFile, PaasLagerDefinition.RollingPolicy,
+			PaasLagerDefinition.LogFormatText, PaasLagerDefinition.LogRotateDate,
+			PaasLagerDefinition.LogRotateSize, PaasLagerDefinition.LogBackupCount)
 	}
 
-	lager.Initialize(PassLagerDefinition.Writers, PassLagerDefinition.LoggerLevel,
-		PassLagerDefinition.LoggerFile, PassLagerDefinition.RollingPolicy,
-		PassLagerDefinition.LogFormatText, PassLagerDefinition.LogRotateDate,
-		PassLagerDefinition.LogRotateSize, PassLagerDefinition.LogBackupCount)
-
+	if err = parseRouterConfig(fileutil.RouterDefinition()); err != nil {
+		if os.IsNotExist(err) {
+			lager.Logger.Infof("[%s] not exist", fileutil.RouterDefinition())
+		} else {
+			return err
+		}
+	}
 	err = archaius.Init()
 	if err != nil {
 		return err
 	}
 	lager.Logger.Infof("archaius init success")
-	err = InitRouter()
-	if err != nil {
-		lager.Logger.Warn("Route Rules init failed: ", err)
-	}
+
 	var schemaError error
 
 	//Upload schemas using environment variable SCHEMA_ROOT
@@ -257,8 +327,6 @@ func Init() error {
 		return msError
 	}
 
-	// set environment
-	Stage = archaius.GetString(common.Env, archaius.GetString(common.EnvInstance, common.EnvValueProd))
 	NodeIP = archaius.GetString(common.EnvNodeIP, "")
 	err = parse()
 	if err != nil {

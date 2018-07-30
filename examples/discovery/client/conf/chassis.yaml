@@ -1,6 +1,4 @@
 ---
-#APPLICATION_ID: CSE optional
-
 cse:
   service:
     registry:
@@ -15,8 +13,6 @@ cse:
     highway:
       listenAddress: 127.0.0.1:8080
       advertiseAddress: 127.0.0.1:8080
-      transport: tcp #optional 指定加载那个传输层
-      workerNumber: 10
     rest:
       listenAddress: 127.0.0.1:8081
       advertiseAddress: 127.0.0.1:8081
@@ -24,7 +20,7 @@ cse:
   handler:
     chain:
       Consumer:
-        default: bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
+        default: bizkeeper-consumer, router, loadbalance,tracing-consumer,ratelimiter-consumer,transport
   references:    #optional：配置客户端依赖的微服务信息，协议信息
     Server:
       version: 0.0.1

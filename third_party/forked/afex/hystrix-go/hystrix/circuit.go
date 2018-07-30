@@ -3,6 +3,7 @@ package hystrix
 // Forked from github.com/afex/hystrix-go/hystrix
 // Some parts of this file have been modified to make it functional in this package
 import (
+	"errors"
 	"fmt"
 	"log"
 	"sync"
@@ -26,6 +27,11 @@ type CircuitBreaker struct {
 }
 
 var (
+	// ErrCBNotExist occurs when no CircuitBreaker exists
+	ErrCBNotExist = errors.New("circuit breaker not exist")
+)
+
+var (
 	circuitBreakersMutex *sync.RWMutex
 	circuitBreakers      map[string]*CircuitBreaker
 )
@@ -33,6 +39,17 @@ var (
 func init() {
 	circuitBreakersMutex = &sync.RWMutex{}
 	circuitBreakers = make(map[string]*CircuitBreaker)
+}
+
+// IsCircuitBreakerOpen returns whether a circuitBreaker is open for an interface
+func IsCircuitBreakerOpen(name string) (bool, error) {
+	circuitBreakersMutex.Lock()
+	defer circuitBreakersMutex.Unlock()
+	if c, ok := circuitBreakers[name]; ok {
+		return c.IsOpen(), nil
+	} else {
+		return false, ErrCBNotExist
+	}
 }
 
 // GetCircuit returns the circuit for the given command and whether this call created it.

@@ -2,8 +2,9 @@ package restful
 
 import (
 	"context"
-	"github.com/emicklei/go-restful"
 	"net/http"
+
+	"github.com/emicklei/go-restful"
 )
 
 //Context is a struct which has both request and response objects
@@ -85,7 +86,17 @@ func (bs *Context) ReadRequest() *http.Request {
 	return bs.req.Request
 }
 
+//ReadRestfulRequest return a native  go-restful request
+func (bs *Context) ReadRestfulRequest() *restful.Request {
+	return bs.req
+}
+
 //ReadResponseWriter return a native net/http ResponseWriter
 func (bs *Context) ReadResponseWriter() http.ResponseWriter {
 	return bs.resp.ResponseWriter
+}
+
+//ReadRestfulResponse return a native go-restful Response
+func (bs *Context) ReadRestfulResponse() *restful.Response {
+	return bs.resp
 }

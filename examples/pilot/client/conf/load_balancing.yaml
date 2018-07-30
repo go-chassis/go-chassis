@@ -1,0 +1,13 @@
+---
+#APPLICATION_ID: CSE optional
+
+cse:
+  loadbalance:
+    retryEnabled: false
+    retryOnNext: 2
+    retryOnSame: 3
+    backoff:
+      kind: constant
+      MinMs: 200
+      MaxMs: 400
+

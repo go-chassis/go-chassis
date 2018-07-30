@@ -1,0 +1,1 @@
+Show how to set local scope parameter and use it in your schema

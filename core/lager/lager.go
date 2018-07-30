@@ -1,20 +1,21 @@
 package lager
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/paas-lager"
-	"github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	paaslager "github.com/go-chassis/paas-lager"
+	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
 )
 
 // constant values for logrotate parameters
 const (
-	LogRotateDate  = 1
-	LogRotateSize  = 10
-	LogBackupCount = 7
+	LogRotateDate     = 1
+	LogRotateSize     = 10
+	LogBackupCount    = 7
+	RollingPolicySize = "size"
 )
 
 // Logger is the global variable for the object of lager.Logger
@@ -70,14 +71,14 @@ func newLog(lag *Lager) lager.Logger {
 	if len(strings.TrimSpace(lag.Writers)) == 0 {
 		writers = []string{"stdout"}
 	}
-	stlager.Init(stlager.Config{
+	paaslager.Init(paaslager.Config{
 		Writers:       writers,
 		LoggerLevel:   lag.LoggerLevel,
 		LoggerFile:    logFilePath,
 		LogFormatText: lag.LogFormatText,
 	})
 
-	logger := stlager.NewLogger(lag.LoggerFile)
+	logger := paaslager.NewLogger(lag.LoggerFile)
 	return logger
 }
 
@@ -93,10 +94,10 @@ func checkPassLagerDefinition(lag *Lager) {
 
 	if lag.RollingPolicy == "" {
 		log.Println("RollingPolicy is empty, use default policy[size]")
-		lag.RollingPolicy = common.RollingPolicySize
-	} else if lag.RollingPolicy != "daily" && lag.RollingPolicy != common.RollingPolicySize {
+		lag.RollingPolicy = RollingPolicySize
+	} else if lag.RollingPolicy != "daily" && lag.RollingPolicy != RollingPolicySize {
 		log.Printf("RollingPolicy is error, RollingPolicy=%s, use default policy[size].", lag.RollingPolicy)
-		lag.RollingPolicy = common.RollingPolicySize
+		lag.RollingPolicy = RollingPolicySize
 	}
 
 	if lag.LogRotateDate <= 0 || lag.LogRotateDate > 10 {

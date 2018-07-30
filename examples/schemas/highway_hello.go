@@ -1,8 +1,9 @@
 package schemas
 
 import (
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"golang.org/x/net/context"
+	"context"
+
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 )
 
 //HelloServer is a struct

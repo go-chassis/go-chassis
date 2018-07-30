@@ -2,14 +2,14 @@ package registry
 
 import (
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	client "github.com/ServiceComb/go-sc-client"
-	"github.com/ServiceComb/go-sc-client/model"
-	pb "github.com/ServiceComb/go-sc-client/model"
-	"os"
 	"sync"
 	"time"
+
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
 
 // DefaultRetryTime default retry time
@@ -25,7 +25,6 @@ type HeartbeatTask struct {
 
 // HeartbeatService heartbeat service
 type HeartbeatService struct {
-	Client    *client.RegistryClient
 	instances map[string]*HeartbeatTask
 	shutdown  bool
 	mux       sync.Mutex
@@ -90,11 +89,11 @@ func (s *HeartbeatService) toggleTask(microServiceID, microServiceInstanceID str
 // DoHeartBeat do heartbeat for each instance
 func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID string) {
 	s.toggleTask(microServiceID, microServiceInstanceID, true)
-	_, err := RegistryService.Heartbeat(microServiceID, microServiceInstanceID)
+	_, err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
 		lager.Logger.Errorf(err, "Run Heartbeat fail")
 		s.RemoveTask(microServiceID, microServiceInstanceID)
-		s.RetryRegister(microServiceID)
+		s.RetryRegister(microServiceID, microServiceInstanceID)
 	}
 	s.RefreshTask(microServiceID, microServiceInstanceID)
 	s.toggleTask(microServiceID, microServiceInstanceID, false)
@@ -109,7 +108,7 @@ func (s *HeartbeatService) run() {
 			if v.Running {
 				continue
 			}
-			if endTime.Sub(v.Time) >= pb.DefaultLeaseRenewalInterval*time.Second {
+			if endTime.Sub(v.Time) >= common.DefaultHBInterval*time.Second {
 				go s.DoHeartBeat(v.ServiceID, v.InstanceID)
 			}
 		}
@@ -119,18 +118,19 @@ func (s *HeartbeatService) run() {
 }
 
 // RetryRegister retrying to register micro-service, and instance
-func (s *HeartbeatService) RetryRegister(sid string) error {
+func (s *HeartbeatService) RetryRegister(sid, iid string) error {
 	for {
 		time.Sleep(DefaultRetryTime)
 		lager.Logger.Infof("Try to re-register self")
-		_, err := RegistryService.GetAllMicroServices()
+		_, err := DefaultServiceDiscoveryService.GetAllMicroServices()
 		if err != nil {
+			lager.Logger.Errorf(err, "DefaultRegistrator is not healthy")
 			continue
 		}
-		if _, e := RegistryService.GetMicroService(sid); e != nil {
+		if _, e := DefaultServiceDiscoveryService.GetMicroService(sid); e != nil {
 			err = s.ReRegisterSelfMSandMSI()
 		} else {
-			err = reRegisterSelfMSI(sid)
+			err = reRegisterSelfMSI(sid, iid)
 		}
 		if err == nil {
 			break
@@ -157,24 +157,19 @@ func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 }
 
 // reRegisterSelfMSI 只重新注册实例
-func reRegisterSelfMSI(sid string) error {
-	hostname, err := os.Hostname()
-	if err != nil {
-		lager.Logger.Errorf(err, "Get HostName failed, hostname:%s", hostname)
-		return err
-	}
-	stage := config.Stage
+func reRegisterSelfMSI(sid, iid string) error {
+	DefaultServiceDiscoveryService.AutoSync()
 	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
 	if InstanceEndpoints != nil {
 		eps = InstanceEndpoints
 	}
 	microServiceInstance := &MicroServiceInstance{
+		InstanceID:   iid,
 		EndpointsMap: eps,
-		HostName:     hostname,
-		Status:       model.MSInstanceUP,
-		Environment:  stage,
+		HostName:     runtime.HostName,
+		Status:       common.DefaultStatus,
 	}
-	instanceID, err := RegistryService.RegisterServiceInstance(sid, microServiceInstance)
+	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
 		lager.Logger.Errorf(err, "RegisterInstance failed.")
 		return err
@@ -182,11 +177,11 @@ func reRegisterSelfMSI(sid string) error {
 
 	value, ok := SelfInstancesCache.Get(microServiceInstance.ServiceID)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceInstance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, microServiceID/instanceID: %s/%s", sid, instanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf(nil, "RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", microServiceInstance.ServiceID, instanceID)
+		lager.Logger.Warnf("RegisterMicroServiceInstance type asserts failed, microServiceID/instanceID: %s/%s", sid, instanceID)
 	}
 	var isRepeat bool
 	for _, va := range instanceIDs {
@@ -198,7 +193,7 @@ func reRegisterSelfMSI(sid string) error {
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	SelfInstancesCache.Set(microServiceInstance.ServiceID, instanceIDs, 0)
-	lager.Logger.Warnf(nil, "RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", microServiceInstance.ServiceID, instanceID)
+	lager.Logger.Warnf("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
 
 	return nil
 }

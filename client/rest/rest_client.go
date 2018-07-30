@@ -1,19 +1,17 @@
 package rest
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
-	"github.com/ServiceComb/go-chassis/core/client"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	microClient "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/client"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/codec"
-	"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"golang.org/x/net/context"
+	"github.com/go-chassis/go-chassis/core/client"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"net"
+	"time"
 )
 
 const (
@@ -21,6 +19,25 @@ const (
 	Name = "rest"
 	// FailureTypePrefix is a constant of type string
 	FailureTypePrefix = "http_"
+	//DefaultTimeoutBySecond defines the default timeout for http connections
+	DefaultTimeoutBySecond = 60 * time.Second
+	//DefaultKeepAliveSecond defines the connection time
+	DefaultKeepAliveSecond = 60 * time.Second
+	//DefaultMaxConnsPerHost defines the maximum number of concurrent connections
+	DefaultMaxConnsPerHost = 512
+	//SchemaHTTP represents the http schema
+	SchemaHTTP = "http"
+	//SchemaHTTPS represents the https schema
+	SchemaHTTPS = "https"
+)
+
+var (
+	//ErrCanceled means Request is canceled by context management
+	ErrCanceled = errors.New("request cancelled")
+	//ErrInvalidReq invalid input
+	ErrInvalidReq = errors.New("rest consumer call arg is not *rest.Request type")
+	//ErrInvalidResp invalid input
+	ErrInvalidResp = errors.New("rest consumer response arg is not *rest.Response type")
 )
 
 //HTTPFailureTypeMap is a variable of type map
@@ -34,25 +51,10 @@ var HTTPFailureTypeMap = map[string]bool{
 
 func init() {
 	client.InstallPlugin(Name, NewRestClient)
-	loadbalance.LatencyMap = make(map[string][]time.Duration)
 }
 
 //NewRestClient is a function
-func NewRestClient(options ...microClient.Option) microClient.Client {
-	opts := microClient.Options{}
-	for _, o := range options {
-		o(&opts)
-	}
-
-	if opts.Codecs == nil {
-		opts.Codecs = codec.GetCodecMap()
-	}
-
-	if len(opts.ContentType) == 0 {
-		//TODO take effect of that option
-		opts.ContentType = common.ContentTypeJSON
-	}
-
+func NewRestClient(opts client.Options) client.ProtocolClient {
 	if opts.Failure == nil || len(opts.Failure) == 0 {
 		opts.Failure = HTTPFailureTypeMap
 	} else {
@@ -67,54 +69,35 @@ func NewRestClient(options ...microClient.Option) microClient.Client {
 		opts.Failure = tmpFailureMap
 	}
 
-	poolSize := fasthttp.DefaultMaxConnsPerHost
+	poolSize := DefaultMaxConnsPerHost
 	if opts.PoolSize != 0 {
 		poolSize = opts.PoolSize
 	}
 
+	tp := &http.Transport{
+		MaxIdleConns:        poolSize,
+		MaxIdleConnsPerHost: poolSize,
+		DialContext: (&net.Dialer{
+			KeepAlive: DefaultKeepAliveSecond,
+			Timeout:   DefaultTimeoutBySecond,
+		}).DialContext}
+	if opts.TLSConfig != nil {
+		tp.TLSClientConfig = opts.TLSConfig
+	}
 	rc := &Client{
 		opts: opts,
-		c: &fasthttp.Client{
-			Name:            "restinvoker",
-			MaxConnsPerHost: poolSize,
+		c: &http.Client{
+			Transport: tp,
 		},
-	}
-
-	if opts.TLSConfig != nil {
-		rc.c.TLSConfig = opts.TLSConfig
 	}
 
 	return rc
 }
 
 //Init is a method
-func (c *Client) Init(opts ...microClient.Option) error {
-	for _, o := range opts {
-		o(&c.opts)
-	}
-
-	return nil
-}
-
-//NewRequest do not use for rest client.
-func (c *Client) NewRequest(service, schemaID, operationID string, arg interface{}, reqOpts ...microClient.RequestOption) *microClient.Request {
-	var opts microClient.RequestOptions
-
-	for _, o := range reqOpts {
-		o(&opts)
-	}
-
-	i := &microClient.Request{
-		MicroServiceName: service,
-		Struct:           schemaID,
-		Method:           operationID,
-		Arg:              arg,
-	}
-	return i
-}
 
 // If a request fails, we generate an error.
-func (c *Client) failure2Error(e error, r *Response) error {
+func (c *Client) failure2Error(e error, r *Response, addr string) error {
 	if e != nil {
 		return e
 	}
@@ -126,59 +109,69 @@ func (c *Client) failure2Error(e error, r *Response) error {
 	codeStr := strconv.Itoa(r.GetStatusCode())
 	// The Failure map defines whether or not a request fail.
 	if c.opts.Failure["http_"+codeStr] {
-		return fmt.Errorf("Get error status code: %d from http response: %s", r.GetStatusCode(), string(r.ReadBody()))
+		return fmt.Errorf("http error status %d, server addr: %s", r.GetStatusCode(), addr)
 	}
 
 	return nil
 }
+func invocation2HttpRequest(inv *invocation.Invocation) (*Request, error) {
+	reqSend, ok := inv.Args.(*Request)
+	if !ok {
+		return nil, ErrInvalidReq
+	}
+	return reqSend, nil
+}
 
 //Call is a method which uses client struct object
-func (c *Client) Call(ctx context.Context, addr string, req *microClient.Request, rsp interface{}, opts ...microClient.CallOption) error {
-	var opt microClient.CallOptions
-
-	for _, o := range opts {
-		o(&opt)
-	}
-
-	reqSend, ok := req.Arg.(*Request)
-	if !ok {
-		return errors.New("Rest consumer call arg is not *rest.Request type")
+func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
+	var err error
+	reqSend, err := invocation2HttpRequest(inv)
+	if err != nil {
+		return err
 	}
 
 	resp, ok := rsp.(*Response)
 	if !ok {
-		return errors.New("Rest consumer response arg is not *rest.Response type")
+		return ErrInvalidResp
 	}
+
+	c.contextToHeader(ctx, reqSend)
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	if c.opts.TLSConfig != nil {
-		reqSend.Req.URI().SetScheme("https")
+		reqSend.Req.URL.Scheme = SchemaHTTPS
 	} else {
-		reqSend.Req.URI().SetScheme("http")
+		reqSend.Req.URL.Scheme = SchemaHTTP
+	}
+	if addr != "" {
+		reqSend.Req.URL.Host = addr
 	}
 
-	reqSend.Req.SetHost(addr)
-
 	//increase the max connection per host to prevent error "no free connection available" error while sending more requests.
-	c.c.MaxConnsPerHost = 512 * 20
+	c.c.Transport.(*http.Transport).MaxIdleConnsPerHost = 512 * 20
 
 	errChan := make(chan error, 1)
 	go func() { errChan <- c.Do(reqSend, resp) }()
 
-	var err error
 	select {
 	case <-ctx.Done():
-		err = errors.New("Request Cancelled")
+		err = ErrCanceled
 	case err = <-errChan:
 	}
-	return c.failure2Error(err, resp)
+	return c.failure2Error(err, resp, addr)
 }
+
 func (c *Client) String() string {
 	return "rest_client"
 }
 
-//Options is a method which used client struct object
-func (c *Client) Options() microClient.Options {
-	return c.opts
+func (c *Client) contextToHeader(ctx context.Context, req *Request) {
+	for k, v := range common.FromContext(ctx) {
+		req.Req.Header.Set(k, v)
+	}
+
+	if len(req.GetContentType()) == 0 {
+		req.SetContentType(common.JSON)
+	}
 }

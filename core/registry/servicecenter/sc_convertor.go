@@ -1,13 +1,16 @@
 package servicecenter
 
 import (
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/go-chassis/go-chassis/core/registry"
+
+	"github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-sc-client/model"
 )
 
-// ToMicroService assign model micro-service parameters to the registry micro-service
+// ToMicroService assign sc micro-service to go chassis micro-service
 func ToMicroService(scs *model.MicroService) *registry.MicroService {
 	cs := &registry.MicroService{}
+	cs.ServiceID = scs.ServiceID
 	cs.ServiceName = scs.ServiceName
 	cs.Version = scs.Version
 	cs.AppID = scs.AppID
@@ -24,12 +27,14 @@ func ToMicroService(scs *model.MicroService) *registry.MicroService {
 	return cs
 }
 
-// ToSCService assign registry micro-service parameters to the model micro-service
+// ToSCService assign go chassis micro-service to the sc micro-service
 func ToSCService(cs *registry.MicroService) *model.MicroService {
 	scs := &model.MicroService{}
+	scs.ServiceID = cs.ServiceID
 	scs.ServiceName = cs.ServiceName
 	scs.Version = cs.Version
 	scs.AppID = cs.AppID
+	scs.Environment = cs.Environment
 	scs.Properties = cs.Metadata
 	scs.Schemas = cs.Schemas
 	scs.Level = cs.Level
@@ -58,7 +63,10 @@ func ToMicroServiceInstance(ins *model.MicroServiceInstance) *registry.MicroServ
 		msi.DataCenterInfo.AvailableZone = ins.DataCenterInfo.AvailableZone
 		msi.DataCenterInfo.Region = ins.DataCenterInfo.Region
 	}
-
+	if msi.Metadata == nil {
+		msi.Metadata = make(map[string]string)
+	}
+	msi.Metadata["version"] = ins.Version
 	return msi
 }
 
@@ -71,7 +79,6 @@ func ToSCInstance(msi *registry.MicroServiceInstance) *model.MicroServiceInstanc
 	si.Properties = msi.Metadata
 	si.HostName = msi.HostName
 	si.Status = msi.Status
-	si.Environment = msi.Environment
 	if msi.DataCenterInfo != nil {
 		si.DataCenterInfo = &model.DataCenterInfo{}
 		si.DataCenterInfo.Name = msi.DataCenterInfo.Name
@@ -102,4 +109,18 @@ func ToSCDependency(dep *registry.MicroServiceDependency) *model.MircroServiceDe
 		scDep.Dependencies[0].Providers = append(scDep.Dependencies[0].Providers, scP)
 	}
 	return scDep
+}
+
+//ToSCOptions convert registry opstions into sc client options
+func ToSCOptions(options registry.Options) client.Options {
+	sco := client.Options{}
+	sco.Timeout = options.Timeout
+	sco.TLSConfig = options.TLSConfig
+	sco.Addrs = options.Addrs
+	sco.Compressed = options.Compressed
+	sco.ConfigTenant = options.Tenant
+	sco.EnableSSL = options.EnableSSL
+	sco.Verbose = options.Verbose
+	sco.Version = options.Version
+	return sco
 }

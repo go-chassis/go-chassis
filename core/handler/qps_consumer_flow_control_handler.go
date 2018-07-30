@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/qpslimiter"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/qpslimiter"
 )
 
 // ConsumerRateLimiterHandler consumer rate limiter handler
@@ -12,9 +12,7 @@ type ConsumerRateLimiterHandler struct{}
 // Handle is handles the consumer rate limiter APIs
 func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	if !archaius.GetBool("cse.flowcontrol.Consumer.qps.enabled", true) {
-		chain.Next(i, func(r *invocation.InvocationResponse) error {
-			return cb(r)
-		})
+		chain.Next(i, cb)
 
 		return
 	}
@@ -23,9 +21,7 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 	operationMeta := qpslimiter.InitSchemaOperations(i)
 	rl.GetOrCreate(operationMeta)
 
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		return cb(r)
-	})
+	chain.Next(i, cb)
 }
 
 func newConsumerRateLimiterHandler() Handler {

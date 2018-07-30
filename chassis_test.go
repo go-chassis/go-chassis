@@ -1,14 +1,17 @@
 package chassis_test
 
 import (
-	"github.com/ServiceComb/go-chassis"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/go-chassis/go-chassis"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -17,26 +20,14 @@ const (
 
 func TestInit(t *testing.T) {
 	t.Log("Testing Chassis Init function")
-
-	path := "root/conf/chassis.yaml"
-	var _, err = os.Stat(path)
-
-	// create file if not exists
-	if os.IsNotExist(err) {
-		err := os.MkdirAll("root", 777)
-		assert.NoError(t, err)
-		err = os.MkdirAll("root/conf", 777)
-		assert.NoError(t, err)
-		file, err := os.Create("root/conf/chassis.yaml")
-		assert.NoError(t, err)
-		defer file.Close()
-	}
-	file, err := os.OpenFile(path, os.O_RDWR, 0644)
+	os.Setenv("CHASSIS_HOME", filepath.Join(os.Getenv("GOPATH"), "test", "chassisInit"))
+	err := os.MkdirAll(fileutil.GetConfDir(), 0600)
 	assert.NoError(t, err)
-	defer file.Close()
+	globalDefFile, err := os.OpenFile(fileutil.GlobalDefinition(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0600)
+	defer globalDefFile.Close()
 
 	// write some text line-by-line to file
-	_, err = file.WriteString(`---
+	_, err = globalDefFile.WriteString(`---
 #APPLICATION_ID: CSE optional
 
 cse:
@@ -49,14 +40,13 @@ cse:
   loadbalance:
     strategy:
       name: RoundRobin
-      sessionTimeoutInSeconds: 30
     retryEnabled: false
     retryOnNext: 2
     retryOnSame: 3
     backoff:
       kind: constant
-      MinMs: 200
-      MaxMs: 400
+      minMs: 200
+      maxMs: 400
   service:
     registry:
       type: servicecenter
@@ -87,18 +77,10 @@ ssl:
   registry.consumer.certPwdFile:
 `)
 	assert.NoError(t, err)
-	path = filepath.Join("root", "conf", "microservice.yaml")
-	_, err = os.Stat(path)
-	// create file if not exists
-	if os.IsNotExist(err) {
-		file, err := os.Create(filepath.Join("root", "conf", "microservice.yaml"))
-		assert.NoError(t, err)
-		defer file.Close()
-	}
-	file, err = os.OpenFile(path, os.O_RDWR, 0644)
+	msDefFile, err := os.OpenFile(fileutil.GetMicroserviceDesc(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0600)
 	assert.NoError(t, err)
-	defer file.Close()
-	_, err = file.WriteString(`---
+	defer msDefFile.Close()
+	_, err = msDefFile.WriteString(`---
 #微服务的私有属性
 service_description:
   name: nodejs2
@@ -110,12 +92,7 @@ service_description:
     a: s
     p: s
 `)
-	assert.NoError(t, err)
-	// save changes
-	err = file.Sync()
-	assert.NoError(t, err)
 
-	os.Setenv("CHASSIS_HOME", filepath.Join("root"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.GlobalDefinition = &model.GlobalCfg{}
@@ -131,17 +108,10 @@ service_description:
 	assert.NoError(t, err)
 
 	chassis.RegisterSchema("rest", "str")
-
-	err = os.Remove(path)
-	assert.NoError(t, err)
-
-	err = os.RemoveAll("root")
-	assert.NoError(t, err)
 }
 func TestInitError(t *testing.T) {
 	t.Log("Testing chassis Init function for errors")
-	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "ServiceComb", "go-chassis", "examples", "communication/client")
+	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "communication/client")
 	os.Setenv("CHASSIS_HOME", p)
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-
 }

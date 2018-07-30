@@ -1,4 +1,4 @@
-ServiceComb Go Chassis
+go-chassis Go Chassis
 Copyright 2017-2018 The Apache Software Foundation
 
 This product includes software developed at
@@ -52,6 +52,7 @@ github.com/reactivex/rxgo
 github.com/smartystreets/assertions
 github.com/smartystreets/goconvey
 github.com/spf13/cast
+github.com/valyala/fasthttp
 go.uber.org/ratelimit
 
 ================================================================
@@ -106,7 +107,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ==========================================
-For client/highway/highway_client.go,core/loadbalance/default.go,third_party/forked/go-micro,
+For core/loadbalance/default.go,third_party/forked/go-micro,
 client/highway/highway_client_test.go,core/loadbalance/default_test.go(Forked from github.com/micro/go-micro)
 
    Copyright 2015 Asim Aslam.
@@ -141,7 +142,7 @@ For metrics/prometheusmetrics.go,metrics/prometheusmetrics_test.go(Forked from g
    limitations under the License.
 
 ==========================================
-For vendor/github.com/ServiceComb/paas-lager/third_party/forked/cloudfoundry/lager(Forked from github.com/cloudfoundry/lager)
+For vendor/github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager(Forked from github.com/cloudfoundry/lager)
 
 Copyright (c) 2015-Present CloudFoundry.org Foundation, Inc. All Rights Reserved.
 
@@ -166,24 +167,18 @@ as noted in the LICENSE file.
 
 
 ==========================================
-For third_party/forked/afex/hystrix-go,vendor/github.com/ServiceComb/cse-collector/cse_collector.go(Forked from github.com/afex/hystrix-go/hystrix)
+For third_party/forked/afex/hystrix-go,vendor/github.com/go-chassis/cse-collector/cse_collector.go(Forked from github.com/afex/hystrix-go/hystrix)
 The MIT License (MIT)
 
 Copyright (c) 2013 keith
 
 ==========================================
-For third_party/forked/valyala/fasthttp(Forked from github.com/valyala/fasthttp/)
-The MIT License (MIT)
-
-Copyright (c) 2015-2016 Aliaksandr Valialkin, VertaMedia
-
-==========================================
-For vendor/github.com/ServiceComb/auth/third_party/forked/datastream/aws(Forked from github.com/datastream/aws)
+For vendor/github.com/go-chassis/auth/third_party/forked/datastream/aws(Forked from github.com/datastream/aws)
 
 Copyright (c) 2014, Xianjie
 All rights reserved.
 
 ==========================================
-For third_party/forked/go-micro/codec/codec.go,core/provider/default_provider.go(Forked from github.com/golang/go)
+For core/provider/default_provider.go(Forked from github.com/golang/go)
 
 Copyright 2009 The Go Authors. All rights reserved.

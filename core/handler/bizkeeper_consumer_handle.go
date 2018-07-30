@@ -1,12 +1,18 @@
 package handler
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"fmt"
+	"net/http"
 	"strings"
+
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"io"
+	"io/ioutil"
 )
 
 // constant for bizkeeper-consumer
@@ -17,77 +23,90 @@ const (
 // BizKeeperConsumerHandler bizkeeper consumer handler
 type BizKeeperConsumerHandler struct{}
 
-// NewHystrixCmd new hystrix command
-func NewHystrixCmd(sourceName, protype, servicename, schemaID, OperationID string) string {
-	var cmd string
-	//for mesher to govern circuit breaker
-	if sourceName != "" {
-		cmd = strings.Join([]string{sourceName, protype}, ".")
-	} else {
-		cmd = protype
+// GetHystrixConfig get hystrix config
+func GetHystrixConfig(service, protype string) (string, hystrix.CommandConfig) {
+	command := protype
+	if service != "" {
+		command = strings.Join([]string{protype, service}, ".")
 	}
-	if servicename != "" {
-		cmd = strings.Join([]string{cmd, servicename}, ".")
+	return command, hystrix.CommandConfig{
+		ForceFallback:          config.GetForceFallback(service, protype),
+		TimeoutEnabled:         config.GetTimeoutEnabled(service, protype),
+		Timeout:                config.GetTimeout(command, protype),
+		MaxConcurrentRequests:  config.GetMaxConcurrentRequests(command, protype),
+		ErrorPercentThreshold:  config.GetErrorPercentThreshold(command, protype),
+		RequestVolumeThreshold: config.GetRequestVolumeThreshold(command, protype),
+		SleepWindow:            config.GetSleepWindow(command, protype),
+		ForceClose:             config.GetForceClose(service, protype),
+		ForceOpen:              config.GetForceOpen(service, protype),
+		CircuitBreakerEnabled:  config.GetCircuitBreakerEnabled(command, protype),
 	}
-
-	return cmd
-
 }
 
 // Handle function is for to handle the chain
 func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	// command 支撑到SchemaID，后面根据情况进行测试
-	command := NewHystrixCmd(i.SourceMicroService, common.Consumer, i.MicroServiceName, i.SchemaID, i.OperationID)
-	cmdConfig := GetHystrixConfig(command, common.Consumer)
+	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Consumer)
 	hystrix.ConfigureCommand(command, cmdConfig)
-	err := hystrix.Do(command, func() error {
-		var err error
-		chain.Next(i, func(resp *invocation.InvocationResponse) error {
-			err = cb(resp)
+
+	finish := make(chan *invocation.Response, 1)
+	err := hystrix.Do(command, func() (err error) {
+		chain.Next(i, func(resp *invocation.Response) error {
+			err = resp.Err
+			select {
+			case finish <- resp:
+			default:
+				// means hystrix error occurred
+			}
 			return err
 		})
-		return err
-	}, GetFallbackFun(command, common.Consumer, i, cb, cmdConfig.ForceFallback))
+		return
+	}, GetFallbackFun(command, common.Consumer, i, finish, cmdConfig.ForceFallback))
+
 	//if err is not nil, means fallback is nil, return original err
 	if err != nil {
 		writeErr(err, cb)
+		return
 	}
-}
 
-// GetHystrixConfig get hystrix config
-func GetHystrixConfig(command, t string) hystrix.CommandConfig {
-	cmdConfig := hystrix.CommandConfig{}
-	cmdConfig.ForceFallback = archaius.GetForceFallback(command, t)
-	cmdConfig.TimeoutEnabled = archaius.GetTimeoutEnabled(command, t)
-	cmdConfig.Timeout = archaius.GetTimeout(command, t)
-	cmdConfig.MaxConcurrentRequests = archaius.GetMaxConcurrentRequests(command, t)
-	cmdConfig.ErrorPercentThreshold = archaius.GetErrorPercentThreshold(command, t)
-	cmdConfig.RequestVolumeThreshold = archaius.GetRequestVolumeThreshold(command, t)
-	cmdConfig.SleepWindow = archaius.GetSleepWindow(command, t)
-	cmdConfig.ForceClose = archaius.GetForceClose(command, t)
-	cmdConfig.ForceOpen = archaius.GetForceOpen(command, t)
-	cmdConfig.CircuitBreakerEnabled = archaius.GetCircuitBreakerEnabled(command, t)
-	return cmdConfig
+	cb(<-finish)
 }
 
 // GetFallbackFun get fallback function
-func GetFallbackFun(cmd, t string, i *invocation.Invocation, cb invocation.ResponseCallBack, isForce bool) func(error) error {
-	enabled := archaius.GetFallbackEnabled(cmd, t)
+func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invocation.Response, isForce bool) func(error) error {
+	enabled := config.GetFallbackEnabled(cmd, t)
 	if enabled || isForce {
 		return func(err error) error {
-			if err.Error() == hystrix.ErrForceFallback.Error() || err.Error() == hystrix.ErrCircuitOpen.Error() || err.Error() == hystrix.ErrMaxConcurrency.Error() || err.Error() == hystrix.ErrTimeout.Error() {
-				//进入这里说明断路了，run函数没执行，那么必须callback
-				lager.Logger.Error("fallback: "+cmd, err)
-				resp := &invocation.InvocationResponse{}
-				if archaius.PolicyNull == archaius.GetPolicy(cmd, t) {
+			// if err is type of hystrix error, return a new response
+			if err.Error() == hystrix.ErrForceFallback.Error() || err.Error() == hystrix.ErrCircuitOpen.Error() ||
+				err.Error() == hystrix.ErrMaxConcurrency.Error() || err.Error() == hystrix.ErrTimeout.Error() {
+				// isolation happened, so lead to callback
+				lager.Logger.Errorf(err, fmt.Sprintf("fallback for %v", cmd))
+				resp := &invocation.Response{}
+
+				var code = http.StatusOK
+				if config.PolicyNull == config.GetPolicy(i.MicroServiceName, t) {
 					resp.Err = hystrix.FallbackNullError{Message: "return null"}
 				} else {
 					resp.Err = hystrix.CircuitError{Message: i.MicroServiceName + " is isolated because of error: " + err.Error()}
+					code = http.StatusRequestTimeout
 				}
-				cb(resp)
-				return nil //没有返回错误的必要
+				switch i.Reply.(type) {
+				case *rest.Response:
+					resp := i.Reply.(*rest.Response)
+					resp.SetStatusCode(code)
+					//make sure body is empty
+					if resp.GetResponse().Body != nil {
+						io.Copy(ioutil.Discard, resp.GetResponse().Body)
+						resp.GetResponse().Body.Close()
+					}
+				}
+				select {
+				case finish <- resp:
+				default:
+				}
+				return nil //no need to return error
 			}
-			// 回调函数目前默认都是执行成功的
+			// call back success
 			return nil
 		}
 	}

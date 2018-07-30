@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	"github.com/ServiceComb/go-chassis/core/route"
-	"github.com/ServiceComb/go-chassis/third_party/forked/go-micro/metadata"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/router"
 )
 
 // RouterHandler router handler
@@ -13,19 +14,27 @@ type RouterHandler struct{}
 
 // Handle is to handle the router related things
 func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	if i.RouteTags.KV != nil {
+		chain.Next(i, cb)
+	}
 
 	tags := map[string]string{}
 	for k, v := range i.Metadata {
 		tags[k] = v.(string)
 	}
+	tags[common.BuildinTagApp] = config.GlobalDefinition.AppID
 
-	var h map[string]string
+	h := make(map[string]string)
 	if i.Protocol == "rest" {
 		req, _ := i.Args.(*rest.Request)
-		h = req.GetRequest().Header.HeaderMap()
-	} else {
-		ctx, _ := metadata.FromContext(i.Ctx)
-		h = map[string]string(ctx)
+		for k := range req.GetRequest().Header {
+			h[k] = req.Req.Header.Get(k)
+		}
+	} else if i.Ctx != nil {
+		at, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+		if ok {
+			h = map[string]string(at)
+		}
 	}
 
 	err := router.Route(h, &registry.SourceInfo{Name: i.SourceMicroService, Tags: tags}, i)
@@ -34,9 +43,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 	}
 
 	//call next chain
-	chain.Next(i, func(r *invocation.InvocationResponse) error {
-		return cb(r)
-	})
+	chain.Next(i, cb)
 }
 
 func newRouterHandler() Handler {

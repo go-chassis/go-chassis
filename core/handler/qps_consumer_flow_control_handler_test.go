@@ -1,13 +1,13 @@
 package handler_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
@@ -31,7 +31,7 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 		OperationID:        "SayHello",
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 	}
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err
@@ -59,7 +59,7 @@ func TestConsumerRateLimiterHandler_Handle(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
 		return r.Err

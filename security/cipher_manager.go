@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ServiceComb/go-chassis/core/goplugin"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/goplugin"
 )
 
 const pluginSuffix = ".so"
@@ -22,7 +23,7 @@ func GetCipherNewFunc(name string) (func() Cipher, error) {
 	if f, ok := cipherPlugins[name]; ok {
 		return f, nil
 	}
-
+	lager.Logger.Debugf("try to load cipher [%s] from go plugin", name)
 	f, err := loadCipherFromPlugin(name)
 	if err == nil {
 		cipherPlugins[name] = f
@@ -31,7 +32,7 @@ func GetCipherNewFunc(name string) (func() Cipher, error) {
 	if !os.IsNotExist(err) {
 		return nil, err
 	}
-	return nil, fmt.Errorf("Cipher plugin [%s] not exist", name)
+	return nil, fmt.Errorf("unkown cipher plugin [%s]", name)
 }
 
 func loadCipherFromPlugin(name string) (func() Cipher, error) {

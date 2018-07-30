@@ -1,21 +1,22 @@
 package archaius_test
 
 import (
-	"testing"
-
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/config/schema"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
+
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/stretchr/testify/assert"
 )
 
 type EListener struct{}
@@ -50,14 +51,14 @@ cse:
     Consumer:
       enabled: true
       forceOpen: false
-      forceClose: true
+      forceClosed: true
       sleepWindowInMilliseconds: 10000
       requestVolumeThreshold: 20
       errorThresholdPercentage: 50
       Server:
         enabled: true
         forceOpen: false
-        forceClose: true
+        forceClosed: true
         sleepWindowInMilliseconds: 10000
         requestVolumeThreshold: 20
         errorThresholdPercentage: 50
@@ -65,7 +66,7 @@ cse:
       Server:
         enabled: true
         forceOpen: false
-        forceClose: true
+        forceClosed: true
         sleepWindowInMilliseconds: 10000
         requestVolumeThreshold: 20
         errorThresholdPercentage: 50
@@ -79,23 +80,26 @@ cse:
       policy: throwexception
 `)
 	lbBytes := []byte(`
---- 
+---
 cse: 
   loadbalance: 
     TargetService: 
       backoff: 
-        MaxMs: 400
-        MinMs: 200
         kind: constant
       retryEnabled: false
-      retryOnNext: 2
-      retryOnSame: 3
-      serverListFilters: zoneaware
+      strategy: 
+        name: WeightedResponse
+    target_Service: 
+      backoff:
+        maxMs: 500
+        minMs: 200
+        kind: constant
+      retryEnabled: false
       strategy: 
         name: WeightedResponse
     backoff: 
-      MaxMs: 400
-      MinMs: 200
+      maxMs: 400
+      minMs: 200
       kind: constant
     retryEnabled: false
     retryOnNext: 2
@@ -181,10 +185,6 @@ cse:
 	configsForDI := archaius.GetConfigsByDI("darklaunch@default#0.0.1")
 	assert.NotEqual(t, configsForDI, nil)
 
-	Stage := archaius.GetString(common.Env, "test")
-	if Stage != "test" {
-		t.Error("set stage is failed")
-	}
 	chassishome := archaius.Get("CHASSIS_HOME")
 	if chassishome != root {
 		t.Error("Get config by key is failed")
@@ -197,8 +197,9 @@ cse:
 	if ciper != "cipertest" {
 		t.Error("Getting the string of  string cipherPlugin is failed;")
 	}
-	fs := archaius.GetServerListFilters()
-	assert.Contains(t, fs, loadbalance.ZoneAware)
+	config.ReadLBFromArchaius()
+	fs := config.GetServerListFilters()
+	assert.Contains(t, fs, loadbalancer.ZoneAware)
 	assert.Equal(t, 20, archaius.GetInt("cse.circuitBreaker.Consumer.requestVolumeThreshold", 0))
 	assert.Equal(t, "throwexception", archaius.GetString("cse.fallbackpolicy.Consumer.policy", ""))
 	assert.Equal(t, 50, archaius.GetInt("cse.circuitBreaker.Consumer.Server.errorThresholdPercentage", 0))
@@ -207,30 +208,44 @@ cse:
 	cb := model.HystrixConfigWrapper{}
 	archaius.UnmarshalConfig(&cb)
 	assert.Equal(t, 20, cb.HystrixConfig.FallbackProperties.Consumer.MaxConcurrentRequests)
+	assert.Equal(t, 1000, cb.HystrixConfig.IsolationProperties.Consumer.AnyService["Server"].TimeoutInMilliseconds)
+	assert.NotEqual(t, 22, cb.HystrixConfig.IsolationProperties.Consumer.AnyService["Server"].TimeoutInMilliseconds)
 	t.Log("Unmarshall lb")
 	lbConfig := model.LBWrapper{}
 	archaius.UnmarshalConfig(&lbConfig)
 	t.Log(lbConfig.Prefix.LBConfig)
 
-	assert.Equal(t, loadbalance.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
+	assert.Equal(t, loadbalancer.ZoneAware, lbConfig.Prefix.LBConfig.Filters)
 	t.Log(lbConfig.Prefix.LBConfig.AnyService)
-	//assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
+	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
+	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["target_Service"].Strategy["name"])
+	assert.Equal(t, 500, int(lbConfig.Prefix.LBConfig.AnyService["target_Service"].Backoff.MaxMs))
 	err = archaius.AddFile(lbFileName)
 	assert.NoError(t, err)
 
 	time.Sleep(1 * time.Second)
 
-	err = archaius.AddKeyValue("externalSourcetest", "testextsource1")
+	err = archaius.AddKeyValue("memorySourcetestKeyCheck", "testmemsource1")
 	if err != nil {
-		t.Error("Failed to Add Key and value in Externalconfig source")
+		t.Error("Failed to Add Key and value in Memoryconfig source")
 	}
 
-	configvalue := archaius.Get("externalSourcetest")
-	if configvalue != "testextsource1" {
-		t.Error("externalconfigsource key value is mismatched")
+	err = archaius.DeleteKeyValue("memorySourcetestKeyCheck", "testmemsource1")
+	if err != nil {
+		t.Error("Failed to Delete Key and value in Memoryconfig source")
 	}
 
-	if archaius.Exist("externalSourcetest") != true || archaius.Exist("notexistingkey") != false {
+	err = archaius.AddKeyValue("memorySourcetest", "testmemsource1")
+	if err != nil {
+		t.Error("Failed to Add Key and value in memoryconfig source")
+	}
+
+	configvalue := archaius.Get("memorySourcetest")
+	if configvalue != "testmemsource1" {
+		t.Error("memoryconfigsource key value is mismatched")
+	}
+
+	if archaius.Exist("memorySourcetest") != true || archaius.Exist("notexistingkey") != false {
 		t.Error("Failed to get the exist status of the keys")
 	}
 

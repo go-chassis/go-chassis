@@ -1,12 +1,16 @@
 package archaius
 
 import (
-	"github.com/ServiceComb/go-archaius"
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/sources/external-source"
-	"github.com/ServiceComb/go-archaius/sources/file-source"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
+	"os"
+	"strings"
+
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-archaius/sources/file-source"
+	"github.com/go-chassis/go-archaius/sources/memory-source"
 )
 
 // Config is the struct of configuration files, and configuration factory
@@ -21,7 +25,7 @@ var DefaultConf *Config
 // NewConfig is gives the object of Config(it is having configuration files, and configuration factory)
 func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 	// created config factory object
-	factory, err := goarchaius.NewConfigFactory()
+	factory, err := goarchaius.NewConfigFactory(lager.Logger)
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +44,14 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 		files = append(files, v)
 	}
 	for _, v := range commonfiles {
+		_, err := os.Stat(v)
+		if os.IsNotExist(err) {
+			lager.Logger.Infof("[%s] not exist", v)
+			continue
+		}
 		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority); err != nil {
 			lager.Logger.Infof("%v", err)
+			return nil, err
 		}
 		files = append(files, v)
 	}
@@ -62,6 +72,7 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 
 	factory.RegisterListener(eventHandler, "a*")
 
+	lager.Logger.Infof("Configuration files: %s", strings.Join(files, ", "))
 	return conf, nil
 }
 
@@ -93,7 +104,6 @@ func Init() error {
 		fileutil.GetTracing(),
 	}
 
-	lager.Logger.Infof("Essential Configuration Path: %v, Configuration Paths %v", essentialfiles, commonfiles)
 	dConf, err := NewConfig(essentialfiles, commonfiles)
 	DefaultConf = dConf
 	return err
@@ -192,5 +202,10 @@ func AddFile(file string) error {
 
 // AddKeyValue is for to add the configuration key, value pairs into the configfactory at run time
 func AddKeyValue(key string, value interface{}) error {
-	return externalconfigsource.NewExternalConfigurationSource().AddKeyValue(key, value)
+	return memoryconfigsource.NewMemoryConfigurationSource().AddKeyValue(key, value)
+}
+
+// DeleteKeyValue is for to delete the configuration key, value pairs into the configfactory at run time
+func DeleteKeyValue(key string, value interface{}) error {
+	return memoryconfigsource.NewMemoryConfigurationSource().DeleteKeyValue(key, value)
 }

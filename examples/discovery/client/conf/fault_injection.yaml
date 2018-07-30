@@ -1,0 +1,76 @@
+#---
+#cse:
+#  governance:
+#    Consumer:
+#      _global:
+#        policy:
+#          fault:
+#            protocols:
+#              rest:
+#                delay:
+#                  fixedDelay: 5
+#                  percent: 10
+#                abort:
+#                  httpStatus: 421
+#                  percent: 100
+#              highway:
+#                delay:
+#                  fixedDelay: 2
+#                  percent: 100
+#                abort:
+#                  percent: 30
+#      Server:
+#        policy:
+#          fault:
+#            protocols:
+#              rest:
+#                delay:
+#                  fixedDelay: 5
+#                  percent: 10
+#                abort:
+#                  httpStatus: 421
+#                  percent: 100
+#              highway:
+#                delay:
+#                  fixedDelay: 2
+#                  percent: 100
+#                abort:
+#                  percent: 30
+#      schemas:
+#        ServerFaultService:
+#          policy:
+#            fault:
+#              protocols:
+#                rest:
+#                  delay:
+#                    fixedDelay: 5
+#                    percent: 10
+#                  abort:
+#                    httpStatus: 421
+#                    percent: 100
+#                highway:
+#                  delay:
+#                    fixedDelay: 2
+#                    percent: 100
+#                  abort:
+#                    httpStatus: 450
+#                    percent: 30
+#      operations:
+#        SayHello:
+#          policy:
+#            fault:
+#              protocols:
+#                rest:
+#                  delay:
+#                    fixedDelay: 5
+#                    percent: 10
+#                  abort:
+#                    httpStatus: 421
+#                    percent: 100
+#                highway:
+#                  delay:
+#                    fixedDelay: 2
+#                    percent: 100
+#                  abort:
+#                    percent: 30
+#                    httpStatus: 451

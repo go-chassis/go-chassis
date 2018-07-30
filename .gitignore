@@ -7,3 +7,4 @@ bin/
 
 vendor/**
 !vendor/manifest
+docs/_build

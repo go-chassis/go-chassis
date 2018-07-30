@@ -1,0 +1,14 @@
+---
+cse:
+  service:
+    registry:
+      type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
+      address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
+  protocols:
+    rest:
+      listenAddress: 127.0.0.1:8083
+      advertiseAddress: 127.0.0.1:8083
+  handler:
+    chain:
+      Provider:
+        default: metadata-handler

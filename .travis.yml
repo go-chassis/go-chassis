@@ -5,10 +5,10 @@ go:
 install: true
 
 before_script:
-  - mkdir -p $HOME/gopath/src/github.com/ServiceComb/go-chassis
-  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/ServiceComb/go-chassis/
-  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/ServiceComb/go-chassis
-  - cd $HOME/gopath/src/github.com/ServiceComb/go-chassis
+  - mkdir -p $HOME/gopath/src/github.com/go-chassis/go-chassis
+  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/go-chassis/go-chassis/
+  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/go-chassis/go-chassis
+  - cd $HOME/gopath/src/github.com/go-chassis/go-chassis
 
 jobs:
   include:
@@ -36,18 +36,17 @@ jobs:
         - bash -x scripts/travis/goCycloChecker.sh
     - stage: Unit Test
       script:
-        - go get github.com/FiloSottile/gvt
+        - go get github.com/Masterminds/glide
         - bash -x scripts/travis/start_latest_sc.sh
         - go get github.com/stretchr/testify
-        - go get github.com/reactivex/rxgo
         - go get github.com/mattn/goveralls
         - go get golang.org/x/tools/cmd/cover
-        - gvt restore
+        - glide install
         - bash -x scripts/travis/unit_test.sh && $HOME/gopath/bin/goveralls -coverprofile=coverage.txt -service=travis-ci
 
     - stage: Build
       script: 
-        - go get github.com/FiloSottile/gvt
-        - gvt restore
+        - go get github.com/Masterminds/glide
+        - glide install
         - go build -o chassis
 

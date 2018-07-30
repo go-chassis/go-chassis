@@ -13,7 +13,7 @@ mkdir -p apache
 cd apache
 git clone https://github.com/apache/incubator-servicecomb-service-center.git
 cd incubator-servicecomb-service-center
-gvt restore
+glide install
 go build -o incubator-servicecomb-service-center
 cp -r etc/conf .
 ./incubator-servicecomb-service-center > start-sc.log 2>&1 &

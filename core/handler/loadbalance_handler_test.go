@@ -2,25 +2,29 @@ package handler_test
 
 import (
 	"fmt"
-	"github.com/ServiceComb/go-archaius/core"
-	"github.com/ServiceComb/go-archaius/core/cast"
-	"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	chassisModel "github.com/ServiceComb/go-chassis/core/config/model"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/loadbalance"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	mk "github.com/ServiceComb/go-chassis/core/registry/mock"
-	"github.com/ServiceComb/go-chassis/examples/schemas/helloworld"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
+
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-archaius/core/cast"
+	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/config"
+	chassisModel "github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/registry"
+	mk "github.com/go-chassis/go-chassis/core/registry/mock"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 const CallTimes = 15
@@ -31,12 +35,12 @@ type handler1 struct {
 }
 
 func (th *handler1) Name() string {
-	return "loadbalance"
+	return "loadbalancer"
 }
 
 func (th *handler1) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	callTimes++
-	cb(&invocation.InvocationResponse{})
+	cb(&invocation.Response{})
 }
 
 type handler2 struct {
@@ -48,14 +52,14 @@ func (h *handler2) Name() string {
 
 func (h *handler2) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	callTimes++
-	r := &invocation.InvocationResponse{
+	r := &invocation.Response{
 		Err: fmt.Errorf("A fake error from handler2"),
 	}
 	if callTimes < CallTimes {
 		cb(r)
 		return
 	}
-	cb(&invocation.InvocationResponse{})
+	cb(&invocation.Response{})
 }
 
 /*======================================================================================================================
@@ -135,7 +139,7 @@ func (m *MockConfigurationFactory) AddByDimensionInfo(dimensionInfo string) (map
 func TestLBHandlerWithRetry(t *testing.T) {
 	t.Log("testing load balance handler with retry")
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	config.SelfServiceID = "selfServiceID"
+	runtime.ServiceID = "selfServiceID"
 	config.Init()
 	//config.GlobalDefinition = &chassisModel.GlobalCfg{}
 
@@ -143,18 +147,18 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	testConfigFactoryObj := new(MockConfigurationFactory)
 	archaius.DefaultConf.ConfigFactory = testConfigFactoryObj
 	key1 := fmt.Sprint("cse.loadbalance.retryEnabled")
-	key2 := fmt.Sprint("cse.loadbalance.source1.service1.retryEnabled")
+	key2 := fmt.Sprint("cse.loadbalance.service1.retryEnabled")
 	key3 := fmt.Sprint("cse.loadbalance.retryOnSame")
-	key4 := fmt.Sprint("cse.loadbalance.source1.service1.retryOnSame")
+	key4 := fmt.Sprint("cse.loadbalance.service1.retryOnSame")
 	key5 := fmt.Sprint("cse.loadbalance.retryOnNext")
-	key6 := fmt.Sprint("cse.loadbalance.source1.service1.retryOnNext")
+	key6 := fmt.Sprint("cse.loadbalance.service1.retryOnNext")
 	key7 := fmt.Sprint("cse.references.service1.transport")
 	key8 := fmt.Sprint("cse.loadbalance.backoff.kind")
-	key9 := fmt.Sprint("cse.loadbalance.source1.service1.backoff.kind")
+	key9 := fmt.Sprint("cse.loadbalance.service1.backoff.kind")
 	key10 := fmt.Sprint("cse.loadbalance.backoff.minMs")
-	key11 := fmt.Sprint("cse.loadbalance.source1.service1.backoff.minMs")
+	key11 := fmt.Sprint("cse.loadbalance.service1.backoff.minMs")
 	key12 := fmt.Sprint("cse.loadbalance.backoff.maxMs")
-	key13 := fmt.Sprint("cse.loadbalance.source1.service1.backoff.maxMs")
+	key13 := fmt.Sprint("cse.loadbalance.service1.backoff.maxMs")
 	key14 := fmt.Sprint("cse.loadbalance.strategy.name")
 	key15 := fmt.Sprint("cse.loadbalance.SessionStickinessRule.sessionTimeoutInSeconds")
 	key16 := fmt.Sprint("cse.loadbalance.SessionStickinessRule.successiveFailedTimes")
@@ -166,7 +170,7 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	val5 := cast.NewValue("Random", nil)
 	val6 := cast.NewValue(10, nil)
 	val7 := cast.NewValue(2, nil)
-	val8 := cast.NewValue(loadbalance.ZoneAware, nil)
+	val8 := cast.NewValue(loadbalancer.ZoneAware, nil)
 	testConfigFactoryObj.On("GetValue", key1).Return(val1)
 	testConfigFactoryObj.On("GetValue", key2).Return(val1)
 	testConfigFactoryObj.On("GetValue", key3).Return(val2)
@@ -200,37 +204,33 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	mss = append(mss, ms1)
 	mss = append(mss, ms2)
 
-	testRegistryObj := new(mk.RegistryMock)
-	registry.RegistryService = testRegistryObj
-	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0").Return(mss, nil)
+	testRegistryObj := new(mk.DiscoveryMock)
+	registry.DefaultServiceDiscoveryService = testRegistryObj
+	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	req, _ := rest.NewRequest("GET", "127.0.0.1")
 	req.SetHeader("Set-Cookie", "sessionid=100")
 	i := &invocation.Invocation{
-		SourceMicroService: "source1",
-		MicroServiceName:   "service1",
-		SchemaID:           "schema1",
-		OperationID:        "SayHello",
-		Args:               req,
-		Version:            "1.0",
-		Strategy:           loadbalance.StrategyRoundRobin,
-		AppID:              "appID",
-		SourceServiceID:    config.SelfServiceID,
-		//Filters:
+		MicroServiceName: "service1",
+		SchemaID:         "schema1",
+		OperationID:      "SayHello",
+		Args:             req,
+		Strategy:         loadbalancer.StrategyRoundRobin,
+		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
+		SourceServiceID:  runtime.ServiceID,
 	}
 	t.Log(i.SourceServiceID)
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
-		//log.Println(r.Result)
 		return r.Err
 	})
 
 	var lbh *handler.LBHandler = new(handler.LBHandler)
 	str := lbh.Name()
-	assert.Equal(t, "loadbalance", str)
+	assert.Equal(t, "loadbalancer", str)
 	t.Log(i.Protocol)
 	t.Log(i.Endpoint)
 }
@@ -259,48 +259,45 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	mss = append(mss, ms1)
 	mss = append(mss, ms2)
 
-	testRegistryObj := new(mk.RegistryMock)
-	registry.RegistryService = testRegistryObj
-	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0").Return(mss, nil)
+	testRegistryObj := new(mk.DiscoveryMock)
+	registry.DefaultServiceDiscoveryService = testRegistryObj
+	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	i := &invocation.Invocation{
-		SourceMicroService: "source1",
-		MicroServiceName:   "service1",
-		SchemaID:           "schema1",
-		OperationID:        "SayHello",
-		Args:               &helloworld.HelloRequest{Name: "peter"},
-		Version:            "1.0",
-		Strategy:           loadbalance.StrategyRoundRobin,
-		AppID:              "appID",
-		SourceServiceID:    "selfServiceID",
-		//Filters:
+		MicroServiceName: "service1",
+		SchemaID:         "schema1",
+		OperationID:      "SayHello",
+		Args:             &helloworld.HelloRequest{Name: "peter"},
+		Strategy:         loadbalancer.StrategyRoundRobin,
+		SourceServiceID:  "selfServiceID",
+		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 	}
-	c.Next(i, func(r *invocation.InvocationResponse) error {
+	c.Next(i, func(r *invocation.Response) error {
 		assert.NoError(t, r.Err)
 		return r.Err
 	})
 
 	var lbh *handler.LBHandler = new(handler.LBHandler)
 	str := lbh.Name()
-	assert.Equal(t, "loadbalance", str)
+	assert.Equal(t, "loadbalancer", str)
 	t.Log(i.Protocol)
 	t.Log(i.Endpoint)
 }
 
 func BenchmarkLBHandler_Handle(b *testing.B) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "client"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	registry.Enable()
 	registry.DoRegister()
-	loadbalance.Enable()
+	loadbalancer.Enable()
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",
-			AppID:       "CSE",
+			AppID:       "default",
 			Level:       "FRONT",
 			Version:     "1.0",
 			Status:      "UP",
@@ -311,29 +308,32 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			HostName:     "test1",
 			Status:       "UP",
 			EndpointsMap: map[string]string{"highway": "10.0.0.4:1234"},
-			Environment:  common.EnvValueProd,
 		},
 		{
 			HostName:     "test2",
 			Status:       "UP",
-			Environment:  common.EnvValueProd,
 			EndpointsMap: map[string]string{"highway": "10.0.0.3:1234"},
 		},
 	}
-	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[0])
-	_, _, _ = registry.RegistryService.RegisterServiceAndInstance(testData1[0], testData2[1])
+	sid, _, _ := registry.DefaultRegistrator.RegisterServiceAndInstance(testData1[0], testData2[0])
+	_, _, _ = registry.DefaultRegistrator.RegisterServiceAndInstance(testData1[0], testData2[1])
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})
 	c.AddHandler(&handler1{})
+	runtime.ServiceID = sid
 	iv := &invocation.Invocation{
 		MicroServiceName: "test2",
-		Version:          "1.0",
 		Protocol:         "highway",
-		Strategy:         loadbalance.StrategyRoundRobin,
+		Strategy:         loadbalancer.StrategyRoundRobin,
+		SourceServiceID:  runtime.ServiceID,
+		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 	}
+
+	b.Log(runtime.ServiceID)
+	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Next(iv, func(r *invocation.InvocationResponse) error {
+		c.Next(iv, func(r *invocation.Response) error {
 			return r.Err
 		})
 		c.Reset()

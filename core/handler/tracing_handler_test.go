@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	//"github.com/ServiceComb/go-chassis/client/rest"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/tracing"
-	//"github.com/ServiceComb/go-chassis/third_party/forked/valyala/fasthttp"
-	"github.com/ServiceComb/go-chassis/util/iputil"
+	//"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/tracing"
+
 	"github.com/apache/thrift/lib/go/thrift"
 	//"github.com/emicklei/go-restful"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
@@ -61,7 +61,7 @@ type spanTestHandler struct {
 
 func (s *spanTestHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	s.Span = opentracing.SpanFromContext(i.Ctx)
-	cb(&invocation.InvocationResponse{
+	cb(&invocation.Response{
 		Err: nil,
 	})
 }
@@ -79,7 +79,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 	// batch size it 1, send every span when once collector get it.
 	collector, err := zipkin.NewHTTPCollector(fmt.Sprintf("http://localhost:%d/api/v1/spans", port), zipkin.HTTPBatchSize(1))
 	assert.NoError(t, err)
-	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", iputil.GetHostName())
+	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
 	tracer, err := zipkin.NewTracer(
 		recorder,
 		zipkin.ClientServerSameSpan(true),
@@ -102,7 +102,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 		Protocol:         common.ProtocolHighway,
 	}
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -143,7 +143,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 	providerChain.AddHandler(providerSpanHandler)
 
 	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	providerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -180,7 +180,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 	s.clearSpans()
 	parentSpanID := providerZpSpanContext.SpanID
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -203,7 +203,7 @@ func TestTracingHandler_Highway(t *testing.T) {
 }
 
 // TODO
-// Comment buggy test cases : Already raised an issue to trace this https://github.com/ServiceComb/go-chassis/issues/5
+// Comment buggy test cases : Already raised an issue to trace this https://github.com/go-chassis/go-chassis/issues/5
 /*
 func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
@@ -242,7 +242,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 		Args:             restClientSentReq,
 	}
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -298,7 +298,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	providerChain.AddHandler(providerSpanHandler)
 
 	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	providerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -338,7 +338,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	s.clearSpans()
 	parentSpanID := providerZpSpanContext.SpanID
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -391,7 +391,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 		Args:             fasthttpRequest,
 	}
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -447,7 +447,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 	providerChain.AddHandler(providerSpanHandler)
 
 	s.clearSpans()
-	providerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	providerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})
@@ -487,7 +487,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 	s.clearSpans()
 	parentSpanID := providerZpSpanContext.SpanID
 
-	consumerChain.Next(inv, func(i *invocation.InvocationResponse) error {
+	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)
 		return nil
 	})

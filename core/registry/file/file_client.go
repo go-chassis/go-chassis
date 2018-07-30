@@ -3,13 +3,15 @@ package file
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
-	"github.com/ServiceComb/go-sc-client/model"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+
+	"github.com/go-chassis/go-sc-client/model"
 )
 
 const (
@@ -79,18 +81,18 @@ func (f *fileClient) getInstanceDataFromFile() *serviceData {
 
 	file, err := os.Open(path)
 	if err != nil {
-		lager.Logger.Warnf(err, "failed to open a file")
+		lager.Logger.Warnf("failed to open a file", err)
 	}
 	defer file.Close()
 
 	plan, err := ioutil.ReadFile(path)
 	if err != nil {
-		lager.Logger.Warnf(err, "failed to do readfile operation")
+		lager.Logger.Warnf("failed to do readfile operation", err)
 	}
 
 	err = json.Unmarshal(plan, &data)
 	if err != nil {
-		lager.Logger.Warnf(err, "failed to do unmarshall")
+		lager.Logger.Warnf("failed to do unmarshall", err)
 	}
 
 	return data

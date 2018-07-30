@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/rolling"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/rolling"
 )
 
 type commandExecution struct {
@@ -87,7 +87,6 @@ func (m *metricExchange) IncrementMetrics(wg *sync.WaitGroup, collector metricCo
 		collector.IncrementShortCircuits()
 
 		collector.IncrementAttempts()
-		collector.IncrementErrors()
 	}
 	if update.Types[0] == "timeout" {
 		collector.IncrementTimeouts()

@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/lager"
 
 	"go.uber.org/ratelimit"
 )
@@ -125,12 +125,12 @@ func (qpsL *QPSLimiterMap) UpdateRateLimit(key string, value interface{}) {
 	case string:
 		convertedIntValue, err := strconv.Atoi(value.(string))
 		if err != nil {
-			lager.Logger.Warnf(err, "Invalid Value type received for QPSLateLimiter: %v", v)
+			lager.Logger.Warnf("Invalid Value type received for QPSLateLimiter: %v", v, err)
 		} else {
 			qpsL.ProcessDefaultRateRpsTokenReq(key, convertedIntValue)
 		}
 	default:
-		lager.Logger.Warnf(nil, "Invalid Value type received for QPSLateLimiter: %v", v)
+		lager.Logger.Warnf("Invalid Value type received for QPSLateLimiter: %v", v)
 	}
 }
 

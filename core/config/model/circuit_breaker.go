@@ -58,7 +58,7 @@ type Timeout struct {
 type CircuitBreakerSpec struct {
 	Enabled                   bool                                  `yaml:"enabled"`
 	ForceOpen                 bool                                  `yaml:"forceOpen"`
-	ForceClose                bool                                  `yaml:"forceClose"`
+	ForceClose                bool                                  `yaml:"forceClosed"`
 	SleepWindowInMilliseconds int                                   `yaml:"sleepWindowInMilliseconds"`
 	RequestVolumeThreshold    int                                   `yaml:"requestVolumeThreshold"`
 	ErrorThresholdPercentage  int                                   `yaml:"errorThresholdPercentage"`
@@ -68,6 +68,7 @@ type CircuitBreakerSpec struct {
 // FallbackSpec fallback specifications
 type FallbackSpec struct {
 	Enabled               bool                              `yaml:"enabled"`
+	Force                 bool                              `yaml:"force"`
 	MaxConcurrentRequests int                               `yaml:"maxConcurrentRequests"`
 	AnyService            map[string]FallbackPropertyStruct `yaml:",inline"`
 }
@@ -89,7 +90,7 @@ type IsolationPropertyStruct struct {
 type CircuitBreakPropertyStruct struct {
 	Enabled                   bool `yaml:"enabled"`
 	ForceOpen                 bool `yaml:"forceOpen"`
-	ForceClose                bool `yaml:"forceClose"`
+	ForceClose                bool `yaml:"forceClosed"`
 	SleepWindowInMilliseconds int  `yaml:"sleepWindowInMilliseconds"`
 	RequestVolumeThreshold    int  `yaml:"requestVolumeThreshold"`
 	ErrorThresholdPercentage  int  `yaml:"errorThresholdPercentage"`
@@ -98,6 +99,7 @@ type CircuitBreakPropertyStruct struct {
 // FallbackPropertyStruct fallback property structure
 type FallbackPropertyStruct struct {
 	Enabled               bool `yaml:"enabled"`
+	Force                 bool `yaml:"force"`
 	MaxConcurrentRequests int  `yaml:"maxConcurrentRequests"`
 }
 

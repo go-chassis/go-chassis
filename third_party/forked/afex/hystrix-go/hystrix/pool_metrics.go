@@ -3,7 +3,7 @@ package hystrix
 import (
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/third_party/forked/afex/hystrix-go/hystrix/rolling"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/rolling"
 )
 
 type poolMetrics struct {

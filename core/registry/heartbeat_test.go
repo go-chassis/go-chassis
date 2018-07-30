@@ -1,13 +1,13 @@
 package registry_test
 
 import (
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/registry"
-	_ "github.com/ServiceComb/go-chassis/core/registry/servicecenter"
-	_ "github.com/ServiceComb/go-chassis/security/plugins/plain"
-	"github.com/ServiceComb/go-sc-client/model"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/registry"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -16,9 +16,10 @@ import (
 
 func TestServicecenter_Heartbeat(t *testing.T) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	config.Init()
+	runtime.Init()
 	t.Log(os.Getenv("CHASSIS_HOME"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
@@ -28,33 +29,33 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",
 		Version:     "2.0.3",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
+		Status:       common.DefaultStatus,
 	}
 
-	sid, insID, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	sid, insID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
 
 	heartBeatService := registry.HeartbeatService{}
 	heartBeatService.DoHeartBeat(sid, insID)
-	heartBeatService.RetryRegister(sid)
+	heartBeatService.RetryRegister(sid, insID)
 	err = heartBeatService.ReRegisterSelfMSandMSI()
 	assert.NoError(t, err)
 
 }
+
 func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "ServiceComb", "go-chassis", "examples", "discovery", "server"))
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	config.Init()
-	var ins = make(map[string]string)
+	var ins = map[string]string{"type": "test"}
 	config.MicroserviceDefinition.ServiceDescription.InstanceProperties = ins
 	t.Log(os.Getenv("CHASSIS_HOME"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
@@ -65,18 +66,17 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",
 		Version:     "2.0.3",
-		Status:      model.MicorserviceUp,
+		Status:      common.DefaultStatus,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
-		Environment:  common.EnvValueProd,
+		Status:       common.DefaultStatus,
 	}
 
-	_, _, err := registry.RegistryService.RegisterServiceAndInstance(microservice, microServiceInstance)
+	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
 
 }

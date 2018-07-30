@@ -1,6 +1,7 @@
 package restful
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -9,18 +10,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/archaius"
-	"github.com/ServiceComb/go-chassis/core/common"
-	"github.com/ServiceComb/go-chassis/core/config"
-	"github.com/ServiceComb/go-chassis/core/handler"
-	"github.com/ServiceComb/go-chassis/core/invocation"
-	"github.com/ServiceComb/go-chassis/core/lager"
-	"github.com/ServiceComb/go-chassis/core/server"
-	"github.com/ServiceComb/go-chassis/metrics"
-	microServer "github.com/ServiceComb/go-chassis/third_party/forked/go-micro/server"
+	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/metrics"
+
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
-	"golang.org/x/net/context"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 )
 
 // constants for metric path and name
@@ -28,10 +29,12 @@ const (
 	//Name is a variable of type string which indicates the protocol being used
 	Name              = "rest"
 	DefaultMetricPath = "metrics"
+	MimeFile          = "application/octet-stream"
+	MimeMult          = "multipart/form-data"
+	SessionID         = ""
 )
 
 func init() {
-	restful.SetCacheReadEntity(false)
 	server.InstallPlugin(Name, newRestfulServer)
 }
 
@@ -39,18 +42,17 @@ type restfulServer struct {
 	microServiceName string
 	container        *restful.Container
 	ws               *restful.WebService
-	opts             microServer.Options
+	opts             server.Options
 	mux              sync.RWMutex
 	exit             chan chan error
 	server           *http.Server
 }
 
-func newRestfulServer(opts ...microServer.Option) microServer.Server {
-	options := newOptions(opts...)
+func newRestfulServer(opts server.Options) server.ProtocolServer {
 	ws := new(restful.WebService)
 	ws.Path("/").Doc("root path").
-		Consumes(restful.MIME_XML, restful.MIME_JSON).
-		Produces(restful.MIME_JSON, restful.MIME_XML) // you can specify this per route as well
+		Consumes(restful.MIME_XML, restful.MIME_JSON, MimeFile, MimeMult).
+		Produces(restful.MIME_JSON, restful.MIME_XML, MimeFile, MimeMult) // you can specify this per route as well
 
 	if archaius.GetBool("cse.metrics.enable", false) {
 
@@ -59,55 +61,53 @@ func newRestfulServer(opts ...microServer.Option) microServer.Server {
 			metricPath = "/" + metricPath
 		}
 		lager.Logger.Info("Enbaled metrics API on " + metricPath)
-		ws.Route(ws.GET(metricPath).To(metrics.MetricsHandleFunc))
+		ws.Route(ws.GET(metricPath).To(metrics.HTTPHandleFunc))
 	}
 	return &restfulServer{
-		opts:      options,
+		opts:      opts,
 		container: restful.NewContainer(),
 		ws:        ws,
 	}
 }
-func newOptions(opt ...microServer.Option) microServer.Options {
-	opts := microServer.Options{
-		Metadata: map[string]string{},
+func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
+	cookie, err := req.Request.Cookie(common.LBSessionID)
+	if err != nil {
+		if err != http.ErrNoCookie {
+			lager.Logger.Errorf(err, "get cookie error")
+			return nil, err
+		}
 	}
 
-	for _, o := range opt {
-		o(&opts)
+	inv := &invocation.Invocation{
+		MicroServiceName:   config.SelfServiceName,
+		SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
+		Args:               req,
+		Protocol:           common.ProtocolRest,
+		SchemaID:           schema,
+		OperationID:        operation,
+		URLPathFormat:      req.Request.URL.Path,
+		Metadata: map[string]interface{}{
+			common.RestMethod: req.Request.Method,
+		},
+		Ctx: context.WithValue(context.Background(), common.ContextHeaderKey{},
+			map[string]string{}), //set headers, do not consider about protocol in handlers
 	}
-	return opts
-}
-
-func (r *restfulServer) Init(opts ...microServer.Option) error {
-	r.mux.Lock()
-	defer r.mux.Unlock()
-	for _, opt := range opts {
-		opt(&r.opts)
+	if cookie != nil {
+		headers := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+		headers[common.LBSessionID] = cookie.Value
 	}
-	lager.Logger.Info("Rest server init success")
-	return nil
+	return inv, nil
 }
-
-func (r *restfulServer) Options() microServer.Options {
-	r.mux.RLock()
-	defer r.mux.RUnlock()
-	opts := r.opts
-	return opts
-}
-
-func (r *restfulServer) Register(schema interface{}, options ...microServer.RegisterOption) (string, error) {
+func (r *restfulServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
 	lager.Logger.Info("register rest server")
-	opts := microServer.RegisterOptions{}
+	opts := server.RegisterOptions{}
 	r.mux.Lock()
 	defer r.mux.Unlock()
 	for _, o := range options {
 		o(&opts)
 	}
-	if opts.MicroServiceName == "" {
-		opts.MicroServiceName = config.SelfServiceName
-	}
-	r.microServiceName = opts.MicroServiceName
-	routes, err := GetRoutes(schema)
+
+	routes, err := GetRouteSpecs(schema)
 	if err != nil {
 		return "", err
 	}
@@ -127,7 +127,7 @@ func (r *restfulServer) Register(schema interface{}, options ...microServer.Regi
 			return "", fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
 		}
 
-		handle := func(req *restful.Request, rep *restful.Response) {
+		handler := func(req *restful.Request, rep *restful.Response) {
 			c, err := handler.GetChain(common.Provider, r.opts.ChainName)
 			if err != nil {
 				lager.Logger.Errorf(err, "Handler chain init err")
@@ -135,22 +135,20 @@ func (r *restfulServer) Register(schema interface{}, options ...microServer.Regi
 				rep.WriteErrorString(http.StatusInternalServerError, err.Error())
 				return
 			}
-			//todo: use it for hystric
-			inv := invocation.Invocation{
-				MicroServiceName:   r.microServiceName,
-				SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
-				Args:               req,
-				Protocol:           common.ProtocolRest,
-				SchemaID:           schemaName,
-				OperationID:        method.Name,
+			inv, err := httpRequest2Invocation(req, schemaName, method.Name)
+			if err != nil {
+				lager.Logger.Errorf(err, "transfer http request to invocation failed")
+				return
 			}
-			bs := NewBaseServer(context.TODO())
+			//give inv.ctx to user handlers, user may inject headers in handler chain
+			bs := NewBaseServer(inv.Ctx)
 			bs.req = req
 			bs.resp = rep
-			c.Next(&inv, func(ir *invocation.InvocationResponse) error {
+			c.Next(inv, func(ir *invocation.Response) error {
 				if ir.Err != nil {
 					return ir.Err
 				}
+				transfer(inv, req)
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
 				if bs.resp.StatusCode() >= http.StatusBadRequest {
 					return fmt.Errorf("get err from http handle, get status: %d", bs.resp.StatusCode())
@@ -160,28 +158,40 @@ func (r *restfulServer) Register(schema interface{}, options ...microServer.Regi
 
 		}
 
-		switch route.Method {
-		case http.MethodGet:
-			r.ws.Route(r.ws.GET(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodPost:
-			r.ws.Route(r.ws.POST(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodHead:
-			r.ws.Route(r.ws.HEAD(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodPut:
-			r.ws.Route(r.ws.PUT(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodPatch:
-			r.ws.Route(r.ws.PATCH(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		case http.MethodDelete:
-			r.ws.Route(r.ws.DELETE(route.Path).To(handle).Doc(route.ResourceFuncName).Operation(route.ResourceFuncName))
-		default:
-			return "", errors.New("method do not support: " + route.Method)
+		if err := r.register2GoRestful(route, handler); err != nil {
+			return "", err
 		}
 	}
 	return reflect.TypeOf(schema).String(), nil
 }
+func transfer(inv *invocation.Invocation, req *restful.Request) {
+	for k, v := range inv.Metadata {
+		req.SetAttribute(k, v.(string))
+	}
 
+}
+func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.RouteFunction) error {
+	switch routeSpec.Method {
+	case http.MethodGet:
+		r.ws.Route(r.ws.GET(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodPost:
+		r.ws.Route(r.ws.POST(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodHead:
+		r.ws.Route(r.ws.HEAD(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodPut:
+		r.ws.Route(r.ws.PUT(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodPatch:
+		r.ws.Route(r.ws.PATCH(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	case http.MethodDelete:
+		r.ws.Route(r.ws.DELETE(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+	default:
+		return errors.New("method [" + routeSpec.Method + "] do not support")
+	}
+	return nil
+}
 func (r *restfulServer) Start() error {
-	config := r.Options()
+	var err error
+	config := r.opts
 	r.mux.Lock()
 	r.opts.Address = config.Address
 	r.mux.Unlock()
@@ -193,18 +203,22 @@ func (r *restfulServer) Start() error {
 	}
 	// TODO Choose a suitable strategy of transforming code to contract
 	// register to swagger ui
-	if val := os.Getenv("GO_CHASSIS_SWAGGERFILEPATH"); val != "" {
-		swaggerConfig := swagger.Config{
-			WebServices:    r.container.RegisteredWebServices(),
-			WebServicesUrl: config.Address,
-			ApiPath:        "/apidocs.json",
-			// Optionally, specify where the UI is located
-			SwaggerPath:     "/apidocs/",
-			SwaggerFilePath: val}
-		swagger.RegisterSwaggerService(swaggerConfig, r.container)
+	var val string
+	if val = os.Getenv("SWAGGER_FILE_PATH"); val == "" {
+		val, err = fileutil.GetWorkDir()
+		if err != nil {
+			return err
+		}
 	}
-
-	var err error
+	swagger.LogInfo = func(format string, v ...interface{}) {
+		lager.Logger.Infof(format, v...)
+	}
+	swaggerConfig := swagger.Config{
+		WebServices:     r.container.RegisteredWebServices(),
+		WebServicesUrl:  config.Address,
+		ApiPath:         "/apidocs.json",
+		SwaggerFilePath: val}
+	swagger.RegisterSwaggerService(swaggerConfig, r.container)
 	go func() {
 		if r.server.TLSConfig != nil {
 			err = r.server.ListenAndServeTLS("", "")
@@ -213,12 +227,12 @@ func (r *restfulServer) Start() error {
 		}
 		if err != nil {
 			lager.Logger.Error("Can't start http server", err)
-			server.ServerErr <- err
+			server.ErrRuntime <- err
 		}
 
 	}()
 
-	lager.Logger.Warnf(nil, "Restful server listening on: %s", config.Address)
+	lager.Logger.Infof("Restful server listening on: %s", config.Address)
 	return nil
 }
 

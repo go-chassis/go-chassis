@@ -3,7 +3,7 @@ package schema
 import (
 	"errors"
 	"fmt"
-	"github.com/ServiceComb/go-chassis/util/fileutil"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"io/ioutil"
 	"os"
 	"path/filepath"

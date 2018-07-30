@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pilot
+    name: istioserver
+  name: istioserver
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 8084
+    protocol: TCP
+    targetPort: 8084
+  selector:
+    app: pilot
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

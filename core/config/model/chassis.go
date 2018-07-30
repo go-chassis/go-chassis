@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 //GlobalCfg chassis.yaml 配置项
 type GlobalCfg struct {
 	AppID      string            `yaml:"APPLICATION_ID"`
@@ -43,32 +41,10 @@ type CseStruct struct {
 	Credentials CredentialStruct            `yaml:"credentials"`
 }
 
-// FaultProtocolStruct fault protocol struct
-type FaultProtocolStruct struct {
-	Fault map[string]Fault `yaml:"protocols"`
-}
-
-// Fault fault struct
-type Fault struct {
-	Abort Abort `yaml:"abort"`
-	Delay Delay `yaml:"delay"`
-}
-
-// Abort abort struct
-type Abort struct {
-	Percent    int `yaml:"percent"`
-	HTTPStatus int `yaml:"httpStatus"`
-}
-
-// Delay delay struct
-type Delay struct {
-	Percent    int           `yaml:"percent"`
-	FixedDelay time.Duration `yaml:"fixedDelay"`
-}
-
 // MetricsStruct metrics struct
 type MetricsStruct struct {
 	APIPath                string `yaml:"apiPath"`
+	FlushInterval          string `yaml:"flushInterval"`
 	Enable                 bool   `yaml:"enable"`
 	EnableGoRuntimeMetrics bool   `yaml:"enableGoRuntimeMetrics"`
 }
@@ -117,13 +93,20 @@ type ConfigStruct struct {
 
 // ClientStruct client structure
 type ClientStruct struct {
-	ServerURI       string                 `yaml:"serverUri"`
-	TenantName      string                 `yaml:"tenantName"`
-	RefreshMode     int                    `yaml:"refreshMode"`
-	RefreshInterval int                    `yaml:"refreshInterval"`
-	RefreshPort     string                 `yaml:"refreshPort"`
-	Autodiscovery   bool                   `yaml:"autodiscovery"`
-	APIVersion      ConfigAPIVersionStruct `yaml:"api"`
+	Type              string                 `yaml:"type"`
+	ServerURI         string                 `yaml:"serverUri"`
+	TenantName        string                 `yaml:"tenantName"`
+	RefreshMode       int                    `yaml:"refreshMode"`
+	RefreshInterval   int                    `yaml:"refreshInterval"`
+	RefreshPort       string                 `yaml:"refreshPort"`
+	Autodiscovery     bool                   `yaml:"autodiscovery"`
+	APIVersion        ConfigAPIVersionStruct `yaml:"api"`
+	ApolloServiceName string                 `yaml:"serviceName"`
+	ApolloEnv         string                 `yaml:"env"`
+	ApolloNameSpace   string                 `yaml:"namespace"`
+	ApolloToken       string                 `yaml:"token"`
+	ClusterName       string                 `yaml:"cluster"`
+	Enabled           bool                   `yaml:"enabled"`
 }
 
 // ConfigAPIVersionStruct is the structure for configuration API version
@@ -146,61 +129,22 @@ type Protocol struct {
 	Failure      string `yaml:"failure"`
 }
 
-//ServiceStruct SC注册中心地址信息结构体
-type ServiceStruct struct {
-	Registry RegistryStruct `yaml:"registry"`
-}
-
-//RegistryStruct SC注册中心地址信息
-type RegistryStruct struct {
-	Disable         bool                     `yaml:"disabled"`
-	Type            string                   `yaml:"type"`
-	Scope           string                   `yaml:"scope"`
-	AutoDiscovery   bool                     `yaml:"autodiscovery"`
-	AutoIPIndex     bool                     `yaml:"autoIPIndex"`
-	Address         string                   `yaml:"address"`
-	RefreshInterval string                   `yaml:"refeshInterval"`
-	Watch           bool                     `yaml:"watch"`
-	Tenant          string                   `yaml:"tenant"`
-	AutoRegister    string                   `yaml:"register"`
-	APIVersion      RegistryAPIVersionStruct `yaml:"api"`
-}
-
-// RegistryAPIVersionStruct registry api version structure
-type RegistryAPIVersionStruct struct {
-	Version string `yaml:"version"`
-}
-
 // MicroserviceCfg microservice.yaml 配置项
 type MicroserviceCfg struct {
-	AppID               string           `yaml:"APPLICATION_ID"`
-	Provider            string           `yaml:"Provider"`
-	ServiceDescription  MicServiceStruct `yaml:"service_description"`
-	InstanceDescription MicServiceStruct `yaml:"instance_description"`
-	Cse                 MicCseStruct     `yaml:"cse"`
+	AppID              string           `yaml:"APPLICATION_ID"`
+	Provider           string           `yaml:"Provider"`
+	ServiceDescription MicServiceStruct `yaml:"service_description"`
 }
 
-// MicServiceStruct ServiceStruct 设置微服务的私有属性
+// MicServiceStruct 设置微服务的私有属性
 type MicServiceStruct struct {
 	Name               string            `yaml:"name"`
+	Hostname           string            `yaml:"hostname"`
 	Version            string            `yaml:"version"`
+	Environment        string            `yaml:"environment"`
 	Level              string            `yaml:"level"`
 	Properties         map[string]string `yaml:"properties"`
 	InstanceProperties map[string]string `yaml:"instance_properties"`
-}
-
-// InstanceDesc is the struct for instance description
-type InstanceDesc struct {
-	Env string `yaml:"environment"`
-}
-
-// MicCseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
-type MicCseStruct struct {
-	RPC     map[string]string `yaml:"rpc"`
-	TCP     map[string]string `yaml:"tcp"`
-	Rest    map[string]string `yaml:"rest"`
-	HighWay map[string]string `yaml:"highway"`
-	Handler HandlerStruct     `yaml:"handler"`
 }
 
 // HandlerStruct 调用链信息

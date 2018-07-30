@@ -5,18 +5,15 @@ import (
 	"reflect"
 )
 
-//Route is a struct
+//Route describe http route path and swagger specifications for API
 type Route struct {
-	// Method is one of the following: GET,PUT,POST,DELETE
-	Method string
-	// Path contains a path pattern
-	Path string
-	//Resource function name
-	ResourceFuncName string
+	Method           string // Method is one of the following: GET,PUT,POST,DELETE
+	Path             string // Path contains a path pattern
+	ResourceFuncName string //Resource function name
 }
 
-//GetRoutes is a function used to respond to corresponding API calls
-func GetRoutes(schema interface{}) ([]Route, error) {
+//GetRouteSpecs is to return a rest API specification of a go struct
+func GetRouteSpecs(schema interface{}) ([]Route, error) {
 	rfValue := reflect.ValueOf(schema)
 	name := reflect.Indirect(rfValue).Type().Name()
 	urlPatternFunc := rfValue.MethodByName("URLPatterns")

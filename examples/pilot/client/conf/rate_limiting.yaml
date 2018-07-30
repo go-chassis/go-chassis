@@ -1,0 +1,8 @@
+---
+cse:
+  flowcontrol:
+    Consumer:
+      qps:
+        enabled: true
+        limit:
+          istioserver.RestFulHello: 100

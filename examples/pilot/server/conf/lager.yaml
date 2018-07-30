@@ -1,0 +1,23 @@
+---
+writers: file,stdout
+# LoggerLevel: |DEBUG|INFO|WARN|ERROR|FATAL
+logger_level: DEBUG
+
+# LoggerFile: used to output the name of log.可配置绝对路径，也可以配置用于拼接CHASSIS_HOME的相对路径。
+logger_file: log/chassis.log
+
+# LogFormatText:设定日志的输出格式是 json 还是 plaintext (类似于log4j)，默认为 false，不建议修改，如果开发过程中想本地查看日志的话，
+# 可以设定 LoggerFile 和 LogFormatText 为 true，这样会输出类似于 log4j 格式的本地日志。
+log_format_text: true
+
+#rollingPolicy daily/size;用于配置根据时间，还是根据大小进行日志rotate操作。
+rollingPolicy: size
+
+# MaxDaily of a log file before rotate. By D Days.；日志rotate时间配置，单位"day"。
+log_rotate_date: 1
+
+# MaxSize of a log file before rotate. By M Bytes.；日志rotate文件大小配置，单位"MB"。
+log_rotate_size: 10
+
+# Max counts to keep of a log's backup files.日志最大存储数量，单位“个”。
+log_backup_count: 7

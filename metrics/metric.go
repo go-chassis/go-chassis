@@ -1,27 +1,26 @@
+//Package metrics bootstrap metrics reporter, and supply 2 metrics registry
+//native prometheus registry and rcrowley/go-metrics registry
+//system registry is the place where go-chassis feed metrics data to
+//you can get system registry and report them to varies monitoring system
 package metrics
 
 import (
 	"errors"
+	"sync"
 
-	"github.com/ServiceComb/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/lager"
 
 	"github.com/emicklei/go-restful"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rcrowley/go-metrics"
-	"sync"
 )
 
-var errMonitoringFail = errors.New("Con not report metrics to CSE monitoring service")
+var errMonitoringFail = errors.New("can not report metrics to CSE monitoring service")
 
 // constants for header parameters
 const (
-	//HeaderUserName is a variable of type string
-	HeaderUserName   = "x-user-name"
-	HeaderDomainName = "x-domain-name"
-	ContentType      = "Content-Type"
-	Name             = "monitor"
-	defaultName      = "default_metric_registry"
+	defaultName = "default_metric_registry"
 	// Metrics is the constant string
 	Metrics = "PrometheusMetrics"
 )
@@ -52,10 +51,9 @@ func GetOrCreateRegistry(name string) metrics.Registry {
 	return r
 }
 
-// MetricsHandleFunc is a restful handler which can expose metrics in http server
-func MetricsHandleFunc(req *restful.Request, rep *restful.Response) {
-	reg := DefaultPrometheusSinker.PromRegistry.(*prometheus.Registry)
-	promhttp.HandlerFor(reg, promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
+// HTTPHandleFunc is a go-restful handler which can expose metrics in http server
+func HTTPHandleFunc(req *restful.Request, rep *restful.Response) {
+	promhttp.HandlerFor(GetSystemPrometheusRegistry(), promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
 }
 
 //Init prepare the metrics registry and report metrics to other systems
@@ -64,7 +62,7 @@ func Init() error {
 	for k, report := range reporterPlugins {
 		lager.Logger.Info("report metrics to " + k)
 		if err := report(GetSystemRegistry()); err != nil {
-			lager.Logger.Warn(err.Error(), err)
+			lager.Logger.Warnf(err.Error(), err)
 			return err
 		}
 	}

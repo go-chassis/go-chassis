@@ -34,13 +34,13 @@ type LoadBalancingSpec struct {
 
 // SessionStickinessRule loadbalancing structure
 type SessionStickinessRule struct {
-	sessionTimeoutInSeconds int `yaml:"sessionTimeoutInSeconds"`
-	successiveFailedTimes   int `yaml:"successiveFailedTimes"`
+	SessionTimeoutInSeconds int `yaml:"sessionTimeoutInSeconds"`
+	SuccessiveFailedTimes   int `yaml:"successiveFailedTimes"`
 }
 
 // BackoffStrategy back off strategy
 type BackoffStrategy struct {
 	Kind  string `yaml:"kind"`
-	MinMs uint   `yaml:"minMs"`
-	MaxMs uint   `yaml:"maxMs"`
+	MinMs int    `yaml:"minMs"`
+	MaxMs int    `yaml:"maxMs"`
 }
