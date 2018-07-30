@@ -188,10 +188,10 @@ func RefreshCache(service string, store []*MicroServiceInstance) {
 	}
 
 	for _, elder := range elders {
-		if _, ok := newers[elder.InstanceID]; ok {
-			lefts = append(lefts, elder)
-			continue
-		}
+		//if _, ok := newers[elder.InstanceID]; ok {
+		//	lefts = append(lefts, elder)
+		//	continue
+		//}
 		if err := HealthCheck(service, elder.version(), elder.appID(), elder); err == nil {
 			lefts = append(lefts, elder)
 		} // else remove the cache immediately if HC failed
