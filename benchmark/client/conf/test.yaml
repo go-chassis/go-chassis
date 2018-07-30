@@ -1,0 +1,8 @@
+---
+threadcount: 50
+messagesize: 1024
+printcount: 20000
+registryenable: true
+endpoint: 127.0.0.1:8080
+gomaxprocs: 4
+protocol: rest
