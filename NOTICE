@@ -70,6 +70,7 @@ github.com/golang/snappy
 github.com/golang/protobuf/proto
 github.com/gogo/protobuf/proto
 github.com/fsnotify/fsnotify
+github.com/shirou/gopsutil
 
 ================================================================
 Notice for gopkg.in/yaml.v2:

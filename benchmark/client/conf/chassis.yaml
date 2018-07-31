@@ -1,0 +1,20 @@
+---
+cse:
+  service:
+    registry:
+      type: servicecenter
+      scope: full
+      address: http://127.0.0.1:30100
+      refreshInterval : 30s
+      watch: true
+  handler:
+    chain:
+      Consumer:
+        default: bizkeeper-consumer,loadbalance, ratelimiter-consumer,transport
+  references:
+    Server:
+      version: 0.0.1
+      transport: highway
+    HelloServer:
+      version : 0.0.1
+      transport: highway
