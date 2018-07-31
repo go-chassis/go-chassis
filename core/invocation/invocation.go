@@ -43,6 +43,26 @@ type Invocation struct {
 	Filters            []string
 }
 
+//Reset reset clear a invocation
+func (inv *Invocation) Reset() {
+	inv.Endpoint = ""
+	inv.Protocol = ""
+	inv.SourceServiceID = ""
+	inv.SourceMicroService = ""
+	inv.MicroServiceName = ""
+	inv.SchemaID = ""
+	inv.OperationID = ""
+	inv.Args = nil
+	inv.URLPathFormat = ""
+	inv.Reply = nil
+	inv.Ctx = nil
+	inv.Metadata = nil
+	inv.RouteTags = utiltags.Tags{}
+	inv.Filters = nil
+	inv.Strategy = ""
+
+}
+
 // New create invocation
 func New(ctx context.Context) *Invocation {
 	inv := &Invocation{

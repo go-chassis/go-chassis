@@ -82,7 +82,7 @@ func CreateChains(chainType string, handlerNameMap map[string]string) error {
 		handlerNames := parseHandlers(handlerNameMap[chainName])
 		c, err := CreateChain(chainType, chainName, handlerNames...)
 		if err != nil {
-			return fmt.Errorf("Err create chain %s.%s:%s %s", chainType, chainName, handlerNames, err.Error())
+			return fmt.Errorf("err create chain %s.%s:%s %s", chainType, chainName, handlerNames, err.Error())
 		}
 		ChainMap[chainType+chainName] = c
 

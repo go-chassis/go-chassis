@@ -165,7 +165,8 @@ func WithContext(ctx context.Context, key, val string) context.Context {
 	return ctx
 }
 
-// FromContext transforms a context object to metadata
+// FromContext return the headers which should be send to provider
+// through transport
 func FromContext(ctx context.Context) map[string]string {
 	if ctx == nil {
 		return make(map[string]string, 0)
