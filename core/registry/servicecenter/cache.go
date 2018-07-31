@@ -225,10 +225,6 @@ func (c *CacheManager) getServiceStore(exist []*model.MicroService) sets.String 
 func filterReIndex(providerInstances []*model.MicroServiceInstance, serviceName string, appID string) {
 	var store = make([]*registry.MicroServiceInstance, 0, len(providerInstances))
 	for _, ins := range providerInstances {
-		if ins.Status != model.MSInstanceUP {
-			continue
-		}
-
 		if ins.Version == "" {
 			lager.Logger.Warn("do not support old service center, plz upgrade")
 			continue

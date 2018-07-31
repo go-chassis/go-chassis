@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/healthz/client"
@@ -166,45 +167,64 @@ func HealthCheck(service, version, appID string, instance *MicroServiceInstance)
 
 // RefreshCache is the function to filter changes between new pulling instances and cache
 func RefreshCache(service string, store []*MicroServiceInstance) {
+	var (
+		arrUps []*MicroServiceInstance
+		downs  = make(map[string]*MicroServiceInstance)
+		ups    = make(map[string]*MicroServiceInstance)
+	)
+
+	for _, ins := range store {
+		if ins.Status != common.DefaultStatus {
+			downs[ins.InstanceID] = ins
+			lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
+				ins.Status, ins.ServiceID, ins.InstanceID)
+			continue
+		}
+		arrUps = append(arrUps, ins)
+		ups[ins.InstanceID] = ins
+	}
+
 	c, ok := MicroserviceInstanceIndex.Get(service, nil)
-	if !ok || c == nil {
+	if !ok || c == nil || c.([]*MicroServiceInstance) == nil {
 		// if full new instances or at less one instance, then refresh cache immediately
-		MicroserviceInstanceIndex.Set(service, store)
+		MicroserviceInstanceIndex.Set(service, arrUps)
 		return
 	}
 
 	var (
-		news   []*MicroServiceInstance
-		lefts  []*MicroServiceInstance
-		elders = make(map[string]*MicroServiceInstance)
-		newers = make(map[string]*MicroServiceInstance)
+		saves []*MicroServiceInstance
+		lefts []*MicroServiceInstance
+		exps  = make(map[string]*MicroServiceInstance)
 	)
 	for _, instance := range c.([]*MicroServiceInstance) {
-		elders[instance.InstanceID] = instance
+		exps[instance.InstanceID] = instance
 	}
 
-	for _, instance := range store {
-		newers[instance.InstanceID] = instance
-	}
-
-	for _, elder := range elders {
-		if _, ok := newers[elder.InstanceID]; ok {
+	for _, elder := range exps {
+		// case: keep still alive instances
+		if _, ok := ups[elder.InstanceID]; ok {
 			lefts = append(lefts, elder)
 			continue
 		}
+		// case: remove instances with the non-up status
+		if _, ok := downs[elder.InstanceID]; ok {
+			continue
+		}
+		// case: keep instances returned HC ok
 		if err := HealthCheck(service, elder.version(), elder.appID(), elder); err == nil {
 			lefts = append(lefts, elder)
-		} // else remove the cache immediately if HC failed
+		}
 	}
 
-	for _, newer := range newers {
-		if _, ok := elders[newer.InstanceID]; ok {
+	for _, up := range ups {
+		if _, ok := exps[up.InstanceID]; ok {
 			continue
 		}
-		news = append(news, newer)
+		// case: add new come in instances
+		saves = append(saves, up)
 	}
 
-	lefts = append(lefts, news...)
+	lefts = append(lefts, saves...)
 	MicroserviceInstanceIndex.Set(service, lefts)
 	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(lefts), service)
 }
