@@ -252,12 +252,8 @@ func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Dur
 		}
 
 		baseClient.RemoveWaitMsg(msgID)
-
 		if bTimeout {
 			ctx.Done()
-		}
-
-		if bTimeout {
 			rsp.Err = "Client send timeout"
 			return errors.New("Client send timeout")
 		}
