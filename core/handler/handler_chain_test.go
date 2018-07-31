@@ -5,8 +5,12 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/stretchr/testify/assert"
+	"log"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -37,4 +41,36 @@ func TestCreateChain(t *testing.T) {
 	var ch *handler.ChainOptions = new(handler.ChainOptions)
 	chopt(ch)
 	assert.Equal(t, "chainName", ch.Name)
+}
+
+func BenchmarkChain_Next(b *testing.B) {
+	path := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
+	config.GlobalDefinition = &model.GlobalCfg{}
+	config.Init()
+	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
+	iv := &invocation.Invocation{}
+	handler.RegisterHandler("f1", createBizkeeperFakeHandler)
+	handler.RegisterHandler("f2", createBizkeeperFakeHandler)
+	handler.RegisterHandler("f3", createBizkeeperFakeHandler)
+	if err := handler.CreateChains(common.Consumer, map[string]string{
+		"default": "f1,f2,f3,f1,f2,f3,f1,f2,f3,f1,f2,f3,f1,f2",
+	}); err != nil {
+		b.Fatal(err)
+	}
+
+	c, err := handler.GetChain(common.Consumer, "default")
+	if err != nil {
+		b.Fatal(err)
+	}
+	log.Println("----------------------------------------------------")
+	log.Println(c)
+
+	for i := 0; i < b.N; i++ {
+		c, _ = handler.GetChain(common.Consumer, "default")
+		c.Next(iv, func(r *invocation.Response) error {
+			return r.Err
+		})
+		c.Reset()
+	}
 }
