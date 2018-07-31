@@ -6,7 +6,7 @@ routeRule:
       route:
       - tags:
           version: v1
-        weight: 40
+        weight: 100
       - tags:
           version: v2
         weight: 40
