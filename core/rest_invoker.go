@@ -7,6 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/util"
 )
 
 // RestInvoker is rest invoker
@@ -36,13 +37,15 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options
 	}
 
 	opts := getOpts(req.GetRequest().Host, options...)
+	service, port, _ := util.ParseServiceAndPort(req.GetRequest().Host)
 	opts.Protocol = common.ProtocolRest
+	opts.Port = port
 
 	resp := rest.NewResponse()
 
 	inv := invocation.New(ctx)
 	wrapInvocationWithOpts(inv, opts)
-	inv.MicroServiceName = req.GetRequest().Host
+	inv.MicroServiceName = service
 	// TODO load from openAPI schema
 	// inv.SchemaID = schemaID
 	// inv.OperationID = operationID

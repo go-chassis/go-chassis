@@ -22,10 +22,11 @@ type InvokeOptions struct {
 	DialTimeout time.Duration
 	// Request/Response timeout
 	RequestTimeout time.Duration
-	// end to end，Directly call
+	// end to end, Directly call
 	Endpoint string
-	// end to end，Directly call
+	// end to end, Directly call
 	Protocol string
+	Port     string
 	//loadbalancer stratery
 	//StrategyFunc loadbalancer.Strategy
 	StrategyFunc string
@@ -137,6 +138,7 @@ func wrapInvocationWithOpts(i *invocation.Invocation, opts InvokeOptions) {
 	i.Protocol = opts.Protocol
 	i.Strategy = opts.StrategyFunc
 	i.Filters = opts.Filters
+	i.Port = opts.Port
 	if opts.Metadata != nil {
 		i.Metadata = opts.Metadata
 	}

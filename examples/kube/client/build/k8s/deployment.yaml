@@ -27,7 +27,7 @@ spec:
         app: registry
     spec:
       containers:
-      - image: gosdk-kube-client:latest
+      - image: ninokop/gosdk-kube-client:latest
         imagePullPolicy: Always
         name: kubeclient
         ports:
