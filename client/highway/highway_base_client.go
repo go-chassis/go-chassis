@@ -232,7 +232,7 @@ func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Dur
 	}
 	if req.TwoWay {
 		wait := make(chan int)
-		ctx := &InvocationContext{Req:req, Rsp:rsp, Wait:&wait}
+		ctx := &InvocationContext{Req: req, Rsp: rsp, Wait: &wait}
 		baseClient.AddWaitMsg(msgID, ctx)
 
 		err := highwayConn.AsyncSendMsg(ctx)
