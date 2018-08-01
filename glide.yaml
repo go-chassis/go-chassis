@@ -15,9 +15,6 @@ import:
   repo: https://github.com/DataDog/datadog-go
   subpackages:
   - statsd
-- package: github.com/huaweicse/auth
-  version: master
-  repo: https://github.com/huaweicse/auth
 - package: github.com/go-chassis/go-archaius
   version: master
   repo: https://github.com/go-chassis/go-archaius
@@ -38,9 +35,6 @@ import:
   repo: https://github.com/go-chassis/go-sc-client
   subpackages:
   - model
-- package: github.com/go-chassis/http-client
-  version: master
-  repo: https://github.com/go-chassis/http-client
 - package: github.com/go-chassis/paas-lager
   version: master
   repo: https://github.com/go-chassis/paas-lager
