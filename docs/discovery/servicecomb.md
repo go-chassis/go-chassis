@@ -1,6 +1,6 @@
 # ServiceComb
 
-ServiceComb service center is the fault plugin of go chassis, it support client side discovery, so need to set registry service
+ServiceComb service center is the default plugin of go chassis, it support client side discovery, so need to set registry service
 it implements both ServiceDiscovery and Registrator plugin
 
 ## Configurations
