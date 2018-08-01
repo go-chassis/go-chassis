@@ -131,7 +131,7 @@ func (c *chassis) initialize() error {
 	if err != nil {
 		return err
 	}
-
+	bootstrap.Bootstrap()
 	if archaius.GetBool("cse.service.registry.disabled", false) != true {
 		err := registry.Enable()
 		if err != nil {
@@ -141,8 +141,6 @@ func (c *chassis) initialize() error {
 			return err
 		}
 	}
-
-	bootstrap.Bootstrap()
 
 	configcenter.InitConfigCenter()
 	// router needs get configs from config-center when init
