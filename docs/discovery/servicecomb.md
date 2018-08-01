@@ -1,6 +1,6 @@
 # ServiceComb
 
-ServiceComb service center is the default plugin of go chassis, it support client side discovery, so need to set registry service
+ServiceComb service center is the default plugin of go chassis, it support client side discovery, so need to set registry service. 
 it implements both ServiceDiscovery and Registrator plugin
 
 ## Configurations
@@ -9,7 +9,7 @@ it implements both ServiceDiscovery and Registrator plugin
 cse:
   service:
     registry:
-      type: servicecenter        #optional: 默认类型为对接服务中心
+      type: servicecenter
       address: http://10.0.0.1:30100,http://10.0.0.2:30100 
       refeshInterval : 30s       
       watch: true                         
