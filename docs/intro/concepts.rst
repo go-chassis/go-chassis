@@ -1,13 +1,20 @@
 Concepts
 ===================
 Registry
- 注册中心负责微服务的注册和发现
+ A registry must support both registration and discovery
 
 Registrator
- 自注册组件，go-chassis在启动后会连接注册中心，自注册服务信息
+ A registrator service must support registration
 
 Service Discovery
- 服务发现组件，负责服务发现并周期性轮询注册中心中的服务到本地缓存。
+ A Service Discovery service must support discovery service at least.
+ For example,ServiceComb service center support both registration and discovery
+ Istio and kubernetes only support discovery
+
+ .. image:: registry.PNG
+
 
 Protocol server and client
- 支持开发者自己将协议逻辑插入到go chassis中，接入统一的治理和微服务管理当中
+ go chassis allows you to integrate any protocol into standardized model Invocation, so that any protocol can reuse same function like circuit breaker, load balancing, rate limiting, route management
+
+ .. image:: protocol.PNG

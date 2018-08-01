@@ -1,10 +1,11 @@
-# Kube Discovery
+# Kubernetes
 
-Kube discovery is a registry choice, which leads go-chassis to do service discovery in kubernetes cluster according to Services. 
+Kubernetes discovery is a service discovery choice, it implements ServiceDiscovery Plugin,
+which leads go-chassis to do service discovery in kubernetes cluster according to Services. 
 
 ## Import Path
 
-kube discovery is a registry plugin that should import in your application code explicitly.
+kube discovery is a service discovery plugin that should import in your application code explicitly.
 
 ```go
 import _ "github.com/go-chassis/go-chassis-plugins/registry/kube"
