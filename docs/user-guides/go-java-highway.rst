@@ -1,6 +1,6 @@
-Communication between GO consumer and JAVA provider using highway protocol:
+Communication between GO consumer and JAVA provider
 ==========================================================================
-
+this guide demonstrate how to use highway to communicate with java chassis
 GO consumer
 ~~~~~~~~~~~
 Go consumer uses invoker.Invoker() call to make highway communication 
