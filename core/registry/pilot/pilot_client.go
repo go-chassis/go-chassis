@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/http-client"
+	"github.com/go-chassis/go-chassis/pkg/httpclient"
 )
 
 const (
@@ -53,7 +53,7 @@ func (c *EnvoyDSClient) Initialize(options Options) (err error) {
 // GetAllServices returns a list of Service registered by istio
 func (c *EnvoyDSClient) GetAllServices() ([]*Service, error) {
 	apiURL := c.getAddress() + BaseRoot
-	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
+	resp, err := c.client.HTTPDo("GET", apiURL, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (c *EnvoyDSClient) GetServiceHosts(serviceName string) (*Hosts, error) {
 // GetHostsByKey returns Hosts using servicekey and tags
 func (c *EnvoyDSClient) GetHostsByKey(serviceKey string, tags map[string]string) (*Hosts, error) {
 	apiURL := c.getAddress() + BaseRoot + pilotQueryKey(serviceKey, tags)
-	resp, err := c.client.HttpDo("GET", apiURL, nil, nil)
+	resp, err := c.client.HTTPDo("GET", apiURL, nil, nil)
 	if err != nil {
 		return nil, err
 	}
