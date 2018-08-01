@@ -33,7 +33,7 @@ spec:
         imagePullPolicy: Always
         name: kubeserver-v3
         ports:
-        - containerPort: 8084
+        - containerPort: 5001
           protocol: TCP
         resources: {}
         terminationMessagePath: /dev/termination-log

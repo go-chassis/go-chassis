@@ -5,6 +5,10 @@ bin/
 *.log*.zip
 *.lnk
 
+release
+*.tar.gz
+glide.lock
+
 vendor/**
 !vendor/manifest
 docs/_build
