@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -22,6 +23,8 @@ func TestCBInit(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	archaius.Init()
+	err := control.Init()
+	assert.NoError(t, err)
 }
 
 func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
