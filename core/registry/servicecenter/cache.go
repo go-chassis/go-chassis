@@ -10,7 +10,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
-	runtime "github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-sc-client"
 	"github.com/go-chassis/go-sc-client/model"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -223,19 +223,23 @@ func (c *CacheManager) getServiceStore(exist []*model.MicroService) sets.String 
 }
 
 func filterReIndex(providerInstances []*model.MicroServiceInstance, serviceName string, appID string) {
-	var store = make([]*registry.MicroServiceInstance, 0, len(providerInstances))
+	ups := make([]*registry.MicroServiceInstance, 0, len(providerInstances))
+	downs := make(map[string]struct{})
 	for _, ins := range providerInstances {
-		if ins.Status != model.MSInstanceUP {
-			continue
-		}
-
-		if ins.Version == "" {
+		switch {
+		case ins.Version == "":
 			lager.Logger.Warn("do not support old service center, plz upgrade")
 			continue
+		case ins.Status != common.DefaultStatus:
+			downs[ins.InstanceID] = struct{}{}
+			lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
+				ins.Status, ins.ServiceID, ins.InstanceID)
+			continue
+		default:
+			ups = append(ups, ToMicroServiceInstance(ins).WithAppID(appID))
 		}
-		store = append(store, ToMicroServiceInstance(ins).WithAppID(appID))
 	}
-	registry.RefreshCache(serviceName, store)
+	registry.RefreshCache(serviceName, ups, downs)
 }
 
 // findVersionRule returns version rules for microservice

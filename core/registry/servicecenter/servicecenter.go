@@ -7,7 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	client "github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-sc-client"
 	"github.com/go-chassis/go-sc-client/model"
 )
 
