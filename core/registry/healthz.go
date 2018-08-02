@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/healthz/client"
@@ -166,58 +165,47 @@ func HealthCheck(service, version, appID string, instance *MicroServiceInstance)
 }
 
 // RefreshCache is the function to filter changes between new pulling instances and cache
-func RefreshCache(service string, store []*MicroServiceInstance) {
-	var (
-		arrUps []*MicroServiceInstance
-		downs  = make(map[string]*MicroServiceInstance)
-		ups    = make(map[string]*MicroServiceInstance)
-	)
-
-	for _, ins := range store {
-		if ins.Status != common.DefaultStatus {
-			downs[ins.InstanceID] = ins
-			lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
-				ins.Status, ins.ServiceID, ins.InstanceID)
-			continue
-		}
-		arrUps = append(arrUps, ins)
-		ups[ins.InstanceID] = ins
-	}
-
+func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]struct{}) {
 	c, ok := MicroserviceInstanceIndex.Get(service, nil)
 	if !ok || c == nil || c.([]*MicroServiceInstance) == nil {
 		// if full new instances or at less one instance, then refresh cache immediately
-		MicroserviceInstanceIndex.Set(service, arrUps)
+		MicroserviceInstanceIndex.Set(service, ups)
 		return
 	}
 
 	var (
-		saves []*MicroServiceInstance
-		lefts []*MicroServiceInstance
-		exps  = make(map[string]*MicroServiceInstance)
+		saves   []*MicroServiceInstance
+		lefts   []*MicroServiceInstance
+		exps    = c.([]*MicroServiceInstance)
+		mapUps  = make(map[string]*MicroServiceInstance, len(ups))
+		mapExps = make(map[string]*MicroServiceInstance, len(exps))
 	)
-	for _, instance := range c.([]*MicroServiceInstance) {
-		exps[instance.InstanceID] = instance
+
+	for _, ins := range ups {
+		mapUps[ins.InstanceID] = ins
+	}
+	for _, instance := range exps {
+		mapExps[instance.InstanceID] = instance
 	}
 
-	for _, elder := range exps {
+	for _, exp := range mapExps {
 		// case: keep still alive instances
-		if _, ok := ups[elder.InstanceID]; ok {
-			lefts = append(lefts, elder)
+		if _, ok := mapUps[exp.InstanceID]; ok {
+			lefts = append(lefts, exp)
 			continue
 		}
 		// case: remove instances with the non-up status
-		if _, ok := downs[elder.InstanceID]; ok {
+		if _, ok := downs[exp.InstanceID]; ok {
 			continue
 		}
 		// case: keep instances returned HC ok
-		if err := HealthCheck(service, elder.version(), elder.appID(), elder); err == nil {
-			lefts = append(lefts, elder)
+		if err := HealthCheck(service, exp.version(), exp.appID(), exp); err == nil {
+			lefts = append(lefts, exp)
 		}
 	}
 
 	for _, up := range ups {
-		if _, ok := exps[up.InstanceID]; ok {
+		if _, ok := mapExps[up.InstanceID]; ok {
 			continue
 		}
 		// case: add new come in instances

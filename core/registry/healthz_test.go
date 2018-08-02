@@ -30,24 +30,24 @@ func TestRefreshCache(t *testing.T) {
 	enableRegistryCache()
 
 	// case: new nil cache
-	RefreshCache("test", nil)
+	RefreshCache("test", nil, nil)
 	// case: refresh nil cache
-	RefreshCache("test", nil)
+	RefreshCache("test", nil, nil)
 
 	// case: new instances
-	RefreshCache("test", []*MicroServiceInstance{})
+	RefreshCache("test", []*MicroServiceInstance{}, nil)
 	RefreshCache("test", []*MicroServiceInstance{
 		{InstanceID: "1", Status: common.DefaultStatus},
-		{InstanceID: "2", Status: common.DefaultStatus}}) // 2
+		{InstanceID: "2", Status: common.DefaultStatus}}, nil) // 2
 
 	is, ok := MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
 	assert.Equal(t, 2, len(is.([]*MicroServiceInstance)))
 
-	// case: down one
+	// case: unregister one
 	RefreshCache("test", []*MicroServiceInstance{
 		{InstanceID: "1", Status: common.DefaultStatus},
-		{InstanceID: "3", Status: common.DefaultStatus}})
+		{InstanceID: "3", Status: common.DefaultStatus}}, nil)
 
 	is, ok = MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
@@ -55,8 +55,8 @@ func TestRefreshCache(t *testing.T) {
 
 	// case: down one with non-up status
 	RefreshCache("test", []*MicroServiceInstance{
-		{InstanceID: "1", Status: common.DefaultStatus},
-		{InstanceID: "3", Status: "xxx"}})
+		{InstanceID: "1", Status: common.DefaultStatus}},
+		map[string]struct{}{"3": {}})
 
 	is, ok = MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
@@ -64,8 +64,8 @@ func TestRefreshCache(t *testing.T) {
 
 	// case: coming in with non-up status
 	RefreshCache("test", []*MicroServiceInstance{
-		{InstanceID: "1", Status: common.DefaultStatus},
-		{InstanceID: "3", Status: "xxx"}})
+		{InstanceID: "1", Status: common.DefaultStatus}},
+		map[string]struct{}{"3": {}})
 
 	is, ok = MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
