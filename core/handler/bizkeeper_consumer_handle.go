@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -45,7 +46,7 @@ func GetHystrixConfig(service, protype string) (string, hystrix.CommandConfig) {
 
 // Handle function is for to handle the chain
 func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Consumer)
+	command, cmdConfig := control.DefaultPanel.GetCircuitBreaker(*i, common.Consumer)
 	hystrix.ConfigureCommand(command, cmdConfig)
 
 	finish := make(chan *invocation.Response, 1)

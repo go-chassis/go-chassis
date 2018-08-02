@@ -4,6 +4,7 @@ package model
 type GlobalCfg struct {
 	AppID      string            `yaml:"APPLICATION_ID"`
 	Cse        CseStruct         `yaml:"cse"`
+	Panel      ControlPanel      `yaml:"control"`
 	Ssl        map[string]string `yaml:"ssl"`
 	Tracing    TracingStruct     `yaml:"tracing"`
 	DataCenter *DataCenterInfo   `yaml:"region"`
