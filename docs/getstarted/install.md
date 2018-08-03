@@ -15,7 +15,7 @@ cd go-chassis
 glide intall
 ```
 
-4. Install go-chassis [service-center](https://github.com/go-chassis/service-center/releases)
+4. Install go-chassis [service-center](http://servicecomb.incubator.apache.org/release/)
 
 
 Use RPC communication

@@ -175,13 +175,21 @@ func Call(beginTime time.Time, invoker *core.RPCInvoker, restInvoker *core.RestI
 				resultInfoPrint := []string{resultPrint}
 				resultInfoPrint = append(resultInfoPrint, sysInfos...)
 
-				result := fmt.Sprintf(fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v,%v", now, count, sucessCount, cycleTPS, tokenTime, averageTime, datacollect.GetMemValue(), datacollect.GetCPUValue(), datacollect.GetNetworkValue()))
+				// For info on each, see: https://golang.org/pkg/runtime/#MemStats
 				err := resultFile.Write([]string{result})
 				if err != nil {
 					panic(err)
 				}
 				fmt.Println(strings.Join(resultInfoPrint, "\n"))
+				var m runtime.MemStats
+				runtime.ReadMemStats(&m)
+				fmt.Printf("Alloc = %v MB\n", bToMb(m.Alloc))
+				fmt.Printf("Sys = %v MB\n", bToMb(m.Sys))
+				fmt.Printf("NumGC = %v\n", m.NumGC)
 			}()
 		}
 	}
+}
+func bToMb(b uint64) uint64 {
+	return b / 1024 / 1024
 }

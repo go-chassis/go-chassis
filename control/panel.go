@@ -18,8 +18,8 @@ var DefaultPanel Panel
 //TODO able to set configs
 type Panel interface {
 	GetCircuitBreaker(inv invocation.Invocation, serviceType string) (string, hystrix.CommandConfig)
-	GetLoadBalancing(inv invocation.Invocation) model.LoadBalancingSpec
-	GetRateLimiting(inv invocation.Invocation, serviceType string) model.FlowControl
+	GetLoadBalancing(inv invocation.Invocation) LoadBalancingConfig
+	GetRateLimiting(inv invocation.Invocation, serviceType string) RateLimitingConfig
 	GetFaultInjection(inv invocation.Invocation) model.Fault
 	GetEgressRule(inv invocation.Invocation)
 }
