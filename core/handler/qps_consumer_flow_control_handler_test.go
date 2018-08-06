@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -10,16 +11,20 @@ import (
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"os"
 	"testing"
 )
 
 func TestConsumerRateLimiterDisable(t *testing.T) {
 	t.Log("testing consumerratelimiter handler with qps enabled as false")
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 	archaius.Init()
-
+	err := control.Init()
+	assert.NoError(t, err)
 	c := handler.Chain{}
 	c.AddHandler(&handler.ConsumerRateLimiterHandler{})
 
