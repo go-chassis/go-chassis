@@ -16,6 +16,7 @@ type Panel struct {
 }
 
 func newPanel(options control.Options) control.Panel {
+	SaveToLBCache(config.GetLoadBalancing())
 	return &Panel{}
 }
 
@@ -41,16 +42,17 @@ func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string)
 
 //GetLoadBalancing get load balancing config
 func (p *Panel) GetLoadBalancing(inv invocation.Invocation) control.LoadBalancingConfig {
-	c := control.LoadBalancingConfig{}
-	c.Strategy = config.GetStrategyName(inv.SourceMicroService, inv.MicroServiceName)
-	c.Filters = config.GetServerListFilters()
-	c.RetryEnabled = config.RetryEnabled(inv.SourceMicroService, inv.MicroServiceName)
-	c.RetryOnSame = config.GetRetryOnSame(inv.SourceMicroService, inv.MicroServiceName)
-	c.RetryOnNext = config.GetRetryOnNext(inv.SourceMicroService, inv.MicroServiceName)
-	c.BackOffKind = config.BackOffKind(inv.SourceMicroService, inv.MicroServiceName)
-	c.BackOffMax = config.BackOffMaxMs(inv.SourceMicroService, inv.MicroServiceName)
-	c.BackOffMin = config.BackOffMinMs(inv.SourceMicroService, inv.MicroServiceName)
-	return c
+	c, ok := LBConfigCache.Get(inv.MicroServiceName)
+	if !ok {
+		c, ok := LBConfigCache.Get("")
+		if !ok {
+			return DefaultLB
+
+		}
+		return c.(control.LoadBalancingConfig)
+
+	}
+	return c.(control.LoadBalancingConfig)
 
 }
 

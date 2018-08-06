@@ -10,6 +10,9 @@ type LoadBalancingConfig struct {
 	BackOffKind  string
 	BackOffMin   int
 	BackOffMax   int
+
+	SessionTimeoutInSeconds int
+	SuccessiveFailedTimes   int
 }
 
 //RateLimitingConfig is a standardized model
