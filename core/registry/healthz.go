@@ -213,6 +213,11 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 	}
 
 	lefts = append(lefts, saves...)
-	MicroserviceInstanceIndex.Set(service, lefts)
+	if len(lefts) == 0 {
+		//todo remove this when the cache struct can delete the key if the input is an empty slice
+		MicroserviceInstanceIndex.Delete(service)
+	} else {
+		MicroserviceInstanceIndex.Set(service, lefts)
+	}
 	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(lefts), service)
 }
