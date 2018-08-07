@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-func TestPanel_GetCircuitBreaker(t *testing.T) {
+func TestPanel_GetLoadBalancing(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	err := config.Init()
@@ -24,6 +24,7 @@ func TestPanel_GetCircuitBreaker(t *testing.T) {
 	err = control.Init()
 	assert.NoError(t, err)
 
+	t.Log("lb")
 	inv := invocation.Invocation{
 		SourceMicroService: "",
 		MicroServiceName:   "Server",
@@ -44,6 +45,11 @@ func TestPanel_GetCircuitBreaker(t *testing.T) {
 	}
 	c = control.DefaultPanel.GetLoadBalancing(inv)
 	assert.Equal(t, loadbalancer.StrategyLatency, c.Strategy)
+
+	t.Log("cb ")
+	command, cb := control.DefaultPanel.GetCircuitBreaker(inv, common.Consumer)
+	assert.Equal(t, 1000, cb.Timeout)
+	assert.Equal(t, "Consumer.fake", command)
 }
 
 func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
