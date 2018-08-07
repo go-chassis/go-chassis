@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
 	"github.com/stretchr/testify/assert"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -18,7 +19,11 @@ func TestHttpDo(t *testing.T) {
 	var uc = new(httpclient.URLClient)
 	uc.Client = htc
 
-	resp, err := uc.HTTPDo("GET", "http://www.baidu.com", nil, nil)
+	htServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	resp, err := uc.HTTPDo(http.MethodGet, htServer.URL, nil, nil)
 	assert.NotNil(t, resp)
 	assert.NoError(t, err)
 }

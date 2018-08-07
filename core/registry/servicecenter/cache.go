@@ -13,6 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-sc-client"
 	"github.com/go-chassis/go-sc-client/model"
+
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -203,8 +204,10 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		return err
 	}
 
-	serviceStore := c.getServiceStore(rsp.Services)
-	for key := range serviceStore {
+	serviceNameSet, serviceNameAppIDKeySet := c.getServiceSet(rsp.Services)
+	c.compareAndDeleteOutdatedProviders(serviceNameSet)
+
+	for key := range serviceNameAppIDKeySet {
 		service := strings.Split(key, ":")
 		if len(service) != 2 {
 			lager.Logger.Errorf(err, "Invalid serviceStore %s for providers %s", key, runtime.ServiceID)
@@ -227,20 +230,33 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 	return nil
 }
 
-// getServiceStore returns service sets
-func (c *CacheManager) getServiceStore(exist []*model.MicroService) sets.String {
+func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.String) {
+	oldProviders := registry.MicroserviceInstanceIndex.Items()
+	for old := range oldProviders {
+		if !newProviders.Has(old) { //provider is outdated, delete it
+			registry.MicroserviceInstanceIndex.Delete(old)
+		}
+	}
+}
+
+// getServiceSet returns service sets
+func (c *CacheManager) getServiceSet(exist []*model.MicroService) (sets.String, sets.String) {
 	//get Provider's instances
-	serviceStore := sets.NewString()
+	serviceNameSet := sets.NewString()         // key is serviceName
+	serviceNameAppIDKeySet := sets.NewString() // key is "serviceName:appId"
+	if exist == nil || len(exist) == 0 {
+		return serviceNameSet, serviceNameAppIDKeySet
+	}
+
 	for _, microservice := range exist {
 		if microservice == nil {
 			continue
 		}
+		serviceNameSet.Insert(microservice.ServiceName)
 		key := strings.Join([]string{microservice.ServiceName, microservice.AppID}, ":")
-		if !serviceStore.Has(key) {
-			serviceStore.Insert(key)
-		}
+		serviceNameAppIDKeySet.Insert(key)
 	}
-	return serviceStore
+	return serviceNameSet, serviceNameAppIDKeySet
 }
 
 func filterReIndex(providerInstances []*model.MicroServiceInstance, serviceName string, appID string) {
