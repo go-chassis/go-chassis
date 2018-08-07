@@ -80,8 +80,8 @@ cse:
 ```
 
 ```go
-archaius.GetInt("cse.fallback.Consumer.Consumer.maxConcurrentRequests", 10)
-archaius.GetBool("cse.fallback.Consumer.Consumer.enabled", false)
+archaius.GetInt("cse.fallback.Consumer.maxConcurrentRequests", 10)
+archaius.GetBool("cse.fallback.Consumer.enabled", false)
 ```
 
 

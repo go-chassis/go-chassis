@@ -28,7 +28,7 @@ message HelloReply {
 ```
 2.通过pb生成go文件 helloworld.pb.go
 
-protoc --go_out=. hello.proto
+protoc --go_out=. helloworld.proto
 将生成的go文件拷贝到目录中
 
 schemas
