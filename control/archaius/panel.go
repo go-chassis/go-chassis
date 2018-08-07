@@ -17,27 +17,24 @@ type Panel struct {
 
 func newPanel(options control.Options) control.Panel {
 	SaveToLBCache(config.GetLoadBalancing())
+	SaveToCBCache(config.GetHystrixConfig())
 	return &Panel{}
 }
 
 //GetCircuitBreaker return command , and circuit breaker settings
 func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string) (string, hystrix.CommandConfig) {
+	key := GetCBCacheKey(inv.MicroServiceName, serviceType)
 	command := serviceType
 	if inv.MicroServiceName != "" {
 		command = strings.Join([]string{serviceType, inv.MicroServiceName}, ".")
 	}
-	return command, hystrix.CommandConfig{
-		ForceFallback:          config.GetForceFallback(inv.MicroServiceName, serviceType),
-		TimeoutEnabled:         config.GetTimeoutEnabled(inv.MicroServiceName, serviceType),
-		Timeout:                config.GetTimeout(command, serviceType),
-		MaxConcurrentRequests:  config.GetMaxConcurrentRequests(command, serviceType),
-		ErrorPercentThreshold:  config.GetErrorPercentThreshold(command, serviceType),
-		RequestVolumeThreshold: config.GetRequestVolumeThreshold(command, serviceType),
-		SleepWindow:            config.GetSleepWindow(command, serviceType),
-		ForceClose:             config.GetForceClose(inv.MicroServiceName, serviceType),
-		ForceOpen:              config.GetForceOpen(inv.MicroServiceName, serviceType),
-		CircuitBreakerEnabled:  config.GetCircuitBreakerEnabled(command, serviceType),
+	c, ok := CBConfigCache.Get(key)
+	if !ok {
+		c, _ := CBConfigCache.Get(serviceType)
+		return command, c.(hystrix.CommandConfig)
+
 	}
+	return command, c.(hystrix.CommandConfig)
 }
 
 //GetLoadBalancing get load balancing config
