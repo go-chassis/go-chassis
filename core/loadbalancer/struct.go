@@ -25,7 +25,7 @@ func (ps *ProtocolStats) CalculateAverageLatency() {
 
 // SaveLatency save latest 10 record
 func (ps *ProtocolStats) SaveLatency(l time.Duration) {
-	if len(ps.Latency) > 10 {
+	if len(ps.Latency) >= 10 {
 		//save latest 10 latencies
 		ps.Latency = ps.Latency[1:]
 	}
