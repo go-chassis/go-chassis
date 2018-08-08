@@ -131,7 +131,7 @@ func newWeightedResponseStrategy() Strategy {
 // ReceiveData receive data
 func (r *WeightedResponseStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceKey, protocol, sessionID string) {
 	r.instances = instances
-	r.serviceName = strings.Split(serviceKey, ":")[0]
+	r.serviceName = strings.Split(serviceKey, "|")[0]
 	r.protocol = protocol
 }
 
