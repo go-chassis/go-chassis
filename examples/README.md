@@ -55,6 +55,6 @@ show tracing on zipkin and export prometheus metrics format
 
 ### metadata
 
-Demonstrate how to set local scope parameter and use it in your schema
+Demonstrate how to set local scope parameter, header, and use them in your schema
 
-In handler chain you can set a local data and then you can read it in next handler in chain and your Restful handler
+In handler chain you can set a local data or protocol header, then you can read it in next handler in chain and your Restful handler

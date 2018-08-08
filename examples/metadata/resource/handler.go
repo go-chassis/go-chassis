@@ -12,6 +12,7 @@ type MetadataHandler struct {
 //Handle
 func (h *MetadataHandler) Handle(chain *handler.Chain, inv *invocation.Invocation, cb invocation.ResponseCallBack) {
 	inv.SetMetadata("auth", "user1")
+	inv.SetHeader("X-Auth", "user2")
 	chain.Next(inv, cb)
 }
 
