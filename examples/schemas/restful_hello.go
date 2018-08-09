@@ -20,6 +20,7 @@ type RestFulHello struct {
 func (r *RestFulHello) Sayhello(b *rf.Context) {
 	id := b.ReadPathParameter("userid")
 	log.Printf("get user id: " + id)
+	log.Printf("get user name: " + b.ReadRequest().Header.Get("user"))
 	b.Write([]byte(fmt.Sprintf("user %s from %d", id, num)))
 }
 

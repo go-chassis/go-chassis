@@ -16,7 +16,7 @@ type RestFulHello struct {
 
 //Health
 func (r *RestFulHello) Health(b *rf.Context) {
-	b.Write([]byte(fmt.Sprintf("handler chain set metadata %s", b.ReadRestfulRequest().Attribute("auth"))))
+	b.Write([]byte(fmt.Sprintf("handler chain set metadata %s,set header %s", b.ReadRestfulRequest().Attribute("auth"), b.ReadRequest().Header.Get("X-Auth"))))
 }
 
 //URLPatterns helps to respond for corresponding API calls

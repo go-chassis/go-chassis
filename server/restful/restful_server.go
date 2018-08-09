@@ -31,7 +31,6 @@ const (
 	DefaultMetricPath = "metrics"
 	MimeFile          = "application/octet-stream"
 	MimeMult          = "multipart/form-data"
-	SessionID         = ""
 )
 
 func init() {
@@ -60,7 +59,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 		if !strings.HasPrefix(metricPath, "/") {
 			metricPath = "/" + metricPath
 		}
-		lager.Logger.Info("Enbaled metrics API on " + metricPath)
+		lager.Logger.Info("Enabled metrics API on " + metricPath)
 		ws.Route(ws.GET(metricPath).To(metrics.HTTPHandleFunc))
 	}
 	return &restfulServer{
@@ -70,13 +69,6 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 	}
 }
 func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
-	cookie, err := req.Request.Cookie(common.LBSessionID)
-	if err != nil {
-		if err != http.ErrNoCookie {
-			lager.Logger.Errorf(err, "get cookie error")
-			return nil, err
-		}
-	}
 
 	inv := &invocation.Invocation{
 		MicroServiceName:   config.SelfServiceName,
@@ -89,12 +81,12 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 		Metadata: map[string]interface{}{
 			common.RestMethod: req.Request.Method,
 		},
-		Ctx: context.WithValue(context.Background(), common.ContextHeaderKey{},
-			map[string]string{}), //set headers, do not consider about protocol in handlers
 	}
-	if cookie != nil {
-		headers := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
-		headers[common.LBSessionID] = cookie.Value
+	//set headers to ctx, then user do not  need to consider about protocol in handlers
+	m := make(map[string]string, 0)
+	inv.Ctx = context.WithValue(context.Background(), common.ContextHeaderKey{}, m)
+	for k := range req.Request.Header {
+		m[k] = req.Request.Header.Get(k)
 	}
 	return inv, nil
 }
@@ -167,6 +159,10 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 func transfer(inv *invocation.Invocation, req *restful.Request) {
 	for k, v := range inv.Metadata {
 		req.SetAttribute(k, v.(string))
+	}
+	m := common.FromContext(inv.Ctx)
+	for k, v := range m {
+		req.Request.Header.Set(k, v)
 	}
 
 }

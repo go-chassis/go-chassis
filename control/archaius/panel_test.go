@@ -50,6 +50,13 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 	command, cb := control.DefaultPanel.GetCircuitBreaker(inv, common.Consumer)
 	assert.Equal(t, 1000, cb.Timeout)
 	assert.Equal(t, "Consumer.fake", command)
+
+	t.Log("rl ")
+	inv.MicroServiceName = "Server"
+	rl := control.DefaultPanel.GetRateLimiting(inv, common.Consumer)
+	assert.Equal(t, 100, rl.Rate)
+	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.Server", rl.Key)
+	assert.Equal(t, true, rl.Enabled)
 }
 
 func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
@@ -100,6 +107,23 @@ func BenchmarkPanel_GetCircuitBreaker(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
 		control.DefaultPanel.GetCircuitBreaker(inv, common.Consumer)
+
+	}
+}
+func BenchmarkPanel_GetRateLimiting(b *testing.B) {
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	config.Init()
+	archaius.Init()
+	config.GlobalDefinition.Panel.Infra = "archaius"
+	control.Init()
+	inv := invocation.Invocation{
+		SourceMicroService: "",
+		MicroServiceName:   "",
+	}
+	for i := 0; i < b.N; i++ {
+
+		control.DefaultPanel.GetRateLimiting(inv, common.Consumer)
 
 	}
 }
