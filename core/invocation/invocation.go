@@ -63,11 +63,17 @@ func (inv *Invocation) Reset() {
 
 }
 
-// New create invocation
+// New create invocation, context can not be nil
 func New(ctx context.Context) *Invocation {
 	inv := &Invocation{
 		SourceServiceID: runtime.ServiceID,
 		Ctx:             ctx,
+	}
+	if inv.Ctx == nil {
+		inv.Ctx = context.TODO()
+	}
+	if inv.Ctx.Value(common.ContextHeaderKey{}) == nil {
+		inv.Ctx = context.WithValue(inv.Ctx, common.ContextHeaderKey{}, map[string]string{})
 	}
 	return inv
 }
@@ -93,12 +99,10 @@ func (inv *Invocation) SetMetadata(key string, value interface{}) {
 }
 
 //SetHeader set headers, the client and server plugins should use them in protocol headers
+//it is convenience but has lower performance than you use Headers[k]=v,
+// when you have a batch of kv to set
 func (inv *Invocation) SetHeader(k, v string) {
-	if inv.Ctx.Value(common.ContextHeaderKey{}) == nil {
-		inv.Ctx = context.WithValue(inv.Ctx, common.ContextHeaderKey{}, map[string]string{})
-	}
 	m := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
-
 	m[k] = v
 }
 

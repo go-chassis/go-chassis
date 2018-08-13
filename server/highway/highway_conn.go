@@ -170,12 +170,11 @@ func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.ProtocolOb
 		return err
 	}
 
-	i := &invocation.Invocation{}
+	i := invocation.New(common.NewContext(req.Attachments))
 	i.Args = req.Arg
 	i.MicroServiceName = req.SvcName
 	i.SchemaID = req.Schema
 	i.OperationID = req.MethodName
-	i.Ctx = common.NewContext(req.Attachments)
 	i.SourceMicroService = common.FromContext(i.Ctx)[common.HeaderSourceName]
 	i.Protocol = common.ProtocolHighway
 	c, err := handler.GetChain(common.Provider, svrConn.handlerChain)
