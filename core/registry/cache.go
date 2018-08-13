@@ -25,6 +25,9 @@ var SchemaInterfaceIndexedCache *cache.Cache
 //SchemaServiceIndexedCache key: schema service name value: []*microservice
 var SchemaServiceIndexedCache *cache.Cache
 
+// ProvidersCache  key: micro service  name, value: []*MicroService
+var ProvidersMicroServiceCache *cache.Cache
+
 func initCache() *cache.Cache { return cache.New(DefaultExpireTime, 0) }
 
 func enableRegistryCache() {
@@ -33,6 +36,7 @@ func enableRegistryCache() {
 	IPIndexedCache = initCache()
 	SchemaServiceIndexedCache = initCache()
 	SchemaInterfaceIndexedCache = initCache()
+	ProvidersMicroServiceCache = initCache()
 }
 
 // CacheIndex defines interface for cache and index used by registry
