@@ -203,7 +203,8 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		lager.Logger.Errorf(err, "get Providers failed, sid = %s", runtime.ServiceID)
 		return err
 	}
-
+	// refresh provider cache
+	rsp.Services = refreshProviderCache(rsp.Services)
 	serviceNameSet, serviceNameAppIDKeySet := c.getServiceSet(rsp.Services)
 	c.compareAndDeleteOutdatedProviders(serviceNameSet)
 
@@ -400,4 +401,47 @@ func updateAction(response *model.MicroServiceInstanceChangedEvent) {
 	}
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
 	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceID, len(microServiceInstances))
+}
+
+// refreshProviderCache is the function to filter changes between new pulling MicroService and cache
+func refreshProviderCache(microServiceUps []*model.MicroService) []*model.MicroService {
+
+	serverName := config.MicroserviceDefinition.ServiceDescription.Name
+	p, ok := registry.ProvidersMicroServiceCache.Get(serverName)
+	if !ok || p == nil || p.([]*model.MicroService) == nil {
+		registry.ProvidersMicroServiceCache.Set(serverName, microServiceUps, 0)
+		return microServiceUps
+	}
+
+	var (
+		saves             []*model.MicroService
+		microServiceCache = p.([]*model.MicroService)
+		mapExps           = make(map[string]*model.MicroService, len(microServiceCache))
+		mapUps            = make(map[string]*model.MicroService, len(microServiceUps))
+	)
+
+	for _, cache := range microServiceCache {
+		mapExps[cache.ServiceName+cache.Version] = cache
+	}
+	for _, up := range microServiceUps {
+		mapUps[up.ServiceName+up.Version] = up
+	}
+
+	for _, serviceExp := range mapExps {
+		if serviceUp, ok := mapUps[serviceExp.ServiceName+serviceExp.Version]; ok {
+			saves = append(saves, serviceUp)
+			continue
+		}
+		saves = append(saves, serviceExp)
+	}
+
+	for _, serviceUp := range mapUps {
+		if _, ok := mapExps[serviceUp.ServiceName+serviceUp.Version]; ok {
+			continue
+		}
+		saves = append(saves, serviceUp)
+	}
+
+	registry.ProvidersMicroServiceCache.Set(serverName, saves, 0)
+	return saves
 }
