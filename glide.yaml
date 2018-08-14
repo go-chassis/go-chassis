@@ -93,7 +93,7 @@ import:
   version: 390ab7935ee28ec6b286364bba9b4dd6410cb3d5
   repo: https://github.com/go-logfmt/logfmt
 - package: github.com/gogo/protobuf
-  version: c0656edd0d9eab7c66d1eb0c568f9039345796f7
+  version: v1.1.1
   repo: https://github.com/gogo/protobuf
 - package: github.com/golang/mock
   version: b3e60bcdc577185fce3cf625fc96b62857ce5574
