@@ -113,7 +113,7 @@ func saveEachCB(serviceName, serviceType string) {
 		ForceOpen:              config.GetForceOpen(serviceName, serviceType),
 		CircuitBreakerEnabled:  config.GetCircuitBreakerEnabled(command, serviceType),
 	}
-
+	lager.Logger.Infof("save circuit breaker config [%#v] for [%s] ", c, serviceName)
 	CBConfigCache.Set(GetCBCacheKey(serviceName, serviceType), c, 0)
 }
 
