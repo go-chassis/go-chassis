@@ -41,7 +41,7 @@ git clone git@github.com:go-chassis/go-chassis.git
 
 ```sh
 cd go-chassis 
-glide intall
+glide install
 ```
 
 4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
