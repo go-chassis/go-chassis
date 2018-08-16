@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/control"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/qpslimiter"
 )
@@ -11,16 +12,14 @@ type ConsumerRateLimiterHandler struct{}
 
 // Handle is handles the consumer rate limiter APIs
 func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	if !archaius.GetBool("cse.flowcontrol.Consumer.qps.enabled", true) {
+	rlc := control.DefaultPanel.GetRateLimiting(*i, common.Consumer)
+	if !rlc.Enabled {
 		chain.Next(i, cb)
 
 		return
 	}
-
 	//get operation meta info ms.schema, ms.schema.operation, ms
-	operationMeta := qpslimiter.InitSchemaOperations(i)
-	rl.GetOrCreate(operationMeta)
-
+	rl.GetOrCreate(rlc)
 	chain.Next(i, cb)
 }
 
@@ -34,11 +33,7 @@ func (rl *ConsumerRateLimiterHandler) Name() string {
 }
 
 // GetOrCreate is for getting or creating qps limiter meta data
-func (rl *ConsumerRateLimiterHandler) GetOrCreate(op *qpslimiter.OperationMeta) {
-
-	qpsRate, key := qpslimiter.GetQPSTrafficLimiter().GetQPSRateWithPriority(op)
-
-	qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(key, qpsRate)
-
+func (rl *ConsumerRateLimiterHandler) GetOrCreate(rlc control.RateLimitingConfig) {
+	qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(rlc.Key, rlc.Rate)
 	return
 }

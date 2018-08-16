@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/examples/schemas"
 	_ "github.com/go-chassis/go-chassis/healthz/provider"
+	_ "github.com/huaweicse/auth/adaptor/gochassis"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/discovery/server/

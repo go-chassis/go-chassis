@@ -52,3 +52,9 @@ this example use  Istio pilot as service registry
 ### monitoring
 
 show tracing on zipkin and export prometheus metrics format  
+
+### metadata
+
+Demonstrate how to set local scope parameter, header, and use them in your schema
+
+In handler chain you can set a local data or protocol header, then you can read it in next handler in chain and your Restful handler

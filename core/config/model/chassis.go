@@ -4,6 +4,7 @@ package model
 type GlobalCfg struct {
 	AppID      string            `yaml:"APPLICATION_ID"`
 	Cse        CseStruct         `yaml:"cse"`
+	Panel      ControlPanel      `yaml:"control"`
 	Ssl        map[string]string `yaml:"ssl"`
 	Tracing    TracingStruct     `yaml:"tracing"`
 	DataCenter *DataCenterInfo   `yaml:"region"`
@@ -35,7 +36,7 @@ type CseStruct struct {
 	Protocols   map[string]Protocol         `yaml:"protocols"`
 	Handler     HandlerStruct               `yaml:"handler"`
 	References  map[string]ReferencesStruct `yaml:"references"`
-	FlowControl ServiceTypes                `yaml:"flowcontrol"`
+	FlowControl FlowControl                 `yaml:"flowcontrol"`
 	Monitor     MonitorStruct               `yaml:"monitor"`
 	Metrics     MetricsStruct               `yaml:"metrics"`
 	Credentials CredentialStruct            `yaml:"credentials"`
@@ -68,19 +69,19 @@ type MonitorAPIVersionStruct struct {
 	Version string `yaml:"version"`
 }
 
-// ServiceTypes gives the information of service types
-type ServiceTypes struct {
-	Consumer TypesStruct `yaml:"Consumer"`
-	Provider TypesStruct `yaml:"Provider"`
+// FlowControl used to define rate limiting
+type FlowControl struct {
+	Consumer QPS `yaml:"Consumer"`
+	Provider QPS `yaml:"Provider"`
 }
 
-// TypesStruct is the struct for QPS
-type TypesStruct struct {
-	QPS QPSStruct `yaml:"qps"`
+// QPS is the struct to define QPS
+type QPS struct {
+	QPS QPSProps `yaml:"qps"`
 }
 
-// QPSStruct QPS struct
-type QPSStruct struct {
+// QPSProps define rate limiting settings
+type QPSProps struct {
 	Enabled bool              `yaml:"enabled"`
 	Global  map[string]int    `yaml:"global"`
 	Limit   map[string]string `yaml:"limit"`

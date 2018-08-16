@@ -1,37 +1,40 @@
 # Fault Tolerance
-## 概述
+## Introduction
 
-go-chassis提供自动重试的容错能力，用户可配置retry及backOff策略自动启用重试功能。
+go-chassis support fault-tolerance to resilient your service
 
-## 配置
+## Configuration
 
-重试功能的相关配置与客户端负载均衡策略都在chassis.yaml的cse.loadbalance.配置下。当retryEnabled配置为true时，可通过配置retryOnSame和retryOnNext定制重试次数。另外可通过backOff定制重试策略，默认支持三种backOff策略。
+the fault-tolerace related configurations is all in load_balancing.yaml, prefix is cse.loadbalance.
+set retryEnabled to true to enable it
 
-- zero:  固定重试时间为0的重试策略，即失败后立即重试不等待。
-- constant: 固定时间为backoff.minMs的重试策略，即失败后等待backoff.minMs再重试。
-- jittered: 按指数增加重试时间的重试策略，初始重试时间为backoff.minMs，最大重试时间为backoff.MaxMs。
+
 
 **retryEnabled**
-> *(optional, bool)* 是否开启重试功能, 默认值为*false*
+> *(optional, bool)* Enable fault tolerance, default is *false*
 
 **retryOnSame**
-> *(optional, int)* 请求失败后向同一个实例重试的次数，默认为*0*
+> *(optional, int)* if failed, then retry on same instance, default is *0*
 
 **retryOnNext**
-> *(optional, int)* 请求失败后向其他实例重试的次数，默认为*0*
+> *(optional, int)* if failed, then call load balancing again to get next instance, default is *0*
 
 **backoff.kind**
-> *(optional, string)* 重试策略: [jittered或constant或zero] 默认为*zero*
+> *(optional, string)* backoff policy: [jittered|constant|zero] default is *zero*
+- zero:  do not wait for any time。
+- constant: after each failed retry, wait for constant time. Use backoff.minMs to set the time。
+- jittered: time wil exponential growth after each retry, till this time reach to MaxMs. 
+Use backoff.minMs to set the the first wait time
 
 **backoff.MinMs**
-> *(optional, bool)* 重试最小时间间隔 单位ms , 默认值为*false*
+> *(optional, int)* minimum wait time between each retry, unit is ms, default is *0*
 
 **backoff.MaxMs**
-> *(optional, int)* 重试最大时间间隔 单位ms, 默认值为*0*
+> *(optional, int)* maximum wait time between each retry, unit is ms, default is *0*
 
-## 示例
+## example
 
-配置chassis.yaml负载均衡部分中的重试参数。
+edit load_balancing.yaml.
 
 ```yaml
 cse:

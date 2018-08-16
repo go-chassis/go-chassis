@@ -1,0 +1,33 @@
+---
+region:
+  name: us-east
+  available_zone: us-east-1
+cse:
+  loadbalance:
+    strategy:
+      name: RoundRobin
+    retryEnabled: false
+    retryOnNext: 2
+    retryOnSame: 3
+    backoff:
+      kind: constant
+      minMs: 200
+      maxMs: 400
+  service:
+    registry:
+      type: servicecenter
+      scope: full
+      address: http://127.0.0.1:30100
+      refreshInterval : 30s
+      watch: true
+  protocols:
+    highway:
+      listenAddress: 127.0.0.1:8082
+      advertiseAddress: 127.0.0.1:8082
+    rest:
+      listenAddress: 127.0.0.1:8083
+      advertiseAddress: 127.0.0.1:8083
+  handler:
+    chain:
+      Provider:
+        default: bizkeeper-provider

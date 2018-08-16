@@ -1,11 +1,10 @@
 package config
 
 import (
-	"github.com/cenkalti/backoff"
 	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"strings"
 	"sync"
-	"time"
 )
 
 const (
@@ -26,11 +25,6 @@ const (
 	DefaultSessionTimeout = 30
 	//DefaultFailedTimes is default value for failed times
 	DefaultFailedTimes = 5
-	backoffJittered    = "jittered"
-	backoffConstant    = "constant"
-	backoffZero        = "zero"
-	//DefaultBackoffKind is zero
-	DefaultBackoffKind = backoffZero
 )
 
 var lbMutex = sync.RWMutex{}
@@ -112,52 +106,28 @@ func GetRetryOnSame(source, service string) int {
 	return ms
 }
 
-func backoffKind(source, service string) string {
+//BackOffKind get kind
+func BackOffKind(source, service string) string {
 	r := GetLoadBalancing().AnyService[service].Backoff.Kind
 	if r == "" {
 		r = GetLoadBalancing().Backoff.Kind
 		if r == "" {
-			r = DefaultBackoffKind
+			r = backoff.DefaultBackOffKind
 		}
 	}
 	return r
 }
 
-func backoffMinMs(source, service string) int {
+//BackOffMinMs get min time
+func BackOffMinMs(source, service string) int {
 	global := GetLoadBalancing().Backoff.MinMs
 	ms := archaius.GetInt(genKey(lbPrefix, service, propertyBackoffMinMs), global)
 	return ms
 }
 
-func backoffMaxMs(source, service string) int {
+//BackOffMaxMs get max time
+func BackOffMaxMs(source, service string) int {
 	global := GetLoadBalancing().Backoff.MaxMs
 	ms := archaius.GetInt(genKey(lbPrefix, service, propertyBackoffMaxMs), global)
 	return ms
-}
-
-//GetBackOff return the the back off policy
-func GetBackOff(source, service string) backoff.BackOff {
-	lbMutex.RLock()
-	backoffKind := backoffKind(source, service)
-	backMin := backoffMinMs(source, service)
-	backMax := backoffMaxMs(source, service)
-	lbMutex.RUnlock()
-	switch backoffKind {
-	case backoffJittered:
-		return &backoff.ExponentialBackOff{
-			InitialInterval:     time.Duration(backMin) * time.Millisecond,
-			RandomizationFactor: backoff.DefaultRandomizationFactor,
-			Multiplier:          backoff.DefaultMultiplier,
-			MaxInterval:         time.Duration(backMax) * time.Millisecond,
-			MaxElapsedTime:      0,
-			Clock:               backoff.SystemClock,
-		}
-	case backoffConstant:
-		return backoff.NewConstantBackOff(time.Duration(backMin) * time.Millisecond)
-	case backoffZero:
-		return &backoff.ZeroBackOff{}
-	default:
-		return &backoff.ZeroBackOff{}
-	}
-
 }

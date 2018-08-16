@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
@@ -15,6 +16,7 @@ import (
 	"github.com/go-chassis/go-sc-client/model"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/util/rand"
 )
 
 func TestCacheManager_AutoSync(t *testing.T) {
@@ -125,5 +127,42 @@ func TestServiceDiscovery_AutoSync(t *testing.T) {
 	assert.True(t, v1.LessThan(v3))
 	assert.True(t, v4.LessThan(v1))
 	assert.True(t, v4.LessThan(v5))
+}
 
+func TestCacheManager_MakeSchemaIndex(t *testing.T) {
+	/*
+		1. Init Config
+		2. Add key for autoIndex
+		3. Start a microservice
+		4. Check the status of Cache
+	*/
+	p := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	config.Init()
+	//Add autoIndex Key in Archaius
+	archaius.AddKeyValue("cse.service.registry.autoSchemaIndex", true)
+	config.GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.RefreshInterval = "1"
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	registry.Enable()
+	registry.DoRegister()
+	time.Sleep(time.Second * 1)
+
+	microservice := &registry.MicroService{
+		AppID:       "default",
+		ServiceName: "AutoIndexServer",
+		Version:     "0.1",
+		Status:      model.MicorserviceUp,
+		Level:       "FRONT",
+	}
+	sid, _ := registry.DefaultRegistrator.RegisterService(microservice)
+	schemaName := rand.String(10)
+	schemaInfoString := "swagger: \"2.0\"\ninfo:\n  version: \"1.0.0\"\n  title: \"swagger definition for org.apache.servicecomb.samples.demo.client.ClientApi\"\n  x-java-interface: \"cse.gen.huaweidemo.DemoClient2.helloclient." + schemaName + "\"\nbasePath: \"/\"\nconsumes:\n- \"application/json\"\nproduces:\n- \"application/json\"\npaths:\n  /sayhello:\n    get:\n      operationId: \"sayHello\"\n      parameters: []\n      responses:\n        200:\n          description: \"response of 200\"\n          schema:\n            type: \"string\"\n"
+	registry.DefaultRegistrator.AddSchemas(sid, schemaName, schemaInfoString)
+	registry.DefaultServiceDiscoveryService.AutoSync()
+	time.Sleep(time.Second * 3)
+	interfaceExistInCache := false
+	if registry.SchemaInterfaceIndexedCache.ItemCount() >= 1 {
+		interfaceExistInCache = true
+	}
+	assert.True(t, interfaceExistInCache)
 }

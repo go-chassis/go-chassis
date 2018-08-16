@@ -10,9 +10,10 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
-	runtime "github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-sc-client"
 	"github.com/go-chassis/go-sc-client/model"
+
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -145,32 +146,53 @@ func (c *CacheManager) MakeSchemaIndex() error {
 				continue
 			}
 
-			interfaceName := schemaContent.Info["x-java-interfcae"]
-			value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
-			if !ok {
-				var allMicroServices []*model.MicroService
-				allMicroServices = append(allMicroServices, ms)
-				registry.SchemaInterfaceIndexedCache.Set(interfaceName, allMicroServices, 0)
-			} else {
-				val, _ := value.([]*model.MicroService)
-				val = append(val, ms)
-				registry.SchemaInterfaceIndexedCache.Set(interfaceName, val, 0)
-			}
-			svcValue, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
-			if !ok {
-				var allMicroServices []*model.MicroService
-				allMicroServices = append(allMicroServices, ms)
-				registry.SchemaServiceIndexedCache.Set(serviceID, allMicroServices, 0)
-			} else {
-				val, _ := svcValue.([]*model.MicroService)
-				val = append(val, ms)
-				registry.SchemaServiceIndexedCache.Set(serviceID, val, 0)
-			}
+			interfaceName := schemaContent.Info["x-java-interface"]
+			if interfaceName != "" {
+				value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
+				if !ok {
+					var allMicroServices []*model.MicroService
+					allMicroServices = append(allMicroServices, ms)
+					registry.SchemaInterfaceIndexedCache.Set(interfaceName, allMicroServices, 0)
+					lager.Logger.Debugf("New Interface added in the Index Cache : %s", interfaceName)
+				} else {
+					val, _ := value.([]*model.MicroService)
+					if !checkIfMicroServiceExistInList(val, ms.ServiceID) {
+						val = append(val, ms)
+						registry.SchemaInterfaceIndexedCache.Set(interfaceName, val, 0)
+						lager.Logger.Debugf("New Interface added in the Index Cache : %s", interfaceName)
+					}
+				}
 
+				svcValue, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
+				if !ok {
+					var allMicroServices []*model.MicroService
+					allMicroServices = append(allMicroServices, ms)
+					registry.SchemaServiceIndexedCache.Set(serviceID, allMicroServices, 0)
+					lager.Logger.Debugf("New Service added in the Index Cache : %s", serviceID)
+				} else {
+					val, _ := svcValue.([]*model.MicroService)
+					if !checkIfMicroServiceExistInList(val, ms.ServiceID) {
+						val = append(val, ms)
+						registry.SchemaServiceIndexedCache.Set(serviceID, val, 0)
+						lager.Logger.Debugf("New Service added in the Index Cache : %s", serviceID)
+					}
+				}
+			}
 		}
 	}
-
 	return nil
+}
+
+// This functions checks if the microservices exist in the list passed in argument
+func checkIfMicroServiceExistInList(microserviceList []*model.MicroService, serviceID string) bool {
+	msIsPresentInList := false
+	for _, interfaceMicroserviceList := range microserviceList {
+		if interfaceMicroserviceList.ServiceID == serviceID {
+			msIsPresentInList = true
+			break
+		}
+	}
+	return msIsPresentInList
 }
 
 // pullMicroserviceInstance pull micro-service instance
@@ -182,8 +204,10 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		return err
 	}
 
-	serviceStore := c.getServiceStore(rsp.Services)
-	for key := range serviceStore {
+	serviceNameSet, serviceNameAppIDKeySet := c.getServiceSet(rsp.Services)
+	c.compareAndDeleteOutdatedProviders(serviceNameSet)
+
+	for key := range serviceNameAppIDKeySet {
 		service := strings.Split(key, ":")
 		if len(service) != 2 {
 			lager.Logger.Errorf(err, "Invalid serviceStore %s for providers %s", key, runtime.ServiceID)
@@ -206,36 +230,53 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 	return nil
 }
 
-// getServiceStore returns service sets
-func (c *CacheManager) getServiceStore(exist []*model.MicroService) sets.String {
+func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.String) {
+	oldProviders := registry.MicroserviceInstanceIndex.Items()
+	for old := range oldProviders {
+		if !newProviders.Has(old) { //provider is outdated, delete it
+			registry.MicroserviceInstanceIndex.Delete(old)
+		}
+	}
+}
+
+// getServiceSet returns service sets
+func (c *CacheManager) getServiceSet(exist []*model.MicroService) (sets.String, sets.String) {
 	//get Provider's instances
-	serviceStore := sets.NewString()
+	serviceNameSet := sets.NewString()         // key is serviceName
+	serviceNameAppIDKeySet := sets.NewString() // key is "serviceName:appId"
+	if exist == nil || len(exist) == 0 {
+		return serviceNameSet, serviceNameAppIDKeySet
+	}
+
 	for _, microservice := range exist {
 		if microservice == nil {
 			continue
 		}
+		serviceNameSet.Insert(microservice.ServiceName)
 		key := strings.Join([]string{microservice.ServiceName, microservice.AppID}, ":")
-		if !serviceStore.Has(key) {
-			serviceStore.Insert(key)
-		}
+		serviceNameAppIDKeySet.Insert(key)
 	}
-	return serviceStore
+	return serviceNameSet, serviceNameAppIDKeySet
 }
 
 func filterReIndex(providerInstances []*model.MicroServiceInstance, serviceName string, appID string) {
-	var store = make([]*registry.MicroServiceInstance, 0, len(providerInstances))
+	ups := make([]*registry.MicroServiceInstance, 0, len(providerInstances))
+	downs := make(map[string]struct{})
 	for _, ins := range providerInstances {
-		if ins.Status != model.MSInstanceUP {
-			continue
-		}
-
-		if ins.Version == "" {
+		switch {
+		case ins.Version == "":
 			lager.Logger.Warn("do not support old service center, plz upgrade")
 			continue
+		case ins.Status != common.DefaultStatus:
+			downs[ins.InstanceID] = struct{}{}
+			lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
+				ins.Status, ins.ServiceID, ins.InstanceID)
+			continue
+		default:
+			ups = append(ups, ToMicroServiceInstance(ins).WithAppID(appID))
 		}
-		store = append(store, ToMicroServiceInstance(ins).WithAppID(appID))
 	}
-	registry.RefreshCache(serviceName, store)
+	registry.RefreshCache(serviceName, ups, downs)
 }
 
 // findVersionRule returns version rules for microservice

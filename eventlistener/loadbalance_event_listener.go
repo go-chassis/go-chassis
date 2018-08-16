@@ -4,6 +4,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 
 	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-chassis/control/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 )
 
@@ -24,4 +25,5 @@ func (e *LoadbalanceEventListener) Event(event *core.Event) {
 	if err := config.ReadLBFromArchaius(); err != nil {
 		lager.Logger.Error("can not unmarshal new lb config", err)
 	}
+	archaius.SaveToLBCache(config.GetLoadBalancing())
 }

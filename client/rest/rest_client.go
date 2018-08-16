@@ -119,6 +119,10 @@ func invocation2HttpRequest(inv *invocation.Invocation) (*Request, error) {
 	if !ok {
 		return nil, ErrInvalidReq
 	}
+	m := common.FromContext(inv.Ctx)
+	for k, v := range m {
+		reqSend.SetHeader(k, v)
+	}
 	return reqSend, nil
 }
 

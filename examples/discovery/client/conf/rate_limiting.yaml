@@ -7,4 +7,4 @@ cse:
       qps:
         enabled: true
         limit:
-          Server.EmployServer: 100
+          Server: 100

@@ -12,3 +12,8 @@ glide.lock
 vendor/**
 !vendor/manifest
 docs/_build
+benchmark/**/*.csv
+benchmark/**/*.txt
+benchmark/client/client
+benchmark/server/server
+benchmark/**/log

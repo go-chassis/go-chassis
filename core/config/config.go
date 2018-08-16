@@ -158,6 +158,18 @@ func readGlobalConfigFile() error {
 	return nil
 }
 
+// readPanelConfig for to unmarshal the global config file(chassis.yaml) information
+func readPanelConfig() error {
+	globalDef := model.GlobalCfg{}
+	err := archaius.UnmarshalConfig(&globalDef)
+	if err != nil {
+		return err
+	}
+	GlobalDefinition = &globalDef
+
+	return nil
+}
+
 // ReadLBFromArchaius for to unmarshal the global config file(chassis.yaml) information
 func ReadLBFromArchaius() error {
 	lbMutex.Lock()

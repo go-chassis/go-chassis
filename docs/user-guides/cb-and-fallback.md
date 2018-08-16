@@ -1,74 +1,62 @@
-# 熔断与降级
-## **概述**
+# Circuit breaker
 
-降级策略是当服务请求异常时，微服务所采用的异常处理策略。
+## **Introduction**
+Circuit breaker help to prevent network failure between service call, 
+it also monitor each service call to make service observable
 
-降级策略有三个相关的技术概念：“隔离”、“熔断”、“容错”：
+## **Configuration**
 
-* “隔离”是一种异常检测机制，常用的检测方法是请求超时、流量过大等。一般的设置参数包括超时时间、同时并发请求个数等。
-* “熔断”是一种异常反应机制，“熔断”依赖于“隔离”。熔断通常基于错误率来实现。一般的设置参数包括统计请求的个数、错误率等。
-* “容错”是一种异常处理机制，“容错”依赖于“熔断”。熔断以后，会调用“容错”的方法。一般的设置参数包括调用容错方法的次数等。
+Configuration Format as below：
 
-把这些概念联系起来：当"隔离"措施检测到N次请求中共有M次错误的时候，"熔断"不再发送后续请求，调用"容错"处理函数。这个技术上的定义，是和Netflix Hystrix一致的，通过这个定义，非常容易理解它提供的配置项，参考：[https://github.com/Netflix/Hystrix/wiki/Configuration](https://github.com/Netflix/Hystrix/wiki/Configuration)。当前go-chassis提供两种容错方式，分别为返回null值和抛出异常。
+cse.{namespace}.Consumer.{serviceName}.{property}
+explanation:
 
-## **配置**
+{namespace}：it can be isolation\|circuitBreaker\|fallback\|fallbackpolicy. 
 
-配置格式为：
+{serviceName}: it is optional. it is the service level configuration, it represent the target service name
 
-cse.{namespace}.Consumer.{serviceName}.{property}: {configuration}
+{property}: configuration items
 
-字段意义：
-
-{namespace}取值为：isolation\|circuitBreaker\|fallback\|fallbackpolicy，分别表示隔离、熔断、降级、降级策略。
-
-{serviceName}表示服务名，即某个服务提供者。
-
-{property}表示具体配置项。
-
-{configuration}表示具体配置内容。
-
-为了方便描述，下表中的配置项均省略了Consumer和{serviceName}。
-
-**cse.isolation.timeout.enabled**
-> *(optional, bool)*  是否启用超时检测,默认*false*
+**cse.isolation.Consumer.timeout.enabled**
+> *(optional, bool)* Enable timeout check,default is *false*
 
 **cse.isolation.timeoutInMilliseconds**
-> *(optional, int)* 超时阈值，默认*30000*
+> *(optional, int)* if delay for a time, this call will be considered as failure, default is *30000*
 
 **cse.isolation.maxConcurrentRequests**
-> *(optional, int)*最大并发数阈值 默认1000
+> *(optional, int)* max concurrency, default is 1000
 
 **cse.circuitBreaker.enabled**
-> *(optional, bool)* 是否启用熔断措施,默认true
+> *(optional, bool)* enable circuit breaker or not, default is true
 
 **cse.circuitBreaker.forceOpen**
-> *(optional, bool)* 不管失败次数，都进行熔断 默认false
+> *(optional, bool)* if it is true, will forcely open the circuit, default is false
 
 **cse.circuitBreaker.forceClosed**
-> *(optional, bool)*任何时候都不熔断，当与forceOpen同时配置时，forceOpen优先。默认false
+> *(optional, bool)* ignore all configurations forcely close crcuit all the time, default is false
 
 **cse.circuitBreaker.sleepWindowInMilliseconds**
-> *(optional, int)* 熔断后，多长时间恢复。恢复后，会重新计算失败情况。注意：如果恢复后的调用立即失败，那么会立即重新进入熔断。
->默认15000
+> *(optional, int)* after a circuit open, how long it should wait for next retry, 
+if retry failed, circuit will open again.
+>default is 15000
 
 **cse.circuitBreaker.requestVolumeThreshold**
-> *(optional, int)* 10s内统计错误发生次数阈值，超过阈值则触发熔断 | 由于10秒还会被划分为10个1秒的统计周期，经过1s中后才会开始计算错误率，因此从调用开始至少经过1s，才会发生熔断
-> 默认20
+> *(optional, int)* it means in 10 seconds after how many request fails, circuit breaker should open
+> default is 20
 
 **cse.circuitBreaker.errorThresholdPercentage**
-> *(optional, int)* 错误率阈值，达到阈值则触发熔断 默认50
+> *(optional, int)* it means how many err percentage met, circuit breaker should open, default is 50
 
 **cse.fallback.enabled**
-> *(optional, bool)* 是否启用出错后的故障处理措施 默认为true
+> *(optional, bool)* enable fallback or not, default is true
 
 **cse.fallbackpolicy.policy**
-> *(optional, string)* 出错后的处理策略 可选 *returnnull* *throwexception*，默认returnnull
+> *(optional, string)* fallback policy  [*returnnull*| *throwexception*]，default is returnnull
 
 
-## **示例**
+## **examples**
 
 ```yaml
----
 cse:
   isolation:
     Consumer:
@@ -76,7 +64,7 @@ cse:
         enabled: false
       timeoutInMilliseconds: 1
       maxConcurrentRequests: 100
-      Server:
+      ServerA: # service level config
         timeout:
           enabled: true
         timeoutInMilliseconds: 1000
@@ -89,7 +77,7 @@ cse:
       sleepWindowInMilliseconds: 10000
       requestVolumeThreshold: 20
       errorThresholdPercentage: 10
-      Server:
+      ServerB: # service level config
         enabled: true
         forceOpen: false
         forceClosed: false

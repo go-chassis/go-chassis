@@ -40,11 +40,14 @@ type InvocationContext struct {
 	Req  *Request
 	Rsp  *Response
 	Wait *chan int
+	once sync.Once
 }
 
 //Done Notify done.
 func (ctx *InvocationContext) Done() {
-	*ctx.Wait <- 1
+	ctx.once.Do(func() {
+		close(*ctx.Wait)
+	})
 }
 
 //ClientMgr client manage
@@ -229,11 +232,12 @@ func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Dur
 	}
 	if req.TwoWay {
 		wait := make(chan int)
-		ctx := &InvocationContext{req, rsp, &wait}
+		ctx := &InvocationContext{Req: req, Rsp: rsp, Wait: &wait}
 		baseClient.AddWaitMsg(msgID, ctx)
 
 		err := highwayConn.AsyncSendMsg(ctx)
 		if err != nil {
+			baseClient.RemoveWaitMsg(msgID)
 			rsp.Err = err.Error()
 			lager.Logger.Error("AsyncSendMsg err:", err)
 			return err
@@ -248,8 +252,8 @@ func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Dur
 		}
 
 		baseClient.RemoveWaitMsg(msgID)
-		close(wait)
 		if bTimeout {
+			ctx.Done()
 			rsp.Err = "Client send timeout"
 			return errors.New("Client send timeout")
 		}

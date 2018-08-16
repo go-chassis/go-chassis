@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-chassis/control/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -33,7 +34,7 @@ func (e *CircuitBreakerEventListener) Event(event *core.Event) {
 	if err := config.ReadHystrixFromArchaius(); err != nil {
 		lager.Logger.Error("can not unmarshal new cb config", err)
 	}
-
+	archaius.SaveToCBCache(config.GetHystrixConfig())
 	switch event.EventType {
 	case common.Update:
 		FlushCircuitByKey(event.Key)

@@ -2,10 +2,8 @@ package handler
 
 import (
 	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -13,6 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 	"io"
 	"io/ioutil"
+	"net/http"
 )
 
 // constant for bizkeeper-consumer
@@ -23,29 +22,9 @@ const (
 // BizKeeperConsumerHandler bizkeeper consumer handler
 type BizKeeperConsumerHandler struct{}
 
-// GetHystrixConfig get hystrix config
-func GetHystrixConfig(service, protype string) (string, hystrix.CommandConfig) {
-	command := protype
-	if service != "" {
-		command = strings.Join([]string{protype, service}, ".")
-	}
-	return command, hystrix.CommandConfig{
-		ForceFallback:          config.GetForceFallback(service, protype),
-		TimeoutEnabled:         config.GetTimeoutEnabled(service, protype),
-		Timeout:                config.GetTimeout(command, protype),
-		MaxConcurrentRequests:  config.GetMaxConcurrentRequests(command, protype),
-		ErrorPercentThreshold:  config.GetErrorPercentThreshold(command, protype),
-		RequestVolumeThreshold: config.GetRequestVolumeThreshold(command, protype),
-		SleepWindow:            config.GetSleepWindow(command, protype),
-		ForceClose:             config.GetForceClose(service, protype),
-		ForceOpen:              config.GetForceOpen(service, protype),
-		CircuitBreakerEnabled:  config.GetCircuitBreakerEnabled(command, protype),
-	}
-}
-
 // Handle function is for to handle the chain
 func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	command, cmdConfig := GetHystrixConfig(i.MicroServiceName, common.Consumer)
+	command, cmdConfig := control.DefaultPanel.GetCircuitBreaker(*i, common.Consumer)
 	hystrix.ConfigureCommand(command, cmdConfig)
 
 	finish := make(chan *invocation.Response, 1)

@@ -1,4 +1,4 @@
-# 服务发现
+# Service Discovery
 ## 概述
 
 Service discovery 是关于如何发现服务的配置。

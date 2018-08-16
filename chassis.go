@@ -23,6 +23,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
+	// archaius panel
+	_ "github.com/go-chassis/go-chassis/control/archaius"
 	// file package for file based registration
 	_ "github.com/go-chassis/go-chassis/core/registry/file"
 	// servicecenter package handles service center api calls
@@ -45,6 +47,7 @@ import (
 	_ "github.com/go-chassis/go-cc-client/apollo-client"
 	_ "github.com/go-chassis/go-cc-client/configcenter-client"
 	"github.com/go-chassis/go-chassis/config-center"
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/metrics"
@@ -120,7 +123,9 @@ func (c *chassis) initialize() error {
 	if err := runtime.Init(); err != nil {
 		return err
 	}
-
+	if err := control.Init(); err != nil {
+		return err
+	}
 	err = c.initHandler()
 	if err != nil {
 		lager.Logger.Errorf(err, "Handler init failed")
@@ -131,7 +136,7 @@ func (c *chassis) initialize() error {
 	if err != nil {
 		return err
 	}
-
+	bootstrap.Bootstrap()
 	if archaius.GetBool("cse.service.registry.disabled", false) != true {
 		err := registry.Enable()
 		if err != nil {
@@ -141,8 +146,6 @@ func (c *chassis) initialize() error {
 			return err
 		}
 	}
-
-	bootstrap.Bootstrap()
 
 	configcenter.InitConfigCenter()
 	// router needs get configs from config-center when init

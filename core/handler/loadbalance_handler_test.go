@@ -10,6 +10,7 @@ import (
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-archaius/core/cast"
 	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	chassisModel "github.com/go-chassis/go-chassis/core/config/model"
@@ -236,19 +237,24 @@ func TestLBHandlerWithRetry(t *testing.T) {
 }
 func TestLBHandlerWithNoRetry(t *testing.T) {
 	t.Log("testing load balance handler with No retry")
+	p := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
-	config.Init()
+	err := config.Init()
+	assert.NoError(t, err)
 	//config.GlobalDefinition = &chassisModel.GlobalCfg{}
 
-	archaius.Init()
-
+	err = archaius.Init()
+	assert.NoError(t, err)
+	err = control.Init()
+	assert.NoError(t, err)
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})
 
 	var mss []*registry.MicroServiceInstance
-	var ms1 *registry.MicroServiceInstance = new(registry.MicroServiceInstance)
-	var ms2 *registry.MicroServiceInstance = new(registry.MicroServiceInstance)
+	var ms1 = new(registry.MicroServiceInstance)
+	var ms2 = new(registry.MicroServiceInstance)
 	var mp = make(map[string]string)
 	mp["any"] = "127.0.0.1"
 	ms1.EndpointsMap = mp
@@ -279,7 +285,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 		return r.Err
 	})
 
-	var lbh *handler.LBHandler = new(handler.LBHandler)
+	var lbh = new(handler.LBHandler)
 	str := lbh.Name()
 	assert.Equal(t, "loadbalancer", str)
 	t.Log(i.Protocol)
@@ -291,6 +297,8 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
+	archaius.Init()
+	control.Init()
 	registry.Enable()
 	registry.DoRegister()
 	loadbalancer.Enable()
@@ -298,7 +306,6 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 		{
 			ServiceName: "test2",
 			AppID:       "default",
-			Level:       "FRONT",
 			Version:     "1.0",
 			Status:      "UP",
 		},
@@ -326,7 +333,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 		Protocol:         "highway",
 		Strategy:         loadbalancer.StrategyRoundRobin,
 		SourceServiceID:  runtime.ServiceID,
-		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
+		RouteTags:        utiltags.NewDefaultTag("1.0", "default"),
 	}
 
 	b.Log(runtime.ServiceID)

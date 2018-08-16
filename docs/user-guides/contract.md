@@ -1,4 +1,4 @@
-# 契约管理
+# Contract management
 ## 概述
 
 go-chassis读取服务契约并将其内容上传至注册中心。

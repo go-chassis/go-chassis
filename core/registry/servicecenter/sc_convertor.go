@@ -50,18 +50,21 @@ func ToSCService(cs *registry.MicroService) *model.MicroService {
 
 // ToMicroServiceInstance assign model micro-service instance parameters to registry micro-service instance parameters
 func ToMicroServiceInstance(ins *model.MicroServiceInstance) *registry.MicroServiceInstance {
-	msi := &registry.MicroServiceInstance{}
+	msi := &registry.MicroServiceInstance{
+		InstanceID: ins.InstanceID,
+		Metadata:   ins.Properties,
+		Status:     ins.Status,
+	}
 	m, p := registry.GetProtocolMap(ins.Endpoints)
-	msi.InstanceID = ins.InstanceID
 	msi.EndpointsMap = m
 	msi.DefaultEndpoint = m[p]
 	msi.DefaultProtocol = p
-	msi.Metadata = ins.Properties
 	if ins.DataCenterInfo != nil {
-		msi.DataCenterInfo = &registry.DataCenterInfo{}
-		msi.DataCenterInfo.Name = ins.DataCenterInfo.Name
-		msi.DataCenterInfo.AvailableZone = ins.DataCenterInfo.AvailableZone
-		msi.DataCenterInfo.Region = ins.DataCenterInfo.Region
+		msi.DataCenterInfo = &registry.DataCenterInfo{
+			Name:          ins.DataCenterInfo.Name,
+			AvailableZone: ins.DataCenterInfo.AvailableZone,
+			Region:        ins.DataCenterInfo.Region,
+		}
 	}
 	if msi.Metadata == nil {
 		msi.Metadata = make(map[string]string)

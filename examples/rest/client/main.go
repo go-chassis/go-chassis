@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
 )
 
@@ -24,8 +25,10 @@ func main() {
 		return
 	}
 	defer req.Close()
-
-	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
+	ctx := context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
+		"user": "peter",
+	})
+	resp, err := core.NewRestInvoker().ContextDo(ctx, req)
 	if err != nil {
 		lager.Logger.Error("do request failed.", err)
 		return

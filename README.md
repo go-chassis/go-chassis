@@ -44,7 +44,7 @@ cd go-chassis
 glide intall
 ```
 
-4. Install [service-center](https://github.com/go-chassis/service-center/releases)
+4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
 
 5. [Write your first http micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
 
