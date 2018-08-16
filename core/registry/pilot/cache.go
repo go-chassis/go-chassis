@@ -2,7 +2,6 @@ package pilot
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/archaius"
@@ -77,7 +76,9 @@ func (c *CacheManager) MakeIPIndex() error {
 	}
 	for _, service := range services {
 		for _, h := range service.Hosts {
-			registry.IPIndexedCache.Set(fmt.Sprintf("%s:%d", h.Address, h.Port), service.ServiceKey, 0)
+			si := &registry.SourceInfo{}
+			si.Name = service.ServiceKey
+			registry.SetIPIndex(h.Address, si)
 			//no need to analyze each endpoint
 			break
 		}

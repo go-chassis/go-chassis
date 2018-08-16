@@ -93,6 +93,8 @@ func (c *CacheManager) refreshCache() {
 }
 
 // MakeIPIndex make ip index
+// if store instance metadata into tags
+// it will be used in route management
 func (c *CacheManager) MakeIPIndex() error {
 	lager.Logger.Debug("Make IP index")
 	services, err := c.registryClient.GetAllResources("instances")
@@ -105,12 +107,19 @@ func (c *CacheManager) MakeIPIndex() error {
 			for _, uri := range inst.Endpoints {
 				u, err := url.Parse(uri)
 				if err != nil {
-					lager.Logger.Error("Wrong URI", err)
+					lager.Logger.Error("Wrong URI:"+uri, err)
 					continue
 				}
-				u.Host = strings.Split(u.Host, ":")[0]
-				registry.IPIndexedCache.Set(u.Host, service.MicroService, 0)
-				//no need to analyze each endpoint
+				si := &registry.SourceInfo{}
+				si.Tags = inst.Properties
+				if si.Tags == nil {
+					si.Tags = make(map[string]string)
+				}
+				si.Name = service.MicroService.ServiceName
+				si.Tags[common.BuildinTagApp] = service.MicroService.AppID
+				si.Tags[common.BuildinTagVersion] = service.MicroService.Version
+				registry.SetIPIndex(u.Hostname(), si)
+				//no need to analyze each endpoint, so break
 				break
 			}
 		}

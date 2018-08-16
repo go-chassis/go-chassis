@@ -24,7 +24,8 @@ type Response struct {
 type ResponseCallBack func(*Response) error
 
 //Invocation is the basic struct that used in go sdk to make client and transport layer transparent .
-//developer should implements a client which is able to  encode from invocation to there own request
+//developer should implements a client which is able to transfer invocation to there own request
+//a protocol server should transfer request to invocation and then back to request
 type Invocation struct {
 	Endpoint           string //service's ip and port, it is decided in load balancing
 	Protocol           string
@@ -64,6 +65,7 @@ func (inv *Invocation) Reset() {
 }
 
 // New create invocation, context can not be nil
+// if you don't set ContextHeaderKey, then New will init it
 func New(ctx context.Context) *Invocation {
 	inv := &Invocation{
 		SourceServiceID: runtime.ServiceID,

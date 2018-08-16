@@ -47,7 +47,8 @@ type DataCenterInfo struct {
 	AvailableZone string
 }
 
-// SourceInfo source info
+// SourceInfo represent the consumer service name and metadata.
+// it is used in route management
 type SourceInfo struct {
 	Name string
 	Tags map[string]string
