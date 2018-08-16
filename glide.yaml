@@ -204,6 +204,9 @@ import:
 - package: google.golang.org/grpc
   version: =1.11.1
   repo: https://github.com/grpc/grpc-go
+- package: google.golang.org/genproto
+  version: master
+  repo: https://github.com/google/go-genproto
 - package: gopkg.in/yaml.v2
   version: 670d4cfef0544295bc27a114dbac37980d83185a
   repo: https://github.com/go-yaml/yaml
