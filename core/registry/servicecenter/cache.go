@@ -74,6 +74,8 @@ func (c *CacheManager) refreshCache() {
 	err := c.pullMicroserviceInstance()
 	if err != nil {
 		lager.Logger.Errorf(err, "AutoUpdateMicroserviceInstance failed.")
+		//connection with sc may lost, reset the revision
+		c.registryClient.ResetRevision()
 	}
 
 	if archaius.GetBool("cse.service.registry.autoSchemaIndex", false) {
