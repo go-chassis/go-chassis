@@ -321,7 +321,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	if !boo || value == nil {
 		lager.Logger.Warnf("%s Get instances from remote, key: %s %s", consumerID, appID, microServiceName)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
-			findVersionRule(microServiceName))
+			findVersionRule(microServiceName), client.WithoutRevision())
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", microServiceName, err)
 		}
