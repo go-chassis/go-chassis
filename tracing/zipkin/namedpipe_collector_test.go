@@ -1,6 +1,6 @@
 // +build linux
 
-package tracing_test
+package zipkin
 
 import (
 	"bufio"
@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
 	"github.com/stretchr/testify/assert"
 )
@@ -56,9 +55,9 @@ func TestNewCollector_linux(t *testing.T) {
 	}
 
 	go readNamedPipe(target)
-	collector, err := tracing.NewCollector(tracing.TracingNamedPipeCollector, target)
+	collector, err := newNamedPipeCollectorLinux(target)
 	assert.NoError(t, err)
-	namedPipeCollector, ok := collector.(*tracing.FileCollector)
+	namedPipeCollector, ok := collector.(*FileCollector)
 	assert.True(t, ok)
 	assert.NotNil(t, namedPipeCollector)
 
@@ -72,9 +71,9 @@ func TestNewCollector_linux(t *testing.T) {
 	assert.NoError(t, err)
 	oldModifyTime := fileInfo.ModTime()
 
-	collector, err = tracing.NewCollector(tracing.TracingNamedPipeCollector, target)
+	collector, err = newNamedPipeCollectorLinux(target)
 	assert.NoError(t, err)
-	namedPipeCollector, ok = collector.(*tracing.FileCollector)
+	namedPipeCollector, ok = collector.(*FileCollector)
 	assert.True(t, ok)
 	assert.NotNil(t, namedPipeCollector)
 

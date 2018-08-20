@@ -1,6 +1,6 @@
 // +build linux
 
-package tracing
+package zipkin
 
 import (
 	"os"

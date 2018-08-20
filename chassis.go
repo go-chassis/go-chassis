@@ -52,6 +52,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	//import tracers
+	_ "github.com/go-chassis/go-chassis/tracing/zipkin"
 )
 
 var goChassis *chassis

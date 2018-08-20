@@ -11,7 +11,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/tracing"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
@@ -23,7 +22,6 @@ type TracingProviderHandler struct{}
 
 // Handle is to handle the provider tracing related things
 func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	tracer := t.getTracer(i)
 
 	var (
 		wireContext   opentracing.SpanContext
@@ -77,10 +75,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		carrier = (opentracing.TextMapCarrier)(at)
 	}
 
-	wireContext, err = tracer.Extract(
-		opentracing.TextMap,
-		carrier,
-	)
+	wireContext, err = opentracing.GlobalTracer().Extract(opentracing.TextMap, carrier)
 
 	switch err {
 	case nil:
@@ -90,7 +85,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		lager.Logger.Errorf(err, "Extract span failed")
 	}
 	operationName := genOperationName(i.MicroServiceName, interfaceName)
-	span := tracer.StartSpan(operationName, ext.RPCServerOption(wireContext))
+	span := opentracing.StartSpan(operationName, ext.RPCServerOption(wireContext))
 	// set span kind to be server
 	ext.SpanKindRPCServer.Set(span)
 
@@ -122,11 +117,6 @@ func (t *TracingProviderHandler) Name() string {
 	return TracingProvider
 }
 
-func (t *TracingProviderHandler) getTracer(i *invocation.Invocation) opentracing.Tracer {
-	caller := i.MicroServiceName + ":" + runtime.HostName
-	return tracing.GetTracer(caller)
-}
-
 func newTracingProviderHandler() Handler {
 	return &TracingProviderHandler{}
 }
@@ -137,8 +127,6 @@ type TracingConsumerHandler struct{}
 // Handle is handle consumer tracing related things
 func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	// the span context is in invocation.Ctx
-	// TODO distinguish rpc msg type
-	tracer := t.getTracer(i)
 
 	if i.Ctx == nil {
 		i.Ctx = context.Background()
@@ -154,9 +142,9 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	operationName := genOperationName(i.MicroServiceName, interfaceName)
 	if parentSpan := opentracing.SpanFromContext(i.Ctx); parentSpan != nil {
 		opts = append(opts, opentracing.ChildOf(parentSpan.Context()))
-		span = tracer.StartSpan(operationName, opts...)
+		span = opentracing.StartSpan(operationName, opts...)
 	} else {
-		span = tracer.StartSpan(operationName, opts...)
+		span = opentracing.StartSpan(operationName, opts...)
 	}
 	// set span kind to be client
 	ext.SpanKindRPCClient.Set(span)
@@ -185,7 +173,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 			break
 		}
 
-		if err = tracer.Inject(span.Context(), opentracing.TextMap, carrier); err != nil {
+		if err = opentracing.GlobalTracer().Inject(span.Context(), opentracing.TextMap, carrier); err != nil {
 			lager.Logger.Errorf(err, "Inject span failed")
 		}
 	default:
@@ -199,7 +187,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 			header = attachments
 		}
 
-		if err := tracer.Inject(
+		if err := opentracing.GlobalTracer().Inject(
 			span.Context(),
 			opentracing.TextMap,
 			(opentracing.TextMapCarrier)(header),
@@ -247,17 +235,6 @@ func setInterfaceName(interfaceName string, i *invocation.Invocation) string {
 // Name returns tracing-consumer string
 func (t *TracingConsumerHandler) Name() string {
 	return TracingConsumer
-}
-
-func (t *TracingConsumerHandler) getTracer(i *invocation.Invocation) opentracing.Tracer {
-	caller := common.DefaultValue
-	if i.Metadata != nil {
-		if c, ok := i.Metadata[common.CallerKey].(string); ok && c != "" {
-			caller = c + ":" + runtime.HostName
-		}
-	}
-
-	return tracing.GetTracer(caller)
 }
 
 func newTracingConsumerHandler() Handler {

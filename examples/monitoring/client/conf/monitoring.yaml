@@ -5,5 +5,8 @@ cse:
     enableGoRuntimeMetrics: true
     flushInterval: 10s
 tracing:
-  collectorType: zipkin
-  collectorTarget: http://localhost:9411/api/v1/spans
+  tracer: zipkin
+  settings:
+    URI: http://127.0.0.1:9411/api/v1/spans
+    batchSize: 1
+    batchInterval: 1s
