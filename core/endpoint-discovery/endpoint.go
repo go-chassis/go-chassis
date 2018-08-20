@@ -45,6 +45,6 @@ func GetEndpointFromServiceCenter(appID, microService, version string) (string, 
 			}
 		}
 	}
-
+	registry.RefreshProviderCache(microService, appID)
 	return endPoint, nil
 }

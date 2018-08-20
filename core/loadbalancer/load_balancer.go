@@ -81,7 +81,7 @@ func BuildStrategy(consumerID, serviceName, protocol, sessionID string, fs []str
 		lager.Logger.Error(lbErr.Error(), nil)
 		return nil, lbErr
 	}
-
+	registry.RefreshProviderCache(serviceName, tags.AppID())
 	serviceKey := strings.Join([]string{serviceName, tags.String()}, "|")
 	s.ReceiveData(instances, serviceKey, protocol, sessionID)
 	return s, nil
