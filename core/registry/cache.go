@@ -1,6 +1,11 @@
 package registry
 
 import (
+	"strings"
+
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/patrickmn/go-cache"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
@@ -26,6 +31,9 @@ var SchemaInterfaceIndexedCache *cache.Cache
 //SchemaServiceIndexedCache key: schema service name value: []*microservice
 var SchemaServiceIndexedCache *cache.Cache
 
+// ProvidersMicroServiceCache  key: micro service  name and appId, value: []*MicroService
+var ProvidersMicroServiceCache *cache.Cache
+
 func initCache() *cache.Cache { return cache.New(DefaultExpireTime, 0) }
 
 func enableRegistryCache() {
@@ -34,6 +42,7 @@ func enableRegistryCache() {
 	ipIndexedCache = initCache()
 	SchemaServiceIndexedCache = initCache()
 	SchemaInterfaceIndexedCache = initCache()
+	ProvidersMicroServiceCache = initCache()
 }
 
 // CacheIndex defines interface for cache and index used by registry
@@ -69,3 +78,33 @@ func SetNoIndexCache() { MicroserviceInstanceIndex = newNoIndexCache() }
 
 // newCacheIndex returns index implemention according to config
 func newCacheIndex() CacheIndex { return newIndexCache() }
+
+// GetProvidersFromCache get local provider cache
+func GetProvidersFromCache() []*MicroService {
+	microServices := make([]*MicroService, 0)
+	items := ProvidersMicroServiceCache.Items()
+	for _, item := range items {
+		microService, ok := item.Object.(MicroService)
+		if !ok {
+			lager.Logger.Warn("cache not microService ")
+			continue
+		}
+		microService.Version = common.AllVersion
+		microServices = append(microServices, &microService)
+	}
+	return microServices
+}
+
+// AddProviderToCache refresh provider cache
+func AddProviderToCache(serverName, appID string) {
+	if appID == "" {
+		appID = config.GetGlobalAppID()
+		if appID == "" {
+			appID = common.DefaultApp
+		}
+	}
+	key := strings.Join([]string{serverName, appID}, "|")
+	if _, ok := ProvidersMicroServiceCache.Get(key); !ok {
+		ProvidersMicroServiceCache.Set(key, MicroService{ServiceName: serverName, AppID: appID}, 0)
+	}
+}
