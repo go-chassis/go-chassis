@@ -348,12 +348,9 @@ func (r *ServiceDiscovery) GetDependentMicroServiceInstances(appID, consumerMicr
 		lager.Logger.Errorf(err, "GetMicroServiceID failed.")
 		return nil, err
 	}
-	providers, err := r.registryClient.GetProviders(microServiceConsumerID)
-	if err != nil {
-		lager.Logger.Errorf(err, "Get Provider failed.")
-		return nil, err
-	}
-	for _, provider := range providers.Services {
+	services := registry.GetProvidersCache()
+
+	for _, provider := range services {
 		microServiceProviderID, err := r.GetMicroServiceID(provider.AppID, provider.ServiceName, provider.Version, env)
 		if err != nil {
 			lager.Logger.Errorf(err, "GetMicroServiceID failed.")
