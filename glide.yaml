@@ -180,9 +180,6 @@ import:
   repo: https://github.com/stretchr/testify
   subpackages:
   - mock
-- package: github.com/valyala/fasthttp
-  version: d42167fd04f636e20b005e9934159e95454233c7
-  repo: https://github.com/valyala/fasthttp
 - package: go.uber.org/ratelimit
   version: d15fa2e2a63dd52104bc96d8ea7dc47ce8027de8
   repo: https://github.com/uber-go/ratelimit

@@ -141,6 +141,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 					return ir.Err
 				}
 				transfer(inv, req)
+				ir.Status = bs.resp.StatusCode()
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
 				if bs.resp.StatusCode() >= http.StatusBadRequest {
 					return fmt.Errorf("get err from http handle, get status: %d", bs.resp.StatusCode())

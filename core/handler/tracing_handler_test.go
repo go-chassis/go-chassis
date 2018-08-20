@@ -16,6 +16,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 
+	"context"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
@@ -84,10 +85,9 @@ func TestTracingHandler_Highway(t *testing.T) {
 	consumerChain.AddHandler(&sleepHandler{})
 	consumerChain.AddHandler(tracingConsumerHandler)
 	consumerChain.AddHandler(consumerSpanHandler)
-	inv := &invocation.Invocation{
-		MicroServiceName: "test",
-		Protocol:         common.ProtocolHighway,
-	}
+	inv := invocation.New(context.TODO())
+	inv.MicroServiceName = "test"
+	inv.Protocol = common.ProtocolHighway
 
 	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)

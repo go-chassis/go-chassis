@@ -11,8 +11,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/fault"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
-
-	"github.com/valyala/fasthttp"
 )
 
 // constant for fault handler name
@@ -58,18 +56,12 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 			case *rest.Response:
 				resp := inv.Reply.(*rest.Response)
 				resp.SetStatusCode(faultConfig.Fault[inv.Protocol].Abort.HTTPStatus)
-			case *fasthttp.Response:
-				resp := inv.Reply.(*fasthttp.Response)
-				resp.SetStatusCode(faultConfig.Fault[inv.Protocol].Abort.HTTPStatus)
 			}
 			r.Status = faultConfig.Fault[inv.Protocol].Abort.HTTPStatus
 		} else {
 			switch inv.Reply.(type) {
 			case *rest.Response:
 				resp := inv.Reply.(*rest.Response)
-				resp.SetStatusCode(http.StatusBadRequest)
-			case *fasthttp.Response:
-				resp := inv.Reply.(*fasthttp.Response)
 				resp.SetStatusCode(http.StatusBadRequest)
 			}
 			r.Status = http.StatusBadRequest
