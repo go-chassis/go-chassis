@@ -17,3 +17,5 @@ benchmark/**/*.txt
 benchmark/client/client
 benchmark/server/server
 benchmark/**/log
+coverage.out
+coverage.txt
