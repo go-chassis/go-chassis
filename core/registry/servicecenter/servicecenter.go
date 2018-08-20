@@ -337,6 +337,9 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	if !ok {
 		lager.Logger.Errorf(nil, "FindMicroServiceInstances failed, Type asserts failed.consumerIDL: %s", consumerID)
 	}
+	if len(microServiceInstance) > 0 {
+		registry.AddProviderCache(microServiceName, appID)
+	}
 	return microServiceInstance, nil
 }
 

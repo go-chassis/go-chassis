@@ -1,6 +1,7 @@
 package servicecenter
 
 import (
+	"errors"
 	"net/url"
 	"strings"
 	"time"
@@ -209,19 +210,15 @@ func checkIfMicroServiceExistInList(microserviceList []*model.MicroService, serv
 // pullMicroserviceInstance pull micro-service instance
 func (c *CacheManager) pullMicroserviceInstance() error {
 	//Get Providers
-	rsp, err := c.registryClient.GetProviders(runtime.ServiceID)
-	if err != nil {
-		lager.Logger.Errorf(err, "get Providers failed, sid = %s", runtime.ServiceID)
-		return err
-	}
+	services := registry.GetProvidersFromCache()
 
-	serviceNameSet, serviceNameAppIDKeySet := c.getServiceSet(rsp.Services)
+	serviceNameSet, serviceNameAppIDKeySet := c.getServiceSet(services)
 	c.compareAndDeleteOutdatedProviders(serviceNameSet)
 
 	for key := range serviceNameAppIDKeySet {
 		service := strings.Split(key, ":")
 		if len(service) != 2 {
-			lager.Logger.Errorf(err, "Invalid serviceStore %s for providers %s", key, runtime.ServiceID)
+			lager.Logger.Errorf(errors.New("split serviceNameAppIDKey length  is not 2  error"), "Invalid serviceStore %s for providers %s", key, runtime.ServiceID)
 			continue
 		}
 
@@ -235,7 +232,9 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 			lager.Logger.Error("Refresh local instance cache failed", err)
 			continue
 		}
-
+		if len(providerInstances) == 0 {
+			registry.ProvidersMicroServiceCache.Delete(strings.Join([]string{service[0], service[1]}, "|"))
+		}
 		filterReIndex(providerInstances, service[0], service[1])
 	}
 	return nil
