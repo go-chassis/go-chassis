@@ -1,20 +1,12 @@
 package handler
 
 import (
-	"context"
-	"errors"
-	"net/url"
-
-	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
-	"github.com/valyala/fasthttp"
 )
 
 // TracingProviderHandler tracing provider handler
@@ -22,61 +14,14 @@ type TracingProviderHandler struct{}
 
 // Handle is to handle the provider tracing related things
 func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-
 	var (
-		wireContext   opentracing.SpanContext
-		err           error
-		interfaceName = "unknown"
-		carrier       interface{}
+		err error
 	)
-
 	// extract span context
-	switch i.Protocol {
-	case common.ProtocolRest:
-		// header stored in args, in rest
-		// handler chain doesn't resolve rest request, so never return
-		switch i.Args.(type) {
-		case *restful.Request:
-			req := i.Args.(*restful.Request)
-			carrier = (opentracing.HTTPHeadersCarrier)(req.Request.Header)
-		case *fasthttp.Request:
-			req := i.Args.(*fasthttp.Request)
-			headerMap := make(map[string]string)
-			req.Header.VisitAll(func(key, value []byte) {
-				headerMap[string(key)] = string(value)
-			})
-			carrier = &tracing.HeaderCarrier{Header: headerMap}
-		default:
-			lager.Logger.Error("rest consumer call arg is neither *restful.Request|*fasthttp.Request type.", nil)
-			err = errors.New("type invalid")
-		}
-		if err != nil {
-			break
-		}
-		// set url path to span name
-		if u, e := url.Parse(i.URLPathFormat); e != nil {
-			lager.Logger.Error("parse request url failed.", e)
-		} else {
-			interfaceName = u.Path
-		}
-	default:
-		interfaceName = i.OperationID
+	// header stored in context
+	carrier := (opentracing.TextMapCarrier)(i.Headers())
 
-		// header stored in context
-		if i.Ctx == nil {
-			lager.Logger.Debug("No metadata found in Invocation.Ctx")
-			break
-		}
-		at, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
-		if !ok {
-			lager.Logger.Debug("No metadata found in Invocation.Ctx")
-			break
-		}
-		carrier = (opentracing.TextMapCarrier)(at)
-	}
-
-	wireContext, err = opentracing.GlobalTracer().Extract(opentracing.TextMap, carrier)
-
+	wireContext, err := opentracing.GlobalTracer().Extract(opentracing.TextMap, carrier)
 	switch err {
 	case nil:
 	case opentracing.ErrSpanContextNotFound:
@@ -84,7 +29,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	default:
 		lager.Logger.Errorf(err, "Extract span failed")
 	}
-	operationName := genOperationName(i.MicroServiceName, interfaceName)
+	operationName := genOperationName(i.MicroServiceName, i.OperationID)
 	span := opentracing.StartSpan(operationName, ext.RPCServerOption(wireContext))
 	// set span kind to be server
 	ext.SpanKindRPCServer.Set(span)
@@ -102,7 +47,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		switch i.Protocol {
 		case common.ProtocolRest:
 			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
-			span.SetTag(zipkincore.HTTP_PATH, interfaceName)
+			span.SetTag(zipkincore.HTTP_PATH, i.OperationID)
 			span.SetTag(zipkincore.HTTP_STATUS_CODE, r.Status)
 			span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
 		default:
@@ -127,24 +72,15 @@ type TracingConsumerHandler struct{}
 // Handle is handle consumer tracing related things
 func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	// the span context is in invocation.Ctx
-
-	if i.Ctx == nil {
-		i.Ctx = context.Background()
-	}
-
 	// start a new span from context
 	var span opentracing.Span
-	opts := make([]opentracing.StartSpanOption, 0)
 
-	interfaceName := "unknown"
-	interfaceName = setInterfaceName(interfaceName, i)
-
-	operationName := genOperationName(i.MicroServiceName, interfaceName)
-	if parentSpan := opentracing.SpanFromContext(i.Ctx); parentSpan != nil {
-		opts = append(opts, opentracing.ChildOf(parentSpan.Context()))
-		span = opentracing.StartSpan(operationName, opts...)
+	operationName := genOperationName(i.MicroServiceName, i.OperationID)
+	parentSpan := opentracing.SpanFromContext(i.Ctx)
+	if parentSpan != nil {
+		span = opentracing.StartSpan(operationName, opentracing.ChildOf(parentSpan.Context()))
 	} else {
-		span = opentracing.StartSpan(operationName, opts...)
+		span = opentracing.StartSpan(operationName)
 	}
 	// set span kind to be client
 	ext.SpanKindRPCClient.Set(span)
@@ -153,51 +89,16 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	i.Ctx = opentracing.ContextWithSpan(i.Ctx, span)
 
 	// inject span context into carrier
-	switch i.Protocol {
-	case common.ProtocolRest:
-		var carrier interface{}
-		var err error
-		// header stored in args, in rest consumer
-		// handler chain doesn't resolve rest request, so never return
-		switch i.Args.(type) {
-		case *rest.Request:
-			req := i.Args.(*rest.Request)
-			carrier = (*tracing.RestClientHeaderWriter)(req)
-		case *fasthttp.Request:
-			carrier = &(i.Args.(*fasthttp.Request).Header)
-		default:
-			lager.Logger.Error("rest consumer call arg is neither *rest.Request|*fasthttp.Request type.", nil)
-			err = errors.New("type invalid")
-		}
-		if err != nil {
-			break
-		}
 
-		if err = opentracing.GlobalTracer().Inject(span.Context(), opentracing.TextMap, carrier); err != nil {
-			lager.Logger.Errorf(err, "Inject span failed")
-		}
-	default:
-		// header stored in context
-		var header map[string]string
-		attachments, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
-		if !ok {
-			header = make(map[string]string)
-			i.Ctx = context.WithValue(i.Ctx, common.ContextHeaderKey{}, header)
-		} else {
-			header = attachments
-		}
+	// header stored in context
 
-		if err := opentracing.GlobalTracer().Inject(
-			span.Context(),
-			opentracing.TextMap,
-			(opentracing.TextMapCarrier)(header),
-		); err != nil {
-			lager.Logger.Errorf(err, "Inject span failed")
-		} else {
-			i.Ctx = context.WithValue(i.Ctx, common.ContextHeaderKey{}, header)
-		}
+	if err := opentracing.GlobalTracer().Inject(
+		span.Context(),
+		opentracing.TextMap,
+		(opentracing.TextMapCarrier)(i.Headers()),
+	); err != nil {
+		lager.Logger.Errorf(err, "Inject span failed")
 	}
-
 	// To ensure accuracy, spans should finish immediately once client send req.
 	// So the best way is that spans finish in the callback func, not after it.
 	// But client may send req in the callback func too, that we have to remove
@@ -206,7 +107,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		switch i.Protocol {
 		case common.ProtocolRest:
 			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
-			span.SetTag(zipkincore.HTTP_PATH, interfaceName)
+			span.SetTag(zipkincore.HTTP_PATH, i.OperationID)
 			span.SetTag(zipkincore.HTTP_STATUS_CODE, r.Status)
 			span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
 		default:
@@ -214,22 +115,6 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		span.Finish()
 		return cb(r)
 	})
-}
-
-func setInterfaceName(interfaceName string, i *invocation.Invocation) string {
-	switch i.Protocol {
-	case common.ProtocolRest:
-		// set url path to span name
-		if u, e := url.Parse(i.URLPathFormat); e != nil {
-			lager.Logger.Error("parse request url failed.", e)
-		} else {
-			interfaceName = u.Path
-		}
-	default:
-		interfaceName = i.OperationID
-	}
-
-	return interfaceName
 }
 
 // Name returns tracing-consumer string
