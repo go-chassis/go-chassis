@@ -55,5 +55,5 @@ You can check examples [here](examples)
 # Communication Protocols
 Go-Chassis supports two types of communication protocol.
 1. Rest - REST is an approach that leverages the HTTP protocol for communication.
-2. Highway - This is a high performance communication protocol originally developed by Huawei. 
+2. Highway - This is a RPC communication protocol
 
