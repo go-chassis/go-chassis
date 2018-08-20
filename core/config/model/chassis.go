@@ -169,9 +169,6 @@ type CredentialStruct struct {
 
 // TracingStruct tracing structure
 type TracingStruct struct {
-	SamplingRate  float64 `yaml:"samplingRate"`
-	CollectorType string  `yaml:"collectorType"` // http|log
-	// if collectorType is http, the target is zipkin server
-	// if collectorType is log, the target is log file
-	CollectorTarget string `yaml:"collectorTarget"`
+	Tracer   string            `yaml:"tracer"`
+	Settings map[string]string `yaml:"settings"`
 }

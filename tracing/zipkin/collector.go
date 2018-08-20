@@ -1,4 +1,4 @@
-package tracing
+package zipkin
 
 import (
 	"bytes"
@@ -56,18 +56,4 @@ type collectorNewer func(string) (zipkin.Collector, error)
 
 var newNamedPipeCollector collectorNewer = func(string) (zipkin.Collector, error) {
 	return nil, errors.New("OS does not support named pipe")
-}
-
-// NewCollector returns the collector object based on collector type
-func NewCollector(collectorType, target string) (zipkin.Collector, error) {
-	if collectorType == "" {
-		collectorType = TracingZipkinCollector
-	}
-	switch collectorType {
-	case TracingZipkinCollector:
-		return zipkin.NewHTTPCollector(target, zipkin.HTTPBatchSize(10))
-	case TracingNamedPipeCollector:
-		return newNamedPipeCollector(target)
-	}
-	return nil, errors.New("Not support collector type: " + collectorType)
 }

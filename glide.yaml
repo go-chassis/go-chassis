@@ -136,7 +136,7 @@ import:
   version: a52f2342449246d5bcc273e65cbdcfa5f7d6c63c
   repo: https://github.com/opentracing-contrib/go-observer
 - package: github.com/opentracing/opentracing-go
-  version: 1949ddbfd147afd4d964a9f00b24eb291e0e7c38
+  version: v1.0.2
   repo: https://github.com/opentracing/opentracing-go
   subpackages:
   - ext

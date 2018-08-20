@@ -10,7 +10,7 @@ cse:
   handler:
     chain:
       Consumer:
-        default: bizkeeper-consumer,loadbalance, ratelimiter-consumer,transport
+        default: bizkeeper-consumer,loadbalance,tracing-consumer,ratelimiter-consumer,transport
   references:
     Server:
       version: 0.0.1
