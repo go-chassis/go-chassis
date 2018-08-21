@@ -82,7 +82,7 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 			common.RestMethod: req.Request.Method,
 		},
 	}
-	//set headers to ctx, then user do not  need to consider about protocol in handlers
+	//set headers to Ctx, then user do not  need to consider about protocol in handlers
 	m := make(map[string]string, 0)
 	inv.Ctx = context.WithValue(context.Background(), common.ContextHeaderKey{}, m)
 	for k := range req.Request.Header {
@@ -132,15 +132,16 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 				lager.Logger.Errorf(err, "transfer http request to invocation failed")
 				return
 			}
-			//give inv.ctx to user handlers, user may inject headers in handler chain
-			bs := NewBaseServer(inv.Ctx)
-			bs.req = req
-			bs.resp = rep
+			//give inv.Ctx to user handlers, modules may inject headers in handler chain
+
 			c.Next(inv, func(ir *invocation.Response) error {
 				if ir.Err != nil {
 					return ir.Err
 				}
 				transfer(inv, req)
+				bs := NewBaseServer(inv.Ctx)
+				bs.req = req
+				bs.resp = rep
 				ir.Status = bs.resp.StatusCode()
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
 				if bs.resp.StatusCode() >= http.StatusBadRequest {

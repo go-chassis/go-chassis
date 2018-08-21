@@ -33,3 +33,25 @@ tracing:
 ```
 
 
+When you have more than 2-levels service calling like A->B->C
+
+in B client you must deliver ctx to C, so that go chassis can keep tracing,
+
+```go
+//Trace is a method
+func (r *TracingHello) Trace(b *rf.Context) {
+	req, err := rest.NewRequest("GET", "cse://RESTServerB/sayhello/world")
+	if err != nil {
+		b.WriteError(500, err)
+		return
+	}
+	defer req.Close()
+    // must set b.Ctx as input for next calling
+	resp, err := core.NewRestInvoker().ContextDo(b.Ctx, req)
+	if err != nil {
+		b.WriteError(500, err)
+		return
+	}
+	b.Write(resp.ReadBody())
+}
+```
