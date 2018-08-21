@@ -30,13 +30,11 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		lager.Logger.Errorf(err, "Extract span failed")
 	}
 	wireContext, err = opentracing.GlobalTracer().Extract(opentracing.TextMap, opentracing.TextMapCarrier(i.Headers()))
-	operationName := genOperationName(i.MicroServiceName, i.OperationID)
 	if wireContext == nil {
-
-		span = opentracing.StartSpan(operationName, ext.RPCServerOption(wireContext))
+		span = opentracing.StartSpan(i.OperationID, ext.RPCServerOption(wireContext))
 	} else {
 		// store span in context
-		span = opentracing.StartSpan(operationName, opentracing.ChildOf(wireContext), ext.RPCServerOption(wireContext))
+		span = opentracing.StartSpan(i.OperationID, opentracing.ChildOf(wireContext), ext.RPCServerOption(wireContext))
 	}
 	ext.SpanKindRPCServer.Set(span)
 	// To ensure accuracy, spans should finish immediately once server responds.
@@ -75,16 +73,14 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	// start a new span from context
 	var span opentracing.Span
 	wireContext, _ := opentracing.GlobalTracer().Extract(opentracing.TextMap, opentracing.TextMapCarrier(i.Headers()))
-	operationName := genOperationName(i.MicroServiceName, i.OperationID)
 	if wireContext == nil {
-		span = opentracing.StartSpan(operationName)
+		span = opentracing.StartSpan(i.OperationID)
 	} else {
 		// store span in context
-		span = opentracing.StartSpan(operationName, opentracing.ChildOf(wireContext))
+		span = opentracing.StartSpan(i.OperationID, opentracing.ChildOf(wireContext))
 	}
 	// set span kind to be client
 	ext.SpanKindRPCClient.Set(span)
-
 	// store span in context
 	i.Ctx = opentracing.ContextWithSpan(i.Ctx, span)
 
@@ -124,8 +120,4 @@ func (t *TracingConsumerHandler) Name() string {
 
 func newTracingConsumerHandler() Handler {
 	return &TracingConsumerHandler{}
-}
-
-func genOperationName(microserviceName, interfaceName string) string {
-	return "[" + microserviceName + "]:[" + interfaceName + "]"
 }

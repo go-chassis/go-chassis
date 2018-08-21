@@ -1,11 +1,5 @@
 package runtime
 
-import (
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"os"
-)
-
 //Status
 const (
 	StatusRunning = "UP"
@@ -18,6 +12,9 @@ var HostName string
 //ServiceID is the service id in registry service
 var ServiceID string
 
+//ServiceName represent self name
+var ServiceName string
+
 //InstanceID is the instance id in registry service
 var InstanceID string
 
@@ -26,16 +23,5 @@ var InstanceStatus string
 
 // Init runtime information
 func Init() error {
-	var err error
-	service := config.MicroserviceDefinition
-	HostName = service.ServiceDescription.Hostname
-	if HostName == "" {
-		HostName, err = os.Hostname()
-		if err != nil {
-			lager.Logger.Error("Get hostname failed.", err)
-			return err
-		}
-	}
-	lager.Logger.Info("Host name is " + HostName)
 	return nil
 }

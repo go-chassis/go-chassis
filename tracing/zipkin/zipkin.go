@@ -68,7 +68,7 @@ func NewTracer(options map[string]string) (opentracing.Tracer, error) {
 	}
 
 	// set default recorder
-	defaultRecorder := zipkintracer.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
+	defaultRecorder := zipkintracer.NewRecorder(collector, false, "0.0.0.0:0", runtime.ServiceName)
 
 	// set tracer map
 	tracer, err := zipkintracer.NewTracer(
