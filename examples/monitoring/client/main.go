@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"time"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/
@@ -18,7 +19,7 @@ func main() {
 		return
 	}
 
-	req, err := rest.NewRequest("GET", "cse://RESTServer/sayhello/world")
+	req, err := rest.NewRequest("GET", "cse://RESTServerA/trace")
 	if err != nil {
 		lager.Logger.Error("new request failed.", err)
 		return
@@ -32,4 +33,5 @@ func main() {
 	}
 	defer resp.Close()
 	lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
+	time.Sleep(2 * time.Second)
 }
