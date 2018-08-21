@@ -158,7 +158,6 @@ func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 
 // reRegisterSelfMSI 只重新注册实例
 func reRegisterSelfMSI(sid, iid string) error {
-	DefaultServiceDiscoveryService.AutoSync()
 	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
 	if InstanceEndpoints != nil {
 		eps = InstanceEndpoints

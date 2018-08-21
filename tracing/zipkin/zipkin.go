@@ -58,7 +58,7 @@ func NewTracer(options map[string]string) (opentracing.Tracer, error) {
 		}
 	} else if collectorOption == "namedPipe" {
 		var err error
-		collector, err = newNamedPipeCollectorLinux(uri)
+		collector, err = newNamedPipeCollector(uri)
 		if err != nil {
 			lager.Logger.Error(err.Error(), nil)
 			return nil, fmt.Errorf("unable to create zipkin collector: %+v", err)
