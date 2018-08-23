@@ -8,11 +8,11 @@ Minimize Installation
 git clone git@github.com:go-chassis/go-chassis.git
 ```
 
-3. Use [glide](https://github.com/Masterminds/glide) to download dependencies
+3. Use [dep](https://github.com/golang/dep) to download dependencies
 
 ```sh
-cd go-chassis 
-glide install
+cd go-chassis
+dep ensure
 ```
 
 4. Install go-chassis [service-center](http://servicecomb.incubator.apache.org/release/)

@@ -350,18 +350,6 @@
   revision = "a0d98a5f288019575c6d1f4bb1573fef2d1fcdc4"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e013355d3f38bab4b76ba01ee8de5b34ae8df4b98e682bf65f8d666659aa28f3"
-  name = "github.com/huaweicse/auth"
-  packages = [
-    ".",
-    "adaptor/gochassis",
-    "third_party/forked/datastream/aws",
-  ]
-  pruneopts = "UT"
-  revision = "002b5d1796ebc09ae93a0e12a523fb2f1e9f1dcc"
-
-[[projects]]
   digest = "1:06ec9147400aabb0d6960dd8557638603b5f320cd4cb8a3eceaae407e782849a"
   name = "github.com/imdario/mergo"
   packages = ["."]
@@ -1021,7 +1009,6 @@
     "github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager",
     "github.com/golang/protobuf/proto",
     "github.com/hashicorp/go-version",
-    "github.com/huaweicse/auth/adaptor/gochassis",
     "github.com/opentracing/opentracing-go",
     "github.com/opentracing/opentracing-go/ext",
     "github.com/openzipkin/zipkin-go-opentracing",
