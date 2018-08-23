@@ -87,10 +87,6 @@ ignored = ["github.com/go-chassis/go-chassis-plugins"]
   version = "1.0.2"
 
 [[constraint]]
-  name = "github.com/openzipkin/zipkin-go-opentracing"
-  version = "0.3.4"
-
-[[constraint]]
   name = "github.com/patrickmn/go-cache"
   version = "2.1.0"
 
@@ -137,3 +133,7 @@ ignored = ["github.com/go-chassis/go-chassis-plugins"]
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/openzipkin/zipkin-go-opentracing"
+  revision = "6bb822a7f15fdc5800b9822a6ac1bfa0b7d9195d"
