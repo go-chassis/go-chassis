@@ -13,6 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"gopkg.in/yaml.v2"
 )
 
@@ -38,6 +39,7 @@ var HystrixConfig *model.HystrixConfigWrapper
 var NodeIP string
 
 // SelfServiceName is self micro service name
+// Deprecated plz use runtime.ServiceName
 var SelfServiceName string
 
 // SelfMetadata is gives meta data of the self micro service
@@ -346,11 +348,20 @@ func Init() error {
 	}
 
 	SelfServiceName = MicroserviceDefinition.ServiceDescription.Name
+	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
 	SelfVersion = MicroserviceDefinition.ServiceDescription.Version
 	SelfMetadata = MicroserviceDefinition.ServiceDescription.Properties
 	if GlobalDefinition.AppID == "" {
 		GlobalDefinition.AppID = common.DefaultApp
 	}
-
+	runtime.HostName = MicroserviceDefinition.ServiceDescription.Hostname
+	if runtime.HostName == "" {
+		runtime.HostName, err = os.Hostname()
+		if err != nil {
+			lager.Logger.Error("Get hostname failed.", err)
+			return err
+		}
+	}
+	lager.Logger.Info("Host name is " + runtime.HostName)
 	return err
 }

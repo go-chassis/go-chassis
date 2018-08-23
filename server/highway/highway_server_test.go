@@ -20,6 +20,7 @@ import (
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,7 +50,7 @@ func TestStart(t *testing.T) {
 
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
-	config.SelfServiceName = msName
+	runtime.ServiceName = msName
 	f, err := server.GetServerFunc("highway")
 	assert.NoError(t, err)
 	s := f(server.Options{

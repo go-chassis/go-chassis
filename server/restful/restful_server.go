@@ -12,7 +12,6 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -21,6 +20,7 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 )
 
@@ -71,7 +71,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
 
 	inv := &invocation.Invocation{
-		MicroServiceName:   config.SelfServiceName,
+		MicroServiceName:   runtime.ServiceName,
 		SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
 		Args:               req,
 		Protocol:           common.ProtocolRest,
