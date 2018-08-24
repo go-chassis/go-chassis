@@ -6,7 +6,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
+	"github.com/openzipkin-contrib/zipkin-go-opentracing/thrift/gen-go/zipkincore"
 )
 
 // TracingProviderHandler tracing provider handler

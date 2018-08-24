@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
+	"github.com/openzipkin-contrib/zipkin-go-opentracing/thrift/gen-go/zipkincore"
 	"github.com/stretchr/testify/assert"
 )
 
