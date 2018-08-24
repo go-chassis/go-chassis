@@ -116,19 +116,20 @@ ignored = ["github.com/go-chassis/go-chassis-plugins"]
 
 [[constraint]]
   name = "golang.org/x/net"
-  source = "https://github.com/golang/net"
+  source = "https://github.com/golang/net.git"
 
 [[constraint]]
   name = "google.golang.org/grpc"
   version = "1.14.0"
+  source = "https://github.com/grpc/grpc-go.git"
 
 [[constraint]]
   name = "gopkg.in/yaml.v2"
-  source = "https://github.com/go-yaml/yaml"
+  source = "https://github.com/go-yaml/yaml.git"
 
 [[constraint]]
-  branch = "master"
   name = "k8s.io/apimachinery"
+  branch = "master"
 
 [prune]
   go-tests = true
