@@ -12,6 +12,8 @@ git clone git@github.com:go-chassis/go-chassis.git
 
 ```sh
 cd go-chassis
+# behind a proxy, you need setup a http proxy server
+# export https_proxy=xxx
 dep ensure
 ```
 
