@@ -6,7 +6,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
-	"github.com/openzipkin/zipkin-go-opentracing"
+	"github.com/openzipkin-contrib/zipkin-go-opentracing"
 	"strconv"
 	"time"
 )

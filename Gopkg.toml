@@ -32,7 +32,7 @@ ignored = ["github.com/go-chassis/go-chassis-plugins"]
 
 [[constraint]]
   name = "github.com/apache/thrift"
-  version = "0.11.0"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/cactus/go-statsd-client"
@@ -136,5 +136,5 @@ ignored = ["github.com/go-chassis/go-chassis-plugins"]
   unused-packages = true
 
 [[constraint]]
-  name = "github.com/openzipkin/zipkin-go-opentracing"
-  revision = "6bb822a7f15fdc5800b9822a6ac1bfa0b7d9195d"
+  name = "github.com/openzipkin-contrib/zipkin-go-opentracing"
+  branch = "master"

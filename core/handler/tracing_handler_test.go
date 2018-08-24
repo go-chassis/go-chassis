@@ -18,8 +18,8 @@ import (
 
 	"context"
 	"github.com/opentracing/opentracing-go"
-	zipkin "github.com/openzipkin/zipkin-go-opentracing"
-	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
+	zipkin "github.com/openzipkin-contrib/zipkin-go-opentracing"
+	"github.com/openzipkin-contrib/zipkin-go-opentracing/thrift/gen-go/zipkincore"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	zipkin "github.com/openzipkin/zipkin-go-opentracing"
+	zipkin "github.com/openzipkin-contrib/zipkin-go-opentracing"
 )
 
 // record span to named pipe
