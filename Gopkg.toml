@@ -113,6 +113,7 @@ ignored = ["github.com/go-chassis/go-chassis-plugins"]
 [[constraint]]
   branch = "master"
   name = "go.uber.org/ratelimit"
+  source= "https://github.com/uber-go/ratelimit.git"
 
 [[constraint]]
   name = "golang.org/x/net"
@@ -130,6 +131,7 @@ ignored = ["github.com/go-chassis/go-chassis-plugins"]
 [[constraint]]
   name = "k8s.io/apimachinery"
   branch = "master"
+  source = "https://github.com/kubernetes/apimachinery.git"
 
 [prune]
   go-tests = true
