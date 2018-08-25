@@ -61,7 +61,6 @@ func TestTransportHandler_Handle(t *testing.T) {
 	h := &handler.TransportHandler{}
 	c.Handlers = append(c.Handlers, h)
 
-	var err2 error
 	c.Next(i, func(r *invocation.Response) error {
 		log.Println("chain start")
 		log.Println(r.Result)
@@ -69,7 +68,6 @@ func TestTransportHandler_Handle(t *testing.T) {
 		//assert.Empty(t, r.Err)
 		//assert.NoError(t, r.Err)
 		assert.Equal(t, nil, r.Result)
-		err2 = r.Err
 		return r.Err
 	})
 
@@ -134,13 +132,11 @@ func TestTransportHandler_HandleRest(t *testing.T) {
 	h := &handler.TransportHandler{}
 	c.Handlers = append(c.Handlers, h)
 
-	var err2 error
 	c.Next(i, func(r *invocation.Response) error {
 		log.Println("chain start")
 		log.Println(r.Result)
 		log.Println(r.Err)
 		assert.Equal(t, nil, r.Result)
-		err2 = r.Err
 		return r.Err
 	})
 

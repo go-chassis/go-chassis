@@ -29,7 +29,7 @@ You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see
 # Quick Start
 You can see more documentations in [here](http://go-chassis.readthedocs.io/en/latest/)
 
-1. Install [go 1.8+](https://golang.org/doc/install)
+1. Install [go 1.8+](https://golang.org/doc/install) 
 
 2. Clone the project
 
@@ -45,7 +45,13 @@ cd go-chassis
 # export https_proxy=xxx
 dep ensure
 ```
-
+or use go mod(go 1.11+, experimental but a recommended way)
+```shell
+cd go-chassis
+GO111MODULE=on go mod download
+#optional
+GO111MODULE=on go mod vendor
+```
 
 
 4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
