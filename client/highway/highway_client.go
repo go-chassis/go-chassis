@@ -40,6 +40,9 @@ func NewHighwayClient(options client.Options) client.ProtocolClient {
 func (c *highwayClient) String() string {
 	return "highway_client"
 }
+func (c *highwayClient) Close() error {
+	return nil
+}
 func invocation2Req(inv *invocation.Invocation) *Request {
 	highwayReq := &Request{}
 	highwayReq.MsgID = uint64(int(GenerateMsgID()))

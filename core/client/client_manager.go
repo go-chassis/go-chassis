@@ -14,8 +14,7 @@ import (
 	"time"
 )
 
-var clients = make(map[string]map[string]ProtocolClient)
-var pl sync.RWMutex
+var clients = make(map[string]ProtocolClient)
 var sl sync.RWMutex
 
 //DefaultPoolSize is 500
@@ -24,6 +23,7 @@ const DefaultPoolSize = 50
 //Options is configs for client creation
 type Options struct {
 	PoolSize  int
+	Endpoint  string
 	PoolTTL   time.Duration
 	TLSConfig *tls.Config
 	Failure   map[string]bool
@@ -35,7 +35,7 @@ func GetProtocolSpec(p string) model.Protocol {
 }
 
 // CreateClient is for to create client based on protocol and the service name
-func CreateClient(protocol, service string) (ProtocolClient, error) {
+func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
 		err = fmt.Errorf("don not Support [%s] client", protocol)
@@ -68,37 +68,51 @@ func CreateClient(protocol, service string) (ProtocolClient, error) {
 		TLSConfig: tlsConfig,
 		PoolSize:  poolSize,
 		Failure:   failureMap,
+		Endpoint:  endpoint,
 	})
 
 	return c, nil
 }
+func generateKey(protocol, service, endpoint string) string {
+	return protocol + service + endpoint
+}
 
-// GetClient is to get the client based on protocol and service name
-func GetClient(protocol, service string) (ProtocolClient, error) {
+// GetClient is to get the client based on protocol, service,endpoint name
+func GetClient(protocol, service, endpoint string) (ProtocolClient, error) {
 	var c ProtocolClient
 	var err error
-	pl.RLock()
-	clientMap, ok := clients[protocol]
-	pl.RUnlock()
-	if !ok {
-		lager.Logger.Info("Create client map for " + protocol)
-		clientMap = make(map[string]ProtocolClient)
-		pl.Lock()
-		clients[protocol] = clientMap
-		pl.Unlock()
-	}
+	key := generateKey(protocol, service, endpoint)
 	sl.RLock()
-	c, ok = clientMap[service]
+	c, ok := clients[key]
 	sl.RUnlock()
 	if !ok {
-		lager.Logger.Info("Create client for " + service)
-		c, err = CreateClient(protocol, service)
+		lager.Logger.Info("Create client for " + protocol + ":" + service + ":" + endpoint)
+		c, err = CreateClient(protocol, service, endpoint)
 		if err != nil {
 			return nil, err
 		}
 		sl.Lock()
-		clientMap[service] = c
+		clients[key] = c
 		sl.Unlock()
 	}
 	return c, nil
+}
+
+//Close close a client conn
+func Close(protocol, service, endpoint string) error {
+	key := generateKey(protocol, service, endpoint)
+	sl.RLock()
+	c, ok := clients[key]
+	sl.RUnlock()
+	if !ok {
+		return fmt.Errorf("client not exists")
+	}
+	if err := c.Close(); err != nil {
+		lager.Logger.Errorf(err, "can not close client %s:%s%:s", protocol, service, endpoint)
+		return err
+	}
+	sl.Lock()
+	delete(clients, key)
+	sl.Unlock()
+	return nil
 }

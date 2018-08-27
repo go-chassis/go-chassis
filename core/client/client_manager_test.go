@@ -26,7 +26,7 @@ func TestInitError(t *testing.T) {
 	assert.Nil(t, f)
 	assert.Error(t, err)
 	t.Log("get Client without initializing")
-	c, err := client.GetClient("fake1", "")
+	c, err := client.GetClient("fake1", "", "")
 	assert.Error(t, err)
 	assert.Nil(t, c)
 }
@@ -46,7 +46,27 @@ func TestInit(t *testing.T) {
 	assert.NotNil(t, f)
 	assert.NoError(t, err)
 	t.Log("get Client after initializing")
-	c, err := client.GetClient("fake", "")
+	c, err := client.GetClient("fake", "service1", "127.0.0.1:9090")
 	assert.NoError(t, err)
 	assert.NotNil(t, c)
+	client.Close("fake", "service1", "127.0.0.1:9090")
+	client.Close("notExist", "service1", "127.0.0.1:9090")
+
+}
+
+func BenchmarkGetClient(b *testing.B) {
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	config.Init()
+	config.GlobalDefinition = &model.GlobalCfg{}
+	m := make(map[string]model.Protocol)
+	m["highway"] = model.Protocol{}
+	config.GlobalDefinition.Cse.Protocols = m
+	c, err := client.GetClient("highway", "", "")
+	b.Log(c)
+	if err != nil {
+		b.Error(b, err)
+	}
+	for i := 0; i < b.N; i++ {
+		_, _ = client.GetClient("highway", "", "")
+	}
 }
