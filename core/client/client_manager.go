@@ -64,14 +64,12 @@ func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 		failureMap[v] = true
 	}
 
-	c := f(Options{
+	return f(Options{
 		TLSConfig: tlsConfig,
 		PoolSize:  poolSize,
 		Failure:   failureMap,
 		Endpoint:  endpoint,
 	})
-
-	return c, nil
 }
 func generateKey(protocol, service, endpoint string) string {
 	return protocol + service + endpoint

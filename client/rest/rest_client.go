@@ -54,7 +54,7 @@ func init() {
 }
 
 //NewRestClient is a function
-func NewRestClient(opts client.Options) client.ProtocolClient {
+func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 	if opts.Failure == nil || len(opts.Failure) == 0 {
 		opts.Failure = HTTPFailureTypeMap
 	} else {
@@ -91,7 +91,7 @@ func NewRestClient(opts client.Options) client.ProtocolClient {
 		},
 	}
 
-	return rc
+	return rc, nil
 }
 
 //Init is a method

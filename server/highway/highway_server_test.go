@@ -67,7 +67,7 @@ func TestStart(t *testing.T) {
 
 	name := s.String()
 	log.Println("server protocol name:", name)
-	c := highway.NewHighwayClient(client.Options{})
+	c, err := highway.NewHighwayClient(client.Options{})
 
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)

@@ -63,7 +63,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(client.Options{})
+	c, err := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
@@ -121,7 +121,7 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(client.Options{})
+	c, err := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
@@ -171,7 +171,7 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	assert.NoError(t, err)
 	fail := make(map[string]bool)
 	fail["something"] = false
-	c := rest.NewRestClient(client.Options{
+	c, _ := rest.NewRestClient(client.Options{
 		Failure:  fail,
 		PoolSize: 3,
 	})
