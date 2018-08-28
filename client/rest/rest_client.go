@@ -170,6 +170,10 @@ func (c *Client) String() string {
 	return "rest_client"
 }
 
+// Close is noop
+func (c *Client) Close() error {
+	return nil
+}
 func (c *Client) contextToHeader(ctx context.Context, req *Request) {
 	for k, v := range common.FromContext(ctx) {
 		req.Req.Header.Set(k, v)
