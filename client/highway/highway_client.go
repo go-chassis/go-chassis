@@ -25,7 +25,7 @@ type highwayClient struct {
 }
 
 //NewHighwayClient is a function
-func NewHighwayClient(options client.Options) client.ProtocolClient {
+func NewHighwayClient(options client.Options) (client.ProtocolClient, error) {
 
 	rc := &highwayClient{
 		once: sync.Once{},
@@ -34,7 +34,7 @@ func NewHighwayClient(options client.Options) client.ProtocolClient {
 
 	c := client.ProtocolClient(rc)
 
-	return c
+	return c, nil
 }
 
 func (c *highwayClient) String() string {
