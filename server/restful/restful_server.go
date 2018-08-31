@@ -22,6 +22,7 @@ import (
 	"github.com/emicklei/go-restful-swagger12"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-mesh/openlogging"
 )
 
 // constants for metric path and name
@@ -115,21 +116,21 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 		lager.Logger.Infof("Add route path: [%s] Method: [%s] Func: [%s]. ", route.Path, route.Method, route.ResourceFuncName)
 		method, exist := schemaType.MethodByName(route.ResourceFuncName)
 		if !exist {
-			lager.Logger.Errorf(nil, "router func can not find: %s", route.ResourceFuncName)
+			lager.Logger.Errorf("router func can not find: %s", route.ResourceFuncName)
 			return "", fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
 		}
 
 		handler := func(req *restful.Request, rep *restful.Response) {
 			c, err := handler.GetChain(common.Provider, r.opts.ChainName)
 			if err != nil {
-				lager.Logger.Errorf(err, "Handler chain init err")
+				lager.Logger.Errorf("Handler chain init err [%s]", err.Error())
 				rep.AddHeader("Content-Type", "text/plain")
 				rep.WriteErrorString(http.StatusInternalServerError, err.Error())
 				return
 			}
 			inv, err := httpRequest2Invocation(req, schemaName, method.Name)
 			if err != nil {
-				lager.Logger.Errorf(err, "transfer http request to invocation failed")
+				lager.Logger.Errorf("transfer http request to invocation failed, err [%s]", err.Error())
 				return
 			}
 			//give inv.Ctx to user handlers, modules may inject headers in handler chain
@@ -224,7 +225,8 @@ func (r *restfulServer) Start() error {
 			err = r.server.ListenAndServe()
 		}
 		if err != nil {
-			lager.Logger.Error("Can't start http server", err)
+			lager.Logger.Error("Can't start http server",
+				openlogging.Tags{"err": err.Error()})
 			server.ErrRuntime <- err
 		}
 

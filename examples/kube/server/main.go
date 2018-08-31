@@ -13,7 +13,7 @@ import (
 func main() {
 	chassis.RegisterSchema("rest", &schemas.RestFulHello{}, server.WithSchemaID("RestHelloService"))
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 	chassis.Run()

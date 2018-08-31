@@ -13,7 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
-	"github.com/go-chassis/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/util/rand"
@@ -35,14 +35,14 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "Server",
 		Version:     "0.1",
-		Status:      model.MicorserviceUp,
+		Status:      client.MicorserviceUp,
 		Level:       "FRONT",
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:5080"},
 		InstanceID:   "event1",
 		HostName:     "event_test",
-		Status:       model.MSInstanceUP,
+		Status:       client.MSInstanceUP,
 	}
 	sid, instanceID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
@@ -78,7 +78,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_UPDATE操作")
 
 	exist = false
-	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSIinstanceDown)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", client.MSIinstanceDown)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -89,7 +89,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_DELETE操作")
 
 	exist = false
-	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSInstanceUP)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", client.MSInstanceUP)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -151,7 +151,7 @@ func TestCacheManager_MakeSchemaIndex(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "AutoIndexServer",
 		Version:     "0.1",
-		Status:      model.MicorserviceUp,
+		Status:      client.MicorserviceUp,
 		Level:       "FRONT",
 	}
 	sid, _ := registry.DefaultRegistrator.RegisterService(microservice)

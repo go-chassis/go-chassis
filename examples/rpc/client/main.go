@@ -14,7 +14,7 @@ import (
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 	//declare reply struct
@@ -22,7 +22,7 @@ func main() {
 	//Invoke with microservice name, schema ID and operation ID
 	if err := core.NewRPCInvoker().Invoke(context.Background(), "RPCServer", "HelloService", "SayHello",
 		&helloworld.HelloRequest{Name: "Peter"}, reply); err != nil {
-		lager.Logger.Error("error", err)
+		lager.Logger.Error("error" + err.Error())
 	}
 	lager.Logger.Info(reply.Message)
 }

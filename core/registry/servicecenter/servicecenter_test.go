@@ -12,7 +12,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
-	"github.com/go-chassis/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,14 +49,14 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",
 		Version:     "2.0.3",
-		Status:      model.MicorserviceUp,
+		Status:      client.MicorserviceUp,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
 		HostName:     "default",
-		Status:       model.MSInstanceUP,
+		Status:       client.MSInstanceUP,
 	}
 	sid, insID, err := scc.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)

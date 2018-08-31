@@ -24,7 +24,7 @@ func errNotNill(err error, cb invocation.ResponseCallBack) {
 	r := &invocation.Response{
 		Err: err,
 	}
-	lager.Logger.Error("GetClient got Error", err)
+	lager.Logger.Error("GetClient got Error: " + err.Error())
 	cb(r)
 	return
 }
@@ -44,7 +44,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 
 	if err != nil {
 		r.Err = err
-		lager.Logger.Errorf(err, "Call got Error")
+		lager.Logger.Errorf("Call got Error, err [%s]", err.Error())
 		if i.Strategy == loadbalancer.StrategySessionStickiness {
 			ProcessSpecialProtocol(i)
 			ProcessSuccessiveFailure(i)

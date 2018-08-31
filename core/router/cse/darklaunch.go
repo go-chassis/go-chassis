@@ -44,7 +44,7 @@ func (r *RouteDarkLaunchGovernSource) GetSourceName() string {
 func (r *RouteDarkLaunchGovernSource) GetConfigurations() (map[string]interface{}, error) {
 	routerConfigs, err := getRouterConfigFromDarkLaunch()
 	if err != nil {
-		lager.Logger.Error("Get router config from dark launch failed", err)
+		lager.Logger.Error("Get router config from dark launch failed: " + err.Error())
 		return nil, err
 	}
 	d := make(map[string]interface{}, 0)

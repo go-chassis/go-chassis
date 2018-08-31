@@ -53,14 +53,14 @@ func NewTracer(options map[string]string) (opentracing.Tracer, error) {
 		var err error
 		collector, err = zipkintracer.NewHTTPCollector(uri, zipkintracer.HTTPBatchSize(batchSize), zipkintracer.HTTPBatchInterval(batchInterval))
 		if err != nil {
-			lager.Logger.Error(err.Error(), nil)
+			lager.Logger.Error(err.Error())
 			return nil, fmt.Errorf("unable to create zipkin collector: %+v", err)
 		}
 	} else if collectorOption == "namedPipe" {
 		var err error
 		collector, err = newNamedPipeCollector(uri)
 		if err != nil {
-			lager.Logger.Error(err.Error(), nil)
+			lager.Logger.Error(err.Error())
 			return nil, fmt.Errorf("unable to create zipkin collector: %+v", err)
 		}
 	} else {
@@ -77,7 +77,7 @@ func NewTracer(options map[string]string) (opentracing.Tracer, error) {
 		zipkintracer.TraceID128Bit(true),
 	)
 	if err != nil {
-		lager.Logger.Error(err.Error(), nil)
+		lager.Logger.Error(err.Error())
 		return nil, fmt.Errorf("unable to create zipkin tracer: %+v", err)
 	}
 	return tracer, nil

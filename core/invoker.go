@@ -36,7 +36,7 @@ func (ri *abstractInvoker) invoke(i *invocation.Invocation) error {
 
 	c, err := handler.GetChain(common.Consumer, ri.opts.ChainName)
 	if err != nil {
-		lager.Logger.Errorf(err, "Handler chain init err.")
+		lager.Logger.Errorf("Handler chain init err [%s]", err.Error())
 		return err
 	}
 

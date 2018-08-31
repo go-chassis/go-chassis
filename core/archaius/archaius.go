@@ -38,7 +38,7 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 	// adding all files with file source
 	for _, v := range essentialfiles {
 		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority); err != nil {
-			lager.Logger.Errorf(err, "add file source error.")
+			lager.Logger.Errorf("add file source error [%s].", err.Error())
 			return nil, err
 		}
 		files = append(files, v)

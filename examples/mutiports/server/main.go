@@ -13,7 +13,7 @@ func main() {
 	chassis.RegisterSchema("rest-legacy", &resource.Legacy{})
 	chassis.RegisterSchema("rest-admin", &resource.Admin{})
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 	chassis.Run()

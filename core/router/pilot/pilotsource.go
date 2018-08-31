@@ -101,7 +101,7 @@ func (r *pilotSource) GetConfigurationByKeyAndDimensionInfo(key, d string) (inte
 func (r *pilotSource) GetConfigurations() (map[string]interface{}, error) {
 	routerConfigs, err := r.getRouterConfigFromPilot()
 	if err != nil {
-		lager.Logger.Error("Get router config from pilot failed", err)
+		lager.Logger.Error("Get router config from pilot failed: " + err.Error())
 		return nil, err
 	}
 	d := make(map[string]interface{}, 0)
@@ -162,7 +162,7 @@ func (r *pilotSource) DynamicConfigHandler(callback core.DynamicConfigCallback) 
 		case <-pilotChan:
 			data, err := r.GetConfigurations()
 			if err != nil {
-				lager.Logger.Error("pilot pull configuration error", err)
+				lager.Logger.Error("pilot pull configuration error: " + err.Error())
 				continue
 			}
 			for k, d := range data {
@@ -172,7 +172,7 @@ func (r *pilotSource) DynamicConfigHandler(callback core.DynamicConfigCallback) 
 		case <-ticker.C:
 			data, err := r.refreshConfigurations()
 			if err != nil {
-				lager.Logger.Error("pilot refresh configuration error", err)
+				lager.Logger.Error("pilot refresh configuration error: " + err.Error())
 				continue
 			}
 			events, err := r.populateEvents(data)

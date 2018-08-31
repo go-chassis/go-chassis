@@ -7,7 +7,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-chassis/go-sc-client"
-	"github.com/go-chassis/go-sc-client/model"
 	"gopkg.in/yaml.v2"
 )
 
@@ -50,10 +49,10 @@ func unmarshalSchemaContent(content []byte) (*registry.SchemaContent, error) {
 }
 
 // filterInstances filter instances
-func filterInstances(providerInstances []*model.MicroServiceInstance) []*registry.MicroServiceInstance {
+func filterInstances(providerInstances []*client.MicroServiceInstance) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {
-		if ins.Status != model.MSInstanceUP {
+		if ins.Status != client.MSInstanceUP {
 			continue
 		}
 		msi := ToMicroServiceInstance(ins)
@@ -65,7 +64,7 @@ func filterInstances(providerInstances []*model.MicroServiceInstance) []*registr
 func closeClient(r *client.RegistryClient) error {
 	err := r.Close()
 	if err != nil {
-		lager.Logger.Errorf(err, "Conn close failed.")
+		lager.Logger.Errorf("Conn close failed. err %s", err)
 		return err
 	}
 	lager.Logger.Debugf("Conn close success.")

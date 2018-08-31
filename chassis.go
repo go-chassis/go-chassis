@@ -101,11 +101,11 @@ func (c *chassis) initChains(chainType string) error {
 }
 func (c *chassis) initHandler() error {
 	if err := c.initChains(common.Provider); err != nil {
-		lager.Logger.Errorf(err, "chain int failed")
+		lager.Logger.Errorf("chain int failed: %s", err)
 		return err
 	}
 	if err := c.initChains(common.Consumer); err != nil {
-		lager.Logger.Errorf(err, "chain int failed")
+		lager.Logger.Errorf("chain int failed: %s", err)
 		return err
 	}
 	lager.Logger.Info("Chain init success")
@@ -119,7 +119,7 @@ func (c *chassis) initialize() error {
 	}
 	err := config.Init()
 	if err != nil {
-		lager.Logger.Error("Failed to initialize conf,", err)
+		lager.Logger.Error("Failed to initialize conf," + err.Error())
 		return err
 	}
 	if err := runtime.Init(); err != nil {
@@ -130,7 +130,7 @@ func (c *chassis) initialize() error {
 	}
 	err = c.initHandler()
 	if err != nil {
-		lager.Logger.Errorf(err, "Handler init failed")
+		lager.Logger.Errorf("Handler init failed: %s", err)
 		return err
 	}
 
@@ -223,12 +223,12 @@ func SetDefaultProviderChains(c map[string]string) {
 func Run() {
 	err := goChassis.start()
 	if err != nil {
-		lager.Logger.Error("run chassis fail:", err)
+		lager.Logger.Error("run chassis fail:" + err.Error())
 	}
 	if !config.GetRegistratorDisable() {
 		//Register instance after Server started
 		if err := registry.DoRegister(); err != nil {
-			lager.Logger.Error("register instance fail:", err)
+			lager.Logger.Error("register instance fail:" + err.Error())
 		}
 	}
 	//Graceful shutdown
@@ -244,13 +244,13 @@ func Run() {
 		lager.Logger.Info("stopping server " + name + "...")
 		err := s.Stop()
 		if err != nil {
-			lager.Logger.Errorf(err, "servers failed to stop")
+			lager.Logger.Errorf("servers failed to stop: %s", err)
 		}
 		lager.Logger.Info(name + " server stop success")
 	}
 	if !config.GetRegistratorDisable() {
 		if err = server.UnRegistrySelfInstances(); err != nil {
-			lager.Logger.Errorf(err, "servers failed to unregister")
+			lager.Logger.Errorf("servers failed to unregister: %s", err)
 		}
 	}
 

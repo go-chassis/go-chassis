@@ -18,6 +18,7 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-archaius/sources/configcenter-source"
+	"github.com/go-chassis/go-chassis/core/registry"
 )
 
 const (
@@ -42,7 +43,7 @@ func InitConfigCenter() error {
 	var enableSSL bool
 	tlsConfig, tlsError := getTLSForClient(configCenterURL)
 	if tlsError != nil {
-		lager.Logger.Errorf(tlsError, "Get %s.%s TLS config failed, err:", Name, common.Consumer)
+		lager.Logger.Errorf("Get %s.%s TLS config failed, err:[%s]", Name, common.Consumer, tlsError.Error())
 		return tlsError
 	}
 
@@ -56,7 +57,7 @@ func InitConfigCenter() error {
 
 	if dimensionInfo == "" {
 		err := errors.New("empty dimension info: " + emptyDimeInfo)
-		lager.Logger.Error("empty dimension info", err)
+		lager.Logger.Error("empty dimension info" + err.Error())
 		return err
 	}
 
@@ -72,7 +73,7 @@ func InitConfigCenter() error {
 		dimensionInfo, config.GlobalDefinition.Cse.Config.Client.TenantName,
 		enableSSL, tlsConfig)
 	if err != nil {
-		lager.Logger.Error("failed to init config center", err)
+		lager.Logger.Error("failed to init config center" + err.Error())
 		return err
 	}
 
@@ -83,13 +84,16 @@ func InitConfigCenter() error {
 func isConfigCenter() (string, error) {
 	configCenterURL := config.GlobalDefinition.Cse.Config.Client.ServerURI
 	if configCenterURL == "" {
-		ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
-		if err != nil {
-			lager.Logger.Warnf("empty config center endpoint in service center %s", err.Error())
-			return "", err
+		if registry.DefaultServiceDiscoveryService != nil {
+			ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
+			if err != nil {
+				lager.Logger.Warnf("empty config center endpoint in service center %s", err.Error())
+				return "", err
+			}
+
+			configCenterURL = ccURL
 		}
 
-		configCenterURL = ccURL
 	}
 
 	return configCenterURL, nil
@@ -101,7 +105,7 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 	}
 	ccURL, err := url.Parse(configCenterURL)
 	if err != nil {
-		lager.Logger.Error("Error occurred while parsing config center Server Uri", err)
+		lager.Logger.Error("Error occurred while parsing config center Server Uri" + err.Error())
 		return nil, err
 	}
 	if ccURL.Scheme == common.HTTP {
@@ -139,7 +143,7 @@ func getUniqueIDForDimInfo() string {
 	}
 
 	if len(serviceName) > maxValue {
-		lager.Logger.Errorf(nil, "exceeded max value %d for dimensionInfo %s with length %d", maxValue, serviceName,
+		lager.Logger.Errorf("exceeded max value %d for dimensionInfo %s with length %d", maxValue, serviceName,
 			len(serviceName))
 		return ""
 	}
@@ -147,12 +151,12 @@ func getUniqueIDForDimInfo() string {
 	dimeExp := `\A([^\$\%\&\+\(/)\[\]\" "\"])*\z`
 	dimRegexVar, err := regexp.Compile(dimeExp)
 	if err != nil {
-		lager.Logger.Error("not a valid regular expression", err)
+		lager.Logger.Error("not a valid regular expression" + err.Error())
 		return ""
 	}
 
 	if !dimRegexVar.Match([]byte(serviceName)) {
-		lager.Logger.Errorf(nil, "invalid value for dimension info, doesnot setisfy the regular expression for dimInfo:%s",
+		lager.Logger.Errorf("invalid value for dimension info, doesnot setisfy the regular expression for dimInfo:%s",
 			serviceName)
 		return ""
 	}
@@ -164,7 +168,7 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != 0 && refreshMode != 1 {
-		lager.Logger.Error(ErrRefreshMode.Error(), ErrRefreshMode)
+		lager.Logger.Error(ErrRefreshMode.Error())
 		return ErrRefreshMode
 	}
 
@@ -182,7 +186,7 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 
 	err = archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
 	if err != nil {
-		lager.Logger.Error("failed to do add source operation!!", err)
+		lager.Logger.Error("failed to do add source operation:" + err.Error())
 		return err
 	}
 	eventHandler := EventListener{
@@ -193,7 +197,7 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 	archaius.DefaultConf.ConfigFactory.RegisterListener(eventHandler, "a*")
 
 	if err := refreshGlobalConfig(); err != nil {
-		lager.Logger.Error("failed to refresh global config for lb and cb", err)
+		lager.Logger.Error("failed to refresh global config for lb and cb:" + err.Error())
 		return err
 	}
 	return nil

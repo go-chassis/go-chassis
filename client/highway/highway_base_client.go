@@ -110,13 +110,13 @@ func (baseClient *BaseClient) makeConnection() (*ClientConnection, error) {
 		baseConn, errDial = net.DialTimeout("tcp", baseClient.addr, baseClient.connParams.Timeout*time.Second)
 	}
 	if errDial != nil {
-		lager.Logger.Error("the addr: "+baseClient.addr, errDial)
+		lager.Logger.Error("the addr: " + baseClient.addr + ", err: " + errDial.Error())
 		return nil, errDial
 	}
 	highwayConn := NewHighwayClientConnection(baseConn, baseClient)
 	err := highwayConn.Open()
 	if err != nil {
-		lager.Logger.Error("highwayConn open: "+baseClient.addr, errDial)
+		lager.Logger.Error("highwayConn open: " + baseClient.addr + ", err: " + errDial.Error())
 		return nil, err
 	}
 
@@ -239,7 +239,7 @@ func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Dur
 		if err != nil {
 			baseClient.RemoveWaitMsg(msgID)
 			rsp.Err = err.Error()
-			lager.Logger.Error("AsyncSendMsg err:", err)
+			lager.Logger.Error("AsyncSendMsg err:" + err.Error())
 			return err
 		}
 
@@ -255,7 +255,7 @@ func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Dur
 		if bTimeout {
 			ctx.Done()
 			rsp.Err = "Client send timeout"
-			return errors.New("Client send timeout")
+			return errors.New("client send timeout")
 		}
 		if ctx.Rsp.Status != Ok {
 			return errors.New(ctx.Rsp.Err)
@@ -264,7 +264,7 @@ func (baseClient *BaseClient) Send(req *Request, rsp *Response, timeout time.Dur
 		// Respond of postMsg  is  needless
 		err := highwayConn.PostMsg(req)
 		if err != nil {
-			lager.Logger.Error("PostMsg err:", err)
+			lager.Logger.Error("PostMsg err:" + err.Error())
 			return err
 		}
 	}

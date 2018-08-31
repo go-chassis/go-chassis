@@ -54,7 +54,7 @@ func RegisterMicroservice() error {
 	sid, err := DefaultRegistrator.RegisterService(microservice)
 	runtime.ServiceID = sid
 	if err != nil {
-		lager.Logger.Errorf(err, "Register [%s] failed", microservice.ServiceName)
+		lager.Logger.Errorf("Register [%s] failed: %s", microservice.ServiceName, err)
 		return err
 	}
 	lager.Logger.Infof("Register [%s] success", microservice.ServiceName)
@@ -74,7 +74,7 @@ func RegisterMicroservice() error {
 		service.ServiceDescription.Properties["allowCrossApp"] = "false"
 	}
 	if err := DefaultRegistrator.UpdateMicroServiceProperties(sid, service.ServiceDescription.Properties); err != nil {
-		lager.Logger.Errorf(err, "Update micro service properties failed, serviceID = %s.", sid)
+		lager.Logger.Errorf("Update micro service properties failed, serviceID = %s. err %s", sid, err)
 		return err
 	}
 	lager.Logger.Debugf("Update micro service properties success, serviceID = %s.", sid)
@@ -114,10 +114,10 @@ func RegisterMicroserviceInstances() error {
 
 	sid, err := DefaultServiceDiscoveryService.GetMicroServiceID(config.GlobalDefinition.AppID, service.ServiceDescription.Name, service.ServiceDescription.Version, service.ServiceDescription.Environment)
 	if err != nil {
-		lager.Logger.Errorf(err, "Get service failed, key: %s:%s:%s",
+		lager.Logger.Errorf("Get service failed, key: %s:%s:%s, err %s",
 			config.GlobalDefinition.AppID,
 			service.ServiceDescription.Name,
-			service.ServiceDescription.Version)
+			service.ServiceDescription.Version, err)
 		return err
 	}
 	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
@@ -143,7 +143,7 @@ func RegisterMicroserviceInstances() error {
 
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
-		lager.Logger.Errorf(err, "Register instance failed, serviceID: %s.", sid)
+		lager.Logger.Errorf("Register instance failed, serviceID: %s, err %s", err)
 		return err
 	}
 	//Set to runtime
@@ -151,7 +151,7 @@ func RegisterMicroserviceInstances() error {
 	runtime.InstanceStatus = runtime.StatusRunning
 	if service.ServiceDescription.InstanceProperties != nil {
 		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(sid, instanceID, service.ServiceDescription.InstanceProperties); err != nil {
-			lager.Logger.Errorf(nil, "UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", sid, instanceID)
+			lager.Logger.Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", sid, instanceID)
 			return err
 		}
 		lager.Logger.Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", sid, instanceID)

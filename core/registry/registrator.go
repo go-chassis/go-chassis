@@ -75,7 +75,7 @@ func enableRegistrator(opts Options) {
 	DefaultRegistrator = f(opts)
 
 	if err := RegisterMicroservice(); err != nil {
-		lager.Logger.Errorf(err, "start bacskoff for register microservice")
+		lager.Logger.Errorf("start bacskoff for register microservice: %s", err)
 		startBackOff(RegisterMicroservice)
 	}
 	go HBService.Start()
@@ -175,13 +175,13 @@ func DoRegister() error {
 	default:
 		{
 			tmpErr := fmt.Errorf("parameter incorrect, autoregister: %s", t)
-			lager.Logger.Error(tmpErr.Error(), nil)
+			lager.Logger.Error(tmpErr.Error())
 			return tmpErr
 		}
 	}
 	if isAutoRegister {
 		if err := RegisterMicroserviceInstances(); err != nil {
-			lager.Logger.Errorf(err, "start back off for register microservice instances background")
+			lager.Logger.Errorf("start back off for register microservice instances background: %s", err)
 			go startBackOff(RegisterMicroserviceInstances)
 		}
 	}

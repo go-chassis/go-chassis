@@ -128,7 +128,7 @@ func (msgObj *ProtocolObject) SerializeReq(req *Request, wBuf *bufio.Writer) {
 
 	header, err := proto.Marshal(&reqHeader)
 	if err != nil {
-		lager.Logger.Errorf(err, "client marshal highway request header failed.")
+		lager.Logger.Errorf("client marshal highway request header failed: %s", err)
 		return
 	}
 	frHead.HeaderLen = uint32(len(header))
@@ -154,7 +154,7 @@ func (msgObj *ProtocolObject) SerializeRsp(rsp *Response, wBuf *bufio.Writer) {
 	respHeader.Flags = 0
 	header, err := proto.Marshal(respHeader)
 	if err != nil {
-		lager.Logger.Errorf(err, "client marshal highway request header failed.")
+		lager.Logger.Errorf("client marshal highway request header failed: %s", err)
 		return
 	}
 	var body []byte
@@ -187,7 +187,7 @@ func (msgObj *ProtocolObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 		tmpsize, rdErr := rdBuf.Read(buf[count:])
 		if rdErr != nil {
 			if rdErr != io.EOF {
-				lager.Logger.Errorf(rdErr, "Recv Frame head failed.")
+				lager.Logger.Errorf("Recv Frame head failed: %s", rdErr)
 			}
 
 			return rdErr
@@ -198,7 +198,7 @@ func (msgObj *ProtocolObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 	msgObj.FrHead = highwayFrameHead{}
 	err = msgObj.FrHead.deserialize(buf)
 	if err != nil {
-		lager.Logger.Errorf(err, "Frame head error.")
+		lager.Logger.Errorf("Frame head error: %s", err)
 		return err
 	}
 	msgObj.payLoad = make([]byte, msgObj.FrHead.TotalLen)
@@ -207,7 +207,7 @@ func (msgObj *ProtocolObject) DeSerializeFrame(rdBuf *bufio.Reader) error {
 	for count < int(msgObj.FrHead.TotalLen) {
 		tmpsize, rdErr := rdBuf.Read(msgObj.payLoad[count:])
 		if rdErr != nil {
-			lager.Logger.Errorf(rdErr, "Read frame body  failed")
+			lager.Logger.Errorf("Read frame body  failed: %s", rdErr)
 			return rdErr
 		}
 		count += tmpsize
@@ -224,7 +224,7 @@ func (msgObj *ProtocolObject) DeSerializeRsp(rsp *Response) error {
 	//Head
 	err = proto.Unmarshal(msgObj.payLoad[0:msgObj.FrHead.HeaderLen], respHeader)
 	if err != nil {
-		lager.Logger.Errorf(err, "Unmarshal response header failed")
+		lager.Logger.Errorf("Unmarshal response header failed: %s", err)
 		return err
 	}
 	rsp.Status = int(respHeader.GetStatusCode())
@@ -235,7 +235,7 @@ func (msgObj *ProtocolObject) DeSerializeRsp(rsp *Response) error {
 	if msgObj.FrHead.HeaderLen != msgObj.FrHead.TotalLen {
 		err = proto.Unmarshal(msgObj.payLoad[msgObj.FrHead.HeaderLen:], (rsp.Result).(proto.Message))
 		if err != nil {
-			lager.Logger.Errorf(err, "Unmarshal response body  failed")
+			lager.Logger.Errorf("Unmarshal response body failed: %s", err)
 			rsp.Err = err.Error()
 			return err
 		}
@@ -251,7 +251,7 @@ func (msgObj *ProtocolObject) DeSerializeReq(req *Request) error {
 
 	err = proto.Unmarshal(msgObj.payLoad[0:msgObj.FrHead.HeaderLen], reqHeader)
 	if err != nil {
-		lager.Logger.Errorf(err, "Unmarshal request header failed")
+		lager.Logger.Errorf("Unmarshal request header failed: %s", err)
 		return err
 	}
 	if req.Arg == nil {
@@ -277,14 +277,14 @@ func (msgObj *ProtocolObject) DeSerializeReq(req *Request) error {
 			//Body
 			err = proto.Unmarshal(msgObj.payLoad[msgObj.FrHead.HeaderLen:], (req.Arg).(proto.Message))
 			if err != nil {
-				lager.Logger.Errorf(err, "Unmarshal request body  failed")
+				lager.Logger.Errorf("Unmarshal request body failed: %s", err)
 				return err
 			}
 		}
 	} else {
 		err = proto.Unmarshal(msgObj.payLoad[msgObj.FrHead.HeaderLen:], (req.Arg).(proto.Message))
 		if err != nil {
-			lager.Logger.Errorf(err, "Unmarshal hello request body  failed")
+			lager.Logger.Errorf("Unmarshal hello request body failed: %s", err)
 			return err
 		}
 	}
@@ -304,7 +304,7 @@ func (msgObj *ProtocolObject) SerializeHelloReq(wBuf *bufio.Writer) error {
 	}
 	header, err := proto.Marshal(&reqHeader)
 	if err != nil {
-		lager.Logger.Errorf(err, "Marshal highway login header failed")
+		lager.Logger.Errorf("Marshal highway login header failed: %s", err)
 		return err
 	}
 	frHead.HeaderLen = uint32(len(header))
@@ -316,7 +316,7 @@ func (msgObj *ProtocolObject) SerializeHelloReq(wBuf *bufio.Writer) error {
 	}
 	body, err := proto.Marshal(&loginBody)
 	if err != nil {
-		lager.Logger.Errorf(err, "Marshal highway login body failed")
+		lager.Logger.Errorf("Marshal highway login body failed: %s", err)
 		return err
 	}
 	frHead.TotalLen = uint32(len(body)) + frHead.HeaderLen
@@ -338,7 +338,7 @@ func (msgObj *ProtocolObject) SerializeLoginRap(msgID uint64, wBuf *bufio.Writer
 	}
 	header, err := proto.Marshal(reqHeader)
 	if err != nil {
-		lager.Logger.Errorf(err, "Marshal highway login header failed")
+		lager.Logger.Errorf("Marshal highway login header failed: %s", err)
 		return err
 	}
 
@@ -352,7 +352,7 @@ func (msgObj *ProtocolObject) SerializeLoginRap(msgID uint64, wBuf *bufio.Writer
 
 	body, err := proto.Marshal(loginRspBody)
 	if err != nil {
-		lager.Logger.Errorf(err, "Marshal highway login body failed")
+		lager.Logger.Errorf("Marshal highway login body failed: %s", err)
 		return err
 	}
 	frHead.TotalLen = uint32(len(body)) + frHead.HeaderLen

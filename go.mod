@@ -4,7 +4,7 @@ require (
 	github.com/DataDog/datadog-go v0.0.0-20180330214955-e67964b4021a
 	github.com/Shopify/sarama v1.17.0 // indirect
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
-	github.com/apache/thrift v0.0.0-20180807212849-6e67faa92827
+	github.com/apache/thrift v0.0.0-20180829120307-8de3749235db
 	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
 	github.com/cactus/go-statsd-client v3.1.1+incompatible
 	github.com/cenkalti/backoff v2.0.0+incompatible
@@ -17,12 +17,13 @@ require (
 	github.com/envoyproxy/go-control-plane v0.5.0
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-chassis/go-archaius v0.0.0-20180801075410-885b00ca6929
-	github.com/go-chassis/go-cc-client v0.0.0-20180803084655-75b751c2f183
+	github.com/go-chassis/go-archaius v0.0.0-20180831094429-1e6b20d2a085
+	github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640
 	github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6
-	github.com/go-chassis/go-sc-client v0.0.0-20180817094046-3be308d3a0a3
-	github.com/go-chassis/paas-lager v0.0.0-20180727081842-50655443dc96
+	github.com/go-chassis/go-sc-client v0.0.0-20180831081217-8135c6df7f96
+	github.com/go-chassis/paas-lager v0.0.0-20180831030822-312e8737a225
 	github.com/go-logfmt/logfmt v0.3.0 // indirect
+	github.com/go-mesh/openlogging v0.0.0-20180831021158-f5d1c4e7e506
 	github.com/go-ole/go-ole v1.2.1 // indirect
 	github.com/gogo/googleapis v1.1.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
@@ -33,7 +34,6 @@ require (
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20180820052304-89baedc74dd7 // indirect
-	github.com/gorilla/websocket v1.3.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7 // indirect
 	github.com/hashicorp/go-version v1.0.0
 	github.com/hashicorp/golang-lru v0.0.0-20180201235237-0fb14efe8c47 // indirect

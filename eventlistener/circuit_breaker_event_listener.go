@@ -32,7 +32,7 @@ type CircuitBreakerEventListener struct {
 func (e *CircuitBreakerEventListener) Event(event *core.Event) {
 	lager.Logger.Infof("Circuit key event: %v", event.Key)
 	if err := config.ReadHystrixFromArchaius(); err != nil {
-		lager.Logger.Error("can not unmarshal new cb config", err)
+		lager.Logger.Error("can not unmarshal new cb config: " + err.Error())
 	}
 	archaius.SaveToCBCache(config.GetHystrixConfig())
 	switch event.EventType {

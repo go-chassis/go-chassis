@@ -24,7 +24,7 @@ func GetEndpointFromServiceCenter(appID, microService, version string) (string, 
 	}
 
 	if len(instances) == 0 {
-		lager.Logger.Errorf(nil, "No available instance, key: %s:%s:%s",
+		lager.Logger.Errorf("No available instance, key: %s:%s:%s",
 			appID, microService, version)
 		instanceError := fmt.Sprintf("No available instance, key: %s:%s:%s",
 			appID, microService, version)
