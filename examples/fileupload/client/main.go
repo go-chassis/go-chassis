@@ -20,7 +20,7 @@ import (
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 
@@ -32,7 +32,7 @@ func main() {
 func uploadfile(filename string) {
 	f, err := os.Open(filename)
 	if err != nil {
-		lager.Logger.Error("Error in opening file", err)
+		lager.Logger.Error("Error in opening file" + err.Error())
 		return
 	}
 	defer f.Close()
@@ -41,13 +41,13 @@ func uploadfile(filename string) {
 
 	_, err = io.Copy(body, f)
 	if err != nil {
-		lager.Logger.Error("Copy failed.", err)
+		lager.Logger.Error("Copy failed." + err.Error())
 		return
 	}
 
 	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadfile", body.Bytes())
 	if err != nil {
-		lager.Logger.Error("new request failed.", err)
+		lager.Logger.Error("new request failed." + err.Error())
 		return
 	}
 	defer req.Close()
@@ -56,7 +56,7 @@ func uploadfile(filename string) {
 
 	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
-		lager.Logger.Error("do request failed.", err)
+		lager.Logger.Error("do request failed." + err.Error())
 		return
 	}
 	defer resp.Close()
@@ -70,20 +70,20 @@ func uploadform(filename string) {
 	headBufWriter := multipart.NewWriter(headBuf)
 	_, err := headBufWriter.CreateFormFile("uploadfile", filename)
 	if err != nil {
-		lager.Logger.Error("Error in create form file", err)
+		lager.Logger.Error("Error in create form file" + err.Error())
 		return
 	}
 
 	f, err := os.Open(filename)
 	if err != nil {
-		lager.Logger.Error("Error in opening file", err)
+		lager.Logger.Error("Error in opening file" + err.Error())
 		return
 	}
 	defer f.Close()
 
 	fs, err := f.Stat()
 	if err != nil {
-		lager.Logger.Error("Error in stat file", err)
+		lager.Logger.Error("Error in stat file" + err.Error())
 		return
 	}
 
@@ -93,7 +93,7 @@ func uploadform(filename string) {
 
 	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadform")
 	if err != nil {
-		lager.Logger.Error("new request failed.", err)
+		lager.Logger.Error("new request failed." + err.Error())
 		return
 	}
 	req.Req.Body = ioutil.NopCloser(bodyReader)
@@ -104,7 +104,7 @@ func uploadform(filename string) {
 
 	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
-		lager.Logger.Error("do request failed.", err)
+		lager.Logger.Error("do request failed." + err.Error())
 		return
 	}
 	defer resp.Close()

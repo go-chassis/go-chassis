@@ -242,16 +242,16 @@ func readMicroserviceConfigFiles() error {
 	defPath := fileutil.GetMicroserviceDesc()
 	data, err := ioutil.ReadFile(defPath)
 	if err != nil {
-		lager.Logger.Errorf(err, fmt.Sprintf("WARN: Missing microservice description file: %s", err.Error()))
+		lager.Logger.Errorf(fmt.Sprintf("WARN: Missing microservice description file: %s", err.Error()))
 		if len(microserviceNames) == 0 {
-			return errors.New("Missing microservice description file")
+			return errors.New("missing microservice description file")
 		}
 		msName := microserviceNames[0]
 		msDefPath := fileutil.MicroserviceDefinition(msName)
 		lager.Logger.Warnf(fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
 		data, err := ioutil.ReadFile(msDefPath)
 		if err != nil {
-			return fmt.Errorf("Missing microservice description file: %s", err.Error())
+			return fmt.Errorf("missing microservice description file: %s", err.Error())
 		}
 		ReadMicroserviceConfigFromBytes(data)
 		return nil
@@ -358,7 +358,7 @@ func Init() error {
 	if runtime.HostName == "" {
 		runtime.HostName, err = os.Hostname()
 		if err != nil {
-			lager.Logger.Error("Get hostname failed.", err)
+			lager.Logger.Error("Get hostname failed:" + err.Error())
 			return err
 		}
 	}

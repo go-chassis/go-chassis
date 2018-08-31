@@ -25,7 +25,7 @@ func GetProtocolMap(eps []string) (map[string]string, string) {
 	for _, ep := range eps {
 		u, err := url.Parse(ep)
 		if err != nil {
-			lager.Logger.Error("Can not parse "+ep, err)
+			lager.Logger.Errorf("Can not parse %s: %s", ep, err.Error())
 			continue
 		}
 		proto := u.Scheme
@@ -105,7 +105,7 @@ func MakeEndpointMap(m map[string]model.Protocol) map[string]string {
 			}
 
 			if err != nil {
-				lager.Logger.Errorf(err, "failed to parse ip address")
+				lager.Logger.Errorf("failed to parse ip address: %s", err)
 			} else {
 				if ip != nil && ip.To4() != nil {
 					eps[name] = ip.String() + ":" + ipWithoutPort[1]
@@ -175,10 +175,10 @@ func getTLSConfig(scheme, t string) (*tls.Config, error) {
 		if err != nil {
 			if chassisTLS.IsSSLConfigNotExist(err) {
 				tmpErr := fmt.Errorf("%s tls mode, but no ssl config", sslTag)
-				lager.Logger.Error(tmpErr.Error(), err)
+				lager.Logger.Error(tmpErr.Error() + ", err: " + err.Error())
 				return nil, tmpErr
 			}
-			lager.Logger.Errorf(err, "Load %s TLS config failed.", sslTag)
+			lager.Logger.Errorf("Load %s TLS config failed: %s", err)
 			return nil, err
 		}
 		lager.Logger.Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",

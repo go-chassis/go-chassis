@@ -32,7 +32,7 @@ type ServiceDiscovery struct {
 func (r *ServiceDiscovery) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
 	_, err := r.registryClient.GetServiceHosts(microServiceName)
 	if err != nil {
-		lager.Logger.Errorf(err, "GetMicroServiceID failed")
+		lager.Logger.Errorf("GetMicroServiceID failed: %s", err)
 		return "", err
 	}
 	lager.Logger.Debugf("GetMicroServiceID success")
@@ -43,7 +43,7 @@ func (r *ServiceDiscovery) GetMicroServiceID(appID, microServiceName, version, e
 func (r *ServiceDiscovery) GetAllMicroServices() ([]*registry.MicroService, error) {
 	svcs, err := r.registryClient.GetAllServices()
 	if err != nil {
-		lager.Logger.Errorf(err, "GetAllMicroServices failed")
+		lager.Logger.Errorf("GetAllMicroServices failed: %s", err)
 		return nil, err
 	}
 
@@ -58,7 +58,7 @@ func (r *ServiceDiscovery) GetAllMicroServices() ([]*registry.MicroService, erro
 func (r *ServiceDiscovery) GetMicroService(microServiceID string) (*registry.MicroService, error) {
 	hs, err := r.registryClient.GetServiceHosts(microServiceID)
 	if err != nil {
-		lager.Logger.Errorf(err, "GetMicroServiceID failed")
+		lager.Logger.Errorf("GetMicroServiceID failed: %s", err)
 		return nil, err
 	}
 	lager.Logger.Debugf("GetMicroServices success, MicroService: %s", microServiceID)
@@ -72,7 +72,7 @@ func (r *ServiceDiscovery) GetMicroService(microServiceID string) (*registry.Mic
 func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID string) ([]*registry.MicroServiceInstance, error) {
 	hs, err := r.registryClient.GetServiceHosts(providerID)
 	if err != nil {
-		lager.Logger.Errorf(err, "GetMicroServiceInstances failed.")
+		lager.Logger.Errorf("GetMicroServiceInstances failed: %s", err)
 		return nil, err
 	}
 	instances := filterInstances(hs.Hosts)
@@ -101,7 +101,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	}
 	microServiceInstance, ok := value.([]*registry.MicroServiceInstance)
 	if !ok {
-		lager.Logger.Errorf(nil, "FindMicroServiceInstances failed, Type asserts failed. consumerIDL: %s",
+		lager.Logger.Errorf("FindMicroServiceInstances failed, Type asserts failed. consumerIDL: %s",
 			consumerID)
 	}
 	return microServiceInstance, nil

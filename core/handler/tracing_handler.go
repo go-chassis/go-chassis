@@ -27,7 +27,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	case opentracing.ErrSpanContextNotFound:
 		lager.Logger.Debug(err.Error())
 	default:
-		lager.Logger.Errorf(err, "Extract span failed")
+		lager.Logger.Errorf("Extract span failed, err [%s]", err.Error())
 	}
 	wireContext, err = opentracing.GlobalTracer().Extract(opentracing.TextMap, opentracing.TextMapCarrier(i.Headers()))
 	if wireContext == nil {
@@ -93,7 +93,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		opentracing.TextMap,
 		(opentracing.TextMapCarrier)(i.Headers()),
 	); err != nil {
-		lager.Logger.Errorf(err, "Inject span failed")
+		lager.Logger.Errorf("Inject span failed, err [%s]", err.Error())
 	}
 	// To ensure accuracy, spans should finish immediately once client send req.
 	// So the best way is that spans finish in the callback func, not after it.

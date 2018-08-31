@@ -131,7 +131,7 @@ func (svrConn *HighwayConnection) msgRecvLoop() {
 		err := protoObj.DeSerializeFrame(rdBuf)
 		if err != nil {
 			if err != io.EOF {
-				lager.Logger.Errorf(err, "DeSerializeFrame failed.")
+				lager.Logger.Errorf("DeSerializeFrame failed. %s", err)
 			}
 
 			break
@@ -155,7 +155,7 @@ func (svrConn *HighwayConnection) writeError(req *highwayclient.Request, err err
 		errSnd := wBuf.Flush()
 		if errSnd != nil {
 			svrConn.Close()
-			lager.Logger.Errorf(errSnd, "writeError failed.")
+			lager.Logger.Errorf("writeError failed. %s", errSnd)
 		}
 	}
 }
@@ -165,7 +165,7 @@ func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.ProtocolOb
 	req := &highwayclient.Request{}
 	err = protoObj.DeSerializeReq(req)
 	if err != nil {
-		lager.Logger.Errorf(err, "DeSerializeReq failed")
+		lager.Logger.Errorf("DeSerializeReq failed. %s", err)
 		svrConn.writeError(req, err)
 		return err
 	}
@@ -179,7 +179,7 @@ func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.ProtocolOb
 	i.Protocol = common.ProtocolHighway
 	c, err := handler.GetChain(common.Provider, svrConn.handlerChain)
 	if err != nil {
-		lager.Logger.Errorf(err, "Handler chain init err")
+		lager.Logger.Errorf("Handler chain init err: %s", err)
 		svrConn.writeError(req, err)
 	}
 
@@ -207,7 +207,7 @@ func (svrConn *HighwayConnection) handleFrame(protoObj *highwayclient.ProtocolOb
 			protoObj.SerializeRsp(rsp, wBuf)
 			err = wBuf.Flush()
 			if err != nil {
-				lager.Logger.Errorf(err, "Send Respond failed.")
+				lager.Logger.Errorf("Send Respond failed: %s", err)
 				svrConn.Close()
 				return err
 			}

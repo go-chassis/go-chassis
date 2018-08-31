@@ -23,7 +23,7 @@ type LoadbalanceEventListener struct {
 func (e *LoadbalanceEventListener) Event(event *core.Event) {
 	lager.Logger.Debugf("LB event, key: %s, type: %s", event.Key, event.EventType)
 	if err := config.ReadLBFromArchaius(); err != nil {
-		lager.Logger.Error("can not unmarshal new lb config", err)
+		lager.Logger.Error("can not unmarshal new lb config: " + err.Error())
 	}
 	archaius.SaveToLBCache(config.GetLoadBalancing())
 }

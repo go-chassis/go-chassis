@@ -36,7 +36,7 @@ func TestRegistryClient_Health(t *testing.T) {
 			for _, uri := range inst.Endpoints {
 				u, err := url.Parse(uri)
 				if err != nil {
-					lager.Logger.Error("Wrong URI", err)
+					lager.Logger.Error("Wrong URI: " + err.Error())
 					continue
 				}
 				u.Host = strings.Split(u.Host, ":")[0]

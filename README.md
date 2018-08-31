@@ -37,15 +37,7 @@ You can see more documentations in [here](http://go-chassis.readthedocs.io/en/la
 git clone git@github.com:go-chassis/go-chassis.git
 ```
 
-3. Use [dep](https://github.com/golang/dep) to download dependencies
-
-```sh
-cd go-chassis
-# behind a proxy, you need setup a http proxy server
-# export https_proxy=xxx
-dep ensure
-```
-or use go mod(go 1.11+, experimental but a recommended way)
+3. Use use go mod(go 1.11+, experimental but a recommended way)
 ```shell
 cd go-chassis
 GO111MODULE=on go mod download

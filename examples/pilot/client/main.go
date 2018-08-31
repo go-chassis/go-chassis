@@ -16,7 +16,7 @@ import (
 func main() {
 	//chassis operation
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 	restInvoker := core.NewRestInvoker()

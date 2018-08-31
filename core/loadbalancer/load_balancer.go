@@ -57,7 +57,7 @@ func BuildStrategy(consumerID, serviceName, protocol, sessionID string, fs []str
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(consumerID, serviceName, tags)
 	if err != nil {
 		lbErr := LBError{err.Error()}
-		lager.Logger.Errorf(lbErr, "Lb err")
+		lager.Logger.Errorf("Lb err: %s", err)
 		return nil, lbErr
 	}
 
@@ -78,7 +78,7 @@ func BuildStrategy(consumerID, serviceName, protocol, sessionID string, fs []str
 
 	if len(instances) == 0 {
 		lbErr := LBError{fmt.Sprintf("No available instance, key: %s(%v)", serviceName, tags)}
-		lager.Logger.Error(lbErr.Error(), nil)
+		lager.Logger.Error(lbErr.Error())
 		return nil, lbErr
 	}
 

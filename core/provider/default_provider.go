@@ -254,7 +254,7 @@ func (p *DefaultProvider) Invoke(inv *invocation.Invocation) (interface{}, error
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
-			lager.Logger.Errorf(nil, "Invoke returns error:%s", err.Error())
+			lager.Logger.Errorf("Invoke returns error:%s", err.Error())
 		}
 	}()
 

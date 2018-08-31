@@ -27,14 +27,14 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		i.Strategy = lbConfig.Strategy
 		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			lager.Logger.Errorf(err, loadbalancer.LBError{
-				Message: "Get strategy [" + i.Strategy + "] failed."}.Error())
+			lager.Logger.Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
 		}
 	} else {
 		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			lager.Logger.Errorf(err, loadbalancer.LBError{
-				Message: "Get strategy [" + i.Strategy + "] failed."}.Error())
+			lager.Logger.Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
 		}
 	}
 	if len(i.Filters) == 0 {
@@ -73,7 +73,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		errStr := fmt.Sprintf("No available instance support ["+i.Protocol+"] protocol,"+
 			" msName: "+i.MicroServiceName+" %v", ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
-		lager.Logger.Errorf(nil, lbErr.Error())
+		lager.Logger.Errorf(lbErr.Error())
 		return "", lbErr
 	}
 	return ep, nil

@@ -74,7 +74,7 @@ func (s *highwayServer) Start() error {
 	}
 
 	if lisErr != nil {
-		lager.Logger.Error("listening failed, reason:", lisErr)
+		lager.Logger.Error("listening failed, reason:" + lisErr.Error())
 		return lisErr
 	}
 	go s.acceptLoop(listener)
@@ -85,7 +85,7 @@ func (s *highwayServer) acceptLoop(l net.Listener) {
 	for {
 		conn, err := l.Accept()
 		if err != nil {
-			lager.Logger.Errorf(err, "Error accepting")
+			lager.Logger.Errorf("Error accepting, err [%s]", err)
 			select {
 			case <-time.After(time.Second * 3):
 				lager.Logger.Info("Sleep three second")

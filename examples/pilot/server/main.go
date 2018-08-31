@@ -14,7 +14,7 @@ func main() {
 	chassis.RegisterSchema("rest", &schemas.RestFulMessage{})
 	//start all server you register in server/schemas.
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 	chassis.Run()

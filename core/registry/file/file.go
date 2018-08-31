@@ -6,7 +6,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-chassis/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client"
 )
 
 // constant string for file
@@ -121,7 +121,7 @@ func (f *Discovery) GetMicroServiceInstances(consumerID, providerID string) ([]*
 }
 
 // WatchMicroService watch micro-service
-func (f *Discovery) WatchMicroService(selfMicroServiceID string, callback func(*model.MicroServiceInstanceChangedEvent)) {
+func (f *Discovery) WatchMicroService(selfMicroServiceID string, callback func(*client.MicroServiceInstanceChangedEvent)) {
 	return
 }
 
@@ -142,7 +142,7 @@ func (f *Discovery) FindMicroServiceInstances(consumerID, microServiceName strin
 }
 
 // filterInstances filter instances
-func filterInstances(providerInstances []*model.MicroServiceInstance) []*registry.MicroServiceInstance {
+func filterInstances(providerInstances []*client.MicroServiceInstance) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {
 		msi := servicecenter.ToMicroServiceInstance(ins)

@@ -11,7 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
-	"github.com/go-chassis/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 
 type localFileData struct {
 	ServiceName  string `json:"serviceName,omitempty"`
-	InstanceData *model.MicroServiceInstance
+	InstanceData *client.MicroServiceInstance
 }
 
 // Options struct having addresses
@@ -45,8 +45,8 @@ func (f *fileClient) Initialize(opt Options) {
 	f.Addresses = opt.Addrs
 }
 
-func (f *fileClient) FindMicroServiceInstances(microServiceName string) ([]*model.MicroServiceInstance, error) {
-	var instanceData []*model.MicroServiceInstance
+func (f *fileClient) FindMicroServiceInstances(microServiceName string) ([]*client.MicroServiceInstance, error) {
+	var instanceData []*client.MicroServiceInstance
 
 	data := f.getInstanceDataFromFile()
 	if data == nil {
@@ -56,7 +56,7 @@ func (f *fileClient) FindMicroServiceInstances(microServiceName string) ([]*mode
 	localData := &localFileData{}
 	for _, value := range data.Service {
 		if value.Name == microServiceName {
-			insData := &model.MicroServiceInstance{
+			insData := &client.MicroServiceInstance{
 				Endpoints: value.Instance,
 			}
 			localData.ServiceName = value.Name

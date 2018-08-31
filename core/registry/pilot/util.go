@@ -20,7 +20,7 @@ const (
 func close(r *EnvoyDSClient) error {
 	err := r.Close()
 	if err != nil {
-		lager.Logger.Errorf(err, "Conn close failed.")
+		lager.Logger.Errorf("Conn close failed: %s", err)
 		return err
 	}
 	lager.Logger.Debugf("Conn close success.")

@@ -36,18 +36,18 @@ jobs:
         - bash -x scripts/travis/goCycloChecker.sh
     - stage: Unit Test
       script:
-        - go get github.com/golang/dep/cmd/dep
         - go get github.com/Masterminds/glide
         - bash -x scripts/travis/start_latest_sc.sh
         - go get github.com/stretchr/testify
         - go get github.com/mattn/goveralls
         - go get golang.org/x/tools/cmd/cover
-        - dep ensure
+        - GO111MODULE=on go mod download
+        - GO111MODULE=on go mod vendor
         - bash -x scripts/travis/unit_test.sh && $HOME/gopath/bin/goveralls -coverprofile=coverage.txt -service=travis-ci
 
     - stage: Build
       script: 
-        - go get github.com/golang/dep/cmd/dep
-        - dep ensure
+        - GO111MODULE=on go mod download
+        - GO111MODULE=on go mod vendor
         - go build -o chassis
 

@@ -8,6 +8,7 @@ import (
 
 	paaslager "github.com/go-chassis/paas-lager"
 	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
+	"github.com/go-mesh/openlogging"
 )
 
 // constant values for logrotate parameters
@@ -49,10 +50,10 @@ func Initialize(writers, loggerLevel, loggerFile, rollingPolicy string, logForma
 		LogRotateSize:  LogRotateSize,
 		LogBackupCount: LogBackupCount,
 	}
-
 	log.Println("Enable log tool")
 	Logger = newLog(lag)
 	initLogRotate(logFilePath, lag)
+	openlogging.SetLogger(Logger)
 	return
 }
 

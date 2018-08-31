@@ -38,8 +38,7 @@ func GetProtocolSpec(p string) model.Protocol {
 func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
-		err = fmt.Errorf("don not Support [%s] client", protocol)
-		lager.Logger.Error("", err)
+		lager.Logger.Error(fmt.Sprintf("don not Support [%s] client", protocol))
 		return nil, err
 	}
 	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
@@ -106,7 +105,7 @@ func Close(protocol, service, endpoint string) error {
 		return fmt.Errorf("client not exists")
 	}
 	if err := c.Close(); err != nil {
-		lager.Logger.Errorf(err, "can not close client %s:%s%:s", protocol, service, endpoint)
+		lager.Logger.Errorf("can not close client %s:%s%:s, err [%s]", protocol, service, endpoint, err.Error())
 		return err
 	}
 	sl.Lock()

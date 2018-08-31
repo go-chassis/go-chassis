@@ -12,7 +12,7 @@ import (
 func main() {
 	chassis.RegisterSchema("highway", &schemas.HelloServer{}, server.WithSchemaID("HelloService"))
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed.")
 		return
 	}
 	chassis.Run()
