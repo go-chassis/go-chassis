@@ -1,6 +1,8 @@
 package registry
 
 import (
+	"errors"
+
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/schema"
@@ -8,6 +10,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
+
+var errEmptyServiceIDFromRegistry = errors.New("got empty serviceID from registry")
 
 // microServiceDependencies micro-service dependencies
 var microServiceDependencies *MicroServiceDependency
@@ -35,6 +39,7 @@ func RegisterMicroservice() error {
 	framework := metadata.NewFramework()
 
 	microservice := &MicroService{
+		ServiceID:   runtime.ServiceID,
 		AppID:       config.GlobalDefinition.AppID,
 		ServiceName: service.ServiceDescription.Name,
 		Version:     service.ServiceDescription.Version,
@@ -52,11 +57,15 @@ func RegisterMicroservice() error {
 	lager.Logger.Infof("Micro service registered by [ %s ]", framework.Register)
 
 	sid, err := DefaultRegistrator.RegisterService(microservice)
-	runtime.ServiceID = sid
 	if err != nil {
 		lager.Logger.Errorf("Register [%s] failed: %s", microservice.ServiceName, err)
 		return err
 	}
+	if sid == "" {
+		lager.Logger.Error(errEmptyServiceIDFromRegistry.Error())
+		return errEmptyServiceIDFromRegistry
+	}
+	runtime.ServiceID = sid
 	lager.Logger.Infof("Register [%s] success", microservice.ServiceName)
 
 	for _, schemaID := range schemas {
