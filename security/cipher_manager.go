@@ -1,6 +1,7 @@
 package security
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -36,15 +37,14 @@ func GetCipherNewFunc(name string) (func() Cipher, error) {
 }
 
 func loadCipherFromPlugin(name string) (func() Cipher, error) {
-	p, err := goplugin.LoadPlugin(name + pluginSuffix)
+	c, err := goplugin.LookUpSymbolFromPlugin(name+pluginSuffix, "Cipher")
 	if err != nil {
 		return nil, err
 	}
-	c, err := p.Lookup("Cipher")
-	if err != nil {
-		return nil, err
+	customCipher, ok := c.(Cipher)
+	if !ok {
+		return nil, errors.New("symbol from plugin is not type Cipher")
 	}
-	customCipher := c.(Cipher)
 	f := func() Cipher {
 		return customCipher
 	}
