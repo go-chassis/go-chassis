@@ -24,6 +24,8 @@ var DefaultConf *Config
 
 // NewConfig is gives the object of Config(it is having configuration files, and configuration factory)
 func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
+	conf := &Config{}
+
 	// created config factory object
 	factory, err := goarchaius.NewConfigFactory(lager.Logger)
 	if err != nil {
@@ -60,10 +62,8 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	conf := &Config{
-		ConfigFiles:   files,
-		ConfigFactory: factory,
-	}
+	conf.ConfigFactory = factory
+	conf.ConfigFiles = files
 
 	eventHandler := EventListener{
 		Name:    "EventHandler",
@@ -103,9 +103,8 @@ func Init() error {
 		fileutil.GetAuth(),
 		fileutil.GetTracing(),
 	}
-
-	dConf, err := NewConfig(essentialfiles, commonfiles)
-	DefaultConf = dConf
+	var err error
+	DefaultConf, err = NewConfig(essentialfiles, commonfiles)
 	return err
 }
 

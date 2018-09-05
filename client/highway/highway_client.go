@@ -77,4 +77,5 @@ func (c *highwayClient) Call(ctx context.Context, addr string, inv *invocation.I
 
 func init() {
 	client.InstallPlugin(Name, NewHighwayClient)
+
 }

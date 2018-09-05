@@ -4,6 +4,8 @@ import (
 	"os"
 	"testing"
 
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"

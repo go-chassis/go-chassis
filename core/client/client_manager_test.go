@@ -3,6 +3,8 @@ package client_test
 import (
 	"testing"
 
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"github.com/go-chassis/go-chassis/client/highway"
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/config"

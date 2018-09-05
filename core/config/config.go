@@ -14,6 +14,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
 )
 
@@ -25,9 +26,6 @@ var lbConfig *model.LBWrapper
 // MicroserviceDefinition is having the info about application id, provider info, description of the service,
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
-
-// PaasLagerDefinition is having the information about loging
-var PaasLagerDefinition *model.PassLagerCfg
 
 // RouterDefinition is route rule config
 var RouterDefinition *model.RouterConfig
@@ -193,16 +191,6 @@ type pathError struct {
 
 func (e *pathError) Error() string { return e.Path + ": " + e.Err.Error() }
 
-// parsePaasLagerConfig unmarshals the paas lager configuration file(lager.yaml)
-func parsePaasLagerConfig(file string) error {
-	PaasLagerDefinition = &model.PassLagerCfg{}
-	err := unmarshalYamlFile(file, PaasLagerDefinition)
-	if err != nil && !os.IsNotExist(err) {
-		return &pathError{Path: file, Err: err}
-	}
-	return err
-}
-
 // parseRouterConfig is unmarshal the router configuration file(router.yaml)
 func parseRouterConfig(file string) error {
 	RouterDefinition = &model.RouterConfig{}
@@ -290,32 +278,16 @@ func GetHystrixConfig() *model.HystrixConfig {
 	return HystrixConfig.HystrixConfig
 }
 
-// Init is initialize the configuration directory, lager, archaius, route rule, and schema
+// Init is initialize the configuration directory, archaius, route rule, and schema
 func Init() error {
-	err := parsePaasLagerConfig(fileutil.PaasLagerDefinition())
-	//initialize log in any case
-	if err != nil {
-		lager.Initialize("", "", "", "", true, 1, 10, 7)
+	if err := parseRouterConfig(fileutil.RouterDefinition()); err != nil {
 		if os.IsNotExist(err) {
-			lager.Logger.Infof("[%s] not exist", fileutil.PaasLagerDefinition())
-		} else {
-			return err
-		}
-	} else {
-		lager.Initialize(PaasLagerDefinition.Writers, PaasLagerDefinition.LoggerLevel,
-			PaasLagerDefinition.LoggerFile, PaasLagerDefinition.RollingPolicy,
-			PaasLagerDefinition.LogFormatText, PaasLagerDefinition.LogRotateDate,
-			PaasLagerDefinition.LogRotateSize, PaasLagerDefinition.LogBackupCount)
-	}
-
-	if err = parseRouterConfig(fileutil.RouterDefinition()); err != nil {
-		if os.IsNotExist(err) {
-			lager.Logger.Infof("[%s] not exist", fileutil.RouterDefinition())
+			openlogging.GetLogger().Infof("[%s] not exist", fileutil.RouterDefinition())
 		} else {
 			return err
 		}
 	}
-	err = archaius.Init()
+	err := archaius.Init()
 	if err != nil {
 		return err
 	}

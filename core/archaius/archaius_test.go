@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"

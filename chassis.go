@@ -9,50 +9,60 @@ import (
 	"sync"
 	"syscall"
 
+	//init logger first
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"github.com/go-chassis/go-chassis/bootstrap"
-	// highway package handles remote procedure calls
+
+	//protocols
 	_ "github.com/go-chassis/go-chassis/client/highway"
+	_ "github.com/go-chassis/go-chassis/client/rest"
+	_ "github.com/go-chassis/go-chassis/server/highway"
+	_ "github.com/go-chassis/go-chassis/server/restful"
+
+	//routers
 	_ "github.com/go-chassis/go-chassis/core/router/cse"
 	_ "github.com/go-chassis/go-chassis/core/router/pilot"
-	// rest package handle rest apis
-	_ "github.com/go-chassis/go-chassis/client/rest"
-	// archaius package to get the conguration info fron diffent configuration sources
+
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
-	// archaius panel
+
+	//control panel
 	_ "github.com/go-chassis/go-chassis/control/archaius"
-	// file package for file based registration
+
+	// registry
 	_ "github.com/go-chassis/go-chassis/core/registry/file"
-	// servicecenter package handles service center api calls
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-	// pilot package handles istio pilot SDS api calls
 	_ "github.com/go-chassis/go-chassis/core/registry/pilot"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+
 	"github.com/go-chassis/go-chassis/core/router"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/go-chassis/go-chassis/eventlistener"
-	// metric plugin
+
+	// metric
 	_ "github.com/go-chassis/go-chassis/metrics/prom"
+
 	// aes package handles security related plugins
 	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
-	_ "github.com/go-chassis/go-chassis/server/restful"
-	// highway package register the highway server plugin
-	_ "github.com/go-chassis/go-chassis/server/highway"
-	// import config center plugins
+
+	//config centers
 	_ "github.com/go-chassis/go-cc-client/apollo-client"
 	_ "github.com/go-chassis/go-cc-client/configcenter-client"
+
 	"github.com/go-chassis/go-chassis/config-center"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	//import tracers
+
+	//tracers
 	_ "github.com/go-chassis/go-chassis/tracing/zipkin"
 )
 
@@ -117,8 +127,7 @@ func (c *chassis) initialize() error {
 	if c.Initialized {
 		return nil
 	}
-	err := config.Init()
-	if err != nil {
+	if err := config.Init(); err != nil {
 		lager.Logger.Error("Failed to initialize conf," + err.Error())
 		return err
 	}
@@ -128,7 +137,7 @@ func (c *chassis) initialize() error {
 	if err := control.Init(); err != nil {
 		return err
 	}
-	err = c.initHandler()
+	err := c.initHandler()
 	if err != nil {
 		lager.Logger.Errorf("Handler init failed: %s", err)
 		return err
