@@ -2,7 +2,6 @@ package goplugin
 
 import (
 	"os"
-	"plugin"
 
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 )
@@ -29,15 +28,7 @@ func LookupPlugin(name string) (string, error) {
 	return "", err
 }
 
-// LoadPlugin load plugin
-func LoadPlugin(name string) (*plugin.Plugin, error) {
-	path, err := LookupPlugin(name)
-	if err != nil {
-		return nil, err
-	}
-	p, err := plugin.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	return p, nil
+// LookUpSymbolFromPlugin looks up symbol from the plugin
+func LookUpSymbolFromPlugin(plugName, symName string) (interface{}, error) {
+	return lookUp(plugName, symName)
 }
