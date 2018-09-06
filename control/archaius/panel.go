@@ -17,7 +17,7 @@ type Panel struct {
 
 func newPanel(options control.Options) control.Panel {
 	SaveToLBCache(config.GetLoadBalancing())
-	SaveToCBCache(config.GetHystrixConfig())
+	SaveToCBCache(config.GetHystrixConfig(), "", true)
 	return &Panel{}
 }
 
