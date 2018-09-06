@@ -1,6 +1,8 @@
 package archaius
 
 import (
+	"strings"
+
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -9,7 +11,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"strings"
 )
 
 //SaveToLBCache save configs
@@ -92,8 +93,25 @@ func saveEachCB(serviceName, serviceType string) {
 		ForceOpen:              config.GetForceOpen(serviceName, serviceType),
 		CircuitBreakerEnabled:  config.GetCircuitBreakerEnabled(command, serviceType),
 	}
-	lager.Logger.Infof("save circuit breaker config [%#v] for [%s] ", c, serviceName)
-	CBConfigCache.Set(GetCBCacheKey(serviceName, serviceType), c, 0)
+	cbcCacheKey := GetCBCacheKey(serviceName, serviceType)
+	cbcCacheValue, b := CBConfigCache.Get(cbcCacheKey)
+	formatString := "save circuit breaker config [%#v] for [%s] "
+	if !b || cbcCacheValue == nil {
+		lager.Logger.Infof(formatString, c, serviceName)
+		CBConfigCache.Set(cbcCacheKey, c, 0)
+		return
+	}
+	commandConfig, ok := cbcCacheValue.(hystrix.CommandConfig)
+	if !ok {
+		lager.Logger.Infof(formatString, c, serviceName)
+		CBConfigCache.Set(cbcCacheKey, c, 0)
+		return
+	}
+	if c == commandConfig {
+		return
+	}
+	lager.Logger.Infof(formatString, c, serviceName)
+	CBConfigCache.Set(cbcCacheKey, c, 0)
 }
 
 //GetCBCacheKey generate cache key
