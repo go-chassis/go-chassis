@@ -65,34 +65,13 @@ func setDefaultLBValue(c *control.LoadBalancingConfig) {
 }
 
 //SaveToCBCache save configs
-func SaveToCBCache(raw *model.HystrixConfig) {
+func SaveToCBCache(raw *model.HystrixConfig, key string, isAnyService bool) {
 	lager.Logger.Debug("Loading cb config from archaius into cache")
 	saveEachCB("", common.Consumer)
 	saveEachCB("", common.Provider)
-	// even though the input is duplicated in below loops but service name list is not certain unless we loop all namespace
-	for k := range raw.IsolationProperties.Consumer.AnyService {
-		saveEachCB(k, common.Consumer)
-	}
-	for k := range raw.IsolationProperties.Provider.AnyService {
-		saveEachCB(k, common.Provider)
-	}
-	for k := range raw.CircuitBreakerProperties.Consumer.AnyService {
-		saveEachCB(k, common.Consumer)
-	}
-	for k := range raw.CircuitBreakerProperties.Provider.AnyService {
-		saveEachCB(k, common.Provider)
-	}
-	for k := range raw.FallbackPolicyProperties.Consumer.AnyService {
-		saveEachCB(k, common.Consumer)
-	}
-	for k := range raw.FallbackPolicyProperties.Provider.AnyService {
-		saveEachCB(k, common.Provider)
-	}
-	for k := range raw.FallbackProperties.Consumer.AnyService {
-		saveEachCB(k, common.Consumer)
-	}
-	for k := range raw.FallbackProperties.Provider.AnyService {
-		saveEachCB(k, common.Provider)
+	if !isAnyService {
+		stringSlice := strings.Split(key, ".")
+		saveEachCB(stringSlice[3], stringSlice[2])
 	}
 }
 
