@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/go-chassis/go-chassis"
+	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/examples/schemas"
 	_ "github.com/go-mesh/mesher/plugins/registry/istiov2"
@@ -14,7 +13,7 @@ import (
 func main() {
 	chassis.RegisterSchema("rest", &schemas.RestFulHello{}, server.WithSchemaID("RestHelloService"))
 	if err := chassis.Init(); err != nil {
-		fmt.Println("Init failed.", err)
+		lager.Logger.Errorf("Init failed: %s", err.Error())
 		return
 	}
 	chassis.Run()

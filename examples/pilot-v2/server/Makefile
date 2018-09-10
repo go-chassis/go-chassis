@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 all: binary docker
 	# ./build/distribute-image.sh go-chassis/pilotv2server:latest
+	- kubectl delete -f ./build/k8s/
 	kubectl apply -f ./build/k8s/
 
 binary:
