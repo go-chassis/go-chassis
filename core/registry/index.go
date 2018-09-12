@@ -89,7 +89,8 @@ func (hi *hashIndex) autoClearCache(k string, exist map[string][]*MicroServiceIn
 
 func (hi *hashIndex) Get(k string, tags map[string]string) (interface{}, bool) {
 	s := hi.getLabelkey(tags)
-	if len(hi.labels) != len(tags) {
+	_, ok := tags["weight"]
+	if len(hi.labels) != len(tags) && !ok {
 		return nil, false
 	}
 
