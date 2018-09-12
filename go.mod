@@ -67,6 +67,13 @@ require (
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.2.2
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277
+	golang.org/x/crypto v0.0.0-20180820150726-614d502a4dac // indirect
+	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591
+	golang.org/x/sys v0.0.0-20180824143301-4910a1d54f87 // indirect
+	golang.org/x/text v0.3.0 // indirect
+	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2 // indirect
+	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 // indirect
+	google.golang.org/grpc v1.14.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.2.1
 	k8s.io/api v0.0.0-20180824172530-dd5c735cbff9 // indirect
