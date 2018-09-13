@@ -1,6 +1,8 @@
 package server_test
 
 import (
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"errors"
 	"os"
 	"testing"

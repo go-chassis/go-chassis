@@ -8,7 +8,8 @@ bin/
 .idea/
 **/log/chassis.log
 *.exe
-*.log*.zip
+*.log
+*.zip
 *.lnk
 
 release

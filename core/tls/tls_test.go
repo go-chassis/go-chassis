@@ -1,6 +1,8 @@
 package tls_test
 
 import (
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"crypto/tls"
 	"io"
 	"os"

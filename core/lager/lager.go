@@ -19,7 +19,8 @@ const (
 	RollingPolicySize = "size"
 )
 
-// Logger is the global variable for the object of lager.Logger
+//Logger is the global variable for the object of lager.Logger
+//Deprecated. plz use openlogging instead
 var Logger lager.Logger
 
 // logFilePath log file path

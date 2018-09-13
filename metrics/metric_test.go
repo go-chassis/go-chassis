@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	//"github.com/go-chassis/auth"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"

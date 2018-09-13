@@ -24,8 +24,8 @@ func TestWrapInstance(t *testing.T) {
 func TestRefreshCache(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	config.Init()
 
 	enableRegistryCache()
 

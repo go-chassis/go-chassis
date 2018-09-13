@@ -23,8 +23,9 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test cache.go")
-	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	config.Init()
 	registry.Enable()
 	registry.DoRegister()
 	t.Log("持有id", runtime.ServiceID)
