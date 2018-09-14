@@ -40,10 +40,8 @@ var NodeIP string
 // Deprecated plz use runtime.ServiceName
 var SelfServiceName string
 
-// SelfMetadata is gives meta data of the self micro service
-var SelfMetadata map[string]string
-
 // SelfVersion gives version of the self micro service
+//Deprecated, use runtime pkg
 var SelfVersion string
 
 // ErrNoName is used to represent the service name missing error
@@ -322,9 +320,13 @@ func Init() error {
 	SelfServiceName = MicroserviceDefinition.ServiceDescription.Name
 	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
 	SelfVersion = MicroserviceDefinition.ServiceDescription.Version
-	SelfMetadata = MicroserviceDefinition.ServiceDescription.Properties
+	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
+
+	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties
+	runtime.App = GlobalDefinition.AppID
 	if GlobalDefinition.AppID == "" {
 		GlobalDefinition.AppID = common.DefaultApp
+		runtime.App = common.DefaultApp
 	}
 	runtime.HostName = MicroserviceDefinition.ServiceDescription.Hostname
 	if runtime.HostName == "" {
