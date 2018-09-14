@@ -26,7 +26,7 @@ func firstRequest() {
 		checkReply = &client.Reply{
 			AppId:       config.GlobalDefinition.AppID,
 			ServiceName: runtime.ServiceName,
-			Version:     config.SelfVersion,
+			Version:     runtime.Version,
 		}
 		checkResult, _ = json.Marshal(checkReply)
 	})
