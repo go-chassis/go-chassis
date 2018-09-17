@@ -33,7 +33,7 @@ func GetTracerFunc(name string) (NewTracer, error) {
 
 // Init initialize the global tracer
 func Init() error {
-	lager.Logger.Info("Tracing enabled. Start to init tracer.", nil)
+	lager.Logger.Info("Tracing enabled. Start to init tracer.")
 	if config.GlobalDefinition.Tracing.Tracer == "" {
 		config.GlobalDefinition.Tracing.Tracer = "zipkin"
 	}
