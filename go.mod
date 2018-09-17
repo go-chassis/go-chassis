@@ -17,7 +17,7 @@ require (
 	github.com/envoyproxy/go-control-plane v0.5.0
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-chassis/go-archaius v0.0.0-20180831094429-1e6b20d2a085
+	github.com/go-chassis/go-archaius v0.0.0-20180831094429-e91e8f9ed49f
 	github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640
 	github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6
 	github.com/go-chassis/go-sc-client v0.0.0-20180831081217-8135c6df7f96
