@@ -14,6 +14,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/pkg/util/tags"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -72,4 +73,17 @@ func TestOptions(t *testing.T) {
 
 	inv = core.WithMetadata(nil)
 	assert.NotEmpty(t, inv)
+
+	t.Log("with router tag")
+	testKey := "testKey"
+	testValue := "testValue"
+	m := map[string]string{
+		testKey: testValue,
+	}
+	op := core.WithRouteTags(m)
+	assert.NotNil(t, op)
+	op(&opt)
+	assert.Equal(t, testValue, opt.RouteTags.KV[testKey])
+	assert.Empty(t, opt.RouteTags.KV[common.BuildinTagApp])
+	assert.Equal(t, utiltags.LabelOfTags(opt.RouteTags.KV), opt.RouteTags.Label)
 }

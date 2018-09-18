@@ -16,6 +16,7 @@ type RouterHandler struct{}
 func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	if i.RouteTags.KV != nil {
 		chain.Next(i, cb)
+		return
 	}
 
 	tags := map[string]string{}
