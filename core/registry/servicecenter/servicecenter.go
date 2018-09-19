@@ -3,9 +3,9 @@ package servicecenter
 import (
 	"fmt"
 
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-chassis/go-sc-client"
 )
@@ -312,12 +312,15 @@ func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID strin
 
 // FindMicroServiceInstances find micro-service instances
 func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceName string, tags utiltags.Tags) ([]*registry.MicroServiceInstance, error) {
-	appID := config.GetGlobalAppID()
 	// TODO: wrap default tags for service center
 	// because sc need version and appID to generate tags
 	tags = wrapTagsForServiceCenter(tags)
 	value, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 	if !boo || value == nil {
+		appID := tags.AppID()
+		if appID == "" {
+			appID = runtime.App
+		}
 		lager.Logger.Warnf("%s Get instances from remote, key: %s %s", consumerID, appID, microServiceName)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
 			findVersionRule(microServiceName), client.WithoutRevision())
