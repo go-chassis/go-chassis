@@ -58,3 +58,7 @@ show tracing on zipkin and export prometheus metrics format
 Demonstrate how to set local scope parameter, header, and use them in your schema
 
 In handler chain you can set a local data or protocol header, then you can read it in next handler in chain and your Restful handler
+
+### router
+
+This example uses the rest protocol to show how to perform route management and achieve  grayscale publishing.

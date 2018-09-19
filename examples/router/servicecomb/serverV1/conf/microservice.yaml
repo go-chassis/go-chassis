@@ -1,0 +1,5 @@
+---
+#Private property of microservices
+service_description:
+  name: ROUTERServer
+  version: 1.0
