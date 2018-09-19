@@ -29,6 +29,7 @@ type ResponseCallBack func(*Response) error
 type Invocation struct {
 	Endpoint           string //service's ip and port, it is decided in load balancing
 	Protocol           string
+	Port               string
 	SourceServiceID    string
 	SourceMicroService string
 	MicroServiceName   string //Target micro service name

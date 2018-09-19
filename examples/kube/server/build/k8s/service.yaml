@@ -11,6 +11,10 @@ spec:
     port: 5001
     protocol: TCP
     targetPort: 5001
+  - name: rest-legacy
+    port: 5002
+    protocol: TCP
+    targetPort: 5002
   selector:
     name: kubeserver
   sessionAffinity: None
