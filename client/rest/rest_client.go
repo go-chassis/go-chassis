@@ -54,7 +54,7 @@ func init() {
 }
 
 //NewRestClient is a function
-func NewRestClient(opts client.Options) client.ProtocolClient {
+func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 	if opts.Failure == nil || len(opts.Failure) == 0 {
 		opts.Failure = HTTPFailureTypeMap
 	} else {
@@ -91,7 +91,7 @@ func NewRestClient(opts client.Options) client.ProtocolClient {
 		},
 	}
 
-	return rc
+	return rc, nil
 }
 
 //Init is a method
@@ -118,6 +118,10 @@ func invocation2HttpRequest(inv *invocation.Invocation) (*Request, error) {
 	reqSend, ok := inv.Args.(*Request)
 	if !ok {
 		return nil, ErrInvalidReq
+	}
+	m := common.FromContext(inv.Ctx)
+	for k, v := range m {
+		reqSend.SetHeader(k, v)
 	}
 	return reqSend, nil
 }
@@ -166,6 +170,10 @@ func (c *Client) String() string {
 	return "rest_client"
 }
 
+// Close is noop
+func (c *Client) Close() error {
+	return nil
+}
 func (c *Client) contextToHeader(ctx context.Context, req *Request) {
 	for k, v := range common.FromContext(ctx) {
 		req.Req.Header.Set(k, v)

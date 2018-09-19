@@ -8,14 +8,16 @@ Minimize Installation
 git clone git@github.com:go-chassis/go-chassis.git
 ```
 
-3. Use [glide](https://github.com/Masterminds/glide) to download dependencies
+3. Use [dep](https://github.com/golang/dep) to download dependencies
 
 ```sh
-cd go-chassis 
-glide intall
+cd go-chassis
+# behind a proxy, you need setup a http proxy server
+# export https_proxy=xxx
+dep ensure
 ```
 
-4. Install go-chassis [service-center](https://github.com/go-chassis/service-center/releases)
+4. Install go-chassis [service-center](http://servicecomb.incubator.apache.org/release/)
 
 
 Use RPC communication

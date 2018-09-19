@@ -25,7 +25,7 @@ func Test(ctx context.Context, protocol, endpoint string, expected Reply) (err e
 }
 
 func restTest(ctx context.Context, endpoint string, expected Reply) (err error) {
-	c, err := client.GetClient(common.ProtocolRest, expected.ServiceName)
+	c, err := client.GetClient(common.ProtocolRest, expected.ServiceName, "")
 	if err != nil {
 		return
 	}
@@ -47,14 +47,14 @@ func restTest(ctx context.Context, endpoint string, expected Reply) (err error) 
 		return
 	}
 	if actual != expected {
-		return fmt.Errorf("Endpoint is belong to %s:%s:%s",
+		return fmt.Errorf("endpoint is belong to %s:%s:%s",
 			actual.ServiceName, actual.Version, actual.AppId)
 	}
 	return
 }
 
 func highwayTest(ctx context.Context, endpoint string, expected Reply) (err error) {
-	c, err := client.GetClient(common.ProtocolHighway, expected.ServiceName)
+	c, err := client.GetClient(common.ProtocolHighway, expected.ServiceName, "")
 	if err != nil {
 		return
 	}

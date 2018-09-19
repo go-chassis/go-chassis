@@ -1,7 +1,7 @@
 language: go
 sudo: required
 go: 
-  - 1.8.3
+  - 1.11
 install: true
 
 before_script:
@@ -41,12 +41,13 @@ jobs:
         - go get github.com/stretchr/testify
         - go get github.com/mattn/goveralls
         - go get golang.org/x/tools/cmd/cover
-        - glide install
+        - GO111MODULE=on go mod download
+        - GO111MODULE=on go mod vendor
         - bash -x scripts/travis/unit_test.sh && $HOME/gopath/bin/goveralls -coverprofile=coverage.txt -service=travis-ci
 
     - stage: Build
       script: 
-        - go get github.com/Masterminds/glide
-        - glide install
+        - GO111MODULE=on go mod download
+        - GO111MODULE=on go mod vendor
         - go build -o chassis
 

@@ -18,7 +18,7 @@ func main() {
 	// just init client
 	chassis.RegisterSchema("highway", &schemas.HelloServer{}, server.WithSchemaID("HelloService"))
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 	// specify chain name
@@ -31,7 +31,7 @@ func main() {
 	})
 	err := invoker.Invoke(ctx, "SimpleServer", "HelloService", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, reply, core.WithEndpoint("127.0.0.1:9901"), core.WithProtocol("highway"))
 	if err != nil {
-		lager.Logger.Errorf(err, "Invoke failed.")
+		lager.Logger.Errorf("Invoke failed.")
 	}
 	log.Println("reply -----------", reply)
 }

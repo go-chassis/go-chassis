@@ -59,7 +59,7 @@ func StartServer() error {
 		lager.Logger.Info("starting server " + name + "...")
 		err := server.Start()
 		if err != nil {
-			lager.Logger.Errorf(err, "servers failed to start")
+			lager.Logger.Errorf("servers failed to start, err %s", err)
 			return fmt.Errorf("can not start [%s] server,%s", name, err.Error())
 		}
 		lager.Logger.Info(name + " server start success")
@@ -72,8 +72,8 @@ func StartServer() error {
 //UnRegistrySelfInstances this function removes the self instance
 func UnRegistrySelfInstances() error {
 	if err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(runtime.ServiceID, runtime.InstanceID); err != nil {
-		lager.Logger.Errorf(err, "StartServer() UnregisterMicroServiceInstance failed, sid/iid: %s/%s",
-			runtime.ServiceID, runtime.InstanceID)
+		lager.Logger.Errorf("StartServer() UnregisterMicroServiceInstance failed, sid/iid: %s/%s: %s",
+			runtime.ServiceID, runtime.InstanceID, err)
 		return err
 	}
 	return nil

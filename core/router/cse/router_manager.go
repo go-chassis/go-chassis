@@ -35,7 +35,7 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 	}
 	routeRules, ok := v.([]*model.RouteRule)
 	if !ok {
-		lager.Logger.Error("value is not type []*RouteRule", nil)
+		lager.Logger.Error("value is not type []*RouteRule")
 		return
 	}
 
@@ -60,7 +60,7 @@ func newRouteFileSource() *routeFileSource {
 		d := make(map[string]interface{}, 0)
 		if routeRules == nil {
 			r.d = d
-			lager.Logger.Error("Can not get any router config", nil)
+			lager.Logger.Error("Can not get any router config")
 			return
 		}
 		for k, v := range routeRules {

@@ -30,18 +30,13 @@ func init() {
 }
 
 func new() security.Cipher {
-	p, err := goplugin.LoadPlugin(cipherPlugin)
+	cipher, err := goplugin.LookUpSymbolFromPlugin(cipherPlugin, "Cipher")
 	if err != nil {
 		if os.IsNotExist(err) {
-			lager.Logger.Errorf(nil, "%s not found", cipherPlugin)
+			lager.Logger.Errorf("%s not found", cipherPlugin)
 		} else {
-			lager.Logger.Errorf(err, "Load %s failed", cipherPlugin)
+			lager.Logger.Errorf("Load %s failed, err [%s]", cipherPlugin, err.Error())
 		}
-		return nil
-	}
-	cipher, err := p.Lookup("Cipher")
-	if err != nil {
-		lager.Logger.Errorf(err, "Get init method error!")
 		return nil
 	}
 	cipherInstance, ok := cipher.(Cipher)

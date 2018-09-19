@@ -25,7 +25,7 @@ type highwayClient struct {
 }
 
 //NewHighwayClient is a function
-func NewHighwayClient(options client.Options) client.ProtocolClient {
+func NewHighwayClient(options client.Options) (client.ProtocolClient, error) {
 
 	rc := &highwayClient{
 		once: sync.Once{},
@@ -34,11 +34,14 @@ func NewHighwayClient(options client.Options) client.ProtocolClient {
 
 	c := client.ProtocolClient(rc)
 
-	return c
+	return c, nil
 }
 
 func (c *highwayClient) String() string {
 	return "highway_client"
+}
+func (c *highwayClient) Close() error {
+	return nil
 }
 func invocation2Req(inv *invocation.Invocation) *Request {
 	highwayReq := &Request{}
@@ -74,4 +77,5 @@ func (c *highwayClient) Call(ctx context.Context, addr string, inv *invocation.I
 
 func init() {
 	client.InstallPlugin(Name, NewHighwayClient)
+
 }

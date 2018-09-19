@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -22,6 +23,8 @@ func TestCBInit(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	archaius.Init()
+	err := control.Init()
+	assert.NoError(t, err)
 }
 
 func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
@@ -84,7 +87,13 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 	b.Log("benchmark for bizkeeper consumer handler")
 	c := handler.Chain{}
 	c.AddHandler(&handler.BizKeeperConsumerHandler{})
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	config.Init()
+	archaius.Init()
+	control.Init()
 	inv := &invocation.Invocation{
 		MicroServiceName: "fakeService",
 		SchemaID:         "schema",
@@ -94,7 +103,6 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		c.Next(inv, func(r *invocation.Response) error {
-			assert.NoError(b, r.Err)
 			return r.Err
 		})
 		c.Reset()

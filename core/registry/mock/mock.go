@@ -3,7 +3,7 @@ package mock
 import (
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-chassis/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -109,7 +109,7 @@ func (m *DiscoveryMock) FindMicroServiceInstances(consumerID, microServiceName s
 }
 
 // WatchMicroService watch micro-service
-func (m *DiscoveryMock) WatchMicroService(selfMicroServiceID string, callback func(*model.MicroServiceInstanceChangedEvent)) {
+func (m *DiscoveryMock) WatchMicroService(selfMicroServiceID string, callback func(*client.MicroServiceInstanceChangedEvent)) {
 	return
 }
 

@@ -39,7 +39,7 @@ func Bootstrap() {
 	for _, bp := range bootstrapPlugins {
 		lager.Logger.Info("Bootstrap " + bp.Name)
 		if err := bp.Plugin.Init(); err != nil {
-			lager.Logger.Errorf(err, "Failed to init %s.", bp.Name)
+			lager.Logger.Errorf("Failed to init %s. error [%s]", bp.Name, err.Error())
 		}
 	}
 }

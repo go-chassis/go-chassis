@@ -14,7 +14,8 @@ Welcome to go-chassis's documentation!
    get-started
    user-guides
    istio-guides
-
+   discovery-guides
+   plugin-tracing-guides
 
 .. toctree::
    :maxdepth: 2

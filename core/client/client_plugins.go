@@ -6,13 +6,13 @@ import (
 )
 
 // NewFunc is function for the client
-type NewFunc func(Options) ProtocolClient
+type NewFunc func(Options) (ProtocolClient, error)
 
-var rpcClientPlugins = make(map[string]NewFunc)
+var plugins = make(map[string]NewFunc)
 
 // GetClientNewFunc is to get the client
 func GetClientNewFunc(name string) (NewFunc, error) {
-	f := rpcClientPlugins[name]
+	f := plugins[name]
 	if f == nil {
 		return nil, fmt.Errorf("don't have client plugin %s", name)
 	}
@@ -22,5 +22,5 @@ func GetClientNewFunc(name string) (NewFunc, error) {
 // InstallPlugin is plugin for the new function
 func InstallPlugin(protocol string, f NewFunc) {
 	log.Printf("Install client plugin, protocol=%s", protocol)
-	rpcClientPlugins[protocol] = f
+	plugins[protocol] = f
 }

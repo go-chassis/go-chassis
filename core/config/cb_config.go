@@ -10,19 +10,20 @@ import (
 
 // constant for hystrix parameters
 const (
-	DefaultForceFallback             = false
-	DefaultTimeoutEnabled            = false
-	DefaultCircuitBreakerEnabled     = true
-	DefaultCircuitBreakerForceOpen   = false
-	DefaultCircuitBreakerForceClosed = false
-	DefaultFallbackEnable            = true
-	DefaultMaxConcurrent             = 1000
-	DefaultSleepWindow               = 15000
-	DefaultTimeout                   = 30000
-	DefaultErrorPercentThreshold     = 50
-	DefaultRequestVolumeThreshold    = 20
-	PolicyNull                       = "returnnull"
-	PolicyThrowException             = "throwexception"
+	DefaultForceFallback                 = false
+	DefaultTimeoutEnabled                = false
+	DefaultConsumerCircuitBreakerEnabled = true
+	DefaultProviderCircuitBreakerEnabled = false
+	DefaultCircuitBreakerForceOpen       = false
+	DefaultCircuitBreakerForceClosed     = false
+	DefaultFallbackEnable                = true
+	DefaultMaxConcurrent                 = 1000
+	DefaultSleepWindow                   = 15000
+	DefaultTimeout                       = 30000
+	DefaultErrorPercentThreshold         = 50
+	DefaultRequestVolumeThreshold        = 20
+	PolicyNull                           = "returnnull"
+	PolicyThrowException                 = "throwexception"
 )
 
 var cbMutex = sync.RWMutex{}
@@ -35,8 +36,13 @@ func GetFallbackEnabled(command, t string) bool {
 
 // GetCircuitBreakerEnabled get circuit breaker enabled
 func GetCircuitBreakerEnabled(command, t string) bool {
+	if common.Consumer == command {
+		return archaius.GetBool(GetCircuitBreakerEnabledKey(command),
+			archaius.GetBool(GetDefaultCircuitBreakerEnabledKey(t), DefaultConsumerCircuitBreakerEnabled))
+	}
+
 	return archaius.GetBool(GetCircuitBreakerEnabledKey(command),
-		archaius.GetBool(GetDefaultCircuitBreakerEnabledKey(t), DefaultCircuitBreakerEnabled))
+		archaius.GetBool(GetDefaultCircuitBreakerEnabledKey(t), DefaultProviderCircuitBreakerEnabled))
 }
 
 // GetTimeoutEnabled get timeout enabled

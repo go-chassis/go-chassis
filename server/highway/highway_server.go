@@ -9,6 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/provider"
 	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"net"
 	"time"
 )
@@ -52,12 +53,12 @@ func (s *highwayServer) Register(schema interface{}, options ...server.RegisterO
 		}
 
 	}
-	provider.RegisterProvider(pn, config.SelfServiceName)
+	provider.RegisterProvider(pn, runtime.ServiceName)
 	if opts.SchemaID != "" {
-		err := provider.RegisterSchemaWithName(config.SelfServiceName, opts.SchemaID, schema)
+		err := provider.RegisterSchemaWithName(runtime.ServiceName, opts.SchemaID, schema)
 		return opts.SchemaID, err
 	}
-	schemaID, err := provider.RegisterSchema(config.SelfServiceName, schema)
+	schemaID, err := provider.RegisterSchema(runtime.ServiceName, schema)
 	return schemaID, err
 }
 
@@ -73,7 +74,7 @@ func (s *highwayServer) Start() error {
 	}
 
 	if lisErr != nil {
-		lager.Logger.Error("listening failed, reason:", lisErr)
+		lager.Logger.Error("listening failed, reason:" + lisErr.Error())
 		return lisErr
 	}
 	go s.acceptLoop(listener)
@@ -84,7 +85,7 @@ func (s *highwayServer) acceptLoop(l net.Listener) {
 	for {
 		conn, err := l.Accept()
 		if err != nil {
-			lager.Logger.Errorf(err, "Error accepting")
+			lager.Logger.Errorf("Error accepting, err [%s]", err)
 			select {
 			case <-time.After(time.Second * 3):
 				lager.Logger.Info("Sleep three second")

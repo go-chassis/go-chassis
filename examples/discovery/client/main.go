@@ -23,7 +23,7 @@ var wg sync.WaitGroup
 func main() {
 	//chassis operation
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed.")
 		return
 	}
 
@@ -59,7 +59,7 @@ func call(invoker *core.RPCInvoker) {
 		EmployList: nil,
 	}, replyTwo)
 	if err != nil {
-		lager.Logger.Errorf(err, "Invoke failed")
+		lager.Logger.Errorf("Invoke failed")
 	}
 	log.Println("AddEmploy ------------------------------", replyTwo)
 
@@ -71,7 +71,7 @@ func call(invoker *core.RPCInvoker) {
 		EmployList: replyTwo.EmployList,
 	}, replyTwo)
 	if err != nil {
-		lager.Logger.Errorf(err, "Invoke failed")
+		lager.Logger.Errorf("Invoke failed")
 	}
 	log.Println("AddEmploy ------------------------------", replyTwo)
 
@@ -84,7 +84,7 @@ func call(invoker *core.RPCInvoker) {
 		EmployList: replyTwo.EmployList,
 	}, replyTwo)
 	if err != nil {
-		lager.Logger.Errorf(err, "Invoke failed")
+		lager.Logger.Errorf("Invoke failed")
 	}
 	log.Println("EditEmploy ------------------------------", replyTwo)
 
@@ -94,7 +94,7 @@ func call(invoker *core.RPCInvoker) {
 		EmployList: replyTwo.EmployList,
 	}, replyTwo)
 	if err != nil {
-		lager.Logger.Errorf(err, "Invoke failed")
+		lager.Logger.Errorf("Invoke failed")
 	}
 	log.Println("GetEmploys ------------------------------", replyTwo)
 
@@ -104,7 +104,7 @@ func call(invoker *core.RPCInvoker) {
 		EmployList: replyTwo.EmployList,
 	}, replyTwo)
 	if err != nil {
-		lager.Logger.Errorf(err, "Invoke failed")
+		lager.Logger.Errorf("Invoke failed")
 	}
 	log.Println("DeleteEmploys ------------------------------", replyTwo)
 
@@ -117,7 +117,7 @@ func callRest(invoker *core.RestInvoker) {
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
 	if err != nil {
-		lager.Logger.Errorf(err, "call request fail (%s) (%d) ", string(resp1.ReadBody()), resp1.GetStatusCode())
+		lager.Logger.Errorf("call request fail (%s) (%d) ", string(resp1.ReadBody()), resp1.GetStatusCode())
 		return
 	}
 	log.Printf("Rest Server sayhello[Get] %s", string(resp1.ReadBody()))

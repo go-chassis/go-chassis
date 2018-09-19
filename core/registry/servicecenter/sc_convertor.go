@@ -4,11 +4,10 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 
 	"github.com/go-chassis/go-sc-client"
-	"github.com/go-chassis/go-sc-client/model"
 )
 
 // ToMicroService assign sc micro-service to go chassis micro-service
-func ToMicroService(scs *model.MicroService) *registry.MicroService {
+func ToMicroService(scs *client.MicroService) *registry.MicroService {
 	cs := &registry.MicroService{}
 	cs.ServiceID = scs.ServiceID
 	cs.ServiceName = scs.ServiceName
@@ -28,8 +27,8 @@ func ToMicroService(scs *model.MicroService) *registry.MicroService {
 }
 
 // ToSCService assign go chassis micro-service to the sc micro-service
-func ToSCService(cs *registry.MicroService) *model.MicroService {
-	scs := &model.MicroService{}
+func ToSCService(cs *registry.MicroService) *client.MicroService {
+	scs := &client.MicroService{}
 	scs.ServiceID = cs.ServiceID
 	scs.ServiceName = cs.ServiceName
 	scs.Version = cs.Version
@@ -40,7 +39,7 @@ func ToSCService(cs *registry.MicroService) *model.MicroService {
 	scs.Level = cs.Level
 	scs.Status = cs.Status
 	if cs.Framework != nil {
-		scs.Framework = &model.Framework{}
+		scs.Framework = &client.Framework{}
 		scs.Framework.Version = cs.Framework.Version
 		scs.Framework.Name = cs.Framework.Name
 	}
@@ -49,19 +48,22 @@ func ToSCService(cs *registry.MicroService) *model.MicroService {
 }
 
 // ToMicroServiceInstance assign model micro-service instance parameters to registry micro-service instance parameters
-func ToMicroServiceInstance(ins *model.MicroServiceInstance) *registry.MicroServiceInstance {
-	msi := &registry.MicroServiceInstance{}
+func ToMicroServiceInstance(ins *client.MicroServiceInstance) *registry.MicroServiceInstance {
+	msi := &registry.MicroServiceInstance{
+		InstanceID: ins.InstanceID,
+		Metadata:   ins.Properties,
+		Status:     ins.Status,
+	}
 	m, p := registry.GetProtocolMap(ins.Endpoints)
-	msi.InstanceID = ins.InstanceID
 	msi.EndpointsMap = m
 	msi.DefaultEndpoint = m[p]
 	msi.DefaultProtocol = p
-	msi.Metadata = ins.Properties
 	if ins.DataCenterInfo != nil {
-		msi.DataCenterInfo = &registry.DataCenterInfo{}
-		msi.DataCenterInfo.Name = ins.DataCenterInfo.Name
-		msi.DataCenterInfo.AvailableZone = ins.DataCenterInfo.AvailableZone
-		msi.DataCenterInfo.Region = ins.DataCenterInfo.Region
+		msi.DataCenterInfo = &registry.DataCenterInfo{
+			Name:          ins.DataCenterInfo.Name,
+			AvailableZone: ins.DataCenterInfo.AvailableZone,
+			Region:        ins.DataCenterInfo.Region,
+		}
 	}
 	if msi.Metadata == nil {
 		msi.Metadata = make(map[string]string)
@@ -71,8 +73,8 @@ func ToMicroServiceInstance(ins *model.MicroServiceInstance) *registry.MicroServ
 }
 
 // ToSCInstance assign registry micro-service instance parameters to model micro-service instance parameters
-func ToSCInstance(msi *registry.MicroServiceInstance) *model.MicroServiceInstance {
-	si := &model.MicroServiceInstance{}
+func ToSCInstance(msi *registry.MicroServiceInstance) *client.MicroServiceInstance {
+	si := &client.MicroServiceInstance{}
 	eps := registry.GetProtocolList(msi.EndpointsMap)
 	si.InstanceID = msi.InstanceID
 	si.Endpoints = eps
@@ -80,7 +82,7 @@ func ToSCInstance(msi *registry.MicroServiceInstance) *model.MicroServiceInstanc
 	si.HostName = msi.HostName
 	si.Status = msi.Status
 	if msi.DataCenterInfo != nil {
-		si.DataCenterInfo = &model.DataCenterInfo{}
+		si.DataCenterInfo = &client.DataCenterInfo{}
 		si.DataCenterInfo.Name = msi.DataCenterInfo.Name
 		si.DataCenterInfo.AvailableZone = msi.DataCenterInfo.AvailableZone
 		si.DataCenterInfo.Region = msi.DataCenterInfo.Region
@@ -90,18 +92,18 @@ func ToSCInstance(msi *registry.MicroServiceInstance) *model.MicroServiceInstanc
 }
 
 // ToSCDependency assign registry micro-service dependencies to model micro-service dependencies
-func ToSCDependency(dep *registry.MicroServiceDependency) *model.MircroServiceDependencyRequest {
-	scDep := &model.MircroServiceDependencyRequest{
-		Dependencies: make([]*model.MicroServiceDependency, 1),
+func ToSCDependency(dep *registry.MicroServiceDependency) *client.MircroServiceDependencyRequest {
+	scDep := &client.MircroServiceDependencyRequest{
+		Dependencies: make([]*client.MicroServiceDependency, 1),
 	}
-	scDep.Dependencies[0] = &model.MicroServiceDependency{}
-	scDep.Dependencies[0].Consumer = &model.DependencyMicroService{
+	scDep.Dependencies[0] = &client.MicroServiceDependency{}
+	scDep.Dependencies[0].Consumer = &client.DependencyMicroService{
 		AppID:       dep.Consumer.AppID,
 		ServiceName: dep.Consumer.ServiceName,
 		Version:     dep.Consumer.Version,
 	}
 	for _, p := range dep.Providers {
-		scP := &model.DependencyMicroService{
+		scP := &client.DependencyMicroService{
 			AppID:       p.AppID,
 			ServiceName: p.ServiceName,
 			Version:     p.Version,

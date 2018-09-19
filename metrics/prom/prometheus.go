@@ -115,7 +115,7 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 		metricName := extractMetricKey(name)
 		operationID := extractOperationID(name)
 		schemaID := extractSchemaID(name)
-		promLabels := prometheus.Labels{"hostname": runtime.HostName, "service": config.SelfServiceName, "appID": config.GlobalDefinition.AppID, "version": config.SelfVersion, "schemaID": schemaID, "operationID": operationID}
+		promLabels := prometheus.Labels{"hostname": runtime.HostName, "service": runtime.ServiceName, "appID": config.GlobalDefinition.AppID, "version": runtime.Version, "schemaID": schemaID, "operationID": operationID}
 		switch metric := i.(type) {
 		case gometrics.Counter:
 			c.gaugeVecFromNameAndValue(metricName, float64(metric.Count()), promLabels)
@@ -229,7 +229,7 @@ func extractSchemaID(key string) (schemaID string) {
 }
 
 func extractMetricKey(key string) string {
-	key = strings.Replace(key, config.SelfServiceName, "service", 1)
+	key = strings.Replace(key, runtime.ServiceName, "service", 1)
 	opID := extractOperationID(key)
 	scID := extractSchemaID(key)
 	if opID == "" && scID == "" {

@@ -1,6 +1,8 @@
 package core_test
 
 import (
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"context"
 	"testing"
 

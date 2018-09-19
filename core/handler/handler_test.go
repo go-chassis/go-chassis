@@ -20,7 +20,7 @@ type ProviderHandler struct {
 func (ph *ProviderHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	p, err := provider.GetProvider(i.MicroServiceName)
 	if err != nil {
-		lager.Logger.Error("GetProvider failed.", err)
+		lager.Logger.Error("GetProvider failed." + err.Error())
 	}
 	p.Invoke(i)
 }

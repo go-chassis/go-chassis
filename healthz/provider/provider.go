@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/healthz/client"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	rf "github.com/go-chassis/go-chassis/server/restful"
 	"net/http"
 	"sync"
@@ -24,8 +25,8 @@ func firstRequest() {
 	once.Do(func() {
 		checkReply = &client.Reply{
 			AppId:       config.GlobalDefinition.AppID,
-			ServiceName: config.SelfServiceName,
-			Version:     config.SelfVersion,
+			ServiceName: runtime.ServiceName,
+			Version:     runtime.Version,
 		}
 		checkResult, _ = json.Marshal(checkReply)
 	})

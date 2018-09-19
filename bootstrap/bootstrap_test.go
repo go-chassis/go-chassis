@@ -1,6 +1,8 @@
 package bootstrap_test
 
 import (
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"

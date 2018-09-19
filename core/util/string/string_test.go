@@ -108,6 +108,32 @@ func TestStringFunc(t *testing.T) {
 	assert.Equal(t, str, string(by))
 }
 
+func TestSplitToTwo(t *testing.T) {
+	s1 := "aa"
+	s2 := "bb"
+	sub := "::"
+	s := s1 + sub + s2
+	p1, p2 := stringutil.SplitToTwo(s, sub)
+	assert.Equal(t, s1, p1)
+	assert.Equal(t, s2, p2)
+
+	p1, p2 = stringutil.SplitToTwo(s, "/")
+	assert.Empty(t, p1)
+	assert.Equal(t, s, p2)
+}
+
+func TestSplitFirstSep(t *testing.T) {
+	s1 := "aa"
+	s2 := "bb"
+	sub := "::"
+	s := s1 + sub + s2
+	p1 := stringutil.SplitFirstSep(s, sub)
+	assert.Equal(t, s1, p1)
+
+	p1 = stringutil.SplitFirstSep(s, "/")
+	assert.Empty(t, p1)
+}
+
 func SplitToTwoByStringsSplit(s, sep string) (string, string) {
 	r := strings.Split(s, sep)
 	return r[0], r[1]

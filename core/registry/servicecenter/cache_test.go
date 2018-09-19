@@ -6,23 +6,26 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
-	"github.com/go-chassis/go-sc-client/model"
+	"github.com/go-chassis/go-sc-client"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/util/rand"
 )
 
 func TestCacheManager_AutoSync(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test cache.go")
-	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	config.Init()
 	registry.Enable()
 	registry.DoRegister()
 	t.Log("持有id", runtime.ServiceID)
@@ -33,14 +36,14 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "Server",
 		Version:     "0.1",
-		Status:      model.MicorserviceUp,
+		Status:      client.MicorserviceUp,
 		Level:       "FRONT",
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]string{"rest": "10.146.207.197:5080"},
 		InstanceID:   "event1",
 		HostName:     "event_test",
-		Status:       model.MSInstanceUP,
+		Status:       client.MSInstanceUP,
 	}
 	sid, instanceID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
@@ -76,7 +79,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_UPDATE操作")
 
 	exist = false
-	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSIinstanceDown)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", client.MSIinstanceDown)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -87,7 +90,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_DELETE操作")
 
 	exist = false
-	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", model.MSInstanceUP)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", client.MSInstanceUP)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -125,5 +128,42 @@ func TestServiceDiscovery_AutoSync(t *testing.T) {
 	assert.True(t, v1.LessThan(v3))
 	assert.True(t, v4.LessThan(v1))
 	assert.True(t, v4.LessThan(v5))
+}
 
+func TestCacheManager_MakeSchemaIndex(t *testing.T) {
+	/*
+		1. Init Config
+		2. Add key for autoIndex
+		3. Start a microservice
+		4. Check the status of Cache
+	*/
+	p := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	config.Init()
+	//Add autoIndex Key in Archaius
+	archaius.AddKeyValue("cse.service.registry.autoSchemaIndex", true)
+	config.GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.RefreshInterval = "1"
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	registry.Enable()
+	registry.DoRegister()
+	time.Sleep(time.Second * 1)
+
+	microservice := &registry.MicroService{
+		AppID:       "default",
+		ServiceName: "AutoIndexServer",
+		Version:     "0.1",
+		Status:      client.MicorserviceUp,
+		Level:       "FRONT",
+	}
+	sid, _ := registry.DefaultRegistrator.RegisterService(microservice)
+	schemaName := rand.String(10)
+	schemaInfoString := "swagger: \"2.0\"\ninfo:\n  version: \"1.0.0\"\n  title: \"swagger definition for org.apache.servicecomb.samples.demo.client.ClientApi\"\n  x-java-interface: \"cse.gen.huaweidemo.DemoClient2.helloclient." + schemaName + "\"\nbasePath: \"/\"\nconsumes:\n- \"application/json\"\nproduces:\n- \"application/json\"\npaths:\n  /sayhello:\n    get:\n      operationId: \"sayHello\"\n      parameters: []\n      responses:\n        200:\n          description: \"response of 200\"\n          schema:\n            type: \"string\"\n"
+	registry.DefaultRegistrator.AddSchemas(sid, schemaName, schemaInfoString)
+	registry.DefaultServiceDiscoveryService.AutoSync()
+	time.Sleep(time.Second * 3)
+	interfaceExistInCache := false
+	if registry.SchemaInterfaceIndexedCache.ItemCount() >= 1 {
+		interfaceExistInCache = true
+	}
+	assert.True(t, interfaceExistInCache)
 }

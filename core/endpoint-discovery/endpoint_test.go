@@ -1,6 +1,8 @@
 package endpoint_test
 
 import (
+	_ "github.com/go-chassis/go-chassis/initiator"
+
 	"github.com/go-chassis/go-chassis"
 	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
 	"github.com/go-chassis/go-chassis/core/registry"

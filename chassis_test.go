@@ -7,11 +7,12 @@ import (
 
 	"github.com/go-chassis/go-chassis"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
+	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/stretchr/testify/assert"
+	"syscall"
 )
 
 const (
@@ -19,17 +20,22 @@ const (
 )
 
 func TestInit(t *testing.T) {
+	mask := syscall.Umask(0)
+	defer syscall.Umask(mask)
 	t.Log("Testing Chassis Init function")
 	os.Setenv("CHASSIS_HOME", filepath.Join(os.Getenv("GOPATH"), "test", "chassisInit"))
-	err := os.MkdirAll(fileutil.GetConfDir(), 0600)
+	err := os.MkdirAll(fileutil.GetConfDir(), 0700)
 	assert.NoError(t, err)
-	globalDefFile, err := os.OpenFile(fileutil.GlobalDefinition(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0600)
+	globalDefFile, err := os.OpenFile(fileutil.GlobalDefinition(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
 	defer globalDefFile.Close()
 
 	// write some text line-by-line to file
 	_, err = globalDefFile.WriteString(`---
 #APPLICATION_ID: CSE optional
-
+controlPanel:
+  infra: istio
+  settings:
+    Adress: xxx
 cse:
   flowcontrol:
     Consumer:
@@ -77,7 +83,7 @@ ssl:
   registry.consumer.certPwdFile:
 `)
 	assert.NoError(t, err)
-	msDefFile, err := os.OpenFile(fileutil.GetMicroserviceDesc(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0600)
+	msDefFile, err := os.OpenFile(fileutil.GetMicroserviceDesc(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
 	assert.NoError(t, err)
 	defer msDefFile.Close()
 	_, err = msDefFile.WriteString(`---

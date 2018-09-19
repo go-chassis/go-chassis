@@ -10,18 +10,16 @@ import (
 	"time"
 
 	//"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/tracing"
 
-	"github.com/apache/thrift/lib/go/thrift"
-	//"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"context"
 	"github.com/opentracing/opentracing-go"
-	zipkin "github.com/openzipkin/zipkin-go-opentracing"
-	"github.com/openzipkin/zipkin-go-opentracing/thrift/gen-go/zipkincore"
+	zipkin "github.com/openzipkin-contrib/zipkin-go-opentracing"
+	"github.com/openzipkin-contrib/zipkin-go-opentracing/thrift/gen-go/zipkincore"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -77,16 +75,6 @@ func TestTracingHandler_Highway(t *testing.T) {
 	s := newHTTPServer(t, port)
 	// init tracer manager
 	// batch size it 1, send every span when once collector get it.
-	collector, err := zipkin.NewHTTPCollector(fmt.Sprintf("http://localhost:%d/api/v1/spans", port), zipkin.HTTPBatchSize(1))
-	assert.NoError(t, err)
-	recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
-	tracer, err := zipkin.NewTracer(
-		recorder,
-		zipkin.ClientServerSameSpan(true),
-		zipkin.TraceID128Bit(true),
-	)
-	assert.NoError(t, err)
-	tracing.TracerMap[common.DefaultKey] = tracer
 
 	t.Log("========tracing [consumer] handler [highway]")
 
@@ -97,10 +85,9 @@ func TestTracingHandler_Highway(t *testing.T) {
 	consumerChain.AddHandler(&sleepHandler{})
 	consumerChain.AddHandler(tracingConsumerHandler)
 	consumerChain.AddHandler(consumerSpanHandler)
-	inv := &invocation.Invocation{
-		MicroServiceName: "test",
-		Protocol:         common.ProtocolHighway,
-	}
+	inv := invocation.New(context.TODO())
+	inv.MicroServiceName = "test"
+	inv.Protocol = common.ProtocolHighway
 
 	consumerChain.Next(inv, func(i *invocation.Response) error {
 		assert.NoError(t, i.Err)

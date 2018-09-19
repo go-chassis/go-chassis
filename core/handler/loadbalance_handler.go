@@ -7,39 +7,42 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
+
 	"github.com/go-chassis/go-chassis/pkg/util"
+
+	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
+
 	"github.com/go-chassis/go-chassis/session"
 )
 
 // LBHandler loadbalancer handler struct
 type LBHandler struct{}
 
-func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
+func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.LoadBalancingConfig) (string, error) {
 	var strategyFun func() loadbalancer.Strategy
 	var err error
 	if i.Strategy == "" {
-		strategyName := config.GetStrategyName(i.SourceMicroService, i.MicroServiceName)
-		i.Strategy = strategyName
-		strategyFun, err = loadbalancer.GetStrategyPlugin(strategyName)
+		i.Strategy = lbConfig.Strategy
+		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			lager.Logger.Errorf(err, loadbalancer.LBError{
-				Message: "Get strategy [" + strategyName + "] failed."}.Error())
+			lager.Logger.Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
 		}
 	} else {
 		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			lager.Logger.Errorf(err, loadbalancer.LBError{
-				Message: "Get strategy [" + i.Strategy + "] failed."}.Error())
+			lager.Logger.Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
 		}
 	}
 	if len(i.Filters) == 0 {
-		i.Filters = config.GetServerListFilters()
+		i.Filters = lbConfig.Filters
 	}
 
 	var sessionID string
@@ -74,7 +77,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 		errStr := fmt.Sprintf("No available instance support ["+i.Protocol+"] protocol,"+
 			" msName: "+i.MicroServiceName+" %v", ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
-		lager.Logger.Errorf(nil, lbErr.Error())
+		lager.Logger.Errorf(lbErr.Error())
 		return "", lbErr
 	}
 	return ep, nil
@@ -82,15 +85,16 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation) (string, error) {
 
 // Handle to handle the load balancing
 func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	if !config.RetryEnabled(i.SourceMicroService, i.MicroServiceName) {
-		lb.handleWithNoRetry(chain, i, cb)
+	lbConfig := control.DefaultPanel.GetLoadBalancing(*i)
+	if !lbConfig.RetryEnabled {
+		lb.handleWithNoRetry(chain, i, lbConfig, cb)
 	} else {
-		lb.handleWithRetry(chain, i, cb)
+		lb.handleWithRetry(chain, i, lbConfig, cb)
 	}
 }
 
-func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	ep, err := lb.getEndpoint(i)
+func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, lbConfig control.LoadBalancingConfig, cb invocation.ResponseCallBack) {
+	ep, err := lb.getEndpoint(i, lbConfig)
 	if err != nil {
 		writeErr(err, cb)
 		return
@@ -100,21 +104,21 @@ func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, c
 	chain.Next(i, cb)
 }
 
-func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	retryOnSame := config.GetRetryOnSame(i.SourceMicroService, i.MicroServiceName)
-	retryOnNext := config.GetRetryOnNext(i.SourceMicroService, i.MicroServiceName)
+func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbConfig control.LoadBalancingConfig, cb invocation.ResponseCallBack) {
+	retryOnSame := lbConfig.RetryOnSame
+	retryOnNext := lbConfig.RetryOnNext
 	handlerIndex := chain.HandlerIndex
 	var invResp *invocation.Response
 	for j := 0; j < retryOnNext+1; j++ {
 		// exchange and retry on the next server
-		ep, err := lb.getEndpoint(i)
+		ep, err := lb.getEndpoint(i, lbConfig)
 		if err != nil {
 			// if get endpoint failed, no need to retry
 			writeErr(err, cb)
 			return
 		}
 		// retry on the same server
-		lbBackoff := config.GetBackOff(i.SourceMicroService, i.MicroServiceName)
+		lbBackoff := backoffUtil.GetBackOff(lbConfig.BackOffKind, lbConfig.BackOffMin, lbConfig.BackOffMax)
 		callTimes := 0
 		operation := func() error {
 			if callTimes == retryOnSame+1 {
@@ -178,15 +182,4 @@ func getSessionID(i *invocation.Invocation) string {
 	}
 
 	return metadata.(string)
-}
-
-func genKey(s ...string) string {
-	return strings.Join(s, ".")
-}
-
-func genMsKey(prefix, src, dest, property string) string {
-	if src == "" {
-		return genKey(prefix, dest, property)
-	}
-	return genKey(prefix, src, dest, property)
 }

@@ -9,7 +9,7 @@ import (
 
 //Context is a struct which has both request and response objects
 type Context struct {
-	ctx  context.Context
+	Ctx  context.Context
 	req  *restful.Request
 	resp *restful.Response
 }
@@ -17,7 +17,7 @@ type Context struct {
 //NewBaseServer is a function which return context
 func NewBaseServer(ctx context.Context) *Context {
 	return &Context{
-		ctx: ctx,
+		Ctx: ctx,
 	}
 }
 

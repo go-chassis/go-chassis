@@ -17,9 +17,15 @@ type RestFulHello struct {
 }
 
 //Sayhello is a method used to reply user with hello
+func (r *RestFulHello) Root(b *rf.Context) {
+	b.Write([]byte(fmt.Sprintf("x-forwarded-host %s", b.ReadRequest().Host)))
+}
+
+//Sayhello is a method used to reply user with hello
 func (r *RestFulHello) Sayhello(b *rf.Context) {
 	id := b.ReadPathParameter("userid")
 	log.Printf("get user id: " + id)
+	log.Printf("get user name: " + b.ReadRequest().Header.Get("user"))
 	b.Write([]byte(fmt.Sprintf("user %s from %d", id, num)))
 }
 
@@ -55,6 +61,7 @@ func (r *RestFulHello) SayJSON(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulHello) URLPatterns() []rf.Route {
 	return []rf.Route{
+		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Root"},
 		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello"},
 		{Method: http.MethodPost, Path: "/sayhi", ResourceFuncName: "Sayhi"},
 		{Method: http.MethodPost, Path: "/sayjson", ResourceFuncName: "SayJSON"},

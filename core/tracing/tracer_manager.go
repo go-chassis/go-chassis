@@ -3,71 +3,48 @@ package tracing
 import (
 	"fmt"
 
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
-	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 )
 
-// TracerMap tracer map
-// key: caller name
-// val: tracer
-var TracerMap map[string]opentracing.Tracer
+// TracerFuncMap saves NewTracer func
+// key: impl name
+// val: tracer new func
+var TracerFuncMap = make(map[string]NewTracer)
 
-// GetTracer get tracer
-func GetTracer(caller string) opentracing.Tracer {
-	if tracer, ok := TracerMap[caller]; ok {
-		return tracer
+// NewTracer is the func to return global tracer
+type NewTracer func(o map[string]string) (opentracing.Tracer, error)
+
+//InstallTracer install new opentracing tracer
+func InstallTracer(name string, f NewTracer) {
+	TracerFuncMap[name] = f
+
+}
+
+// GetTracerFunc get NewTracer
+func GetTracerFunc(name string) (NewTracer, error) {
+	tracer, ok := TracerFuncMap[name]
+	if !ok {
+		return nil, fmt.Errorf("not supported tracer [%s]", name)
 	}
-	return TracerMap[common.DefaultKey]
+	return tracer, nil
 }
 
-func init() {
-	TracerMap = make(map[string]opentracing.Tracer)
-}
-
-// Init initialize the tracer
+// Init initialize the global tracer
 func Init() error {
-	lager.Logger.Info("Tracing enabled. Start to init tracer map.", nil)
-	collector, err := NewCollector(config.GlobalDefinition.Tracing.CollectorType, config.GlobalDefinition.Tracing.CollectorTarget)
+	lager.Logger.Info("Tracing enabled. Start to init tracer.")
+	if config.GlobalDefinition.Tracing.Tracer == "" {
+		config.GlobalDefinition.Tracing.Tracer = "zipkin"
+	}
+	f, err := GetTracerFunc(config.GlobalDefinition.Tracing.Tracer)
 	if err != nil {
-		lager.Logger.Error(err.Error(), nil)
-		return fmt.Errorf("unable to create tracing collector: %+v", err)
+		return err
 	}
-
-	microserviceNames := schema.GetMicroserviceNames()
-	// key: caller name, val: recorder
-	recorderMap := make(map[string]zipkin.SpanRecorder, len(microserviceNames)+1)
-
-	// set default recorder
-	defaultCaller := common.DefaultKey
-	defaultRecorder := zipkin.NewRecorder(collector, false, "0.0.0.0:0", runtime.HostName)
-	recorderMap[defaultCaller] = defaultRecorder
-
-	// set recorder map
-	for _, msName := range microserviceNames {
-		caller := msName + ":" + runtime.HostName
-		r := zipkin.NewRecorder(collector, false, "0.0.0.0:0", caller)
-		recorderMap[caller] = r
+	tracer, err := f(config.GlobalDefinition.Tracing.Settings)
+	if err != nil {
+		return err
 	}
-
-	// set tracer map
-	for caller, recorder := range recorderMap {
-		// TODO more tracer configuration
-		tracer, err := zipkin.NewTracer(
-			recorder,
-			zipkin.ClientServerSameSpan(true),
-			zipkin.TraceID128Bit(true),
-		)
-		if err != nil {
-			lager.Logger.Error(err.Error(), nil)
-			return fmt.Errorf("unable to create global tracer: %+v", err)
-		}
-		TracerMap[caller] = tracer
-	}
-
+	opentracing.SetGlobalTracer(tracer)
 	return nil
 }

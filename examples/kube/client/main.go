@@ -17,19 +17,19 @@ import (
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.", err)
+		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
 	for {
 		req, err := rest.NewRequest("GET", "cse://kubeserver/hello")
 		if err != nil {
-			lager.Logger.Error("new request failed.", err)
+			lager.Logger.Error("new request failed." + err.Error())
 		}
 		defer req.Close()
 
 		resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 		if err != nil {
-			lager.Logger.Error("do request failed.", err)
+			lager.Logger.Error("do request failed." + err.Error())
 		}
 		defer resp.Close()
 		lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))

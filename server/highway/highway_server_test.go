@@ -9,27 +9,33 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/client/highway"
+	_ "github.com/go-chassis/go-chassis/initiator"
+
+	_ "github.com/go-chassis/go-chassis/client/highway"
+	_ "github.com/go-chassis/go-chassis/server/highway"
+
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/examples/schemas"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 
+	"github.com/go-chassis/go-chassis"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 )
 
 var addrHighway = "127.0.0.1:2399"
 
 func initEnv() {
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	log.Println("prepare ")
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("CHASSIS_HOME"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -49,7 +55,7 @@ func TestStart(t *testing.T) {
 
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
-	config.SelfServiceName = msName
+	runtime.ServiceName = msName
 	f, err := server.GetServerFunc("highway")
 	assert.NoError(t, err)
 	s := f(server.Options{
@@ -66,7 +72,7 @@ func TestStart(t *testing.T) {
 
 	name := s.String()
 	log.Println("server protocol name:", name)
-	c := highway.NewHighwayClient(client.Options{})
+	c, err := client.GetClient("highway", "fake", "")
 
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)

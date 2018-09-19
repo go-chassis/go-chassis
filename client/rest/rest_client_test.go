@@ -18,6 +18,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/server/restful"
 
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,7 +38,7 @@ func initEnv() {
 
 func TestNewRestClient_Call(t *testing.T) {
 	initEnv()
-	config.SelfServiceName = "Server"
+	runtime.ServiceName = "Server"
 	schema := "schema2"
 
 	defaultChain := make(map[string]string)
@@ -62,7 +63,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(client.Options{})
+	c, err := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
@@ -99,7 +100,7 @@ func TestNewRestClient_Call(t *testing.T) {
 func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	t.Log("Testing NewRestClient function for parse duration failed scenario")
 	initEnv()
-	config.SelfServiceName = "Server1"
+	runtime.ServiceName = "Server1"
 	schema := "schema2"
 
 	defaultChain := make(map[string]string)
@@ -120,7 +121,7 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	err = s.Start()
 	assert.NoError(t, err)
 
-	c := rest.NewRestClient(client.Options{})
+	c, err := rest.NewRestClient(client.Options{})
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
@@ -148,7 +149,7 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	t.Log("Testing NewRestClient call function for error scenarios")
 	initEnv()
-	config.SelfServiceName = "Server2"
+	runtime.ServiceName = "Server2"
 	schema := "schema2"
 
 	defaultChain := make(map[string]string)
@@ -170,7 +171,7 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	assert.NoError(t, err)
 	fail := make(map[string]bool)
 	fail["something"] = false
-	c := rest.NewRestClient(client.Options{
+	c, _ := rest.NewRestClient(client.Options{
 		Failure:  fail,
 		PoolSize: 3,
 	})

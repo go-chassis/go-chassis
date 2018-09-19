@@ -1,8 +1,6 @@
 package pilot
 
 import (
-	"errors"
-	"fmt"
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/archaius"
@@ -32,7 +30,7 @@ func (c *CacheManager) AutoSync() {
 	} else {
 		timeValue, err := time.ParseDuration(refreshInterval)
 		if err != nil {
-			lager.Logger.Errorf(err, "refeshInterval is invalid. So use Default value")
+			lager.Logger.Errorf("refeshInterval is invalid. So use Default value, err %s", err)
 			timeValue = DefaultRefreshInterval
 		}
 		ticker = time.NewTicker(timeValue)
@@ -48,21 +46,21 @@ func (c *CacheManager) AutoSync() {
 func (c *CacheManager) refreshCache() {
 	if archaius.GetBool("cse.service.registry.autodiscovery", false) {
 		// TODO CDS
-		lager.Logger.Errorf(errors.New("not supported"), "SyncPilotEndpoints failed.")
+		lager.Logger.Errorf("SyncPilotEndpoints not supported.")
 	}
 	err := c.pullMicroserviceInstance()
 	if err != nil {
-		lager.Logger.Errorf(err, "AutoUpdateMicroserviceInstance failed.")
+		lager.Logger.Errorf("AutoUpdateMicroserviceInstance failed: %s", err)
 	}
 
 	if archaius.GetBool("cse.service.registry.autoSchemaIndex", false) {
-		lager.Logger.Errorf(errors.New("Not support operation"), "MakeSchemaIndex failed.")
+		lager.Logger.Errorf("MakeSchemaIndex Not support operation.")
 	}
 
 	if archaius.GetBool("cse.service.registry.autoIPIndex", false) {
 		err = c.MakeIPIndex()
 		if err != nil {
-			lager.Logger.Errorf(err, "Auto Update IP index failed.")
+			lager.Logger.Errorf("Auto Update IP index failed: %s", err)
 		}
 	}
 }
@@ -72,12 +70,14 @@ func (c *CacheManager) MakeIPIndex() error {
 	lager.Logger.Debug("Make IP index")
 	services, err := c.registryClient.GetAllServices()
 	if err != nil {
-		lager.Logger.Errorf(err, "Get instances failed")
+		lager.Logger.Errorf("Get instances failed: %s", err)
 		return err
 	}
 	for _, service := range services {
 		for _, h := range service.Hosts {
-			registry.IPIndexedCache.Set(fmt.Sprintf("%s:%d", h.Address, h.Port), service.ServiceKey, 0)
+			si := &registry.SourceInfo{}
+			si.Name = service.ServiceKey
+			registry.SetIPIndex(h.Address, si)
 			//no need to analyze each endpoint
 			break
 		}

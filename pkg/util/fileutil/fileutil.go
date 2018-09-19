@@ -81,7 +81,7 @@ func ChassisHomeDir() string {
 
 //GetConfDir is a function used to get the configuration directory
 func GetConfDir() string {
-	once.Do(initDir)
+	initDir()
 	return configDir
 }
 

@@ -13,6 +13,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
 )
 
@@ -25,9 +27,6 @@ var lbConfig *model.LBWrapper
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
 
-// PaasLagerDefinition is having the information about loging
-var PaasLagerDefinition *model.PassLagerCfg
-
 // RouterDefinition is route rule config
 var RouterDefinition *model.RouterConfig
 
@@ -38,12 +37,11 @@ var HystrixConfig *model.HystrixConfigWrapper
 var NodeIP string
 
 // SelfServiceName is self micro service name
+// Deprecated plz use runtime.ServiceName
 var SelfServiceName string
 
-// SelfMetadata is gives meta data of the self micro service
-var SelfMetadata map[string]string
-
 // SelfVersion gives version of the self micro service
+//Deprecated, use runtime pkg
 var SelfVersion string
 
 // ErrNoName is used to represent the service name missing error
@@ -158,6 +156,18 @@ func readGlobalConfigFile() error {
 	return nil
 }
 
+// readPanelConfig for to unmarshal the global config file(chassis.yaml) information
+func readPanelConfig() error {
+	globalDef := model.GlobalCfg{}
+	err := archaius.UnmarshalConfig(&globalDef)
+	if err != nil {
+		return err
+	}
+	GlobalDefinition = &globalDef
+
+	return nil
+}
+
 // ReadLBFromArchaius for to unmarshal the global config file(chassis.yaml) information
 func ReadLBFromArchaius() error {
 	lbMutex.Lock()
@@ -178,16 +188,6 @@ type pathError struct {
 }
 
 func (e *pathError) Error() string { return e.Path + ": " + e.Err.Error() }
-
-// parsePaasLagerConfig unmarshals the paas lager configuration file(lager.yaml)
-func parsePaasLagerConfig(file string) error {
-	PaasLagerDefinition = &model.PassLagerCfg{}
-	err := unmarshalYamlFile(file, PaasLagerDefinition)
-	if err != nil && !os.IsNotExist(err) {
-		return &pathError{Path: file, Err: err}
-	}
-	return err
-}
 
 // parseRouterConfig is unmarshal the router configuration file(router.yaml)
 func parseRouterConfig(file string) error {
@@ -228,16 +228,16 @@ func readMicroserviceConfigFiles() error {
 	defPath := fileutil.GetMicroserviceDesc()
 	data, err := ioutil.ReadFile(defPath)
 	if err != nil {
-		lager.Logger.Errorf(err, fmt.Sprintf("WARN: Missing microservice description file: %s", err.Error()))
+		lager.Logger.Errorf(fmt.Sprintf("WARN: Missing microservice description file: %s", err.Error()))
 		if len(microserviceNames) == 0 {
-			return errors.New("Missing microservice description file")
+			return errors.New("missing microservice description file")
 		}
 		msName := microserviceNames[0]
 		msDefPath := fileutil.MicroserviceDefinition(msName)
 		lager.Logger.Warnf(fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
 		data, err := ioutil.ReadFile(msDefPath)
 		if err != nil {
-			return fmt.Errorf("Missing microservice description file: %s", err.Error())
+			return fmt.Errorf("missing microservice description file: %s", err.Error())
 		}
 		ReadMicroserviceConfigFromBytes(data)
 		return nil
@@ -276,32 +276,16 @@ func GetHystrixConfig() *model.HystrixConfig {
 	return HystrixConfig.HystrixConfig
 }
 
-// Init is initialize the configuration directory, lager, archaius, route rule, and schema
+// Init is initialize the configuration directory, archaius, route rule, and schema
 func Init() error {
-	err := parsePaasLagerConfig(fileutil.PaasLagerDefinition())
-	//initialize log in any case
-	if err != nil {
-		lager.Initialize("", "", "", "", true, 1, 10, 7)
+	if err := parseRouterConfig(fileutil.RouterDefinition()); err != nil {
 		if os.IsNotExist(err) {
-			lager.Logger.Infof("[%s] not exist", fileutil.PaasLagerDefinition())
-		} else {
-			return err
-		}
-	} else {
-		lager.Initialize(PaasLagerDefinition.Writers, PaasLagerDefinition.LoggerLevel,
-			PaasLagerDefinition.LoggerFile, PaasLagerDefinition.RollingPolicy,
-			PaasLagerDefinition.LogFormatText, PaasLagerDefinition.LogRotateDate,
-			PaasLagerDefinition.LogRotateSize, PaasLagerDefinition.LogBackupCount)
-	}
-
-	if err = parseRouterConfig(fileutil.RouterDefinition()); err != nil {
-		if os.IsNotExist(err) {
-			lager.Logger.Infof("[%s] not exist", fileutil.RouterDefinition())
+			openlogging.GetLogger().Infof("[%s] not exist", fileutil.RouterDefinition())
 		} else {
 			return err
 		}
 	}
-	err = archaius.Init()
+	err := archaius.Init()
 	if err != nil {
 		return err
 	}
@@ -334,11 +318,24 @@ func Init() error {
 	}
 
 	SelfServiceName = MicroserviceDefinition.ServiceDescription.Name
+	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
 	SelfVersion = MicroserviceDefinition.ServiceDescription.Version
-	SelfMetadata = MicroserviceDefinition.ServiceDescription.Properties
+	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
+
+	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties
+	runtime.App = GlobalDefinition.AppID
 	if GlobalDefinition.AppID == "" {
 		GlobalDefinition.AppID = common.DefaultApp
+		runtime.App = common.DefaultApp
 	}
-
+	runtime.HostName = MicroserviceDefinition.ServiceDescription.Hostname
+	if runtime.HostName == "" {
+		runtime.HostName, err = os.Hostname()
+		if err != nil {
+			lager.Logger.Error("Get hostname failed:" + err.Error())
+			return err
+		}
+	}
+	lager.Logger.Info("Host name is " + runtime.HostName)
 	return err
 }

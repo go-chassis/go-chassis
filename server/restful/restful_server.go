@@ -12,7 +12,6 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -21,7 +20,9 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful-swagger12"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-mesh/openlogging"
 )
 
 // constants for metric path and name
@@ -31,7 +32,6 @@ const (
 	DefaultMetricPath = "metrics"
 	MimeFile          = "application/octet-stream"
 	MimeMult          = "multipart/form-data"
-	SessionID         = ""
 )
 
 func init() {
@@ -60,7 +60,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 		if !strings.HasPrefix(metricPath, "/") {
 			metricPath = "/" + metricPath
 		}
-		lager.Logger.Info("Enbaled metrics API on " + metricPath)
+		lager.Logger.Info("Enabled metrics API on " + metricPath)
 		ws.Route(ws.GET(metricPath).To(metrics.HTTPHandleFunc))
 	}
 	return &restfulServer{
@@ -70,16 +70,9 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 	}
 }
 func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
-	cookie, err := req.Request.Cookie(common.LBSessionID)
-	if err != nil {
-		if err != http.ErrNoCookie {
-			lager.Logger.Errorf(err, "get cookie error")
-			return nil, err
-		}
-	}
 
 	inv := &invocation.Invocation{
-		MicroServiceName:   config.SelfServiceName,
+		MicroServiceName:   runtime.ServiceName,
 		SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
 		Args:               req,
 		Protocol:           common.ProtocolRest,
@@ -89,12 +82,12 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 		Metadata: map[string]interface{}{
 			common.RestMethod: req.Request.Method,
 		},
-		Ctx: context.WithValue(context.Background(), common.ContextHeaderKey{},
-			map[string]string{}), //set headers, do not consider about protocol in handlers
 	}
-	if cookie != nil {
-		headers := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
-		headers[common.LBSessionID] = cookie.Value
+	//set headers to Ctx, then user do not  need to consider about protocol in handlers
+	m := make(map[string]string, 0)
+	inv.Ctx = context.WithValue(context.Background(), common.ContextHeaderKey{}, m)
+	for k := range req.Request.Header {
+		m[k] = req.Request.Header.Get(k)
 	}
 	return inv, nil
 }
@@ -123,32 +116,34 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 		lager.Logger.Infof("Add route path: [%s] Method: [%s] Func: [%s]. ", route.Path, route.Method, route.ResourceFuncName)
 		method, exist := schemaType.MethodByName(route.ResourceFuncName)
 		if !exist {
-			lager.Logger.Errorf(nil, "router func can not find: %s", route.ResourceFuncName)
+			lager.Logger.Errorf("router func can not find: %s", route.ResourceFuncName)
 			return "", fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
 		}
 
 		handler := func(req *restful.Request, rep *restful.Response) {
 			c, err := handler.GetChain(common.Provider, r.opts.ChainName)
 			if err != nil {
-				lager.Logger.Errorf(err, "Handler chain init err")
+				lager.Logger.Errorf("Handler chain init err [%s]", err.Error())
 				rep.AddHeader("Content-Type", "text/plain")
 				rep.WriteErrorString(http.StatusInternalServerError, err.Error())
 				return
 			}
 			inv, err := httpRequest2Invocation(req, schemaName, method.Name)
 			if err != nil {
-				lager.Logger.Errorf(err, "transfer http request to invocation failed")
+				lager.Logger.Errorf("transfer http request to invocation failed, err [%s]", err.Error())
 				return
 			}
-			//give inv.ctx to user handlers, user may inject headers in handler chain
-			bs := NewBaseServer(inv.Ctx)
-			bs.req = req
-			bs.resp = rep
+			//give inv.Ctx to user handlers, modules may inject headers in handler chain
+
 			c.Next(inv, func(ir *invocation.Response) error {
 				if ir.Err != nil {
 					return ir.Err
 				}
 				transfer(inv, req)
+				bs := NewBaseServer(inv.Ctx)
+				bs.req = req
+				bs.resp = rep
+				ir.Status = bs.resp.StatusCode()
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
 				if bs.resp.StatusCode() >= http.StatusBadRequest {
 					return fmt.Errorf("get err from http handle, get status: %d", bs.resp.StatusCode())
@@ -167,6 +162,10 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 func transfer(inv *invocation.Invocation, req *restful.Request) {
 	for k, v := range inv.Metadata {
 		req.SetAttribute(k, v.(string))
+	}
+	m := common.FromContext(inv.Ctx)
+	for k, v := range m {
+		req.Request.Header.Set(k, v)
 	}
 
 }
@@ -226,7 +225,8 @@ func (r *restfulServer) Start() error {
 			err = r.server.ListenAndServe()
 		}
 		if err != nil {
-			lager.Logger.Error("Can't start http server", err)
+			lager.Logger.Error("Can't start http server",
+				openlogging.Tags{"err": err.Error()})
 			server.ErrRuntime <- err
 		}
 

@@ -28,7 +28,7 @@ func InstallProviderPlugin(pluginName string, newFunc func(string) Provider) {
 func RegisterProvider(pluginName string, microserviceName string) Provider {
 	pFunc, exist := providerPlugins[pluginName]
 	if !exist {
-		lager.Logger.Errorf(nil, "provider type %s is not exist.", pluginName)
+		lager.Logger.Errorf("provider type %s is not exist.", pluginName)
 		return nil
 	}
 	p := pFunc(microserviceName)

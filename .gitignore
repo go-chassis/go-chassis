@@ -1,9 +1,20 @@
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
 bin/
 .idea/
 **/log/chassis.log
 *.exe
-*.log*.zip
+*.log
+*.zip
 *.lnk
+
+release
+*.tar.gz
+glide.lock
 
 vendor/**
 !vendor/manifest
@@ -13,3 +24,5 @@ benchmark/**/*.txt
 benchmark/client/client
 benchmark/server/server
 benchmark/**/log
+coverage.out
+coverage.txt

@@ -4,6 +4,7 @@ package model
 type GlobalCfg struct {
 	AppID      string            `yaml:"APPLICATION_ID"`
 	Cse        CseStruct         `yaml:"cse"`
+	Panel      ControlPanel      `yaml:"control"`
 	Ssl        map[string]string `yaml:"ssl"`
 	Tracing    TracingStruct     `yaml:"tracing"`
 	DataCenter *DataCenterInfo   `yaml:"region"`
@@ -14,18 +15,6 @@ type DataCenterInfo struct {
 	Name          string `yaml:"name"`
 	Region        string `yaml:"region"`
 	AvailableZone string `yaml:"availableZone"`
-}
-
-//PassLagerCfg is the struct for lager information(passlager.yaml)
-type PassLagerCfg struct {
-	Writers        string `yaml:"writers"`
-	LoggerLevel    string `yaml:"logger_level"`
-	LoggerFile     string `yaml:"logger_file"`
-	LogFormatText  bool   `yaml:"log_format_text"`
-	RollingPolicy  string `yaml:"rollingPolicy"`
-	LogRotateDate  int    `yaml:"log_rotate_date"`
-	LogRotateSize  int    `yaml:"log_rotate_size"`
-	LogBackupCount int    `yaml:"log_backup_count"`
 }
 
 //CseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
@@ -168,9 +157,6 @@ type CredentialStruct struct {
 
 // TracingStruct tracing structure
 type TracingStruct struct {
-	SamplingRate  float64 `yaml:"samplingRate"`
-	CollectorType string  `yaml:"collectorType"` // http|log
-	// if collectorType is http, the target is zipkin server
-	// if collectorType is log, the target is log file
-	CollectorTarget string `yaml:"collectorTarget"`
+	Tracer   string            `yaml:"tracer"`
+	Settings map[string]string `yaml:"settings"`
 }

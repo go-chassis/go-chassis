@@ -1,4 +1,4 @@
-# 动态配置
+# Dynamic Configuration
 ## 概述
 
 go-chassis提供动态配置管理能力，支持CSE配置中心，本地文件，环境变量及命令行等多种配置管理，并由archaius包提供统一的接口获取配置。
@@ -80,8 +80,8 @@ cse:
 ```
 
 ```go
-archaius.GetInt("cse.fallback.Consumer.Consumer.maxConcurrentRequests", 10)
-archaius.GetBool("cse.fallback.Consumer.Consumer.enabled", false)
+archaius.GetInt("cse.fallback.Consumer.maxConcurrentRequests", 10)
+archaius.GetBool("cse.fallback.Consumer.enabled", false)
 ```
 
 

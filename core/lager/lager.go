@@ -8,6 +8,7 @@ import (
 
 	paaslager "github.com/go-chassis/paas-lager"
 	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
+	"github.com/go-mesh/openlogging"
 )
 
 // constant values for logrotate parameters
@@ -18,7 +19,8 @@ const (
 	RollingPolicySize = "size"
 )
 
-// Logger is the global variable for the object of lager.Logger
+//Logger is the global variable for the object of lager.Logger
+//Deprecated. plz use openlogging instead
 var Logger lager.Logger
 
 // logFilePath log file path
@@ -49,10 +51,10 @@ func Initialize(writers, loggerLevel, loggerFile, rollingPolicy string, logForma
 		LogRotateSize:  LogRotateSize,
 		LogBackupCount: LogBackupCount,
 	}
-
 	log.Println("Enable log tool")
 	Logger = newLog(lag)
 	initLogRotate(logFilePath, lag)
+	openlogging.SetLogger(Logger)
 	return
 }
 

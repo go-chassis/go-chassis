@@ -8,10 +8,6 @@ const (
 	Consumer = "Consumer"
 )
 
-// constant for transport tcp
-const (
-	TransportTCP = "tcp"
-)
 const (
 	// ScopeFull means service is able to access to another app's service
 	ScopeFull = "full"
@@ -121,7 +117,6 @@ const (
 
 	Client           = "client"
 	File             = "File"
-	SessionID        = "sessionid"
 	DefaultTenant    = "default"
 	DefaultChainName = "default"
 

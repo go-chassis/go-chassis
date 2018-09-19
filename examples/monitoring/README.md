@@ -9,12 +9,17 @@ docker-compose up
 2. Run rest server
 
 ```sh 
-cd server
+cd serverA
 export CHASSIS_HOME=$PWD
 go run main.go
 
 ```
+```sh 
+cd serverB
+export CHASSIS_HOME=$PWD
+go run main.go
 
+```
 3. Run Rest client
 ```sh 
  cd client
