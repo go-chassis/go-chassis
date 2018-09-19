@@ -35,14 +35,14 @@ func main() {
 
 	req, err = rest.NewRequest("GET", "cse://RESTServer:legacy/legacy")
 	if err != nil {
-		lager.Logger.Error("new request failed.", err)
+		lager.Logger.Error("new request failed." + err.Error())
 		return
 	}
 	defer req.Close()
 
 	resp, err = core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
-		lager.Logger.Error("do request failed.", err)
+		lager.Logger.Error("do request failed." + err.Error())
 		return
 	}
 	defer resp.Close()

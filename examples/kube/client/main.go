@@ -37,13 +37,13 @@ func main() {
 
 		req, err = rest.NewRequest("GET", "cse://kubeserver:legacy/legacy")
 		if err != nil {
-			lager.Logger.Error("new request failed.", err)
+			lager.Logger.Error("new request failed." + err.Error())
 		}
 		defer req.Close()
 
 		resp, err = core.NewRestInvoker().ContextDo(context.TODO(), req)
 		if err != nil {
-			lager.Logger.Error("do request failed.", err)
+			lager.Logger.Error("do request failed." + err.Error())
 		}
 		defer resp.Close()
 		lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
