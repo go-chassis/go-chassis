@@ -111,6 +111,14 @@ cse:
       name: WeightedResponse
 
 `)
+
+	testBytes := []byte(`
+---
+cse1:
+  fallback1:
+    Consumer1:
+      name: Test
+`)
 	root, _ := fileutil.GetWorkDir()
 	os.Setenv("CHASSIS_HOME", root)
 	t.Log(os.Getenv("CHASSIS_HOME"))
@@ -123,6 +131,7 @@ cse:
 	circuitBreakerFileName := filepath.Join(root, "conf", "circuit_breaker.yaml")
 	filename3 := filepath.Join(root, "conf", "lager.yaml")
 	lbFileName := filepath.Join(root, "conf", "load_balancing.yaml")
+	testFileName := filepath.Join(root, "conf", "test.yaml")
 	filename6 := filepath.Join(root, "conf", "microservice.yaml")
 
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
@@ -130,6 +139,7 @@ cse:
 	os.Remove(circuitBreakerFileName)
 	os.Remove(filename3)
 	os.Remove(lbFileName)
+	os.Remove(testFileName)
 	os.Remove(filename6)
 	os.Remove(confdir)
 	err := os.Mkdir(confdir, 0777)
@@ -151,6 +161,10 @@ cse:
 	check(err4)
 	defer lbFile.Close()
 	defer os.Remove(lbFileName)
+	testFile, err5 := os.Create(testFileName)
+	check(err5)
+	defer testFile.Close()
+	defer os.Remove(testFileName)
 	f6, err6 := os.Create(filename6)
 	check(err6)
 	defer f6.Close()
@@ -160,6 +174,7 @@ cse:
 	_, err1 = io.WriteString(circuitBreakerFile, string(cbBytes))
 	_, err1 = io.WriteString(f3, lageryamlcontent)
 	_, err1 = io.WriteString(lbFile, string(lbBytes))
+	_, err1 = io.WriteString(testFile, string(testBytes))
 
 	t.Log(os.Getenv("CHASSIS_HOME"))
 
@@ -224,6 +239,13 @@ cse:
 	assert.Equal(t, 500, int(lbConfig.Prefix.LBConfig.AnyService["target_Service"].Backoff.MaxMs))
 	err = archaius.AddFile(lbFileName)
 	assert.NoError(t, err)
+
+	time.Sleep(1 * time.Second)
+
+	err = archaius.AddFile(testFileName)
+	assert.NoError(t, err)
+	value := archaius.GetString("cse1.fallback1.Consumer1.name", "")
+	assert.Equal(t, "Test", value)
 
 	time.Sleep(1 * time.Second)
 
