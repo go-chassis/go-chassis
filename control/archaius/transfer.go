@@ -1,9 +1,8 @@
 package archaius
 
 import (
-	"strings"
-
 	"github.com/go-chassis/go-chassis/control"
+	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -11,6 +10,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"strings"
 )
 
 //SaveToLBCache save configs
@@ -22,9 +22,16 @@ func SaveToLBCache(raw *model.LoadBalancing, key string, isAnyService bool) {
 	}
 	if !isAnyService {
 		stringSlice := strings.Split(key, ".")
-		saveEachLB(stringSlice[2], raw.AnyService[stringSlice[2]])
-	}
+		if strings.Contains(key, "strategy.name") {
+			value := archaius.Get(key)
+			if value != nil {
+				saveEachLB(stringSlice[2], raw.AnyService[stringSlice[2]])
+			} else {
+				LBConfigCache.Delete(stringSlice[2])
+			}
+		}
 
+	}
 }
 func saveDefaultLB(raw *model.LoadBalancing) {
 	c := control.LoadBalancingConfig{
