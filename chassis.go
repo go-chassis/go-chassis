@@ -33,7 +33,7 @@ import (
 
 	//control panel
 	_ "github.com/go-chassis/go-chassis/control/archaius"
-
+	_ "github.com/go-chassis/go-chassis/control/istio"
 	// registry
 	_ "github.com/go-chassis/go-chassis/core/registry/file"
 	_ "github.com/go-chassis/go-chassis/core/registry/pilot"

@@ -69,8 +69,8 @@ func (p *Panel) GetFaultInjection(inv invocation.Invocation) model.Fault {
 }
 
 //GetEgressRule get egress config
-func (p *Panel) GetEgressRule(inv invocation.Invocation) {
-
+func (p *Panel) GetEgressRule() []control.EgressConfig {
+	return []control.EgressConfig{}
 }
 
 func init() {

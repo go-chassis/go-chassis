@@ -21,10 +21,20 @@ const (
 const (
 	// RDSHttpProxy query all route configuration
 	RDSHttpProxy = "http_proxy"
+
+	// CDSHttpProxy query all route configuration
+	CDSHttpProxy = "ORIGINAL_DST"
 	// EnvoyAPIV2 defines prefix of type
 	EnvoyAPIV2 = "type.googleapis.com/envoy.api.v2."
 	// RouteType defines ADS type
 	RouteType = EnvoyAPIV2 + "RouteConfiguration"
+
+	// ClusterType is used for cluster discovery. Typically first request received
+	ClusterType = EnvoyAPIV2 + "Cluster"
+	// EndpointType is used for EDS and ADS endpoint discovery. Typically second request.
+	EndpointType = EnvoyAPIV2 + "ClusterLoadAssignment"
+	// ListenerType is sent after clusters and endpoints.
+	ListenerType = EnvoyAPIV2 + "Listener"
 )
 
 // ServiceKey returns service key from a service name

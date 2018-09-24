@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -32,7 +33,9 @@ type RDS interface {
 type EDS interface{}
 
 // CDS defines cluster discovery service interface
-type CDS interface{}
+type CDS interface {
+	GetAllClusterConfigurations() ([]envoy_api.Cluster, error)
+}
 
 // LDS defines listener discovery service interface
 type LDS interface{}
@@ -111,4 +114,41 @@ func (c *pilotClient) GetRouteConfigurationsByPort(port string) (*envoy_api.Rout
 		return nil, fmt.Errorf("[RDS] recv error for %s(%s): %v", util.RDSHttpProxy, nodeID, err)
 	}
 	return GetRouteConfiguration(res)
+}
+
+func (c *pilotClient) GetAllClusterConfigurations() ([]envoy_api.Cluster, error) {
+	cds, err := c.adsConn.StreamAggregatedResources(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("[CDS] stream error: %v", err)
+	}
+
+	nodeID := util.BuildNodeID()
+	err = cds.Send(&envoy_api.DiscoveryRequest{
+		ResponseNonce: time.Now().String(),
+		Node: &envoy_api_core.Node{
+			Id: nodeID,
+		},
+		ResourceNames: []string{""},
+		TypeUrl:       util.ClusterType})
+	if err != nil {
+		return nil, fmt.Errorf("[CDS] send req error for %s(%s): %v", util.ClusterType, nodeID, err)
+	}
+
+	res, err := cds.Recv()
+	if err != nil {
+		return nil, fmt.Errorf("[CDS] recv error for %s(%s): %v", util.ClusterType, nodeID, err)
+	}
+
+	for _, value := range res.GetResources() {
+
+		cla := &envoy_api.Cluster{}
+		_ = cla.Unmarshal(value.Value)
+
+	}
+
+	_, err = json.Marshal(res)
+	if err != nil {
+		return nil, fmt.Errorf("marshal CDS response failed: %v", err)
+	}
+	return GetClusterConfiguration(res)
 }
