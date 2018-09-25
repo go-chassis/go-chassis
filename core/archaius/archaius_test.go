@@ -119,6 +119,18 @@ cse1:
     Consumer1:
       name: Test
 `)
+
+	testNewBytes := []byte(`
+---
+cse1:
+  fallback1:
+    Consumer1:
+      name: Test
+`)
+
+	testTxtBytes := []byte(`
+ServiceComb:CSE
+`)
 	root, _ := fileutil.GetWorkDir()
 	os.Setenv("CHASSIS_HOME", root)
 	t.Log(os.Getenv("CHASSIS_HOME"))
@@ -132,16 +144,11 @@ cse1:
 	filename3 := filepath.Join(root, "conf", "lager.yaml")
 	lbFileName := filepath.Join(root, "conf", "load_balancing.yaml")
 	testFileName := filepath.Join(root, "conf", "test.yaml")
+	testNewFileName := filepath.Join(root, "conf", "testnew.yaml")
+	testtxtFileName := filepath.Join(root, "conf", "test.txt")
 	filename6 := filepath.Join(root, "conf", "microservice.yaml")
 
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	os.Remove(filename1)
-	os.Remove(circuitBreakerFileName)
-	os.Remove(filename3)
-	os.Remove(lbFileName)
-	os.Remove(testFileName)
-	os.Remove(filename6)
-	os.Remove(confdir)
 	err := os.Mkdir(confdir, 0777)
 	check(err)
 	defer os.Remove(confdir)
@@ -165,6 +172,16 @@ cse1:
 	check(err5)
 	defer testFile.Close()
 	defer os.Remove(testFileName)
+
+	testNewFile, err7 := os.Create(testNewFileName)
+	check(err7)
+	defer testNewFile.Close()
+	defer os.Remove(testNewFileName)
+
+	testtxtFile, err6 := os.Create(testtxtFileName)
+	check(err6)
+	defer testtxtFile.Close()
+	defer os.Remove(testtxtFileName)
 	f6, err6 := os.Create(filename6)
 	check(err6)
 	defer f6.Close()
@@ -175,6 +192,8 @@ cse1:
 	_, err1 = io.WriteString(f3, lageryamlcontent)
 	_, err1 = io.WriteString(lbFile, string(lbBytes))
 	_, err1 = io.WriteString(testFile, string(testBytes))
+	_, err1 = io.WriteString(testNewFile, string(testNewBytes))
+	_, err1 = io.WriteString(testtxtFile, string(testTxtBytes))
 
 	t.Log(os.Getenv("CHASSIS_HOME"))
 
@@ -237,17 +256,51 @@ cse1:
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["TargetService"].Strategy["name"])
 	assert.Equal(t, "WeightedResponse", lbConfig.Prefix.LBConfig.AnyService["target_Service"].Strategy["name"])
 	assert.Equal(t, 500, int(lbConfig.Prefix.LBConfig.AnyService["target_Service"].Backoff.MaxMs))
-	err = archaius.AddFile(lbFileName)
+	err = archaius.AddFile(lbFileName, nil)
 	assert.NoError(t, err)
 
 	time.Sleep(1 * time.Second)
 
-	err = archaius.AddFile(testFileName)
+	err = archaius.AddFile(testFileName, nil)
 	assert.NoError(t, err)
 	value := archaius.GetString("cse1.fallback1.Consumer1.name", "")
 	assert.Equal(t, "Test", value)
 
 	time.Sleep(1 * time.Second)
+
+	// testFileName is allready added so next time when we call AddFile it will not add the file.
+	err = archaius.AddFile(testFileName, archaius.WithHandleFunc)
+	assert.NoError(t, err)
+	value = archaius.GetString(testFileName, "")
+	assert.Equal(t, "", value)
+
+	time.Sleep(1 * time.Second)
+
+	err = archaius.AddFile(testNewFileName, archaius.WithHandleFunc)
+	assert.NoError(t, err)
+	value = archaius.GetString(testNewFileName, "")
+	v := "\n---\ncse1:\n  fallback1:\n    Consumer1:\n      name: Test\n"
+	assert.Equal(t, v, value)
+	v1 := "\n---\ncse1:\n  fallback1:\n    Consumer1:\n      name: Test1\n"
+	assert.NotEqual(t, v1, value)
+
+	time.Sleep(1 * time.Second)
+
+	err = archaius.AddFile(testtxtFileName, archaius.WithHandleFunc)
+	assert.NoError(t, err)
+	value = archaius.GetString(testtxtFileName, "")
+	v2 := "\nServiceComb:CSE\n"
+	assert.Equal(t, v2, value)
+	v3 := "\n\"ServiceComb\":\"OPENSOURCE\"\n"
+	assert.NotEqual(t, v3, value)
+
+	//Edit the existing file and check the content it should add the new key and value
+	content := "Hello: hi"
+	_, err = io.WriteString(testtxtFile, content)
+	time.Sleep(10 * time.Millisecond)
+	value = archaius.GetString(testtxtFileName, "")
+	v4 := "\nServiceComb:CSE\nHello: hi"
+	assert.Equal(t, v4, value)
 
 	err = archaius.AddKeyValue("memorySourcetestKeyCheck", "testmemsource1")
 	if err != nil {

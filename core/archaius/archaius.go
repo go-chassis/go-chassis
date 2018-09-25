@@ -39,7 +39,7 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 	fileSource := filesource.NewYamlConfigurationSource()
 	// adding all files with file source
 	for _, v := range essentialfiles {
-		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority); err != nil {
+		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority, nil); err != nil {
 			lager.Logger.Errorf("add file source error [%s].", err.Error())
 			return nil, err
 		}
@@ -51,7 +51,7 @@ func NewConfig(essentialfiles, commonfiles []string) (*Config, error) {
 			lager.Logger.Infof("[%s] not exist", v)
 			continue
 		}
-		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority); err != nil {
+		if err := fileSource.AddFileSource(v, filesource.DefaultFilePriority, nil); err != nil {
 			lager.Logger.Infof("%v", err)
 			return nil, err
 		}
@@ -194,9 +194,14 @@ func UnRegisterListener(listenerObj core.EventListener, key ...string) error {
 	return DefaultConf.ConfigFactory.UnRegisterListener(listenerObj, key...)
 }
 
+func WithHandleFunc(path string) error {
+	return filesource.NewYamlConfigurationSource().HandleFunc(path)
+}
+
 // AddFile is for to add the configuration files into the configfactory at run time
-func AddFile(file string) error {
-	return filesource.NewYamlConfigurationSource().AddFileSource(file, filesource.DefaultFilePriority)
+func AddFile(file string, f func(path string) error) error {
+	return filesource.NewYamlConfigurationSource().AddFileSource(file,
+		filesource.DefaultFilePriority, f)
 }
 
 // AddKeyValue is for to add the configuration key, value pairs into the configfactory at run time
