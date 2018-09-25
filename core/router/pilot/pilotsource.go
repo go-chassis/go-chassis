@@ -16,6 +16,7 @@ import (
 	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
 	"github.com/go-chassis/go-chassis/pkg/istio/client"
 	"github.com/go-chassis/go-chassis/pkg/istio/util"
+	"github.com/go-mesh/openlogging"
 )
 
 const routePilotSourceName = "RoutePilotSource"
@@ -260,7 +261,7 @@ type pilotEventListener struct{}
 // update route rule of a service
 func (r *pilotEventListener) Event(e *core.Event) {
 	if e == nil {
-		lager.Logger.Warn("pilot event pointer is nil", nil)
+		lager.Logger.Warn("pilot event pointer is nil")
 		return
 	}
 
@@ -272,7 +273,7 @@ func (r *pilotEventListener) Event(e *core.Event) {
 	}
 	routeRules, ok := v.([]*model.RouteRule)
 	if !ok {
-		lager.Logger.Error("value of pilot is not type []*RouteRule", nil)
+		openlogging.GetLogger().Error("value of pilot is not type []*RouteRule")
 		return
 	}
 

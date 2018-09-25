@@ -225,8 +225,8 @@ func (r *restfulServer) Start() error {
 			err = r.server.ListenAndServe()
 		}
 		if err != nil {
-			lager.Logger.Error("Can't start http server",
-				openlogging.Tags{"err": err.Error()})
+			openlogging.GetLogger().Error("Can't start http server",
+				openlogging.WithTags(openlogging.Tags{"err": err.Error()}))
 			server.ErrRuntime <- err
 		}
 

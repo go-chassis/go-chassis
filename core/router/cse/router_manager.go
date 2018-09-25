@@ -11,6 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/router"
 	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
+	"github.com/go-mesh/openlogging"
 )
 
 const routeFileSourceName = "RouteFileSource"
@@ -23,7 +24,7 @@ type routeRuleEventListener struct{}
 // update route rule of a service
 func (r *routeRuleEventListener) Event(e *core.Event) {
 	if e == nil {
-		lager.Logger.Warn("Event pointer is nil", nil)
+		openlogging.GetLogger().Warn("Event pointer is nil")
 		return
 	}
 
