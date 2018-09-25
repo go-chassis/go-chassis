@@ -136,7 +136,7 @@ func (s *HeartbeatService) RetryRegister(sid, iid string) error {
 			break
 		}
 	}
-	lager.Logger.Warn("Re-register self success", nil)
+	lager.Logger.Warn("Re-register self success")
 	return nil
 }
 

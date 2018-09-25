@@ -9,6 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-mesh/openlogging"
 )
 
 // RouteDarkLaunchGovernSourceName is source name of dark launch configuration
@@ -104,7 +105,7 @@ func (r *RouteDarkLaunchGovernSource) Callback(e *core.Event) {
 	}
 	lager.Logger.Debugf("Get event, key: %s, type: %s", e.Key, e.EventType)
 	if r.d == nil {
-		lager.Logger.Warn("Dynamic config handler is nil", nil)
+		openlogging.GetLogger().Warn("Dynamic config handler is nil")
 		return
 	}
 	r.d.OnEvent(e)

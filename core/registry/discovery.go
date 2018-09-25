@@ -80,7 +80,7 @@ func enableContractDiscovery(opts Options) {
 	}
 	f := cdFunc[t]
 	if f == nil {
-		lager.Logger.Warn("No contract discovery plugin", nil)
+		lager.Logger.Warn("No contract discovery plugin")
 		return
 	}
 	DefaultContractDiscoveryService = f(opts)

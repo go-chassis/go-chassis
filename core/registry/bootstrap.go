@@ -117,7 +117,7 @@ func refreshDependency(service *MicroService) error {
 
 // RegisterMicroserviceInstances register micro-service instances
 func RegisterMicroserviceInstances() error {
-	lager.Logger.Info("Start to register instance.", nil)
+	lager.Logger.Info("Start to register instance.")
 	service := config.MicroserviceDefinition
 	var err error
 

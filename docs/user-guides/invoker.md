@@ -1,15 +1,15 @@
 # Invoker
-## 概述
+## Introduction
 
 ---
 
-框架提供Rest调用与RPC调用2种方式
+Invoker is the entry point for a developer to call remote service
 
 ## API
 
-#### Rest调用
+#### Rest Invoker
 
-使用NewRestInvoker创建一个invoker实例，可接受chain, filters等自定义选项
+使用NewRestInvoker创建一个invoker实例，可接受chain等自定义选项
 
 ContextDo可以接受一个http request作为参数，开发者可通过request的API对request进行操作，并作为参数传入该方法
 
@@ -18,7 +18,7 @@ func NewRestInvoker(opt ...Option) *RestInvoker
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options ...InvocationOption) (*rest.Response, error)
 ```
 
-#### RPC调用
+#### RPC Invoker
 
 使用NewRPCInvoker创建invoker实例，可接受chain, filters等自定义选项
 
@@ -33,7 +33,7 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 
 无论Rest还是RPC调用方法都能够接受多种选项对一次调用进行控制，参考options.go查看更多选项
 
-## 示例
+## Examples
 
 #### RPC
 
@@ -57,6 +57,26 @@ req, _ := rest.NewRequest("GET", "cse://RESTServer/sayhello/world")
 defer req.Close()
 resp, err := core.NewRestInvoker(core.ChainName("custom")).ContextDo(context.TODO(), req)
 ```
+
+#### Multiple Port
+if you define different port for the same protocol, like below
+```go
+cse:
+  protocols:
+    rest:
+      listenAddress: 0.0.0.0:5000
+    rest-admin:
+      listenAddress: 0.0.0.0:5001
+```
+then you can use suffix "admin" as port to access rest-admin server
+```go
+req, _ := rest.NewRequest("GET", "cse://RESTServer:admin/sayhello/world")
+```
+use only service name to access rest server
+```go
+req, _ := rest.NewRequest("GET", "cse://RESTServer/sayhello/world")
+```
+
 
 
 
