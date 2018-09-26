@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/go-chassis/go-chassis/bootstrap"
 	_ "github.com/go-mesh/mesher/plugins/registry/istiov2"
+	"github.com/go-mesh/openlogging"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/
@@ -20,6 +21,7 @@ func main() {
 		lager.Logger.Errorf("Init failed: %s", err.Error())
 		return
 	}
+	openlogging.SetLogger(lager.Logger)
 	for {
 		req, err := rest.NewRequest("GET", "cse://pilotv2server/sayhello/world")
 		if err != nil {
@@ -32,7 +34,7 @@ func main() {
 			lager.Logger.Errorf("do request failed.", err)
 		}
 		defer resp.Close()
-		lager.Logger.Infof("REST Server sayhello[GET]: %s" + string(resp.ReadBody()))
+		lager.Logger.Infof("REST Server sayhello[GET]: %s", string(resp.ReadBody()))
 		time.Sleep(5 * time.Second)
 	}
 }
