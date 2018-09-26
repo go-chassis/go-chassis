@@ -234,6 +234,9 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 				lager.Logger.Debug(err.Error())
 				continue
 			}
+			if err == client.ErrMicroServiceNotExists {
+				registry.ProvidersMicroServiceCache.Delete(strings.Join([]string{service[0], service[1]}, "|"))
+			}
 			lager.Logger.Error("Refresh local instance cache failed: " + err.Error())
 			continue
 		}

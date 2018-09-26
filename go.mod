@@ -11,7 +11,7 @@ require (
 	github.com/go-chassis/go-archaius v0.0.0-20180831094429-e91e8f9ed49f
 	github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640
 	github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6
-	github.com/go-chassis/go-sc-client v0.0.0-20180831081217-8135c6df7f96
+	github.com/go-chassis/go-sc-client v0.0.0-20180925063328-78ad13b4fbef
 	github.com/go-chassis/paas-lager v0.0.0-20180905100939-eff93e5e67db
 	github.com/go-mesh/openlogging v0.0.0-20180912071658-0fd4707a75ab
 	github.com/golang/protobuf v1.2.0
