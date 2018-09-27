@@ -129,7 +129,7 @@ func Call(beginTime time.Time, invoker *core.RPCInvoker, restInvoker *core.RestI
 		if registryEnabled {
 			if protocolName == restProtocol {
 				url := "cse://" + microServiceName + "/getmessage"
-				req, _ := rest.NewRequest(http.MethodGet, url)
+				req, _ := rest.NewRequest(http.MethodGet, url, nil)
 				resp, err := restInvoker.ContextDo(ctx, req)
 				if err != nil {
 					panic(err)

@@ -5,35 +5,34 @@ import (
 	"testing"
 
 	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/stretchr/testify/assert"
 )
 
-var req *rest.Request
-
 func TestNewRestRequest(t *testing.T) {
 	t.Log("Testing all the restfull client functions")
-	req, err := rest.NewRequest("GET", "cse://hello")
+	req, err := rest.NewRequest("GET", "cse://hello", nil)
 	assert.NoError(t, err)
 
 	req, err = rest.NewRequest("", "cse://hello", []byte("bodypart"))
 	assert.NoError(t, err)
 
-	req.SetURI("cse://example/:id")
-	uri := req.GetURI()
+	httputil.SetURI(req, "cse://example/:id")
+	uri := req.URL.String()
 	assert.Equal(t, uri, "cse://example/:id")
 
-	req.SetBody([]byte("hello"))
+	httputil.SetBody(req, []byte("hello"))
 
-	req.SetHeader("a", "1")
-	value := req.GetHeader("a")
+	req.Header.Set("a", "1")
+	value := req.Header.Get("a")
 	assert.Equal(t, value, "1")
 
-	req.SetContentType("application/json")
-	value = req.GetContentType()
+	httputil.SetContentType(req, "application/json")
+	value = httputil.GetContentType(req)
 	assert.Equal(t, value, "application/json")
 
-	req.SetMethod("POST")
-	method := req.GetMethod()
+	req.Method = "POST"
+	method := req.Method
 	assert.Equal(t, "POST", method)
 
 	resp := rest.NewResponse()
@@ -55,17 +54,15 @@ func TestNewRestRequest(t *testing.T) {
 	val := resp.GetCookie("test")
 	assert.Equal(t, c1.Value, string(val))
 
-	req, err = rest.NewRequest("GET", "cse://hello")
+	req, err = rest.NewRequest("GET", "cse://hello", nil)
 	assert.NoError(t, err)
 
 	testHeaderKey := "hello"
 	testHeaderValue := "go-chassis"
-	req.Req.Header.Add(testHeaderKey, testHeaderValue)
-	req.Req.AddCookie(c1)
-	newRequest := req.Copy()
-	assert.Equal(t, newRequest.Req.Header.Get(testHeaderKey), testHeaderValue)
-	assert.Equal(t, newRequest.GetCookie(c1.Name), c1.Value)
+	req.Header.Add(testHeaderKey, testHeaderValue)
+	req.AddCookie(c1)
+	assert.Equal(t, req.Header.Get(testHeaderKey), testHeaderValue)
+	assert.Equal(t, httputil.GetCookie(req, c1.Name), c1.Value)
 
-	req.Close()
 	resp.Close()
 }

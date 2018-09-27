@@ -50,9 +50,8 @@ func uploadfile(filename string) {
 		lager.Logger.Error("new request failed." + err.Error())
 		return
 	}
-	defer req.Close()
 
-	req.SetHeader("Content-Type", "application/octet-stream")
+	req.Header.Set("Content-Type", "application/octet-stream")
 
 	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
@@ -91,16 +90,14 @@ func uploadform(filename string) {
 
 	bodyReader := io.MultiReader(headBuf, f, lastBoundary)
 
-	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadform")
+	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadform", nil)
 	if err != nil {
 		lager.Logger.Error("new request failed." + err.Error())
 		return
 	}
-	req.Req.Body = ioutil.NopCloser(bodyReader)
-	req.SetHeader("Content-Type", headBufWriter.FormDataContentType())
-	req.Req.ContentLength = int64(headBuf.Len()) + fs.Size() + int64(lastBoundary.Len())
-
-	defer req.Close()
+	req.Body = ioutil.NopCloser(bodyReader)
+	req.Header.Set("Content-Type", headBufWriter.FormDataContentType())
+	req.ContentLength = int64(headBuf.Len()) + fs.Size() + int64(lastBoundary.Len())
 
 	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
