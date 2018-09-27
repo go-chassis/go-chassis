@@ -16,6 +16,7 @@ import (
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,8 +45,8 @@ func TestRPCInvoker_InvokeFailinChainInit(t *testing.T) {
 func TestRestInvoker_ContextDo(t *testing.T) {
 	initenv()
 	restinvoker := core.NewRestInvoker()
-	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest")
-	req.SetContentType("application/json")
+	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest", nil)
+	httputil.SetContentType(req, "application/json")
 	//use the invoker like http client.
 	_, err := restinvoker.ContextDo(context.TODO(), req, core.WithEndpoint("0.0.0.0"), core.WithProtocol("rest"), core.WithFilters(""))
 	assert.Error(t, err)

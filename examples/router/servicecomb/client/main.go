@@ -11,6 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/
@@ -26,7 +27,7 @@ func main() {
 	}
 
 	for i := 0; i < 10; i++ {
-		req, err := rest.NewRequest("POST", "cse://ROUTERServer/equal")
+		req, err := rest.NewRequest("POST", "cse://ROUTERServer/equal", nil)
 		if err != nil {
 			lager.Logger.Error("new request failed.")
 			return
@@ -40,10 +41,9 @@ func main() {
 		}
 
 		parmByte, _ := json.Marshal(parm)
-		req.SetBody(parmByte)
+		httputil.SetBody(req, parmByte)
 
 		//req.SetHeader("Chassis", "info")
-		defer req.Close()
 		ctx := context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
 			"user": "peter",
 		})

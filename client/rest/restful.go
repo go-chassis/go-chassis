@@ -9,6 +9,20 @@ import (
 	"sync"
 )
 
+//NewRequest is a function which creates new request
+func NewRequest(method, urlStr string, body []byte) (*http.Request, error) {
+	var r io.Reader
+	if body != nil {
+		r = bytes.NewReader(body)
+	}
+
+	req, err := http.NewRequest(method, urlStr, r)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
 //Client is a struct
 type Client struct {
 	c    *http.Client
@@ -17,130 +31,9 @@ type Client struct {
 }
 
 //Do is a method
-func (c *Client) Do(req *Request, resp *Response) (err error) {
-	resp.Resp, err = c.c.Do(req.Req)
+func (c *Client) Do(req *http.Request, resp *Response) (err error) {
+	resp.Resp, err = c.c.Do(req)
 	return
-}
-
-//Request is struct
-type Request struct {
-	Req *http.Request
-}
-
-//NewRequest is a function which creates new request
-func NewRequest(method, urlStr string, body ...[]byte) (*Request, error) {
-	if method == "" {
-		method = "GET"
-	}
-	var r io.Reader
-	if body != nil {
-		r = bytes.NewReader(body[0])
-	}
-
-	req, err := http.NewRequest(method, urlStr, r)
-	if err != nil {
-		return nil, err
-	}
-	return &Request{Req: req}, nil
-}
-
-//SetURI sets host for the request.
-func (req *Request) SetURI(url string) {
-	if tempURL, err := req.Req.URL.Parse(url); err == nil {
-		req.Req.URL = tempURL
-	}
-}
-
-//Copy is method
-func (req *Request) Copy() *Request {
-	newReq, err := http.NewRequest(req.Req.Method, req.Req.URL.String(), req.Req.Body)
-	if err != nil {
-		return nil
-	}
-	//Copy headers
-	for key := range req.Req.Header {
-		newReq.Header.Add(key, req.Req.Header.Get(key))
-	}
-	//Copy cookies
-	for _, c := range req.Req.Cookies() {
-		newReq.AddCookie(c)
-	}
-
-	return &Request{Req: newReq}
-}
-
-//GetRequest is a method
-func (req *Request) GetRequest() *http.Request {
-	return req.Req
-}
-
-//SetBody is a method used for setting body for a request
-func (req *Request) SetBody(body []byte) {
-	req.Req.Body = ioutil.NopCloser(bytes.NewReader(body))
-}
-
-//SetCookie set key value in request cookie
-func (req *Request) SetCookie(k, v string) {
-	c := &http.Cookie{
-		Name:  k,
-		Value: v,
-	}
-	req.Req.AddCookie(c)
-}
-
-//GetURI is a method
-func (req *Request) GetURI() string {
-	return req.Req.URL.String()
-}
-
-// SetContentType is a method used for setting content-type in a request
-func (req *Request) SetContentType(ct string) {
-	req.Req.Header.Set("Content-Type", ct)
-}
-
-// GetContentType is a method used for getting content-type in a request
-func (req *Request) GetContentType() string {
-	return req.Req.Header.Get("Content-Type")
-}
-
-//SetHeader is a method used for setting header in a request
-func (req *Request) SetHeader(key, value string) {
-	req.Req.Header.Set(key, value)
-}
-
-//SetHeaderCookie is a method used to setting header cookie
-func (req *Request) SetHeaderCookie(key, value string) {
-	req.Req.Header.Set(key, value)
-}
-
-//GetHeader is a method which gets head from a request
-func (req *Request) GetHeader(key string) string {
-	return string(req.Req.Header.Get(key))
-}
-
-//GetCookie is a method which gets cookie from a request
-func (req *Request) GetCookie(key string) string {
-	cookie, err := req.Req.Cookie(key)
-	if err == http.ErrNoCookie {
-		return ""
-	}
-	return cookie.Value
-}
-
-//SetMethod is a method
-func (req *Request) SetMethod(method string) {
-	req.Req.Method = method
-}
-
-//GetMethod is a method
-func (req *Request) GetMethod() string {
-	return req.Req.Method
-}
-
-//Close is used for closing a request
-//TODO Confirm it's necessary or not
-func (req *Request) Close() {
-	//req.Req.Body.Close()
 }
 
 //Response is a struct used for handling response

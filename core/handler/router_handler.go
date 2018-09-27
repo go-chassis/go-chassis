@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -26,12 +25,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 	tags[common.BuildinTagApp] = config.GlobalDefinition.AppID
 
 	h := make(map[string]string)
-	if i.Protocol == "rest" {
-		req, _ := i.Args.(*rest.Request)
-		for k := range req.GetRequest().Header {
-			h[k] = req.Req.Header.Get(k)
-		}
-	} else if i.Ctx != nil {
+	if i.Ctx != nil {
 		at, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 		if ok {
 			h = map[string]string(at)

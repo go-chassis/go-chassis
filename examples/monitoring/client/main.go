@@ -19,12 +19,11 @@ func main() {
 		return
 	}
 
-	req, err := rest.NewRequest("GET", "cse://RESTServerA/trace")
+	req, err := rest.NewRequest("GET", "cse://RESTServerA/trace", nil)
 	if err != nil {
 		lager.Logger.Error("new request failed." + err.Error())
 		return
 	}
-	defer req.Close()
 
 	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {

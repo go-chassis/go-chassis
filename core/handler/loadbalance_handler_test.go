@@ -238,8 +238,8 @@ service_description:
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
 	loadbalancer.Enable()
-	req, _ := rest.NewRequest("GET", "127.0.0.1")
-	req.SetHeader("Set-Cookie", "sessionid=100")
+	req, _ := rest.NewRequest("GET", "127.0.0.1", nil)
+	req.Header.Set("Set-Cookie", "sessionid=100")
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",

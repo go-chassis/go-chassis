@@ -33,7 +33,7 @@ func callRest(invoker *core.RestInvoker, i int) {
 	if i < 10 {
 		url = "cse://istioserver/sayhello/a"
 	}
-	req, _ := rest.NewRequest("GET", url)
+	req, _ := rest.NewRequest("GET", url, nil)
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
 	if err != nil {
@@ -43,23 +43,5 @@ func callRest(invoker *core.RestInvoker, i int) {
 	}
 	log.Println(i, "REST SayHello ------------------------------ ", resp1.GetStatusCode(), string(resp1.ReadBody()))
 
-	//req, _ = rest.NewRequest(http.MethodPost, "cse://Server/sayhi", []byte(`{"name": "peter wang and me"}`))
-	//req.SetHeader("Content-Type", "application/json")
-	//resp1, err = invoker.ContextDo(context.TODO(), req)
-	//if err != nil {
-	//	log.Println(err)
-	//	return
-	//}
-	//log.Printf("Rest Server sayhi[POST] %s", string(resp1.ReadBody()))
-	//
-	//req, _ = rest.NewRequest(http.MethodGet, "cse://Server/sayerror", []byte(""))
-	//resp1, err = invoker.ContextDo(context.TODO(), req)
-	//if err != nil {
-	//	log.Println(err)
-	//	return
-	//}
-	//log.Printf("Rest Server sayerror[GET] %s ", string(resp1.ReadBody()))
-
-	req.Close()
 	resp1.Close()
 }

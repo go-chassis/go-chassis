@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/cenkalti/backoff"
-	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
@@ -18,7 +17,9 @@ import (
 
 	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
 
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-chassis/go-chassis/session"
+	"net/http"
 )
 
 // LBHandler loadbalancer handler struct
@@ -161,9 +162,9 @@ func getSessionID(i *invocation.Invocation) string {
 	var metadata interface{}
 
 	switch i.Args.(type) {
-	case *rest.Request:
-		req := i.Args.(*rest.Request)
-		value := req.GetCookie(common.LBSessionID)
+	case *http.Request:
+		req := i.Args.(*http.Request)
+		value := httputil.GetCookie(req, common.LBSessionID)
 		if value != "" {
 			metadata = value
 		}

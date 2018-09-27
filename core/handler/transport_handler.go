@@ -11,6 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/session"
+	"net/http"
 )
 
 // TransportHandler transport handler
@@ -76,8 +77,8 @@ func ProcessSpecialProtocol(inv *invocation.Invocation) {
 		var reply *rest.Response
 		if inv.Reply != nil && inv.Args != nil {
 			reply = inv.Reply.(*rest.Response)
-			req := inv.Args.(*rest.Request)
-			session.SaveSessionIDFromHTTP(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req.GetRequest())
+			req := inv.Args.(*http.Request)
+			session.SaveSessionIDFromHTTP(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req)
 		}
 	case common.ProtocolHighway:
 		inv.Ctx = session.SaveSessionIDFromContext(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))

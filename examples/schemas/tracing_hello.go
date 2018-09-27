@@ -16,18 +16,18 @@ type TracingHello struct {
 //Trace is a method
 func (r *TracingHello) Trace(b *rf.Context) {
 	log.Println("tracing===", b.Ctx)
-	req, err := rest.NewRequest("GET", "cse://RESTServerB/sayhello/world")
+	req, err := rest.NewRequest("GET", "cse://RESTServerB/sayhello/world", nil)
 	if err != nil {
 		b.WriteError(500, err)
 		return
 	}
-	defer req.Close()
 
 	resp, err := core.NewRestInvoker().ContextDo(b.Ctx, req)
 	if err != nil {
 		b.WriteError(500, err)
 		return
 	}
+	resp.Close()
 	b.Write(resp.ReadBody())
 }
 

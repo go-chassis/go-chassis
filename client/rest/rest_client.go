@@ -10,6 +10,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"net"
 	"time"
 )
@@ -34,8 +35,7 @@ const (
 var (
 	//ErrCanceled means Request is canceled by context management
 	ErrCanceled = errors.New("request cancelled")
-	//ErrInvalidReq invalid input
-	ErrInvalidReq = errors.New("rest consumer call arg is not *rest.Request type")
+
 	//ErrInvalidResp invalid input
 	ErrInvalidResp = errors.New("rest consumer response arg is not *rest.Response type")
 )
@@ -114,22 +114,11 @@ func (c *Client) failure2Error(e error, r *Response, addr string) error {
 
 	return nil
 }
-func invocation2HttpRequest(inv *invocation.Invocation) (*Request, error) {
-	reqSend, ok := inv.Args.(*Request)
-	if !ok {
-		return nil, ErrInvalidReq
-	}
-	m := common.FromContext(inv.Ctx)
-	for k, v := range m {
-		reqSend.SetHeader(k, v)
-	}
-	return reqSend, nil
-}
 
 //Call is a method which uses client struct object
 func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
 	var err error
-	reqSend, err := invocation2HttpRequest(inv)
+	reqSend, err := httputil.HTTPRequest(inv)
 	if err != nil {
 		return err
 	}
@@ -144,12 +133,12 @@ func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocati
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	if c.opts.TLSConfig != nil {
-		reqSend.Req.URL.Scheme = SchemaHTTPS
+		reqSend.URL.Scheme = SchemaHTTPS
 	} else {
-		reqSend.Req.URL.Scheme = SchemaHTTP
+		reqSend.URL.Scheme = SchemaHTTP
 	}
 	if addr != "" {
-		reqSend.Req.URL.Host = addr
+		reqSend.URL.Host = addr
 	}
 
 	//increase the max connection per host to prevent error "no free connection available" error while sending more requests.
@@ -174,12 +163,12 @@ func (c *Client) String() string {
 func (c *Client) Close() error {
 	return nil
 }
-func (c *Client) contextToHeader(ctx context.Context, req *Request) {
+func (c *Client) contextToHeader(ctx context.Context, req *http.Request) {
 	for k, v := range common.FromContext(ctx) {
-		req.Req.Header.Set(k, v)
+		req.Header.Set(k, v)
 	}
 
-	if len(req.GetContentType()) == 0 {
-		req.SetContentType(common.JSON)
+	if len(req.Header.Get("Content-Type")) == 0 {
+		req.Header.Set("Content-Type", common.JSON)
 	}
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/examples/schemas/employ"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
 
 var wg sync.WaitGroup
@@ -112,7 +113,7 @@ func call(invoker *core.RPCInvoker) {
 
 func callRest(invoker *core.RestInvoker) {
 	defer wg.Done()
-	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest")
+	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest", nil)
 
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
@@ -122,10 +123,10 @@ func callRest(invoker *core.RestInvoker) {
 	}
 	log.Printf("Rest Server sayhello[Get] %s", string(resp1.ReadBody()))
 	log.Printf("Cookie from LB %s", string(resp1.GetCookie(common.LBSessionID)))
-	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
+	httputil.SetCookie(req, common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	req, _ = rest.NewRequest(http.MethodPost, "cse://Server/sayhi", []byte(`{"name": "peter wang and me"}`))
-	req.SetHeader("Content-Type", "application/json")
-	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
+	req.Header.Set("Content-Type", "application/json")
+	httputil.SetCookie(req, common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
 		log.Println(err)
@@ -134,7 +135,7 @@ func callRest(invoker *core.RestInvoker) {
 	log.Printf("Rest Server sayhi[POST] %s", string(resp1.ReadBody()))
 
 	req, _ = rest.NewRequest(http.MethodGet, "cse://Server/sayerror", []byte(""))
-	req.SetCookie(common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
+	httputil.SetCookie(req, common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
 		log.Printf("%s", string(resp1.ReadBody()))
@@ -143,6 +144,5 @@ func callRest(invoker *core.RestInvoker) {
 	}
 	log.Printf("Rest Server sayerror[GET] %s ", string(resp1.ReadBody()))
 
-	req.Close()
 	resp1.Close()
 }
