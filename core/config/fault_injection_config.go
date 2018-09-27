@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-archaius"
 
 	"strconv"
 	"time"

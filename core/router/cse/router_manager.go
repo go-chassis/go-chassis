@@ -130,6 +130,7 @@ func AddRouteRuleSource(s core.ConfigSource) error {
 	if err := routeRuleMgr.AddSource(s, s.GetPriority()); err != nil {
 		return err
 	}
+
 	lager.Logger.Infof("Add [%s] source success", s.GetSourceName())
 	return nil
 }

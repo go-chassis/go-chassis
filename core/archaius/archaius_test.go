@@ -9,8 +9,9 @@ import (
 
 	_ "github.com/go-chassis/go-chassis/initiator"
 
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/core"
-	"github.com/go-chassis/go-chassis/core/archaius"
+	arch "github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -182,7 +183,7 @@ cse1:
 	if err != nil {
 		t.Error(err)
 	}
-	archaius.Init()
+	arch.Init()
 
 	time.Sleep(10 * time.Millisecond)
 	eventHandler := EListener{}

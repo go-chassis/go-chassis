@@ -6,7 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/go-chassis/go-chassis/core/archaius"
+	"github.com/go-chassis/go-archaius"
+	arch "github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/config/schema"
@@ -285,7 +286,7 @@ func Init() error {
 			return err
 		}
 	}
-	err := archaius.Init()
+	err := arch.Init()
 	if err != nil {
 		return err
 	}

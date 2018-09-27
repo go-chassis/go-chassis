@@ -55,9 +55,9 @@ import (
 	_ "github.com/go-chassis/go-cc-client/apollo-client"
 	_ "github.com/go-chassis/go-cc-client/configcenter-client"
 
-	"github.com/go-chassis/go-chassis/config-center"
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-chassis/configcenter"
 	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"

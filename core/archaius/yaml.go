@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/lager"
 
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/core"
 )
 
@@ -22,5 +23,5 @@ type ConfigListener struct{}
 
 // Event is for to receive the events based on registered key and object pairs
 func (cl *ConfigListener) Event(e *core.Event) {
-	lager.Logger.Infof("the value of %s is change to %v, get the values: %v", e.Key, e.Value, Get(e.Key))
+	lager.Logger.Infof("the value of %s is change to %v, get the values: %v", e.Key, e.Value, archaius.Get(e.Key))
 }
