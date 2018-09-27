@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"time"
 )
 
@@ -30,7 +31,7 @@ func main() {
 		lager.Logger.Error("do request failed." + err.Error())
 		return
 	}
-	defer resp.Close()
-	lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
+	defer resp.Body.Close()
+	lager.Logger.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 	time.Sleep(2 * time.Second)
 }

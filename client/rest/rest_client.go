@@ -97,7 +97,7 @@ func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 //Init is a method
 
 // If a request fails, we generate an error.
-func (c *Client) failure2Error(e error, r *Response, addr string) error {
+func (c *Client) failure2Error(e error, r *http.Response, addr string) error {
 	if e != nil {
 		return e
 	}
@@ -106,10 +106,10 @@ func (c *Client) failure2Error(e error, r *Response, addr string) error {
 		return nil
 	}
 
-	codeStr := strconv.Itoa(r.GetStatusCode())
+	codeStr := strconv.Itoa(r.StatusCode)
 	// The Failure map defines whether or not a request fail.
 	if c.opts.Failure["http_"+codeStr] {
-		return fmt.Errorf("http error status %d, server addr: %s", r.GetStatusCode(), addr)
+		return fmt.Errorf("http error status %d, server addr: %s", r.StatusCode, addr)
 	}
 
 	return nil
@@ -122,8 +122,7 @@ func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocati
 	if err != nil {
 		return err
 	}
-
-	resp, ok := rsp.(*Response)
+	resp, ok := rsp.(*http.Response)
 	if !ok {
 		return ErrInvalidResp
 	}
@@ -143,15 +142,22 @@ func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocati
 
 	//increase the max connection per host to prevent error "no free connection available" error while sending more requests.
 	c.c.Transport.(*http.Transport).MaxIdleConnsPerHost = 512 * 20
-
+	var temp *http.Response
 	errChan := make(chan error, 1)
-	go func() { errChan <- c.Do(reqSend, resp) }()
+	go func() {
+		temp, err = c.c.Do(reqSend)
+		errChan <- err
+	}()
 
 	select {
 	case <-ctx.Done():
 		err = ErrCanceled
 	case err = <-errChan:
+		if err == nil {
+			*resp = *temp
+		}
 	}
+
 	return c.failure2Error(err, resp, addr)
 }
 

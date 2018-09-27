@@ -13,6 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"io/ioutil"
 )
 
@@ -58,8 +59,8 @@ func uploadfile(filename string) {
 		lager.Logger.Error("do request failed." + err.Error())
 		return
 	}
-	defer resp.Close()
-	lager.Logger.Info("FileUploadServer Response: " + string(resp.ReadBody()))
+	defer resp.Body.Close()
+	lager.Logger.Info("FileUploadServer Response: " + string(httputil.ReadBody(resp)))
 
 }
 
@@ -104,7 +105,7 @@ func uploadform(filename string) {
 		lager.Logger.Error("do request failed." + err.Error())
 		return
 	}
-	defer resp.Close()
-	lager.Logger.Info("FileUploadServer Response: " + string(resp.ReadBody()))
+	defer resp.Body.Close()
+	lager.Logger.Info("FileUploadServer Response: " + string(httputil.ReadBody(resp)))
 
 }

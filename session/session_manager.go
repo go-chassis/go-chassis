@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
 
 	"context"
-	cache "github.com/patrickmn/go-cache"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/patrickmn/go-cache"
 )
 
 // ErrResponseNil used for to represent the error response, when it is nil
@@ -132,10 +132,9 @@ func (c cookieResponseWriter) WriteHeader(int) {
 
 //setCookie appends cookie with already present cookie with ';' in between
 func setCookie(resp *http.Response, value string) {
-	Resp := rest.Response{Resp: resp}
 
 	newCookie := common.LBSessionID + "=" + value
-	oldCookie := string(Resp.GetCookie(common.LBSessionID))
+	oldCookie := string(httputil.GetRespCookie(resp, common.LBSessionID))
 
 	if oldCookie != "" {
 		//If cookie is already set, append it with ';'

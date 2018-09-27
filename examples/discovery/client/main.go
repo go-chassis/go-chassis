@@ -118,31 +118,31 @@ func callRest(invoker *core.RestInvoker) {
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
 	if err != nil {
-		lager.Logger.Errorf("call request fail (%s) (%d) ", string(resp1.ReadBody()), resp1.GetStatusCode())
+		lager.Logger.Errorf("call request fail (%s) (%d) ", string(httputil.ReadBody(resp1)), resp1.StatusCode)
 		return
 	}
-	log.Printf("Rest Server sayhello[Get] %s", string(resp1.ReadBody()))
-	log.Printf("Cookie from LB %s", string(resp1.GetCookie(common.LBSessionID)))
-	httputil.SetCookie(req, common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
+	log.Printf("Rest Server sayhello[Get] %s", string(httputil.ReadBody(resp1)))
+	log.Printf("Cookie from LB %s", string(httputil.GetRespCookie(resp1, common.LBSessionID)))
+	httputil.SetCookie(req, common.LBSessionID, string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 	req, _ = rest.NewRequest(http.MethodPost, "cse://Server/sayhi", []byte(`{"name": "peter wang and me"}`))
 	req.Header.Set("Content-Type", "application/json")
-	httputil.SetCookie(req, common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
+	httputil.SetCookie(req, common.LBSessionID, string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Printf("Rest Server sayhi[POST] %s", string(resp1.ReadBody()))
+	log.Printf("Rest Server sayhi[POST] %s %s", httputil.GetRespCookie(resp1, common.LBSessionID), httputil.ReadBody(resp1))
 
 	req, _ = rest.NewRequest(http.MethodGet, "cse://Server/sayerror", []byte(""))
-	httputil.SetCookie(req, common.LBSessionID, string(resp1.GetCookie(common.LBSessionID)))
+	httputil.SetCookie(req, common.LBSessionID, string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {
-		log.Printf("%s", string(resp1.ReadBody()))
+		log.Printf("%s", string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 		log.Println(err)
 		return
 	}
-	log.Printf("Rest Server sayerror[GET] %s ", string(resp1.ReadBody()))
+	log.Printf("Rest Server sayerror[GET] %s ", string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 
-	resp1.Close()
+	defer resp1.Body.Close()
 }

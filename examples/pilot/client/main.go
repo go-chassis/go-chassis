@@ -10,6 +10,7 @@ import (
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
@@ -41,7 +42,7 @@ func callRest(invoker *core.RestInvoker, i int) {
 		//lager.Logger.Errorf(err, "call request fail (%s) (%d) ", string(resp1.ReadBody()), resp1.GetStatusCode())
 		//return
 	}
-	log.Println(i, "REST SayHello ------------------------------ ", resp1.GetStatusCode(), string(resp1.ReadBody()))
+	log.Println(i, "REST SayHello ------------------------------ ", resp1.StatusCode, string(httputil.ReadBody(resp1)))
 
-	resp1.Close()
+	resp1.Body.Close()
 }
