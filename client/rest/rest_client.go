@@ -109,7 +109,7 @@ func (c *Client) failure2Error(e error, r *http.Response, addr string) error {
 	codeStr := strconv.Itoa(r.StatusCode)
 	// The Failure map defines whether or not a request fail.
 	if c.opts.Failure["http_"+codeStr] {
-		return fmt.Errorf("http error status %d, server addr: %s", r.StatusCode, addr)
+		return fmt.Errorf("http error status [%d], server addr: [%s], will not print response body, to protect service sensitive data", r.StatusCode, addr)
 	}
 
 	return nil
