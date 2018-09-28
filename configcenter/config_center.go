@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
@@ -16,8 +15,6 @@ import (
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-archaius/core"
-	"github.com/go-chassis/go-archaius/sources/configcenter-source"
 	"github.com/go-chassis/go-chassis/core/registry"
 )
 
@@ -177,42 +174,33 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 		clientType = DefaultConfigCenter
 
 	}
-	configCenterSource, err := configcentersource.InitConfigCenter(ccEndpoint, dimensionInfo, tenantName, enableSSL, tlsConfig, refreshMode,
-		config.GlobalDefinition.Cse.Config.Client.RefreshInterval, config.GlobalDefinition.Cse.Config.Client.Autodiscovery, clientType)
+
+	var ccObj = archaius.ConfigCenterInfo{
+		URL:             ccEndpoint,
+		DimensionInfo:   dimensionInfo,
+		TenantName:      tenantName,
+		EnableSSL:       enableSSL,
+		TLSConfig:       tlsConfig,
+		RefreshMode:     refreshMode,
+		RefreshInterval: config.GlobalDefinition.Cse.Config.Client.RefreshInterval,
+		Autodiscovery:   config.GlobalDefinition.Cse.Config.Client.Autodiscovery,
+		ClientType:      clientType,
+		Version:         config.GlobalDefinition.Cse.Config.Client.APIVersion.Version,
+		RefreshPort:     config.GlobalDefinition.Cse.Config.Client.RefreshPort,
+		Environment:     config.MicroserviceDefinition.ServiceDescription.Environment,
+	}
+
+	err := archaius.InitConfigCenter(archaius.WithConfigCenter(ccObj))
 
 	if err != nil {
 		return err
 	}
-
-	err = archaius.DefaultConf.ConfigFactory.AddSource(configCenterSource)
-	if err != nil {
-		lager.Logger.Error("failed to do add source operation:" + err.Error())
-		return err
-	}
-	eventHandler := EventListener{
-		Name:    "EventHandler",
-		Factory: archaius.DefaultConf.ConfigFactory,
-	}
-
-	archaius.DefaultConf.ConfigFactory.RegisterListener(eventHandler, "a*")
 
 	if err := refreshGlobalConfig(); err != nil {
 		lager.Logger.Error("failed to refresh global config for lb and cb:" + err.Error())
 		return err
 	}
 	return nil
-}
-
-//EventListener is a struct
-type EventListener struct {
-	Name    string
-	Factory goarchaius.ConfigurationFactory
-}
-
-//Event is a method
-func (e EventListener) Event(event *core.Event) {
-	value := e.Factory.GetConfigurationByKey(event.Key)
-	lager.Logger.Infof("config value %s | %s", event.Key, value)
 }
 
 func refreshGlobalConfig() error {

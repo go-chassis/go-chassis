@@ -9,7 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis"
 	_ "github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/client/rest"
-	_ "github.com/go-chassis/go-chassis/config-center"
+	_ "github.com/go-chassis/go-chassis/configcenter"
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"

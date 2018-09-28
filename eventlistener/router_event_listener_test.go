@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/core"
-	"github.com/go-chassis/go-archaius/sources/memory-source"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/router"
 	"github.com/go-chassis/go-chassis/core/router/cse"
@@ -22,14 +21,8 @@ const (
 
 func TestDarkLaunchEventListenerEvent(t *testing.T) {
 	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
-	c, err := archaius.NewConfig(make([]string, 0), make([]string, 0))
-	if err != nil {
-		t.Error(err)
-	}
-	archaius.DefaultConf = c
-	c.ConfigFactory.AddSource(memoryconfigsource.NewMemoryConfigurationSource())
 
-	err = router.Init()
+	err := router.Init()
 	assert.NoError(t, err)
 
 	e := &core.Event{

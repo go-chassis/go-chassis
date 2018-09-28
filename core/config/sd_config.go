@@ -1,6 +1,6 @@
 package config
 
-import "github.com/go-chassis/go-chassis/core/archaius"
+import "github.com/go-chassis/go-archaius"
 
 // GetServiceDiscoveryType returns the Type of SD registry
 func GetServiceDiscoveryType() string {

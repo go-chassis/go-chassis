@@ -172,7 +172,6 @@ service_description:
 	err = control.Init()
 	assert.NoError(t, err)
 	testConfigFactoryObj := new(MockConfigurationFactory)
-	archaius.DefaultConf.ConfigFactory = testConfigFactoryObj
 	key1 := fmt.Sprint("cse.loadbalance.retryEnabled")
 	key2 := fmt.Sprint("cse.loadbalance.service1.retryEnabled")
 	key3 := fmt.Sprint("cse.loadbalance.retryOnSame")

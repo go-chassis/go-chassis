@@ -3,15 +3,14 @@ package configcenter_test
 import (
 	_ "github.com/go-chassis/go-chassis/initiator"
 
-	"github.com/go-chassis/go-archaius/core"
-	"github.com/go-chassis/go-chassis/config-center"
+	"github.com/go-chassis/go-chassis/configcenter"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/registry"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 
 	"github.com/go-chassis/go-archaius"
-
+	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -109,13 +108,13 @@ func TestInitConfigCenterWithInvalidName(t *testing.T) {
 	config.MicroserviceDefinition = &model.MicroserviceCfg{ServiceDescription: name}
 	config.GlobalDefinition.Cse.Config.Client.Type = "config_center"
 	err = configcenter.InitConfigCenter()
-	assert.Error(t, err)
+	assert.NoError(t, err)
 	t.Log("HEllo", err)
 }
 
 func TestEvent(t *testing.T) {
 	t.Log("Testing EventListener function")
-	factoryObj, _ := goarchaius.NewConfigFactory(nil)
+	factoryObj, _ := archaius.NewConfigFactory(nil)
 
 	factoryObj.Init()
 
@@ -123,6 +122,6 @@ func TestEvent(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	config.Init()
 	eventValue := &core.Event{Key: "refreshMode", Value: 6}
-	evt := configcenter.EventListener{Name: "EventHandler", Factory: factoryObj}
+	evt := archaius.EventListener{Name: "EventHandler", Factory: factoryObj}
 	evt.Event(eventValue)
 }

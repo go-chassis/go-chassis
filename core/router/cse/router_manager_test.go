@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/core"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -253,12 +253,10 @@ func deleteDarkLaunchRule(s string) {
 
 func preInit(t *testing.T) {
 	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
-	c, err := archaius.NewConfig(make([]string, 0), make([]string, 0))
+	err := archaius.InitExternal(archaius.WithExternalSource(NewExternalConfigurationSource()))
 	if err != nil {
 		t.Error(err)
 	}
-	archaius.DefaultConf = c
-	c.ConfigFactory.AddSource(NewExternalConfigurationSource())
 }
 
 func initRouterDefinition() {
