@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/go-chassis/go-chassis-plugins/registry/kube"
 	_ "github.com/go-chassis/go-chassis/bootstrap"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/
@@ -31,7 +32,7 @@ func main() {
 			lager.Logger.Error("do request failed." + err.Error())
 		}
 		defer resp.Close()
-		lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
+		lager.Logger.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 		time.Sleep(1 * time.Second)
 
 		req, err = rest.NewRequest("GET", "cse://kubeserver:legacy/legacy", nil)
@@ -43,8 +44,8 @@ func main() {
 		if err != nil {
 			lager.Logger.Error("do request failed." + err.Error())
 		}
-		defer resp.Close()
-		lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
+		defer resp.Body.Close()
+		lager.Logger.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 		time.Sleep(1 * time.Second)
 	}
 }

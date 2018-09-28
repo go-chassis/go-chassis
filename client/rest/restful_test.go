@@ -36,13 +36,11 @@ func TestNewRestRequest(t *testing.T) {
 	assert.Equal(t, "POST", method)
 
 	resp := rest.NewResponse()
-	body := resp.ReadBody()
+	body := httputil.ReadBody(resp)
 	assert.Empty(t, body)
 
-	header := resp.GetHeader()
+	header := resp.Header
 	assert.Empty(t, header)
-
-	_ = resp.GetStatusCode()
 
 	c1 := new(http.Cookie)
 	c1.Name = "test"
@@ -50,8 +48,8 @@ func TestNewRestRequest(t *testing.T) {
 	sessionIDValue := "abcdefg"
 	c1.Value = sessionIDValue
 
-	resp.SetCookie(c1)
-	val := resp.GetCookie("test")
+	httputil.SetRespCookie(resp, c1)
+	val := httputil.GetRespCookie(resp, "test")
 	assert.Equal(t, c1.Value, string(val))
 
 	req, err = rest.NewRequest("GET", "cse://hello", nil)
@@ -64,5 +62,4 @@ func TestNewRestRequest(t *testing.T) {
 	assert.Equal(t, req.Header.Get(testHeaderKey), testHeaderValue)
 	assert.Equal(t, httputil.GetCookie(req, c1.Name), c1.Value)
 
-	resp.Close()
 }

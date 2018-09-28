@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/fault"
@@ -53,16 +52,16 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 	if err != nil {
 		if strings.Contains(err.Error(), "injecting abort") {
 			switch inv.Reply.(type) {
-			case *rest.Response:
-				resp := inv.Reply.(*rest.Response)
-				resp.SetStatusCode(faultConfig.Fault[inv.Protocol].Abort.HTTPStatus)
+			case *http.Response:
+				resp := inv.Reply.(*http.Response)
+				resp.StatusCode = faultConfig.Fault[inv.Protocol].Abort.HTTPStatus
 			}
 			r.Status = faultConfig.Fault[inv.Protocol].Abort.HTTPStatus
 		} else {
 			switch inv.Reply.(type) {
-			case *rest.Response:
-				resp := inv.Reply.(*rest.Response)
-				resp.SetStatusCode(http.StatusBadRequest)
+			case *http.Response:
+				resp := inv.Reply.(*http.Response)
+				resp.StatusCode = http.StatusBadRequest
 			}
 			r.Status = http.StatusBadRequest
 		}

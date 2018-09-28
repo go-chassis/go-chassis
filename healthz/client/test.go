@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"net/http"
 )
 
@@ -33,16 +34,16 @@ func restTest(ctx context.Context, endpoint string, expected Reply) (err error) 
 	arg, _ := rest.NewRequest(http.MethodGet, "cse://"+expected.ServiceName+"/healthz", nil)
 	req := &invocation.Invocation{Args: arg}
 	rsp := rest.NewResponse()
-	defer rsp.Close()
+	defer rsp.Body.Close()
 	err = c.Call(ctx, endpoint, req, rsp)
 	if err != nil {
 		return
 	}
-	if rsp.GetStatusCode() != http.StatusOK {
+	if rsp.StatusCode != http.StatusOK {
 		return nil
 	}
 	var actual Reply
-	err = json.Unmarshal(rsp.ReadBody(), &actual)
+	err = json.Unmarshal(httputil.ReadBody(rsp), &actual)
 	if err != nil {
 		return
 	}

@@ -3,7 +3,6 @@ package handler
 import (
 	"time"
 
-	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -42,7 +41,6 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	//taking the time elapsed to check for latency aware strategy
 	timeBefore := time.Now()
 	err = c.Call(i.Ctx, i.Endpoint, i, i.Reply)
-
 	if err != nil {
 		r.Err = err
 		lager.Logger.Errorf("Call got Error, err [%s]", err.Error())
@@ -66,7 +64,6 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	}
 
 	r.Result = i.Reply
-
 	cb(r)
 }
 
@@ -74,11 +71,11 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 func ProcessSpecialProtocol(inv *invocation.Invocation) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
-		var reply *rest.Response
+		var reply *http.Response
 		if inv.Reply != nil && inv.Args != nil {
-			reply = inv.Reply.(*rest.Response)
+			reply = inv.Reply.(*http.Response)
 			req := inv.Args.(*http.Request)
-			session.SaveSessionIDFromHTTP(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply.GetResponse(), req)
+			session.SaveSessionIDFromHTTP(inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName), reply, req)
 		}
 	case common.ProtocolHighway:
 		inv.Ctx = session.SaveSessionIDFromContext(inv.Ctx, inv.Endpoint, config.GetSessionTimeout(inv.SourceMicroService, inv.MicroServiceName))
@@ -88,19 +85,19 @@ func ProcessSpecialProtocol(inv *invocation.Invocation) {
 //ProcessSuccessiveFailure handles special logic for protocol
 func ProcessSuccessiveFailure(i *invocation.Invocation) {
 	var cookie string
-	var reply *rest.Response
+	var reply *http.Response
 
 	switch i.Protocol {
 	case common.ProtocolRest:
 		if i.Reply != nil && i.Args != nil {
-			reply = i.Reply.(*rest.Response)
+			reply = i.Reply.(*http.Response)
 		}
-		cookie = session.GetSessionCookie(nil, reply.GetResponse())
+		cookie = session.GetSessionCookie(nil, reply)
 		if cookie != "" {
 			loadbalancer.IncreaseSuccessiveFailureCount(cookie)
 			errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
 			if errCount == config.StrategySuccessiveFailedTimes(i.SourceServiceID, i.MicroServiceName) {
-				session.DeletingKeySuccessiveFailure(reply.GetResponse())
+				session.DeletingKeySuccessiveFailure(reply)
 				loadbalancer.DeleteSuccessiveFailureCount(cookie)
 			}
 		}

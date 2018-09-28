@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -70,13 +69,13 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invoca
 					code = http.StatusRequestTimeout
 				}
 				switch i.Reply.(type) {
-				case *rest.Response:
-					resp := i.Reply.(*rest.Response)
-					resp.SetStatusCode(code)
+				case *http.Response:
+					resp := i.Reply.(*http.Response)
+					resp.StatusCode = code
 					//make sure body is empty
-					if resp.GetResponse().Body != nil {
-						io.Copy(ioutil.Discard, resp.GetResponse().Body)
-						resp.GetResponse().Body.Close()
+					if resp.Body != nil {
+						io.Copy(ioutil.Discard, resp.Body)
+						resp.Body.Close()
 					}
 				}
 				select {

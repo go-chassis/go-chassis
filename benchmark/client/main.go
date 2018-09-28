@@ -10,6 +10,7 @@ import (
 	"github.com/go-chassis/go-chassis/benchmark/helpers/helloworld/protobuf"
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -96,7 +97,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			msg = string(resp.ReadBody())
+			msg = string(httputil.ReadBody(resp))
 		} else {
 			err = invoker.Invoke(nil, microServiceName, "HelloServer", "CreateMessage", &protobuf.MessageRequest{Str: "a", Count: msgSize}, replyOne, core.WithProtocol(protocolName))
 			if err != nil {
@@ -134,7 +135,7 @@ func Call(beginTime time.Time, invoker *core.RPCInvoker, restInvoker *core.RestI
 				if err != nil {
 					panic(err)
 				}
-				result = string(resp.ReadBody())
+				result = string(httputil.ReadBody(resp))
 			} else {
 				err = invoker.Invoke(nil, microServiceName, "HelloServer", "CreateMessage", &protobuf.MessageRequest{Str: "a", Count: msgSize}, replyOne, core.WithProtocol(protocolName))
 				if err != nil {

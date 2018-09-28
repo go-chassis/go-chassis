@@ -64,3 +64,30 @@ func HTTPRequest(inv *invocation.Invocation) (*http.Request, error) {
 	}
 	return reqSend, nil
 }
+
+// ReadBody read body from the from the response
+func ReadBody(resp *http.Response) []byte {
+	if resp != nil && resp.Body != nil {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil
+		}
+		return body
+	}
+	return nil
+}
+
+// GetRespCookie returns response Cookie.
+func GetRespCookie(resp *http.Response, key string) []byte {
+	for _, c := range resp.Cookies() {
+		if c.Name == key {
+			return []byte(c.Value)
+		}
+	}
+	return nil
+}
+
+// SetRespCookie sets the cookie.
+func SetRespCookie(resp *http.Response, cookie *http.Cookie) {
+	resp.Header.Add("Set-Cookie", cookie.String())
+}
