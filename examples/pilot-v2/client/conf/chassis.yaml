@@ -1,0 +1,14 @@
+---
+cse:
+  service:
+    registry:
+      autoIPIndex: true
+      registrator:
+        disabled: true
+      serviceDiscovery:
+        type: pilotv2
+        address: grpc://istio-pilot.istio-system:15010
+  protocols:
+    rest:
+      listenAddress: 0.0.0.0:5002
+      advertiseAddress: 0.0.0.0:5002

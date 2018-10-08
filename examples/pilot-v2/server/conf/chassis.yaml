@@ -1,0 +1,17 @@
+---
+cse:
+  service:
+    registry:
+      registrator:
+        disabled: true
+      serviceDiscovery:
+        type: pilotv2
+        address: grpc://istio-pilot.istio-system:15010
+  protocols:
+    rest:
+      listenAddress: 0.0.0.0:5001
+      advertiseAddress: 0.0.0.0:5001
+  handler:
+    chain:
+      Provider:
+        default: tracing-provider,bizkeeper-provider

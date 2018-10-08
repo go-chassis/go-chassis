@@ -1,0 +1,4 @@
+---
+APPLICATION_ID: registry #optional
+service_description:
+  name: pilotv2client
