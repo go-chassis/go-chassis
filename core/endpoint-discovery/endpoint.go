@@ -41,7 +41,7 @@ func GetEndpointFromServiceCenter(appID, microService, version string) (string, 
 					endPoint = "http://" + separation[0]
 				}
 			} else {
-				endPoint = "http://" + value
+				endPoint = "https://" + value
 			}
 		}
 	}
