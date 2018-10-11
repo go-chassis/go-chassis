@@ -9,7 +9,6 @@ import (
 	_ "github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
@@ -43,17 +42,15 @@ func main() {
 		parmByte, _ := json.Marshal(parm)
 		httputil.SetBody(req, parmByte)
 
-		//req.SetHeader("Chassis", "info")
-		ctx := context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
-			"user": "peter",
-		})
-		resp, err := core.NewRestInvoker().ContextDo(ctx, req)
+		//req.Header.Set("Chassis", "info")
+
+		resp, err := core.NewRestInvoker().ContextDo(context.Background(), req)
 		if err != nil {
 			lager.Logger.Error("do request failed.")
 			return
 		}
-		defer resp.Close()
-		lager.Logger.Info("ROUTER Server equal num [POST]: " + string(resp.ReadBody()))
+		defer resp.Body.Close()
+		lager.Logger.Info("ROUTER Server equal num [POST]: " + string(httputil.ReadBody(resp)))
 
 		time.Sleep(1 * time.Second)
 	}

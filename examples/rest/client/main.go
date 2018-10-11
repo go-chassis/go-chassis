@@ -9,6 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/
@@ -19,12 +20,12 @@ func main() {
 		return
 	}
 
-	req, err := rest.NewRequest("GET", "cse://RESTServer/sayhello/world")
+	req, err := rest.NewRequest("GET", "cse://RESTServer/sayhello/world", nil)
 	if err != nil {
 		lager.Logger.Error("new request failed.")
 		return
 	}
-	defer req.Close()
+
 	ctx := context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
 		"user": "peter",
 	})
@@ -33,6 +34,6 @@ func main() {
 		lager.Logger.Error("do request failed.")
 		return
 	}
-	defer resp.Close()
-	lager.Logger.Info("REST Server sayhello[GET]: " + string(resp.ReadBody()))
+	defer resp.Body.Close()
+	lager.Logger.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 }

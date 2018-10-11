@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"net/http"
+
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/pkg/util"
-	"net/http"
 )
 
 // RestInvoker is rest invoker
@@ -36,6 +37,14 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 	if string(req.URL.Scheme) != "cse" {
 		return nil, fmt.Errorf("scheme invalid: %s, only support cse://", req.URL.Scheme)
 	}
+	// set headers to Ctx
+	if len(req.Header) > 0 {
+		m := make(map[string]string, 0)
+		ctx = context.WithValue(ctx, common.ContextHeaderKey{}, m)
+		for k := range req.Header {
+			m[k] = req.Header.Get(k)
+		}
+	}
 
 	opts := getOpts(req.Host, options...)
 	service, port, _ := util.ParseServiceAndPort(req.Host)
@@ -45,6 +54,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 	resp := rest.NewResponse()
 
 	inv := invocation.New(ctx)
+
 	wrapInvocationWithOpts(inv, opts)
 	inv.MicroServiceName = service
 	// TODO load from openAPI schema
