@@ -5,6 +5,7 @@ go:
 install: true
 
 before_script:
+  - export GO111MODULE=on
   - mkdir -p $HOME/gopath/src/github.com/go-chassis/go-chassis
   - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/go-chassis/go-chassis/
   - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/go-chassis/go-chassis

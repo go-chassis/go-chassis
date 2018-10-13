@@ -134,9 +134,7 @@ func (c *chassis) initialize() error {
 	if err := runtime.Init(); err != nil {
 		return err
 	}
-	if err := control.Init(); err != nil {
-		return err
-	}
+
 	err := c.initHandler()
 	if err != nil {
 		lager.Logger.Errorf("Handler init failed: %s", err)
@@ -162,6 +160,9 @@ func (c *chassis) initialize() error {
 	// router needs get configs from config-center when init
 	// so it must init after bootstrap
 	if err = router.Init(); err != nil {
+		return err
+	}
+	if err := control.Init(); err != nil {
 		return err
 	}
 
