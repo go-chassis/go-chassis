@@ -1,14 +1,14 @@
 package archaius
 
 import (
+	"strings"
+
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/qpslimiter"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"strings"
 )
 
 //Panel pull configs from archaius
@@ -16,8 +16,8 @@ type Panel struct {
 }
 
 func newPanel(options control.Options) control.Panel {
-	SaveToLBCache(config.GetLoadBalancing(), "", true)
-	SaveToCBCache(config.GetHystrixConfig(), "", true)
+	initLBCache()
+	initCBCache()
 	return &Panel{}
 }
 
