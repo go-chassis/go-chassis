@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -18,26 +17,22 @@ import (
 )
 
 //SaveToLBCache save configs
-func SaveToLBCache(raw *model.LoadBalancing, key string, isAnyService bool) {
+func SaveToLBCache(raw *model.LoadBalancing) {
 	lager.Logger.Debug("Loading lb config from archaius into cache")
-	saveDefaultLB(raw)
-	for k, v := range raw.AnyService {
-		saveEachLB(k, v)
+	oldKeys := LBConfigCache.Items()
+	newKeys := make(map[string]bool)
+	// if there is no config, none key will be updated
+	if raw != nil {
+		newKeys = reloadLBCache(raw)
 	}
-	if !isAnyService {
-		stringSlice := strings.Split(key, ".")
-		if strings.Contains(key, "strategy.name") {
-			value := archaius.Get(key)
-			if value != nil {
-				saveEachLB(stringSlice[2], raw.AnyService[stringSlice[2]])
-			} else {
-				LBConfigCache.Delete(stringSlice[2])
-			}
+	// remove outdated keys
+	for old := range oldKeys {
+		if _, ok := newKeys[old]; !ok {
+			LBConfigCache.Delete(old)
 		}
-
 	}
 }
-func saveDefaultLB(raw *model.LoadBalancing) {
+func saveDefaultLB(raw *model.LoadBalancing) string { // return updated key
 	c := control.LoadBalancingConfig{
 		Strategy:                raw.Strategy["name"],
 		RetryEnabled:            raw.RetryEnabled,
@@ -52,9 +47,9 @@ func saveDefaultLB(raw *model.LoadBalancing) {
 
 	setDefaultLBValue(&c)
 	LBConfigCache.Set("", c, 0)
-
+	return ""
 }
-func saveEachLB(k string, raw model.LoadBalancingSpec) {
+func saveEachLB(k string, raw model.LoadBalancingSpec) string { // return updated key
 	c := control.LoadBalancingConfig{
 		Strategy:                raw.Strategy["name"],
 		RetryEnabled:            raw.RetryEnabled,
@@ -68,7 +63,7 @@ func saveEachLB(k string, raw model.LoadBalancingSpec) {
 	}
 	setDefaultLBValue(&c)
 	LBConfigCache.Set(k, c, 0)
-
+	return k
 }
 
 func setDefaultLBValue(c *control.LoadBalancingConfig) {
@@ -81,17 +76,23 @@ func setDefaultLBValue(c *control.LoadBalancingConfig) {
 }
 
 //SaveToCBCache save configs
-func SaveToCBCache(raw *model.HystrixConfig, key string, isAnyService bool) {
+func SaveToCBCache(raw *model.HystrixConfig) {
 	lager.Logger.Debug("Loading cb config from archaius into cache")
-	saveEachCB("", common.Consumer)
-	saveEachCB("", common.Provider)
-	if !isAnyService {
-		stringSlice := strings.Split(key, ".")
-		saveEachCB(stringSlice[3], stringSlice[2])
+	oldKeys := CBConfigCache.Items()
+	newKeys := make(map[string]bool)
+	// if there is no config, none key will be updated
+	if raw != nil {
+		newKeys = reloadCBCache(raw)
+	}
+	// remove outdated keys
+	for old := range oldKeys {
+		if _, ok := newKeys[old]; !ok {
+			CBConfigCache.Delete(old)
+		}
 	}
 }
 
-func saveEachCB(serviceName, serviceType string) {
+func saveEachCB(serviceName, serviceType string) string { //return updated key
 	command := serviceType
 	if serviceName != "" {
 		command = strings.Join([]string{serviceType, serviceName}, ".")
@@ -114,19 +115,20 @@ func saveEachCB(serviceName, serviceType string) {
 	if !b || cbcCacheValue == nil {
 		lager.Logger.Infof(formatString, c, serviceName)
 		CBConfigCache.Set(cbcCacheKey, c, 0)
-		return
+		return cbcCacheKey
 	}
 	commandConfig, ok := cbcCacheValue.(hystrix.CommandConfig)
 	if !ok {
 		lager.Logger.Infof(formatString, c, serviceName)
 		CBConfigCache.Set(cbcCacheKey, c, 0)
-		return
+		return cbcCacheKey
 	}
 	if c == commandConfig {
-		return
+		return cbcCacheKey
 	}
 	lager.Logger.Infof(formatString, c, serviceName)
 	CBConfigCache.Set(cbcCacheKey, c, 0)
+	return cbcCacheKey
 }
 
 //GetCBCacheKey generate cache key
@@ -138,21 +140,27 @@ func GetCBCacheKey(serviceName, serviceType string) string {
 	return key
 }
 
-func initLBCache() {
-	src := config.GetLoadBalancing()
-	saveDefaultLB(src)
+func reloadLBCache(src *model.LoadBalancing) map[string]bool { //return updated keys
+	keys := make(map[string]bool)
+	k := saveDefaultLB(src)
+	keys[k] = true
 	if src.AnyService == nil {
-		return
+		return keys
 	}
 	for name, conf := range src.AnyService {
-		saveEachLB(name, conf)
+		k = saveEachLB(name, conf)
+		keys[k] = true
 	}
+	return keys
 }
 
-func initCBCache() {
+func reloadCBCache(src *model.HystrixConfig) map[string]bool { //return updated keys
+	keys := make(map[string]bool)
 	// global level config
-	saveEachCB("", common.Consumer)
-	saveEachCB("", common.Provider)
+	k := saveEachCB("", common.Consumer)
+	keys[k] = true
+	k = saveEachCB("", common.Provider)
+	keys[k] = true
 	// get all services who have configs
 	consumers := make([]string, 0)
 	providers := make([]string, 0)
@@ -163,9 +171,9 @@ func initCBCache() {
 	// CircuitBreakerProperties|FallbackPolicyProperties|FallbackProperties,
 	// it's configuration should be added to cache when framework starts
 	for _, p := range []interface{}{
-		config.GetHystrixConfig().IsolationProperties,
-		config.GetHystrixConfig().CircuitBreakerProperties,
-		config.GetHystrixConfig().FallbackProperties,
+		src.IsolationProperties,
+		src.CircuitBreakerProperties,
+		src.FallbackProperties,
 		config.GetHystrixConfig().FallbackPolicyProperties} {
 		if services, err := getServiceNamesByServiceTypeAndAnyService(p, common.Consumer); err != nil {
 			lager.Logger.Errorf("Parse services from config failed: %v", err.Error())
@@ -187,11 +195,14 @@ func initCBCache() {
 	}
 	// service level config
 	for name := range consumerMap {
-		saveEachCB(name, common.Consumer)
+		k = saveEachCB(name, common.Consumer)
+		keys[k] = true
 	}
 	for name := range providerMap {
-		saveEachCB(name, common.Provider)
+		k = saveEachCB(name, common.Provider)
+		keys[k] = true
 	}
+	return keys
 }
 
 func getServiceNamesByServiceTypeAndAnyService(i interface{}, serviceType string) (services []string, err error) {
