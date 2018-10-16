@@ -1,6 +1,9 @@
 package archaius_test
 
 import (
+	"os"
+	"testing"
+
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/control/archaius"
 	archaius2 "github.com/go-chassis/go-chassis/core/archaius"
@@ -10,8 +13,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 func TestSaveToLBCache(t *testing.T) {
@@ -27,15 +28,30 @@ func TestSaveToLBCache(t *testing.T) {
 				},
 			},
 		},
-	}, "", true)
+	})
 	c, _ := archaius.LBConfigCache.Get("test")
 	assert.Equal(t, loadbalancer.StrategyRoundRobin, c.(control.LoadBalancingConfig).Strategy)
 }
 func TestSaveDefaultToLBCache(t *testing.T) {
+	t.Log("==delete outdated key")
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	archaius.SaveToLBCache(&model.LoadBalancing{}, "", true)
-	c, _ := archaius.LBConfigCache.Get("test")
-	assert.Equal(t, loadbalancer.StrategyRoundRobin, c.(control.LoadBalancingConfig).Strategy)
+	archaius.SaveToLBCache(&model.LoadBalancing{
+		Strategy: map[string]string{
+			"name": loadbalancer.StrategyRoundRobin,
+		},
+		AnyService: map[string]model.LoadBalancingSpec{
+			"test": {
+				Strategy: map[string]string{
+					"name": loadbalancer.StrategyRoundRobin,
+				},
+			},
+		},
+	})
+	_, ok := archaius.LBConfigCache.Get("test")
+	assert.True(t, ok)
+	archaius.SaveToLBCache(&model.LoadBalancing{})
+	_, ok = archaius.LBConfigCache.Get("test")
+	assert.False(t, ok)
 }
 
 func TestSaveToCBCache(t *testing.T) {
@@ -52,7 +68,7 @@ func TestSaveToCBCache(t *testing.T) {
 	err = archaius2.Init()
 	assert.NoError(t, err)
 	err = control.Init()
-	archaius.SaveToCBCache(config.GetHystrixConfig(), "", true)
+	archaius.SaveToCBCache(config.GetHystrixConfig())
 	c, _ := archaius.CBConfigCache.Get("Consumer")
 	assert.Equal(t, 1000, c.(hystrix.CommandConfig).Timeout)
 }

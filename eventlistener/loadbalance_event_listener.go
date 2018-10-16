@@ -6,7 +6,6 @@ import (
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/control/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
-	"regexp"
 )
 
 // constants for loadbalancer strategy name, and timeout
@@ -27,6 +26,5 @@ func (e *LoadbalanceEventListener) Event(event *core.Event) {
 	if err := config.ReadLBFromArchaius(); err != nil {
 		lager.Logger.Error("can not unmarshal new lb config: " + err.Error())
 	}
-	regNormal := regexp.MustCompile(regex4normalloadbalance)
-	archaius.SaveToLBCache(config.GetLoadBalancing(), event.Key, regNormal.MatchString(event.Key))
+	archaius.SaveToLBCache(config.GetLoadBalancing())
 }

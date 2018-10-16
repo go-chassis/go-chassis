@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/qpslimiter"
@@ -16,8 +17,8 @@ type Panel struct {
 }
 
 func newPanel(options control.Options) control.Panel {
-	initLBCache()
-	initCBCache()
+	SaveToLBCache(config.GetLoadBalancing())
+	SaveToCBCache(config.GetHystrixConfig())
 	return &Panel{}
 }
 

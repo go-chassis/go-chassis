@@ -34,8 +34,7 @@ func (e *CircuitBreakerEventListener) Event(event *core.Event) {
 	if err := config.ReadHystrixFromArchaius(); err != nil {
 		lager.Logger.Error("can not unmarshal new cb config: " + err.Error())
 	}
-	regNormal := regexp.MustCompile(regex4normal)
-	archaius.SaveToCBCache(config.GetHystrixConfig(), event.Key, regNormal.MatchString(event.Key))
+	archaius.SaveToCBCache(config.GetHystrixConfig())
 	switch event.EventType {
 	case common.Update:
 		FlushCircuitByKey(event.Key)
