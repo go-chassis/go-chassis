@@ -23,6 +23,7 @@ require (
 	github.com/hashicorp/go-version v1.0.0
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.5 // indirect
+	github.com/lyft/protoc-gen-validate v0.0.7 // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.0.0-20180726151020-b85dc675b16b
@@ -34,6 +35,7 @@ require (
 	github.com/shirou/gopsutil v0.0.0-20180801053943-8048a2e9c577
 	github.com/smartystreets/assertions v0.0.0-20180820201707-7c9eb446e3cf // indirect
 	github.com/smartystreets/goconvey v0.0.0-20170602164621-9e8dc3f972df
+	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/stretchr/testify v1.2.2
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277
 	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591
@@ -41,6 +43,7 @@ require (
 	gopkg.in/yaml.v2 v2.2.1
 	k8s.io/api v0.0.0-20180925152912-a191abe0b71e // indirect
 	k8s.io/apimachinery v0.0.0-20180823151430-017bf4f8f588
+	k8s.io/client-go v9.0.0+incompatible // indirect
 )
 
 replace (
