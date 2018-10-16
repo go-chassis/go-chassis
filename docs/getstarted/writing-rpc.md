@@ -1,6 +1,6 @@
-Writing RPC service
+Writing gRPC service
 ==========================================
-定义请求与返回结构体
+### Define grpc contract
 1个工程或者go package，推荐结构如下
 
 schemas
@@ -15,6 +15,11 @@ syntax = "proto3";
 
 package helloworld;
 
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
 
 // The request message containing the user's name.
 message HelloRequest {
@@ -25,6 +30,7 @@ message HelloRequest {
 message HelloReply {
   string message = 1;
 }
+
 ```
 2.通过pb生成go文件 helloworld.pb.go
 
@@ -39,7 +45,25 @@ schemas
 
 │ └──helloworld.pb.go
 
-服务端
+After generated, need to change one variable name
+```go
+var _Greeter_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "helloworld.Greeter",
+	HandlerType: (*GreeterServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SayHello",
+			Handler:    _Greeter_SayHello_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "helloworld.proto",
+}
+```
+
+change _Greeter_serviceDesc to *Greeter_serviceDesc*
+
+### Provider Side
 1个工程或者go package，推荐结构如下
 
 server/
@@ -54,28 +78,21 @@ server/
 
 1.编写接口
 ```go
-type HelloServer struct {
-}
-func (s *HelloServer) SayHello(ctx context.Context, in *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
-    return &helloworld.HelloReply{Message: "Go Hello  " + in.Name}, nil
+type Server struct{}
+
+// SayHello implements helloworld.GreeterServer
+func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 ```
 2.注册接口
 
-第一个参数表示你要向哪个协议注册，第三个为schema ID,会在调用中使用
+第一个参数表示你要向哪个协议注册，第三个为grpc serivce desc
 
-chassis.RegisterSchema("highway", &HelloServer{}, server.WithSchemaId("HelloService"))
-说明:
+```go
+chassis.RegisterSchema("grpc", &Server{}, server.WithGRPCServiceDesc(&pb.Greeter_serviceDesc))
+```
 
-想暴露为API的方法都要符合以下条件
-
-第一个参数为context.Context
-
-第二个参数必须是结构体指针
-
-返回的第一个必须是结构体指针
-
-返回的第二个为error
 
 3.修改配置文件chassis.yaml
 ```yaml
@@ -103,7 +120,7 @@ func main() {
     chassis.Run()
 }
 ```
-客户端
+### Consumer Side
 1个工程或者go package，推荐结构如下
 
 client/
@@ -136,18 +153,19 @@ service_description:
 ```go
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
-    //Init framework
-    if err := chassis.Init(); err != nil {
-        lager.Logger.Error("Init failed.", err)
-        return
-    }
-    //declare reply struct
-    reply := &helloworld.HelloReply{}
-    //Invoke with microservice name, schema ID and operation ID
-    if err := core.NewRPCInvoker().Invoke(context.Background(), "Server", "HelloService", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, reply); err != nil {
-        lager.Logger.Error("error", err)
-    }
-    lager.Logger.Info(reply.Message)
+//Init framework
+	if err := chassis.Init(); err != nil {
+		lager.Logger.Error("Init failed." + err.Error())
+		return
+	}
+	//declare reply struct
+	reply := &helloworld.HelloReply{}
+	//Invoke with microservice name, schema ID and operation ID
+	if err := core.NewRPCInvoker().Invoke(context.Background(), "RPCServer", "helloworld.Greeter", "SayHello",
+		&helloworld.HelloRequest{Name: "Peter"}, reply, core.WithProtocol("grpc")); err != nil {
+		lager.Logger.Error("error" + err.Error())
+	}
+	lager.Logger.Info(reply.Message)
 }
 ```
 

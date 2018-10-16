@@ -8,4 +8,4 @@ docker rm -f service-center
 echo "docker pull servicecomb/service-center images"
 docker pull servicecomb/service-center
 
-docker run -d -p 30100:30100 --name=service-center  servicecomb/service-center
+docker run -d -p 30100:30100 --name=service-center  servicecomb/service-center:1.0.0

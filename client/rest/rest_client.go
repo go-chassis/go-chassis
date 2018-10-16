@@ -94,8 +94,6 @@ func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 	return rc, nil
 }
 
-//Init is a method
-
 // If a request fails, we generate an error.
 func (c *Client) failure2Error(e error, r *http.Response, addr string) error {
 	if e != nil {

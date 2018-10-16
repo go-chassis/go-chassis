@@ -16,6 +16,7 @@ const (
 )
 
 //ClientConnection Highway client connection
+//Deprecated
 type ClientConnection struct {
 	remoteAddr string
 	baseConn   net.Conn
@@ -25,6 +26,7 @@ type ClientConnection struct {
 }
 
 //NewHighwayClientConnection creat Highway client connection
+//Deprecated
 func NewHighwayClientConnection(conn net.Conn, client *BaseClient) *ClientConnection {
 	tmp := new(ClientConnection)
 	//conn.SetKeepAlive(true)

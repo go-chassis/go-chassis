@@ -27,12 +27,14 @@ const (
 
 var remoteLogin = true
 
+//Deprecated
 type highwayServer struct {
 	connMgr *ConnectionMgr
 	opts    server.Options
 	sync.RWMutex
 }
 
+//Deprecated
 func (s *highwayServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
 	opts := server.RegisterOptions{}
 	var pn string

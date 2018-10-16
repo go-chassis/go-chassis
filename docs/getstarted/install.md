@@ -1,6 +1,6 @@
 Minimize Installation
 =====
-1. Install [go 1.8+](https://golang.org/doc/install)
+1. Install [go 1.8+](https://golang.org/doc/install) 
 
 2. Clone the project
 
@@ -8,20 +8,22 @@ Minimize Installation
 git clone git@github.com:go-chassis/go-chassis.git
 ```
 
-3. Use [dep](https://github.com/golang/dep) to download dependencies
-
-```sh
+3. Use use go mod(go 1.11+, experimental but a recommended way)
+```shell
 cd go-chassis
-# behind a proxy, you need setup a http proxy server
-# export https_proxy=xxx
-dep ensure
+GO111MODULE=on go mod download
+#optional
+GO111MODULE=on go mod vendor
 ```
 
-4. Install go-chassis [service-center](http://servicecomb.incubator.apache.org/release/)
+
+4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
+
+5. [Write your first http micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
 
 
-Use RPC communication
+Use gRPC communication
 ===================
-Install protobuff 3.2.0 https://github.com/google/protobuf
+follow https://developers.google.com/protocol-buffers/docs/gotutorial to install grpc 
 
-Install https://github.com/golang/protobuf
+[Write your first grpc micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rpc.html)

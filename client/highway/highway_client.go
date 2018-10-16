@@ -17,7 +17,8 @@ const (
 	DefaultSendTimeOut    = 300
 )
 
-//higway client
+//highwayClient
+//Deprecated
 type highwayClient struct {
 	once     sync.Once
 	opts     client.Options
@@ -25,6 +26,7 @@ type highwayClient struct {
 }
 
 //NewHighwayClient is a function
+//Deprecated
 func NewHighwayClient(options client.Options) (client.ProtocolClient, error) {
 
 	rc := &highwayClient{
