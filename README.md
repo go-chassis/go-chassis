@@ -8,7 +8,7 @@ Go-Chassis is a microservice framework for rapid development of microservices in
 # Features
  - **Pluggable registrator and discovery service**: Support Service center,istio pilot and file based registry, 
  fit both client side discovery and server side discovery pattern 
- - **Pluggable Protocol**: You can custom your own protocol, by default support http and highway(RPC)
+ - **Pluggable Protocol**: You can custom your own protocol, by default support http, highway(RPC) and grpc
  - **Circuit breaker**: Protect your service in runtime or on-demand
  - **Route management**: Able to route to different service based on weight and match rule to achieve Canary Release easily
  - **Load balancing**: Able to custom strategy and filter
@@ -53,10 +53,10 @@ GO111MODULE=on go mod vendor
 # Examples
 You can check examples [here](examples)
 # Communication Protocols
-Go-Chassis supports two types of communication protocol.
+Go-Chassis supports 3 types of communication protocol.
 1. Rest - REST is an approach that leverages the HTTP protocol for communication.
-2. Highway - This is a RPC communication protocol
-
+2. Highway - This is a RPC communication protocol, it was deprecated.
+3. grpc - native grpc protocol, go chassis bring circuit breaker, route management etc to grpc.
 ## Debug suggestion for dlv:
 Add `-tags debug` into go build arguments before debugging, if your go version is go1.10 onward.
 

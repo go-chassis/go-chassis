@@ -30,6 +30,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/prometheus/client_golang v0.8.0
+	github.com/prometheus/common v0.0.0-20181015124227-bcb74de08d37 // indirect
 	github.com/prometheus/procfs v0.0.0-20180920065004-418d78d0b9a7 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165
 	github.com/shirou/gopsutil v0.0.0-20180801053943-8048a2e9c577
