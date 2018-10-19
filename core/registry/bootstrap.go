@@ -66,7 +66,7 @@ func RegisterMicroservice() error {
 		return errEmptyServiceIDFromRegistry
 	}
 	runtime.ServiceID = sid
-	lager.Logger.Infof("Register [%s] success", microservice.ServiceName)
+	lager.Logger.Infof("Register [%s/%s] success", runtime.ServiceID, microservice.ServiceName)
 
 	for _, schemaID := range schemas {
 		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
