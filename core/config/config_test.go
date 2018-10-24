@@ -37,8 +37,6 @@ func TestInit2(t *testing.T) {
 cse:
   isolation:
     Consumer:
-      timeout:
-        enabled: true
       timeoutInMilliseconds: 10
       maxConcurrentRequests: 100
       Server:
@@ -85,7 +83,6 @@ cse:
 	s, _ := c.String()
 	t.Log(string(s))
 	assert.Equal(t, 20, c.HystrixConfig.FallbackProperties.Consumer.MaxConcurrentRequests)
-	assert.Equal(t, true, c.HystrixConfig.IsolationProperties.Consumer.TimeoutEnable.Enabled)
 	assert.Equal(t, "throwexception", c.HystrixConfig.FallbackPolicyProperties.Consumer.Policy)
 	assert.Equal(t, 50, c.HystrixConfig.CircuitBreakerProperties.Consumer.AnyService["Server"].ErrorThresholdPercentage)
 	assert.NotEqual(t, nil, config.GetHystrixConfig())

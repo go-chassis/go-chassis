@@ -43,15 +43,9 @@ type FallbackPolicyWrapper struct {
 
 // IsolationSpec isolation speciafications
 type IsolationSpec struct {
-	TimeoutEnable         Timeout                  `yaml:"timeout"`
 	TimeoutInMilliseconds int                      `yaml:"timeoutInMilliseconds"`
 	MaxConcurrentRequests int                      `yaml:"maxConcurrentRequests"`
 	AnyService            map[string]IsolationSpec `yaml:",inline"`
-}
-
-// Timeout time out
-type Timeout struct {
-	Enabled bool `yaml:"enabled"`
 }
 
 // CircuitBreakerSpec circuit breaker specifications
@@ -81,9 +75,8 @@ type FallbackPolicySpec struct {
 
 // IsolationPropertyStruct isolation 属性集合
 type IsolationPropertyStruct struct {
-	Timeout               Timeout `yaml:"timeout"`
-	TimeoutInMilliseconds int     `yaml:"timeoutInMilliseconds"`
-	MaxConcurrentRequests int     `yaml:"maxConcurrentRequests"`
+	TimeoutInMilliseconds int `yaml:"timeoutInMilliseconds"`
+	MaxConcurrentRequests int `yaml:"maxConcurrentRequests"`
 }
 
 // CircuitBreakPropertyStruct circuitBreaker 属性集合
@@ -118,7 +111,6 @@ const (
 var (
 	//default config fo hystric.
 	DefaultIsolation = IsolationPropertyStruct{
-		Timeout:               Timeout{true},
 		TimeoutInMilliseconds: 1000,
 		MaxConcurrentRequests: 4000,
 	}

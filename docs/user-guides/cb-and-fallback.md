@@ -17,9 +17,6 @@ explanation:
 
 {property}: configuration items
 
-**cse.isolation.Consumer.timeout.enabled**
-> *(optional, bool)* Enable timeout check,default is *false*
-
 **cse.isolation.timeoutInMilliseconds**
 > *(optional, int)* if delay for a time, this call will be considered as failure, default is *30000*
 
@@ -60,13 +57,9 @@ if retry failed, circuit will open again.
 cse:
   isolation:
     Consumer:
-      timeout:
-        enabled: false
       timeoutInMilliseconds: 1
       maxConcurrentRequests: 100
       ServerA: # service level config
-        timeout:
-          enabled: true
         timeoutInMilliseconds: 1000
         maxConcurrentRequests: 1000
   circuitBreaker:

@@ -146,24 +146,19 @@ func Go(name string, run runFunc, fallback fallbackFunc) chan error {
 				log.Print(err)
 			}
 		}()
-		//增加定制逻辑可以不启用timeout检测
-		if getSettings(name).TimeoutEnabled {
-			timer := time.NewTimer(getSettings(name).Timeout)
-			defer timer.Stop()
+		timer := time.NewTimer(getSettings(name).Timeout)
+		defer timer.Stop()
 
-			select {
-			case <-cmd.finished:
-			case <-timer.C:
+		select {
+		case <-cmd.finished:
+		case <-timer.C:
 
-				cmd.Lock()
-				cmd.timedOut = true
-				cmd.Unlock()
-				cmd.errorWithFallback(ErrTimeout)
+			cmd.Lock()
+			cmd.timedOut = true
+			cmd.Unlock()
+			cmd.errorWithFallback(ErrTimeout)
 
-				return
-			}
-		} else {
-			<-cmd.finished
+			return
 		}
 	}()
 

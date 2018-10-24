@@ -7,7 +7,7 @@ type executorPool struct {
 	Tickets chan *struct{}
 }
 
-const ConcurrentRequestsLimit = 1000
+const ConcurrentRequestsLimit = 5000
 
 func newExecutorPool(name string) *executorPool {
 	p := &executorPool{}
