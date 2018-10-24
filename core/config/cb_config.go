@@ -45,18 +45,6 @@ func GetCircuitBreakerEnabled(command, t string) bool {
 		archaius.GetBool(GetDefaultCircuitBreakerEnabledKey(t), DefaultProviderCircuitBreakerEnabled))
 }
 
-// GetTimeoutEnabled get timeout enabled
-func GetTimeoutEnabled(service, t string) bool {
-	cbMutex.RLock()
-	isolation := getIsolationSpec(t)
-	if en, ok := isolation.AnyService[service]; ok {
-		cbMutex.RUnlock()
-		return en.TimeoutEnable.Enabled
-	}
-	cbMutex.RUnlock()
-	return isolation.TimeoutEnable.Enabled
-}
-
 // GetForceClose get force close
 func GetForceClose(service, t string) bool {
 	cbMutex.RLock()

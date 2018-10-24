@@ -26,3 +26,5 @@ benchmark/server/server
 benchmark/**/log
 coverage.out
 coverage.txt
+main
+auth.yaml

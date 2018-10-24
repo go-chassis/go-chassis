@@ -27,7 +27,6 @@ var (
 type Settings struct {
 	// isolation 属性
 	Timeout               time.Duration
-	TimeoutEnabled        bool
 	MaxConcurrentRequests int
 
 	// circuit break 属性
@@ -44,7 +43,6 @@ type Settings struct {
 
 // CommandConfig is used to tune circuit settings at runtime
 type CommandConfig struct {
-	TimeoutEnabled         bool
 	Timeout                int `json:"timeout"`
 	MaxConcurrentRequests  int `json:"max_concurrent_requests"`
 	RequestVolumeThreshold int `json:"request_volume_threshold"`
@@ -147,7 +145,6 @@ func ConfigureCommand(name string, config CommandConfig) {
 		errorPercent = config.ErrorPercentThreshold
 	}
 	circuitSettings[name] = &Settings{
-		TimeoutEnabled:         config.TimeoutEnabled,
 		ForceClose:             config.ForceClose,
 		ForceOpen:              config.ForceOpen,
 		CircuitBreakerEnabled:  config.CircuitBreakerEnabled,

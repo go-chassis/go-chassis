@@ -2,13 +2,9 @@
 cse:
   isolation:
     Consumer:
-      timeout:
-        enabled: false
       timeoutInMilliseconds: 1000
       maxConcurrentRequests: 100
       Server:
-        timeout:
-          enabled: true
         timeoutInMilliseconds: 1000
         maxConcurrentRequests: 100
   circuitBreaker:

@@ -29,15 +29,6 @@ func TestGetCircuitBreakerEnabled(t *testing.T) {
 	assert.Equal(t, true, check)
 }
 
-func TestGetTimeoutEnabled(t *testing.T) {
-	check := config.GetTimeoutEnabled("test", common.Consumer)
-	assert.Equal(t, true, check)
-	check = config.GetTimeoutEnabled("Server", common.Consumer)
-	assert.Equal(t, false, check)
-	check = config.GetTimeoutEnabled("test", common.Provider)
-	assert.Equal(t, false, check)
-}
-
 func TestGetForceOpen(t *testing.T) {
 	check := config.GetForceOpen("test", common.Consumer)
 	assert.Equal(t, false, check)
