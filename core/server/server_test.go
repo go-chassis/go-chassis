@@ -80,7 +80,6 @@ func TestSrcMgr(t *testing.T) {
 	var mp model.Protocol
 	mp.Listen = "127.0.0.1:30100"
 	mp.Advertise = "127.0.0.1:8080"
-	mp.Failure = "127.0.0.1:8080"
 	mp.WorkerNumber = 10
 	mp.Transport = "tcp"
 
@@ -150,7 +149,6 @@ func TestSrcMgrErr(t *testing.T) {
 	var mp model.Protocol
 	//mp.Listen="127.0.0.1:30101"
 	mp.Advertise = "127.0.0.1:8081"
-	mp.Failure = "127.0.0.1:8081"
 	mp.WorkerNumber = 10
 	mp.Transport = "abc"
 

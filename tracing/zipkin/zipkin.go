@@ -43,9 +43,9 @@ func NewTracer(options map[string]string) (opentracing.Tracer, error) {
 			return nil, fmt.Errorf("can not convert [%s] to batch interval", bi)
 		}
 	}
-	var collectorOption string
+	var collectorOption = options["collector"]
 	var collector zipkintracer.Collector
-	if options["collector"] == "" {
+	if collectorOption == "" {
 		collectorOption = DefaultCollector
 	}
 	lager.Logger.Infof("New Zipkin tracer with options %s,%s,%s", uri, batchSize, batchInterval)

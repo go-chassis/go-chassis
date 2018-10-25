@@ -8,7 +8,6 @@ import (
 	"crypto/tls"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"time"
@@ -29,9 +28,17 @@ type Options struct {
 	Failure   map[string]bool
 }
 
-// GetProtocolSpec is to get protocol specifications
-func GetProtocolSpec(p string) model.Protocol {
-	return config.GlobalDefinition.Cse.Protocols[p]
+// GetFailureMap return failure map
+func GetFailureMap(p string) map[string]bool {
+	failureList := strings.Split(config.GlobalDefinition.Cse.Transport.Failure[p], ",")
+	failureMap := make(map[string]bool)
+	for _, v := range failureList {
+		if v == "" {
+			continue
+		}
+		failureMap[v] = true
+	}
+	return failureMap
 }
 
 // CreateClient is for to create client based on protocol and the service name
@@ -50,23 +57,13 @@ func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 		lager.Logger.Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
 			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
-	p := GetProtocolSpec(protocol)
 
 	poolSize := DefaultPoolSize
-
-	failureList := strings.Split(p.Failure, ",")
-	failureMap := make(map[string]bool)
-	for _, v := range failureList {
-		if v == "" {
-			continue
-		}
-		failureMap[v] = true
-	}
 
 	return f(Options{
 		TLSConfig: tlsConfig,
 		PoolSize:  poolSize,
-		Failure:   failureMap,
+		Failure:   GetFailureMap(protocol),
 		Endpoint:  endpoint,
 	})
 }

@@ -26,7 +26,6 @@ cse:
   fallback:
     Consumer:
       enabled: true
-      maxConcurrentRequests: 20
   fallbackpolicy:
     Consumer:
       policy: throwexception

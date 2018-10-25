@@ -40,35 +40,12 @@ var (
 	ErrInvalidResp = errors.New("rest consumer response arg is not *rest.Response type")
 )
 
-//HTTPFailureTypeMap is a variable of type map
-var HTTPFailureTypeMap = map[string]bool{
-	FailureTypePrefix + strconv.Itoa(http.StatusInternalServerError): true, //http_500
-	FailureTypePrefix + strconv.Itoa(http.StatusBadGateway):          true, //http_502
-	FailureTypePrefix + strconv.Itoa(http.StatusServiceUnavailable):  true, //http_503
-	FailureTypePrefix + strconv.Itoa(http.StatusGatewayTimeout):      true, //http_504
-	FailureTypePrefix + strconv.Itoa(http.StatusTooManyRequests):     true, //http_429
-}
-
 func init() {
 	client.InstallPlugin(Name, NewRestClient)
 }
 
 //NewRestClient is a function
 func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
-	if opts.Failure == nil || len(opts.Failure) == 0 {
-		opts.Failure = HTTPFailureTypeMap
-	} else {
-		tmpFailureMap := make(map[string]bool)
-		for k := range opts.Failure {
-			if HTTPFailureTypeMap[k] {
-				tmpFailureMap[k] = true
-			}
-
-		}
-
-		opts.Failure = tmpFailureMap
-	}
-
 	poolSize := DefaultMaxConnsPerHost
 	if opts.PoolSize != 0 {
 		poolSize = opts.PoolSize
@@ -99,7 +76,9 @@ func (c *Client) failure2Error(e error, r *http.Response, addr string) error {
 	if e != nil {
 		return e
 	}
-
+	if c.opts.Failure == nil {
+		return nil
+	}
 	if r == nil {
 		return nil
 	}

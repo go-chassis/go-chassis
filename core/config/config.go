@@ -38,7 +38,7 @@ var HystrixConfig *model.HystrixConfigWrapper
 var NodeIP string
 
 // SelfServiceName is self micro service name
-// Deprecated plz use runtime.ServiceName
+//Deprecated, plz use runtime.ServiceName
 var SelfServiceName string
 
 // SelfVersion gives version of the self micro service
@@ -153,7 +153,6 @@ func readGlobalConfigFile() error {
 		return err
 	}
 	GlobalDefinition = &globalDef
-
 	return nil
 }
 

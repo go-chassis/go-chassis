@@ -20,11 +20,8 @@ then go chassis will automatically generate advertise address, it is convenience
 
 
 
-
-
 ## Example
 this config will launch 2 http server and 1 highway server
-
 ```
 cse:
   protocols:

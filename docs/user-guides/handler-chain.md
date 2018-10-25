@@ -23,8 +23,6 @@ Provider表示，当你被别人调用人，会通过的处理链
 
 ratelimiter-consumer	客户端限流
 
-bizkeeper-consumer	熔断降级
-
 router	路由策略
 
 loadbalance	负载均衡
@@ -41,8 +39,6 @@ ratelimiter-provider	服务端限流
 
 tracing-provider	服务端调用链追踪
 
-bizkeeper-provider	服务端熔断
-
 ## API
 当处理链配置为空，用户也可自定义自己的默认处理链
 ```go
@@ -50,6 +46,28 @@ bizkeeper-provider	服务端熔断
 func SetDefaultConsumerChains(c map[string]string)
 //SetDefaultProviderChains set your custom chain map for Provider,if there is no config, this default chain will take affect
 func SetDefaultProviderChains(c map[string]string)
+
+
+```
+
+you can check build-in handler list in [handler.go](https://github.com/go-chassis/go-chassis/blob/master/core/handler/handler.go)
+the const part shows handler list
+```go
+const (
+	//consumer chain
+	Transport           = "transport"
+	Loadbalance         = "loadbalance"
+	BizkeeperConsumer   = "bizkeeper-consumer"
+	TracingConsumer     = "tracing-consumer"
+	RatelimiterConsumer = "ratelimiter-consumer"
+	Router              = "router"
+	FaultInject         = "fault-inject"
+
+	//provider chain
+	RatelimiterProvider = "ratelimiter-provider"
+	TracingProvider     = "tracing-provider"
+	BizkeeperProvider   = "bizkeeper-provider"
+)
 ```
 ## 实例
 ```yaml

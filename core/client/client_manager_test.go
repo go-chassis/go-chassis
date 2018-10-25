@@ -13,6 +13,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestGetFailureMap(t *testing.T) {
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	config.GlobalDefinition = &model.GlobalCfg{}
+	config.GlobalDefinition.Cse.Transport.Failure = map[string]string{
+		"rest": "http_500,http:502",
+	}
+	m := client.GetFailureMap("rest")
+	t.Log(m)
+	assert.True(t, m["http_500"])
+	assert.False(t, m["http_540"])
+}
 func TestInitError(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
