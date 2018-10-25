@@ -21,13 +21,9 @@ cse:
     chain:
       Consumer:
         default: bizkeeper-consumer, router, loadbalance,tracing-consumer,ratelimiter-consumer,transport
-  references:    #optional：配置客户端依赖的微服务信息，协议信息
-    Server:
-      version: 0.0.1
-      transport: highway
-    HelloServer:
-      version: 0.0.1
-      transport: highway
+  transport:
+    failure:
+      rest: http_500,http_502
 # ssl:
 #   registry.Consumer.cipherPlugin: default
 #   registry.Consumer.verifyPeer: false

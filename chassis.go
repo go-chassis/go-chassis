@@ -271,7 +271,6 @@ func Init() error {
 	if goChassis.DefaultConsumerChainNames == nil {
 		defaultChain := strings.Join([]string{
 			handler.RatelimiterConsumer,
-			handler.BizkeeperConsumer,
 			handler.Router,
 			handler.Loadbalance,
 			handler.TracingConsumer,
@@ -285,7 +284,6 @@ func Init() error {
 		defaultChain := strings.Join([]string{
 			handler.RatelimiterProvider,
 			handler.TracingProvider,
-			handler.BizkeeperProvider,
 		}, ",")
 		goChassis.DefaultProviderChainNames = map[string]string{
 			common.DefaultKey: defaultChain,

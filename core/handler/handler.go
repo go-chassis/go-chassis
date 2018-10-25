@@ -20,16 +20,19 @@ var HandlerFuncMap = make(map[string]func() Handler)
 
 // constant keys for handlers
 const (
+	//consumer chain
 	Transport           = "transport"
 	Loadbalance         = "loadbalance"
 	BizkeeperConsumer   = "bizkeeper-consumer"
-	BizkeeperProvider   = "bizkeeper-provider"
 	TracingConsumer     = "tracing-consumer"
-	TracingProvider     = "tracing-provider"
 	RatelimiterConsumer = "ratelimiter-consumer"
-	RatelimiterProvider = "ratelimiter-provider"
 	Router              = "router"
 	FaultInject         = "fault-inject"
+
+	//provider chain
+	RatelimiterProvider = "ratelimiter-provider"
+	TracingProvider     = "tracing-provider"
+	BizkeeperProvider   = "bizkeeper-provider"
 )
 
 // init is for to initialize the all handlers at boot time

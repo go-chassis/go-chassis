@@ -28,6 +28,13 @@ type CseStruct struct {
 	Monitor     MonitorStruct               `yaml:"monitor"`
 	Metrics     MetricsStruct               `yaml:"metrics"`
 	Credentials CredentialStruct            `yaml:"credentials"`
+	Transport   Transport                   `yaml:"transport"`
+}
+
+//Transport defines failure
+//TODO support TLS config
+type Transport struct {
+	Failure map[string]string `yaml:"failure"`
 }
 
 // MetricsStruct metrics struct
@@ -115,7 +122,6 @@ type Protocol struct {
 	Advertise    string `yaml:"advertiseAddress"`
 	WorkerNumber int    `yaml:"workerNumber"`
 	Transport    string `yaml:"transport"`
-	Failure      string `yaml:"failure"`
 }
 
 // MicroserviceCfg microservice.yaml 配置项
