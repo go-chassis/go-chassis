@@ -12,7 +12,7 @@ import (
 const (
 	DefaultForceFallback                 = false
 	DefaultTimeoutEnabled                = false
-	DefaultConsumerCircuitBreakerEnabled = true
+	DefaultConsumerCircuitBreakerEnabled = false
 	DefaultProviderCircuitBreakerEnabled = false
 	DefaultCircuitBreakerForceOpen       = false
 	DefaultCircuitBreakerForceClosed     = false
