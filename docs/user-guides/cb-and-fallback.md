@@ -2,7 +2,7 @@
 
 ## **Introduction**
 Circuit breaker help to prevent network failure between service call, 
-it also monitor each service call to make service observable
+it also monitor each service call to make service [observable](https://go-chassis.readthedocs.io/en/latest/user-guides/metrics.html)
 
 ## **Configuration**
 
@@ -52,7 +52,6 @@ if retry failed, circuit will open again.
 
 
 ## **examples**
-
 ```yaml
 cse:
   isolation:
@@ -85,6 +84,13 @@ cse:
     Consumer:
       policy: throwexception
 ```
-
+you must set bizkeeper-consumer handler in chain before load balancing and transport
+here is a example 
+```yaml
+handler:
+  chain:
+    Consumer:
+      default: bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
+```
 
 

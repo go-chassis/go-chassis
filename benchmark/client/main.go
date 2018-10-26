@@ -33,7 +33,7 @@ func main() {
 		log.Println(http.ListenAndServe("0.0.0.0:7778", nil))
 	}()
 	chassis.Init()
-
+	go chassis.Run()
 	resultTime := time.Now().Format("20060102150405")
 	resultFilePath := filepath.Join(os.Getenv("CHASSIS_HOME"), "result_"+resultTime+".csv")
 	resultFile = &datacollect.ResultFile{Path: resultFilePath}
