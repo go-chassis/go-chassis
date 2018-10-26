@@ -10,12 +10,8 @@ cse:
   handler:
     chain:
       Consumer:
-        default: loadbalance,ratelimiter-consumer,transport
-        #default: bizkeeper-consumer,loadbalance,ratelimiter-consumer,transport
-  references:
-    Server:
-      version: 0.0.1
-      transport: highway
-    HelloServer:
-      version : 0.0.1
-      transport: highway
+        #default: loadbalance,transport
+        default: bizkeeper-consumer,loadbalance,transport
+  protocols:
+    rest-metrics:
+      listenAddress: 127.0.0.1:7000
