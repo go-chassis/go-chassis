@@ -25,6 +25,7 @@ type IsolationWrapper struct {
 
 // CircuitWrapper circuit wrapper structure
 type CircuitWrapper struct {
+	Scope    string              `yaml:"scope"`
 	Consumer *CircuitBreakerSpec `yaml:"Consumer"`
 	Provider *CircuitBreakerSpec `yaml:"Provider"`
 }

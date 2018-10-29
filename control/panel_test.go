@@ -6,6 +6,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -34,4 +35,29 @@ func TestInit(t *testing.T) {
 	config.GlobalDefinition.Panel.Infra = "xxx"
 	err = control.Init()
 	assert.Error(t, err)
+}
+
+func TestNewCircuitCmd(t *testing.T) {
+	config.HystrixConfig = &model.HystrixConfigWrapper{
+		HystrixConfig: &model.HystrixConfig{
+			CircuitBreakerProperties: &model.CircuitWrapper{
+				Scope: "",
+			},
+		},
+	}
+	i := invocation.Invocation{
+		MicroServiceName: "mall",
+		SchemaID:         "rest",
+		OperationID:      "/test",
+	}
+	cmd := control.NewCircuitName("Consumer", i)
+	assert.Equal(t, "Consumer.mall.rest./test", cmd)
+
+	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "api"
+	cmd = control.NewCircuitName("Consumer", i)
+	assert.Equal(t, "Consumer.mall.rest./test", cmd)
+
+	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "service"
+	cmd = control.NewCircuitName("Consumer", i)
+	assert.Equal(t, "Consumer.mall", cmd)
 }

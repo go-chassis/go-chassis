@@ -6,12 +6,18 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"strings"
 )
 
 var panelPlugin = make(map[string]func(options Options) Panel)
 
 //DefaultPanel get fetch config
 var DefaultPanel Panel
+
+const (
+	//ScopeAPI is config const
+	ScopeAPI = "api"
+)
 
 //Panel is a abstraction of pulling configurations from various of systems, and transfer different configuration into standardized model
 //you can use different panel implementation to pull different of configs from Istio or Archaius
@@ -49,4 +55,25 @@ func Init() error {
 		Address: config.GlobalDefinition.Panel.Settings["address"],
 	})
 	return nil
+}
+
+// NewCircuitName create circuit command
+func NewCircuitName(serviceType string, inv invocation.Invocation) string {
+	var cmd = serviceType
+	if inv.MicroServiceName != "" {
+		cmd = strings.Join([]string{cmd, inv.MicroServiceName}, ".")
+	}
+	if config.GetHystrixConfig().CircuitBreakerProperties.Scope == "" {
+		config.GetHystrixConfig().CircuitBreakerProperties.Scope = ScopeAPI
+	}
+	if config.GetHystrixConfig().CircuitBreakerProperties.Scope == ScopeAPI {
+		if inv.SchemaID != "" {
+			cmd = strings.Join([]string{cmd, inv.SchemaID}, ".")
+		}
+		if inv.OperationID != "" {
+			cmd = strings.Join([]string{cmd, inv.OperationID}, ".")
+		}
+	}
+	return cmd
+
 }

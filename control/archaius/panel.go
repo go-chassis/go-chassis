@@ -1,8 +1,6 @@
 package archaius
 
 import (
-	"strings"
-
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -25,10 +23,7 @@ func newPanel(options control.Options) control.Panel {
 //GetCircuitBreaker return command , and circuit breaker settings
 func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string) (string, hystrix.CommandConfig) {
 	key := GetCBCacheKey(inv.MicroServiceName, serviceType)
-	command := serviceType
-	if inv.MicroServiceName != "" {
-		command = strings.Join([]string{serviceType, inv.MicroServiceName}, ".")
-	}
+	command := control.NewCircuitName(serviceType, inv)
 	c, ok := CBConfigCache.Get(key)
 	if !ok {
 		c, _ := CBConfigCache.Get(serviceType)

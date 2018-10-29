@@ -5,6 +5,7 @@ package hystrix
 import (
 	"errors"
 	"fmt"
+	"github.com/go-mesh/openlogging"
 	"log"
 	"sync"
 	"sync/atomic"
@@ -66,6 +67,7 @@ func GetCircuit(name string) (*CircuitBreaker, bool, error) {
 		if cb, ok := circuitBreakers[name]; ok {
 			return cb, false, nil
 		}
+		openlogging.GetLogger().Infof("new circuit [%s] is protecting you service", name)
 		circuitBreakers[name] = newCircuitBreaker(name)
 	} else {
 		defer circuitBreakersMutex.RUnlock()

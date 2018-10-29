@@ -5,7 +5,7 @@
 Go chassis is a micro service framework for Go developer. you can develop distributed system with go chassis rapidly.
 
 
-### Why use go chassis
+### Why use Go chassis
 
 go chassis is designed as a protocol-independent framework, any protocol is able to integrate with go chassis and leverage same function like load balancing,
 circuit breaker,rate limiting, those function resilient your service
