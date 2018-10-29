@@ -89,16 +89,6 @@ cse:
     chain:
     #  Consumer:
     #    default: bizkeeper-consumer, loadbalancer,ratelimiter-consumer
-  references:    #optional：配置客户端依赖的微服务信息，协议信息
-    ServerChassis:
-      version: 0.1
-      transport: rest
-    LoadBServer:
-      version: 0.1
-      transport: rest
-    HelloServer:
-      version: 0.1
-      transport: highway
 ssl:
   registry.consumer.cipherPlugin: default
   registry.consumer.verifyPeer: false

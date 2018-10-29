@@ -54,18 +54,15 @@ func (m *metricExchange) Monitor() {
 		m.Mutex.RLock()
 
 		totalDuration := time.Since(update.Start)
-		wg := &sync.WaitGroup{}
 		for _, collector := range m.metricCollectors {
-			wg.Add(1)
-			go m.IncrementMetrics(wg, collector, update, totalDuration)
+			m.IncrementMetrics(collector, update, totalDuration)
 		}
-		wg.Wait()
 
 		m.Mutex.RUnlock()
 	}
 }
 
-func (m *metricExchange) IncrementMetrics(wg *sync.WaitGroup, collector metricCollector.MetricCollector, update *commandExecution, totalDuration time.Duration) {
+func (m *metricExchange) IncrementMetrics(collector metricCollector.MetricCollector, update *commandExecution, totalDuration time.Duration) {
 	// granular metrics
 	if update.Types[0] == "success" {
 		collector.IncrementAttempts()
@@ -108,7 +105,6 @@ func (m *metricExchange) IncrementMetrics(wg *sync.WaitGroup, collector metricCo
 	collector.UpdateTotalDuration(totalDuration)
 	collector.UpdateRunDuration(update.RunDuration)
 
-	wg.Done()
 }
 
 func (m *metricExchange) Reset() {

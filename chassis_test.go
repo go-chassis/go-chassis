@@ -65,13 +65,6 @@ cse:
     chain:
       consumer:
         default: bizkeeper-consumer, loadbalance, ratelimiter-consumer
-  references:
-    Server:
-      version: 0.1
-      transport: highway
-    HelloServer:
-      version: 0.1
-      transport: highway
 ssl:
   registry.consumer.cipherPlugin: default
   registry.consumer.verifyPeer: false
