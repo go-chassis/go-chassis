@@ -57,9 +57,12 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 
 	wrapInvocationWithOpts(inv, opts)
 	inv.MicroServiceName = service
-	// TODO load from openAPI schema
-	// inv.SchemaID = schemaID
-	// inv.OperationID = operationID
+	//TODO load from openAPI schema
+	inv.SchemaID = port
+	if inv.SchemaID == "" {
+		inv.SchemaID = "rest"
+	}
+	inv.OperationID = req.URL.Path
 	inv.Args = req
 	inv.Reply = resp
 	inv.URLPathFormat = req.URL.Path

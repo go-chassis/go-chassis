@@ -47,6 +47,7 @@ cse:
         timeoutInMilliseconds: 10
         maxConcurrentRequests: 100
   circuitBreaker:
+    scope: service
     Consumer:
       enabled: true
       forceOpen: false
@@ -82,6 +83,7 @@ cse:
 	assert.NoError(t, err)
 	s, _ := c.String()
 	t.Log(string(s))
+	assert.Equal(t, "service", c.HystrixConfig.CircuitBreakerProperties.Scope)
 	assert.Equal(t, 20, c.HystrixConfig.FallbackProperties.Consumer.MaxConcurrentRequests)
 	assert.Equal(t, "throwexception", c.HystrixConfig.FallbackPolicyProperties.Consumer.Policy)
 	assert.Equal(t, 50, c.HystrixConfig.CircuitBreakerProperties.Consumer.AnyService["Server"].ErrorThresholdPercentage)

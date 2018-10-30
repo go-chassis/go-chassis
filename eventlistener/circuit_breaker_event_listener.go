@@ -50,10 +50,10 @@ func FlushCircuitByKey(key string) {
 	sourceName, serviceName := GetNames(key)
 	cmdName := GetCircuitName(sourceName, serviceName)
 	if cmdName == common.Consumer {
-		lager.Logger.Info("Global Key changed For circuit: [" + cmdName + "]")
+		lager.Logger.Info("Global Key changed For circuit: [" + cmdName + "], will flush all circuit")
 		hystrix.Flush()
 	} else {
-		lager.Logger.Info("Specific Key changed For circuit: [" + cmdName + "]")
+		lager.Logger.Info("Specific Key changed For circuit: [" + cmdName + "], will only flush this circuit")
 		hystrix.FlushByName(cmdName)
 	}
 

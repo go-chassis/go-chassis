@@ -1,7 +1,9 @@
 # Circuit breaker
 
 ## **Introduction**
-Circuit breaker help to prevent network failure between service call, 
+Circuit breaker help to isolate upstream services during runtime,
+all of invocation will be executed by circuit, under its protection, if there is too much error, time out or concurrency,
+circuit will open to stop network communication
 it also monitor each service call to make service [observable](https://go-chassis.readthedocs.io/en/latest/user-guides/metrics.html)
 
 ## **Configuration**
@@ -23,8 +25,13 @@ explanation:
 **cse.isolation.maxConcurrentRequests**
 > *(optional, int)* max concurrency, default is 1000
 
+**cse.circuitBreaker.scope**
+> *(optional, string)* service or api, 
+default is api, go chassis create a dedicated circuit for every api, invocation will be isolated based on api
+if set to service, all of API for each service share one circuit, it will isolate the service.
+
 **cse.circuitBreaker.enabled**
-> *(optional, bool)* enable circuit breaker or not, default is true
+> *(optional, bool)* enable circuit breaker or not, default is false
 
 **cse.circuitBreaker.forceOpen**
 > *(optional, bool)* if it is true, will forcely open the circuit, default is false
@@ -62,6 +69,7 @@ cse:
         timeoutInMilliseconds: 1000
         maxConcurrentRequests: 1000
   circuitBreaker:
+    scope: api
     Consumer:
       enabled: false
       forceOpen: false

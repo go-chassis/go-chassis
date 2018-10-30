@@ -2,16 +2,16 @@
 cse:
   isolation:
     Consumer:
-      timeoutInMilliseconds: 10000
+      timeoutInMilliseconds: 100
       maxConcurrentRequests: 1000
   circuitBreaker:
     scope: api # service|api
     Consumer:
-      enabled: false
+      enabled: true
       forceOpen: false
       forceClosed: false
       sleepWindowInMilliseconds: 10000
-      requestVolumeThreshold: 20
+      requestVolumeThreshold: 10
       errorThresholdPercentage: 10
   #容错处理函数，目前暂时按照开源的方式来不进行区分处理，统一调用fallback函数
   fallback:
