@@ -28,11 +28,52 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/prometheus/client_golang/prometheus"
 	gometrics "github.com/rcrowley/go-metrics"
+	"regexp"
 )
 
 // DefaultPrometheusSinker variable for default prometheus configurations
 var DefaultPrometheusSinker *PrometheusSinker
 var onceInit sync.Once
+
+const (
+	regex       = "(Provider|Consumer)\\.(.*)"
+	regexSource = "\\.(.+)\\.(Provider|Consumer)\\.(.*)"
+)
+
+var desc = map[string]string{
+	"Consumer.attempts":          "all requests count to target provider service",
+	"Consumer.errors":            "if a request is failed because of error or timeout or circuit open, it will increase",
+	"Consumer.successes":         "if request is not timeout or failed, it will increase",
+	"Consumer.failures":          "if request return error, it will increase",
+	"Consumer.rejects":           "if circuit open, then all request will be reject immediately, it will increas",
+	"Consumer.shortCircuits":     "after circuit open, it will increase",
+	"Consumer.timeouts":          "after timeout, it will increase ",
+	"Consumer.fallbackSuccesses": "if fallback is executed and no error returns, it will increase",
+	"Consumer.fallbackFailures":  "if fallback is executed and error returns, it will increase",
+	"Consumer.totalDuration":     "how long all requests consumed totally",
+	"Consumer.runDuration":       "how long a request consumed",
+
+	"Provider.attempts":          "all requests count to target provider service",
+	"Provider.errors":            "if a request is failed because of error or timeout or circuit open, it will increase",
+	"Provider.successes":         "if request is not timeout or failed, it will increase",
+	"Provider.failures":          "if request return error, it will increase",
+	"Provider.rejects":           "if circuit open, then all request will be reject immediately, it will increas",
+	"Provider.shortCircuits":     "after circuit open, it will increase",
+	"Provider.timeouts":          "after timeout, it will increase ",
+	"Provider.fallbackSuccesses": "if fallback is executed and no error returns, it will increase",
+	"Provider.fallbackFailures":  "if fallback is executed and error returns, it will increase",
+	"Provider.totalDuration":     "how long all requests consumed totally",
+	"Provider.runDuration":       "how long a request consumed",
+}
+
+//GetDesc retrieve metric doc
+func GetDesc(name string) string {
+	h := desc[name]
+	if h != "" {
+		return h
+	}
+	return name
+}
 
 // PrometheusSinker is the struct for prometheus configuration parameters
 type PrometheusSinker struct {
@@ -77,7 +118,7 @@ func (c *PrometheusSinker) gaugeFromNameAndValue(name string, val float64) {
 	if !ok {
 		g = prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: c.flattenKey(name),
-			Help: name,
+			Help: desc[name],
 		})
 		metrics.GetSystemPrometheusRegistry().MustRegister(g)
 		c.gauges[name] = g
@@ -94,7 +135,7 @@ func (c *PrometheusSinker) gaugeVecFromNameAndValue(name string, val float64, la
 	if !ok {
 		gVec = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: c.flattenKey(name),
-			Help: name,
+			Help: GetDesc(name),
 		}, labelNames)
 		metrics.GetSystemPrometheusRegistry().MustRegister(gVec)
 		c.gaugeVecs[name] = gVec
@@ -112,10 +153,11 @@ func (c *PrometheusSinker) UpdatePrometheusMetrics() {
 // UpdatePrometheusMetricsOnce update prometheus metrics once
 func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 	c.Registry.Each(func(name string, i interface{}) {
-		metricName := extractMetricKey(name)
-		operationID := extractOperationID(name)
-		schemaID := extractSchemaID(name)
-		promLabels := prometheus.Labels{"hostname": runtime.HostName, "service": runtime.ServiceName, "appID": config.GlobalDefinition.AppID, "version": runtime.Version, "schemaID": schemaID, "operationID": operationID}
+		metricName, sn, operationID, schemaID := ExtractMetricKey(name)
+		promLabels := prometheus.Labels{"hostname": runtime.HostName, "self": runtime.ServiceName, "target": sn, "appID": runtime.App, "version": runtime.Version, "schemaID": schemaID, "operationID": operationID}
+		for k, v := range runtime.MD {
+			promLabels[k] = v
+		}
 		switch metric := i.(type) {
 		case gometrics.Counter:
 			c.gaugeVecFromNameAndValue(metricName, float64(metric.Count()), promLabels)
@@ -138,21 +180,20 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 			switch getEventType(name) {
 			case "runDuration":
 				meanTime := t.Mean() / float64(time.Millisecond)
-				key := strings.Replace(metricName, "runDuration", "request.duration.miliseconds", -1)
-				c.gaugeVecFromNameAndValue(fmt.Sprintf("%s.%s", key, "mean"), meanTime, promLabels)
-				c.gaugeVecFromNameAndValue(strings.Replace(metricName, "runDuration", "qps", -1), t.RateMean(), prometheus.Labels{"schemaID": schemaID, "operationID": operationID})
+				c.gaugeVecFromNameAndValue(fmt.Sprintf("%s.%s", metricName, "mean"), meanTime, promLabels)
+				c.gaugeVecFromNameAndValue(strings.Replace(metricName, "runDuration", "qps", -1), t.RateMean(), promLabels)
 				promLabels["quantile"] = "0.05"
-				c.gaugeVecFromNameAndValue(key, ps[0]/float64(time.Millisecond), promLabels)
+				c.gaugeVecFromNameAndValue(metricName, ps[0]/float64(time.Millisecond), promLabels)
 				promLabels["quantile"] = "0.25"
-				c.gaugeVecFromNameAndValue(key, ps[1]/float64(time.Millisecond), promLabels)
+				c.gaugeVecFromNameAndValue(metricName, ps[1]/float64(time.Millisecond), promLabels)
 				promLabels["quantile"] = "0.5"
-				c.gaugeVecFromNameAndValue(key, ps[2]/float64(time.Millisecond), promLabels)
+				c.gaugeVecFromNameAndValue(metricName, ps[2]/float64(time.Millisecond), promLabels)
 				promLabels["quantile"] = "0.75"
-				c.gaugeVecFromNameAndValue(key, ps[3]/float64(time.Millisecond), promLabels)
+				c.gaugeVecFromNameAndValue(metricName, ps[3]/float64(time.Millisecond), promLabels)
 				promLabels["quantile"] = "0.90"
-				c.gaugeVecFromNameAndValue(key, ps[4]/float64(time.Millisecond), promLabels)
+				c.gaugeVecFromNameAndValue(metricName, ps[4]/float64(time.Millisecond), promLabels)
 				promLabels["quantile"] = "0.99"
-				c.gaugeVecFromNameAndValue(key, ps[5]/float64(time.Millisecond), promLabels)
+				c.gaugeVecFromNameAndValue(metricName, ps[5]/float64(time.Millisecond), promLabels)
 			}
 		}
 	})
@@ -170,76 +211,48 @@ func getEventType(metricName string) string {
 	return tokens[len(tokens)-1]
 }
 
-func extractOperationID(key string) (operationID string) {
-	var IsKeyHaveSourceName bool
-	if !strings.HasPrefix(key, "Provider") && !strings.HasPrefix(key, "Consumer") {
-		IsKeyHaveSourceName = true
-	}
-	tokens := strings.Split(key, ".")
+//ExtractServiceSchemaOperationMetrics parse service,schema and operation
+//key example Microservice.SchemaID.OperationId.metrics
+func ExtractServiceSchemaOperationMetrics(raw string) (target, schemaID, operation, metrics string) {
+	metrics = getEventType(raw)
+	tokens := strings.Split(raw, ".")
 	switch len(tokens) {
+	case 2:
+		target = tokens[0]
 	case 3:
-		return
+		target = tokens[0]
+		schemaID = tokens[1]
 	case 4:
-		if IsKeyHaveSourceName {
-			return
-		}
-		operationID = tokens[2]
-		return
-	case 5:
-		if IsKeyHaveSourceName {
-			operationID = tokens[3]
-			return
-		}
-		operationID = tokens[3]
-		return
-	case 6:
-		operationID = tokens[4]
-		return
+		target = tokens[0]
+		schemaID = tokens[1]
+		operation = tokens[2]
 	}
 	return
 }
 
-func extractSchemaID(key string) (schemaID string) {
-	var IsKeyHaveSourceName bool
-	if !strings.HasPrefix(key, "Provider") && !strings.HasPrefix(key, "Consumer") {
-		IsKeyHaveSourceName = true
+//ExtractMetricKey return metrics related infors
+//example Consumer.ErrServer.rest./sayhimessage.rejects
+//the first and last string consist of metrics name
+//second is ErrServer
+//3th and 4th is schema and operation
+func ExtractMetricKey(key string) (source string, target string, schema string, op string) {
+	regNormal := regexp.MustCompile(regex)
+	regSource := regexp.MustCompile(regexSource)
+	var raw, role string
+	if regNormal.MatchString(key) {
+		s := regNormal.FindStringSubmatch(key)
+		role = s[1]
+		raw = s[2]
 	}
-	tokens := strings.Split(key, ".")
-	switch len(tokens) {
-	case 3:
-		return
-	case 4:
-		if IsKeyHaveSourceName {
-			return
-		}
-		schemaID = tokens[2]
-		return
-	case 5:
-		if IsKeyHaveSourceName {
-			schemaID = tokens[3]
-			return
-		}
-		schemaID = tokens[2]
-		return
-	case 6:
-		schemaID = tokens[3]
-		return
+	if regSource.MatchString(key) {
+		s := regNormal.FindStringSubmatch(key)
+		source = s[1]
+		role = s[2]
+		raw = s[3]
 	}
-	return
-}
+	sn, scID, opID, m := ExtractServiceSchemaOperationMetrics(raw)
 
-func extractMetricKey(key string) string {
-	key = strings.Replace(key, runtime.ServiceName, "service", 1)
-	opID := extractOperationID(key)
-	scID := extractSchemaID(key)
-	if opID == "" && scID == "" {
-		return key
-	}
-
-	key = strings.Replace(key, opID+".", "", 1)
-	key = strings.Replace(key, scID+".", "", 1)
-
-	return key
+	return role + "." + m, sn, scID, opID
 }
 
 var onceEnable sync.Once

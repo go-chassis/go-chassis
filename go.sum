@@ -33,17 +33,13 @@ github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMo
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-chassis/go-archaius v0.0.0-20180831094429-1e6b20d2a085/go.mod h1:wahnwKS5N7/4ozbNiqPgctqjT7DxL7JH5VKd3FnSWDI=
-github.com/go-chassis/go-archaius v0.0.0-20180831094429-ab75db7118a6 h1:rL2II34Cxn6G9c6zl3SDM8mPMusjIxJbvlCeHMN/jB0=
-github.com/go-chassis/go-archaius v0.0.0-20180831094429-ab75db7118a6/go.mod h1:m6fFnn+qrd7U+x+y+DRfTHeKuMPtrJCPWQKIY2gymAI=
-github.com/go-chassis/go-archaius v0.0.0-20180831094429-e91e8f9ed49f h1:zkV4400mHrFR1PTKj8K+P/gaIgxJQMjQtvaXHAP8LTU=
-github.com/go-chassis/go-archaius v0.0.0-20180831094429-e91e8f9ed49f/go.mod h1:bTRCDy09g6WV/+d/ebo6GngAxTbNf1eXLYyVvxfyYVs=
+github.com/go-chassis/go-archaius v0.0.0-20181031080527-71340a440efd h1:KvLqTs2f72cFvN0xebiOhqFkK4D+oEvTAz0oHbjgFsE=
+github.com/go-chassis/go-archaius v0.0.0-20181031080527-71340a440efd/go.mod h1:m6fFnn+qrd7U+x+y+DRfTHeKuMPtrJCPWQKIY2gymAI=
 github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640 h1:o4wHmHChm8sOe++xtGXQsmeFpugdqW+yGZN2VuQaPwY=
 github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640/go.mod h1:6P5JmlcKZBlAVebxGgfGnKlsZ3UKLfO2VfyhJ1nO82c=
-github.com/go-chassis/go-chassis v0.0.0-20180831021158-fcc43e7cb6ea/go.mod h1:qYnF5AEh6HjcZsDcFVwDr00K06q5BDGhdzWnmC8AtHk=
 github.com/go-chassis/go-chassis v0.8.3/go.mod h1:/DwP7rnJQo05bJFbAaAJcXK39XkFyFg6U/HH6qaOwCM=
 github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6 h1:uQOwwJMk+qdGUz3jd8A0RyygG8v4p5hrkHYvIw2aKAQ=
 github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6/go.mod h1:DqeW7HKONWncHIQhtEus/nNpe7N15F7c43V9p4AqaHM=
-github.com/go-chassis/go-sc-client v0.0.0-20180831081217-8135c6df7f96 h1:+CwasSmqeqHut6G4CxURqCqd6QcRjCl5LoUZHaL148Y=
 github.com/go-chassis/go-sc-client v0.0.0-20180831081217-8135c6df7f96/go.mod h1:IS3XXS6JdNbKP4K7duT+q2Gk8+yJq5EUh+5zTMWnCDg=
 github.com/go-chassis/go-sc-client v0.0.0-20180925063328-78ad13b4fbef h1:zJxjCnDswC4WSXeyv2bPh8MYtqYq9Ns7NLri6zXHVEo=
 github.com/go-chassis/go-sc-client v0.0.0-20180925063328-78ad13b4fbef/go.mod h1:IS3XXS6JdNbKP4K7duT+q2Gk8+yJq5EUh+5zTMWnCDg=
@@ -76,7 +72,6 @@ github.com/golang/text v0.3.0/go.mod h1:GUiq9pdJKRKKAZXiVgWFEvocYuREvC14NhI4OPgE
 github.com/golang/time v0.0.0-20180412165947-fbb02b2291d2/go.mod h1:Goyxmr1dEyuE8J10MyNptB/4WJaypDxCpNr2pf27wjI=
 github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c h1:964Od4U6p2jUkFxvCydnIczKteheJEzHRToSGK3Bnlw=
 github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=
-github.com/google/go-genproto v0.0.0-20180817151627-c66870c02cf8 h1:I9PuChzQA31gMw88WmVPJaAwE0nZNHpMrLDUnTyzFAI=
 github.com/google/go-genproto v0.0.0-20180817151627-c66870c02cf8/go.mod h1:3Rcd9jSoLVkV/osPrt5CogLvLiarfI8U9/x78NwhuDU=
 github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf h1:+RRA9JqSOZFfKrOeqr2z77+8R2RKyh8PG66dcu1V0ck=
 github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf/go.mod h1:HP5RmnzzSNb993RKQDq4+1A4ia9nllfqcQFTQJedwGI=
@@ -106,7 +101,6 @@ github.com/jtolds/gls v4.2.1+incompatible h1:fSuqC+Gmlu6l/ZYAoZzx2pyucC8Xza35fpR
 github.com/jtolds/gls v4.2.1+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 h1:T+h1c/A9Gawja4Y9mFVWj2vyii2bbUNDw3kt9VxK2EY=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
-github.com/lyft/protoc-gen-validate v0.0.6 h1:4YInPV0jraTH7uUZl/xq5m9nhckBdUSAl9HlFgq1HPA=
 github.com/lyft/protoc-gen-validate v0.0.6/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0QoUACkjt2znoq26NVQ=
 github.com/lyft/protoc-gen-validate v0.0.7 h1:WdKhTdks4N9eamVA+rrPY3hc/q25G8r7/9EvNVWgy1A=
 github.com/lyft/protoc-gen-validate v0.0.7/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0QoUACkjt2znoq26NVQ=
@@ -137,7 +131,6 @@ github.com/prometheus/client_golang v0.8.0 h1:1921Yw9Gc3iSc4VQh3PIoOqgPCZS7G/4xQ
 github.com/prometheus/client_golang v0.8.0/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910 h1:idejC8f05m9MGOsuEi1ATq9shN03HrxNkD/luQvxCv8=
 github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=
-github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e h1:n/3MEhJQjQxrOUCzh1Y3Re6aJUUWRp2M9+Oc3eVn/54=
 github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e/go.mod h1:daVV7qP5qjZbuso7PdcryaAu0sAZbrN9i7WWcTMWvro=
 github.com/prometheus/common v0.0.0-20181015124227-bcb74de08d37 h1:Y7YdJ9Xb3MoQOzAWXnDunAJYpvhVwZdTirNfGUgPKaA=
 github.com/prometheus/common v0.0.0-20181015124227-bcb74de08d37/go.mod h1:daVV7qP5qjZbuso7PdcryaAu0sAZbrN9i7WWcTMWvro=
@@ -157,7 +150,6 @@ github.com/smartystreets/goconvey v0.0.0-20170602164621-9e8dc3f972df h1:AawEzDdi
 github.com/smartystreets/goconvey v0.0.0-20170602164621-9e8dc3f972df/go.mod h1:XDJAKZRPZ1CvBcN2aX5YOUTYGHki24fSF0Iv48Ibg0s=
 github.com/spf13/cast v1.2.0 h1:HHl1DSRbEQN2i8tJmtS6ViPyHx35+p51amrdsiTCrkg=
 github.com/spf13/cast v1.2.0/go.mod h1:r2rcYCSwa1IExKTDiTfzaxqT2FNHs8hODu4LnUfgKEg=
-github.com/spf13/pflag v1.0.2 h1:Fy0orTDgHdbnzHcsOgfCN4LtHf0ec3wwtiwJqwvf3Gc=
 github.com/spf13/pflag v1.0.2/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
 github.com/spf13/pflag v1.0.3 h1:zPAT6CGy6wXeQ7NtTnaTerfKOsV6V6F8agHXFiazDkg=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
@@ -177,7 +169,6 @@ k8s.io/api v0.0.0-20180925152912-a191abe0b71e h1:Mx42+OpPb8/BDCRrGGmrnv77tCgzyE2
 k8s.io/api v0.0.0-20180925152912-a191abe0b71e/go.mod h1:iuAfoD4hCxJ8Onx9kaTIt30j7jUFS00AXQi6QMi99vA=
 k8s.io/apimachinery v0.0.0-20180823151430-017bf4f8f588 h1:27Eed77htcD+xKyRQpbq8thV+F1tv611laPnUFMZoeg=
 k8s.io/apimachinery v0.0.0-20180823151430-017bf4f8f588/go.mod h1:ccL7Eh7zubPUSh9A3USN90/OzHNSVN6zxzde07TDCL0=
-k8s.io/client-go v8.0.0+incompatible h1:7Zl+OVXn0bobcsi4NEZGdoQDTE9ij1zPMfM21+yqQsM=
 k8s.io/client-go v8.0.0+incompatible/go.mod h1:7vJpHMYJwNQCWgzmNV+VYUl1zCObLyodBc8nIyt8L5s=
 k8s.io/client-go v9.0.0+incompatible h1:/PdJjifJTjMFe0G4ESclZDcwF1+bFePTJ2xf+MXjcvs=
 k8s.io/client-go v9.0.0+incompatible/go.mod h1:7vJpHMYJwNQCWgzmNV+VYUl1zCObLyodBc8nIyt8L5s=

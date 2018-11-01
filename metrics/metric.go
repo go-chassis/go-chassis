@@ -10,6 +10,9 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 
 	"github.com/emicklei/go-restful"
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
+	"github.com/go-mesh/openlogging"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rcrowley/go-metrics"
@@ -56,8 +59,12 @@ func HTTPHandleFunc(req *restful.Request, rep *restful.Response) {
 //Init prepare the metrics registry and report metrics to other systems
 func Init() error {
 	metricRegistries[defaultName] = metrics.DefaultRegistry
+	if archaius.GetBool("cse.metrics.enableCircuitMetrics", true) {
+		metricCollector.Registry.Register(NewCseCollector)
+	}
+
 	for k, report := range reporterPlugins {
-		lager.Logger.Info("report metrics to " + k)
+		openlogging.GetLogger().Info("report metrics to " + k)
 		if err := report(GetSystemRegistry()); err != nil {
 			lager.Logger.Warnf(err.Error(), err)
 			return err

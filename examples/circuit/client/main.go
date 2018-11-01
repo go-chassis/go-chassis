@@ -20,7 +20,8 @@ func main() {
 		lager.Logger.Error("Init failed." + err.Error())
 		return
 	}
-
+	// run is only to enable metric exporter
+	go chassis.Run()
 	ctx := context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
 		"user": "peter",
 	})

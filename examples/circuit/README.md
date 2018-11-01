@@ -32,3 +32,6 @@ client can still call other API of this same service
 if you change scope to "service"
 
 it will isolate the service 
+
+the runtime metrics is exported by prometheus exporter
+check 127.0.0.1:5000/metrics and 127.0.0.1:5001/metrics to observe services
