@@ -43,6 +43,7 @@ type MetricsStruct struct {
 	FlushInterval          string `yaml:"flushInterval"`
 	Enable                 bool   `yaml:"enable"`
 	EnableGoRuntimeMetrics bool   `yaml:"enableGoRuntimeMetrics"`
+	EnableCircuitMetrics   bool   `yaml:"enableCircuitMetrics"`
 }
 
 // MonitorStruct is the struct for monitoring parameters
