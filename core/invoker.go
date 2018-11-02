@@ -1,11 +1,15 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/session"
 )
 
 // newOptions is for updating options
@@ -45,4 +49,28 @@ func (ri *abstractInvoker) invoke(i *invocation.Invocation) error {
 		return err
 	})
 	return err
+}
+
+// setCookieToCache   set go-chassisLB cookie to cache when use SessionStickiness strategy
+func setCookieToCache(inv invocation.Invocation, namespace string) {
+	if inv.Strategy != loadbalancer.StrategySessionStickiness {
+		return
+	}
+	cookie := session.GetSessionIDFromInv(inv, common.LBSessionID)
+	if cookie != "" {
+		cookies := strings.Split(cookie, "=")
+		if len(cookies) > 1 {
+			session.AddSessionStickinessToCache(cookies[1], namespace)
+		}
+	}
+}
+
+// getNamespaceFromMetadata get namespace from opts.Metadata
+func getNamespaceFromMetadata(metadata map[string]interface{}) string {
+	if namespaceTemp, ok := metadata[common.SessionNameSpaceKey]; ok {
+		if v, ok := namespaceTemp.(string); ok {
+			return v
+		}
+	}
+	return common.SessionNameSpaceDefaultValue
 }

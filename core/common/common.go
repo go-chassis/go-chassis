@@ -67,6 +67,12 @@ const (
 	LBSessionID     = "go-chassisLB"
 )
 
+// SessionNameSpaceKey metadata session namespace key
+const SessionNameSpaceKey = "_Session_Namespace"
+
+// SessionNameSpaceDefaultValue default session namespace value
+const SessionNameSpaceDefaultValue = "default"
+
 // DefaultKey default key
 const DefaultKey = "default"
 

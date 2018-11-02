@@ -12,7 +12,10 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 
 	"context"
+
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-mesh/openlogging"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -22,8 +25,12 @@ var ErrResponseNil = errors.New("can not set session, resp is nil")
 // Cache session cache variable
 var Cache *cache.Cache
 
+// SessionStickinessCache key: go-chassisLB , value is cookie
+var SessionStickinessCache *cache.Cache
+
 func init() {
 	Cache = initCache()
+	SessionStickinessCache = initCache()
 	cookieMap = make(map[string]string)
 }
 func initCache() *cache.Cache {
@@ -181,7 +188,6 @@ func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req 
 		sessionIDValue := generateCookieSessionID()
 		setCookie(resp, sessionIDValue)
 		Save(sessionIDValue, ep, timeValue)
-
 	}
 
 }
@@ -246,4 +252,66 @@ func GetSessionCookie(ctx context.Context, resp *http.Response) string {
 	}
 
 	return ""
+}
+
+// AddSessionStickinessToCache add new cookie or refresh old cookie
+func AddSessionStickinessToCache(cookie, namespace string) {
+	key := getSessionStickinessCacheKey(namespace)
+	value, ok := SessionStickinessCache.Get(key)
+	if !ok || value == nil {
+		SessionStickinessCache.Set(key, cookie, 0)
+		return
+	}
+	s, ok := value.(string)
+	if !ok {
+		SessionStickinessCache.Set(key, cookie, 0)
+		return
+	}
+	if cookie != "" && s != cookie {
+		SessionStickinessCache.Set(key, cookie, 0)
+	}
+}
+
+// GetSessionID get sessionID from cache
+func GetSessionID(namespace string) string {
+
+	value, ok := SessionStickinessCache.Get(getSessionStickinessCacheKey(namespace))
+	if !ok || value == nil {
+		openlogging.GetLogger().Warn("not sessionID in cache")
+		return ""
+	}
+	s, ok := value.(string)
+	if !ok {
+		openlogging.GetLogger().Warn("get sessionID from cache failed")
+		return ""
+	}
+	return s
+}
+func getSessionStickinessCacheKey(namespace string) string {
+	if namespace == "" {
+		namespace = common.SessionNameSpaceDefaultValue
+	}
+	return strings.Join([]string{common.LBSessionID, namespace}, "|")
+}
+
+// GetSessionIDFromInv when use  SessionStickiness , get session id from inv
+func GetSessionIDFromInv(inv invocation.Invocation, key string) string {
+	var metadata interface{}
+	switch inv.Reply.(type) {
+	case *http.Response:
+		resp := inv.Reply.(*http.Response)
+		value := httputil.GetRespCookie(resp, key)
+		if string(value) != "" {
+			metadata = string(value)
+		}
+	default:
+		value := GetContextMetadata(inv.Ctx, key)
+		if value != "" {
+			metadata = value
+		}
+	}
+	if metadata == nil {
+		metadata = ""
+	}
+	return metadata.(string)
 }
