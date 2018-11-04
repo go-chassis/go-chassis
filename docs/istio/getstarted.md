@@ -1,7 +1,7 @@
-Use Istio pilot as Service Discovery component
+Get started
 =====
 
-go-chassis can be integrated with Istio Pilot for service discovery. To enable Istio pilot support in go-chassis, the simple 2 steps are needed during development:
+go-chassis can be integrated with Istio for service discovery and routing. To enable Istio pilot support in go-chassis, the simple 2 steps are needed during development:
 
 - **Import the istiov2 registry plugin from mesher**
 
