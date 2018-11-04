@@ -4,12 +4,12 @@ Instead of using CSE and route config to manage route, go-chassis supports istio
 
 ## Go-chassis Configurations
 
-In **Consumer** router.yaml, you can set router.infra to define which router plugin go-chassis fetches from.  The default router.infra  is cse, which means the routerule comes from route config in CSE config-center. If router.infra is set to be pilot, the router.address is necessary, such as the in-cluster istio-pilot grpc address.
+In **Consumer** router.yaml, you can set router.infra to define which router plugin go-chassis fetches from.  The default router.infra  is cse, which means the routerule comes from route config in CSE config-center. If router.infra is set to be pilotv2, the router.address is necessary, such as the in-cluster istio-pilot grpc address.
 
 ```yaml
 router:
-  infra: pilot # pilot or cse
-  address: http://istio-pilot.istio-system:15010
+  infra: pilotv2 # pilotv2 or cse
+  address: grpc://istio-pilot.istio-system:15010
 ```
 
 In **Both** consumer and provider registry configurations, the recommended one shows below.
@@ -21,8 +21,8 @@ cse:
       registrator:
         disabled: true
       serviceDiscovery:
-        type: pilot
-        address: http://istio-pilot.istio-system:8080
+        type: pilotv2
+        address: grpc://istio-pilot.istio-system:15010
 ```
 
 ## Kubernetes Configurations
@@ -72,7 +72,7 @@ spec:
         terminationMessagePolicy: File
         env:
         - name: CSE_SERVICE_CENTER
-          value: http://istio-pilot.istio-system:8080
+          value: grpc://istio-pilot.istio-system:15010
         - name: POD_NAME
           valueFrom:
             fieldRef:
