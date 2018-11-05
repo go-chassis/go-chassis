@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -17,7 +16,6 @@ func initEnv() {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
-	archaius.Init()
 }
 
 func TestProviderRateLimiterDisable(t *testing.T) {

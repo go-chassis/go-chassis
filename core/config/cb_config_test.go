@@ -6,7 +6,6 @@ import (
 
 	_ "github.com/go-chassis/go-chassis/initiator"
 
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +15,6 @@ func TestCBInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	config.Init()
-	archaius.Init()
 }
 
 func TestGetFallbackEnabled(t *testing.T) {
@@ -33,7 +31,7 @@ func TestGetForceOpen(t *testing.T) {
 	check := config.GetForceOpen("test", common.Consumer)
 	assert.Equal(t, false, check)
 	check = config.GetForceOpen("Server", common.Consumer)
-	assert.Equal(t, true, check)
+	assert.Equal(t, false, check)
 }
 
 func TestGetForceClose(t *testing.T) {
@@ -41,7 +39,7 @@ func TestGetForceClose(t *testing.T) {
 	check := config.GetForceClose("test", common.Consumer)
 	assert.Equal(t, true, check)
 	check = config.GetForceClose("Server", common.Consumer)
-	assert.Equal(t, false, check)
+	assert.Equal(t, true, check)
 }
 
 func TestTimeout(t *testing.T) {

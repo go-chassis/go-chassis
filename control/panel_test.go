@@ -3,7 +3,6 @@ package control_test
 import (
 	"github.com/go-chassis/go-chassis/control"
 	_ "github.com/go-chassis/go-chassis/control/archaius"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -27,8 +26,6 @@ func TestInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	err := config.Init()
-	assert.NoError(t, err)
-	err = archaius.Init()
 	assert.NoError(t, err)
 	err = control.Init()
 	assert.NoError(t, err)

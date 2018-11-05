@@ -4,7 +4,6 @@ import (
 	_ "github.com/go-chassis/go-chassis/initiator"
 
 	"github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -38,7 +37,6 @@ func (b *bootstrapPlugin) Init() error {
 func TestBootstrap(t *testing.T) {
 	initialize()
 	config.Init()
-	archaius.Init()
 	time.Sleep(1 * time.Second)
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.MicroserviceDefinition = &model.MicroserviceCfg{}

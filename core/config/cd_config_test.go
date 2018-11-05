@@ -6,7 +6,6 @@ import (
 
 	_ "github.com/go-chassis/go-chassis/initiator"
 
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 
 	"github.com/stretchr/testify/assert"
@@ -16,7 +15,6 @@ func TestCDInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	config.Init()
-	archaius.Init()
 }
 
 func TestGetContractDiscoveryType(t *testing.T) {
@@ -26,7 +24,7 @@ func TestGetContractDiscoveryType(t *testing.T) {
 
 func TestGetContractDiscoveryAddress(t *testing.T) {
 	check := config.GetContractDiscoveryAddress()
-	assert.Equal(t, "http://127.0.0.1:30100", check)
+	assert.Equal(t, "", check)
 }
 
 func TestGetContractDiscoveryTenant(t *testing.T) {

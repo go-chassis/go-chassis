@@ -1,7 +1,6 @@
 package router_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -121,11 +120,9 @@ func TestBuildRouter(t *testing.T) {
 
 	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
 	config.Init()
-	err := archaius.Init()
-	assert.NoError(t, err)
 	router.BuildRouter("cse")
 
-	err = router.BuildRouter("fake")
+	err := router.BuildRouter("fake")
 	assert.Error(t, err)
 	err = router.BuildRouter("cse")
 	assert.NoError(t, err)

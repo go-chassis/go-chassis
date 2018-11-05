@@ -11,8 +11,8 @@ require (
 	github.com/emicklei/go-restful-swagger12 v0.0.0-20170208215640-dcef7f557305
 	github.com/envoyproxy/go-control-plane v0.5.0
 
-	github.com/go-chassis/go-archaius v0.0.0-20181031080527-71340a440efd
-	github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640
+	github.com/go-chassis/go-archaius v0.0.0-20181102103750-3dfd20d229f6
+	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
 	github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6
 	github.com/go-chassis/go-sc-client v0.0.0-20180925063328-78ad13b4fbef
 	github.com/go-chassis/paas-lager v0.0.0-20180905100939-eff93e5e67db

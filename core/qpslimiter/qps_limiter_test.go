@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -43,7 +42,6 @@ func TestGetQpsRateWithPriority(t *testing.T) {
 	initialize()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
-	archaius.Init()
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",

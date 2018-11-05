@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -22,7 +21,6 @@ func TestCBInit(t *testing.T) {
 
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
-	archaius.Init()
 	err := control.Init()
 	assert.NoError(t, err)
 }
@@ -92,7 +90,6 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
-	archaius.Init()
 	control.Init()
 	inv := &invocation.Invocation{
 		MicroServiceName: "fakeService",

@@ -1,4 +1,4 @@
-package archaius_test
+package config_test
 
 import (
 	"io"
@@ -11,7 +11,6 @@ import (
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/core"
-	arch "github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -28,13 +27,7 @@ type ConfigStruct struct {
 	Yamltest1 int `yaml:"yamltest1"`
 }
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func TestInit2(t *testing.T) {
+func TestInit3(t *testing.T) {
 	cbBytes := []byte(`
 cse:
   isolation:
@@ -183,7 +176,7 @@ cse1:
 	if err != nil {
 		t.Error(err)
 	}
-	arch.Init()
+	config.InitArchaius()
 
 	time.Sleep(10 * time.Millisecond)
 	eventHandler := EListener{}
