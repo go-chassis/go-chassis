@@ -35,8 +35,12 @@ github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeME
 github.com/go-chassis/go-archaius v0.0.0-20180831094429-1e6b20d2a085/go.mod h1:wahnwKS5N7/4ozbNiqPgctqjT7DxL7JH5VKd3FnSWDI=
 github.com/go-chassis/go-archaius v0.0.0-20181031080527-71340a440efd h1:KvLqTs2f72cFvN0xebiOhqFkK4D+oEvTAz0oHbjgFsE=
 github.com/go-chassis/go-archaius v0.0.0-20181031080527-71340a440efd/go.mod h1:m6fFnn+qrd7U+x+y+DRfTHeKuMPtrJCPWQKIY2gymAI=
+github.com/go-chassis/go-archaius v0.0.0-20181102103750-3dfd20d229f6 h1:t75QUtKdza7v0qIeAAnq0uSOOcSJzozBVHJTHw5cNHI=
+github.com/go-chassis/go-archaius v0.0.0-20181102103750-3dfd20d229f6/go.mod h1:qmduR5sRlA+6yff9T5KDxP02ZAL3uQmv9P4IeoBnvtA=
 github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640 h1:o4wHmHChm8sOe++xtGXQsmeFpugdqW+yGZN2VuQaPwY=
 github.com/go-chassis/go-cc-client v0.0.0-20180831085349-c2bb6cef1640/go.mod h1:6P5JmlcKZBlAVebxGgfGnKlsZ3UKLfO2VfyhJ1nO82c=
+github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34 h1:VmZhFKjCh21NIqW9ymc2gRUURgW6zn8XpsSLhcpTuIk=
+github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34/go.mod h1:6P5JmlcKZBlAVebxGgfGnKlsZ3UKLfO2VfyhJ1nO82c=
 github.com/go-chassis/go-chassis v0.8.3/go.mod h1:/DwP7rnJQo05bJFbAaAJcXK39XkFyFg6U/HH6qaOwCM=
 github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6 h1:uQOwwJMk+qdGUz3jd8A0RyygG8v4p5hrkHYvIw2aKAQ=
 github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6/go.mod h1:DqeW7HKONWncHIQhtEus/nNpe7N15F7c43V9p4AqaHM=
@@ -72,6 +76,7 @@ github.com/golang/text v0.3.0/go.mod h1:GUiq9pdJKRKKAZXiVgWFEvocYuREvC14NhI4OPgE
 github.com/golang/time v0.0.0-20180412165947-fbb02b2291d2/go.mod h1:Goyxmr1dEyuE8J10MyNptB/4WJaypDxCpNr2pf27wjI=
 github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c h1:964Od4U6p2jUkFxvCydnIczKteheJEzHRToSGK3Bnlw=
 github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=
+github.com/google/go-genproto v0.0.0-20180817151627-c66870c02cf8 h1:I9PuChzQA31gMw88WmVPJaAwE0nZNHpMrLDUnTyzFAI=
 github.com/google/go-genproto v0.0.0-20180817151627-c66870c02cf8/go.mod h1:3Rcd9jSoLVkV/osPrt5CogLvLiarfI8U9/x78NwhuDU=
 github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf h1:+RRA9JqSOZFfKrOeqr2z77+8R2RKyh8PG66dcu1V0ck=
 github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf/go.mod h1:HP5RmnzzSNb993RKQDq4+1A4ia9nllfqcQFTQJedwGI=

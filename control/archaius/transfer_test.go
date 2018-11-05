@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/control/archaius"
-	archaius2 "github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -64,8 +63,6 @@ func TestSaveToCBCache(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	err := config.Init()
-	assert.NoError(t, err)
-	err = archaius2.Init()
 	assert.NoError(t, err)
 	err = control.Init()
 	archaius.SaveToCBCache(config.GetHystrixConfig())

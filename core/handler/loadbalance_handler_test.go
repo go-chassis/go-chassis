@@ -11,7 +11,6 @@ import (
 	"github.com/go-chassis/go-archaius/core/cast"
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	chassisModel "github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -267,8 +266,6 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	assert.NoError(t, err)
 	//config.GlobalDefinition = &chassisModel.GlobalCfg{}
 
-	err = archaius.Init()
-	assert.NoError(t, err)
 	err = control.Init()
 	assert.NoError(t, err)
 	c := handler.Chain{}
@@ -319,7 +316,6 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
-	archaius.Init()
 	control.Init()
 	registry.Enable()
 	registry.DoRegister()

@@ -19,6 +19,7 @@ type RestFulMessage struct {
 //Saymessage is used to reply user with his name
 func (r *RestFulMessage) DeadLock(b *rf.Context) {
 	l.Lock()
+	b.Write([]byte("hello world"))
 }
 
 //Sayhi is a method used to reply request user with hello world text

@@ -19,16 +19,13 @@ func check(e error) {
 }
 func TestInit(t *testing.T) {
 	t.Log("testing config initialization")
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-	//config.Init()
 
 	err := config.Init()
 	assert.NoError(t, err)
 
-	assert.Equal(t, "default", config.GlobalDefinition.AppID)
+	assert.Equal(t, "CSE", config.GlobalDefinition.AppID)
 	assert.Equal(t, "servicecenter", config.GlobalDefinition.Cse.Service.Registry.Type)
-	assert.Equal(t, "127.0.0.1:8082", config.GlobalDefinition.Cse.Protocols["highway"].Listen)
+	assert.Equal(t, "127.0.0.1:8080", config.GlobalDefinition.Cse.Protocols["highway"].Listen)
 
 }
 

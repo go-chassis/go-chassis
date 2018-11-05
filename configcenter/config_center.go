@@ -190,7 +190,7 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 		Environment:     config.MicroserviceDefinition.ServiceDescription.Environment,
 	}
 
-	err := archaius.InitConfigCenter(archaius.WithConfigCenter(ccObj))
+	err := archaius.InitConfigCenter(ccObj)
 
 	if err != nil {
 		return err

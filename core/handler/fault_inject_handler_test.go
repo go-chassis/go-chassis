@@ -2,7 +2,6 @@ package handler_test
 
 import (
 	"errors"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -135,8 +134,6 @@ service_description:
 	t.Log(f2.Name())
 	assert.NoError(t, err)
 	err = config.Init()
-	assert.NoError(t, err)
-	err = archaius.Init()
 	assert.NoError(t, err)
 	c := handler.Chain{}
 	c.AddHandler(&handler.FaultHandler{})

@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-chassis/go-chassis/control"
 	_ "github.com/go-chassis/go-chassis/control/archaius"
-	"github.com/go-chassis/go-chassis/core/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -19,8 +18,6 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	err := config.Init()
-	assert.NoError(t, err)
-	err = archaius.Init()
 	assert.NoError(t, err)
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	err = control.Init()
@@ -65,7 +62,6 @@ func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
-	archaius.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	control.Init()
 	inv := invocation.Invocation{
@@ -82,7 +78,6 @@ func BenchmarkPanel_GetLoadBalancing2(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
-	archaius.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	control.Init()
 	inv := invocation.Invocation{
@@ -99,7 +94,6 @@ func BenchmarkPanel_GetCircuitBreaker(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
-	archaius.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	control.Init()
 	inv := invocation.Invocation{
@@ -116,7 +110,6 @@ func BenchmarkPanel_GetRateLimiting(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
-	archaius.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	control.Init()
 	inv := invocation.Invocation{
