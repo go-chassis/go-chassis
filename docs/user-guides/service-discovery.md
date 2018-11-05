@@ -11,7 +11,7 @@ Service Discovery与Registry只能选择其一进行配置
 服务发现的配置在chassis.yaml。
 
 **type**
-> *(optional, string)* 对接服务中心插件类型，默认为servicecenter，另外可选择pilot以及kube
+> *(optional, string)* 对接服务中心插件类型，默认为servicecenter，另外可选择pilotv2以及kube
 
 **NOTE: 当使用kube registry时，发布的service需要指定port name为以下格式 [protocol]-[suffix]，目前protocol只支持rest和highway。**
 
@@ -23,16 +23,16 @@ Service Discovery与Registry只能选择其一进行配置
 
 ## 示例
 
-当registry type为pilot时需要指定pilot的地址address，当registry type为kube时需要指定与kube-apiserver交互所需的kubeconfig的配置文件位置，以下分别为registry的最小示例。
+当registry type为pilotv2时需要指定pilot的地址address，当registry type为kube时需要指定与kube-apiserver交互所需的kubeconfig的配置文件位置，以下分别为registry的最小示例。
 
 ```yaml
 cse:
   service:
     Registry:
       serviceDiscovery:
-        type: pilot
-        address: http://istio-pilot.istio-system:8080
-        refeshInterval : 30s                    
+        type: pilotv2
+        address: grpc://istio-pilot.istio-system:15010
+        refeshInterval : 30s
 ```
 
 ```yaml

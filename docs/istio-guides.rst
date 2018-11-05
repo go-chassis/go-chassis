@@ -5,6 +5,7 @@ Use Istio as control plane
    :maxdepth: 4
    :glob:
 
+   istio/getstarted
    istio/discovery
    istio/router
 

@@ -19,7 +19,7 @@ edit chassis.yaml.
 
 **serviceDiscovery.type**
 
- specify the plugin type to pilot
+ specify the plugin type to pilotv2
 
 **serviceDiscovery.address**
 
@@ -37,6 +37,6 @@ example
         registrator:
           disabled: true
         serviceDiscovery:
-          type: pilot
-          address: http://istio-pilot.istio-system:8080
+          type: pilotv2
+          address: grpc://istio-pilot.istio-system:15010
 
