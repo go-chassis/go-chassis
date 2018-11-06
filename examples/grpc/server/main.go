@@ -7,6 +7,8 @@ import (
 	pb "github.com/go-chassis/go-chassis/examples/grpc/helloworld"
 	_ "github.com/go-chassis/go-chassis/server/grpc"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc/metadata"
+	"log"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rpc/server/
@@ -15,6 +17,8 @@ type Server struct{}
 
 // SayHello implements helloworld.GreeterServer
 func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	log.Println(md["x-user"])
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 func main() {
