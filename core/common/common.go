@@ -137,7 +137,8 @@ const (
 	DefaultRefreshMode = 1
 )
 
-//ContextHeaderKey is the key of header value in context
+//ContextHeaderKey is the unified key of header value in context
+//all protocol integrated with go chassis must set protocol header into context in this context key
 type ContextHeaderKey struct{}
 
 // NewContext transforms a metadata to context object

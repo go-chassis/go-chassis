@@ -3,8 +3,11 @@ package grpc
 import (
 	"context"
 	"github.com/go-chassis/go-chassis/core/client"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 )
 
 func init() {
@@ -24,9 +27,9 @@ func New(opts client.Options) (client.ProtocolClient, error) {
 	if opts.TLSConfig == nil {
 		conn, err = grpc.Dial(opts.Endpoint, grpc.WithInsecure())
 	} else {
-		conn, err = grpc.Dial(opts.Endpoint, grpc.WithInsecure())
+		conn, err = grpc.Dial(opts.Endpoint,
+			grpc.WithTransportCredentials(credentials.NewTLS(opts.TLSConfig)))
 	}
-
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +39,16 @@ func New(opts client.Options) (client.ProtocolClient, error) {
 	}, nil
 }
 
+//TransformContext will deliver header in chassis context key to grpc context key
+func TransformContext(ctx context.Context) context.Context {
+	m := common.FromContext(ctx)
+	md := metadata.New(m)
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
 //Call remote server
 func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
+	ctx = TransformContext(ctx)
 	return c.c.Invoke(ctx, "/"+inv.SchemaID+"/"+inv.OperationID, inv.Args, rsp)
 }
 
