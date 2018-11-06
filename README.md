@@ -28,7 +28,7 @@ You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see
 # Quick Start
 You can see more documentations in [here](http://go-chassis.readthedocs.io/en/latest/)
 
-1. Install [go 1.8+](https://golang.org/doc/install) 
+1. Install [go 1.10+](https://golang.org/doc/install) 
 
 2. Clone the project
 
@@ -36,7 +36,7 @@ You can see more documentations in [here](http://go-chassis.readthedocs.io/en/la
 git clone git@github.com:go-chassis/go-chassis.git
 ```
 
-3. Use use go mod(go 1.11+, experimental but a recommended way)
+3. Use go mod(go 1.11+, experimental but a recommended way)
 ```shell
 cd go-chassis
 GO111MODULE=on go mod download
@@ -53,6 +53,8 @@ GO111MODULE=on go mod vendor
 
 # Examples
 You can check examples [here](examples)
+
+Now examples is migrating to [here](https://github.com/go-chassis/go-chassis-examples)
 # Communication Protocols
 Go-Chassis supports 3 types of communication protocol.
 1. Rest - REST is an approach that leverages the HTTP protocol for communication.
