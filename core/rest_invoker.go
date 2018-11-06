@@ -37,6 +37,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 	if string(req.URL.Scheme) != "cse" {
 		return nil, fmt.Errorf("scheme invalid: %s, only support cse://", req.URL.Scheme)
 	}
+
 	// set headers to Ctx
 	if len(req.Header) > 0 {
 		m := make(map[string]string, 0)
@@ -70,5 +71,9 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 	inv.SetMetadata(common.RestMethod, req.Method)
 
 	err := ri.invoke(inv)
+
+	if err == nil {
+		setCookieToCache(*inv, getNamespaceFromMetadata(opts.Metadata))
+	}
 	return resp, err
 }

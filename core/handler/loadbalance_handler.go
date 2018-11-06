@@ -3,23 +3,19 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/cenkalti/backoff"
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 
-	"github.com/go-chassis/go-chassis/pkg/util"
-
 	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
 
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/pkg/util"
 	"github.com/go-chassis/go-chassis/session"
-	"net/http"
 )
 
 // LBHandler loadbalancer handler struct
@@ -48,7 +44,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 
 	var sessionID string
 	if i.Strategy == loadbalancer.StrategySessionStickiness {
-		sessionID = getSessionID(i)
+		sessionID = session.GetSessionID(getNamespace(i))
 	}
 
 	s, err := loadbalancer.BuildStrategy(i.SourceServiceID, i.MicroServiceName, i.Protocol,
@@ -158,29 +154,11 @@ func newLBHandler() Handler {
 	return &LBHandler{}
 }
 
-func getSessionID(i *invocation.Invocation) string {
-	var metadata interface{}
-
-	switch i.Args.(type) {
-	case *http.Request:
-		req := i.Args.(*http.Request)
-		value := httputil.GetCookie(req, common.LBSessionID)
-		if value != "" {
-			metadata = value
-		}
-	default:
-		value := session.GetContextMetadata(i.Ctx, common.LBSessionID)
-		if value != "" {
-			cookieKey := strings.Split(string(value), "=")
-			if len(cookieKey) > 1 {
-				metadata = cookieKey[1]
-			}
+func getNamespace(i *invocation.Invocation) string {
+	if metadata, ok := i.Metadata[common.SessionNameSpaceKey]; ok {
+		if v, ok := metadata.(string); ok {
+			return v
 		}
 	}
-
-	if metadata == nil {
-		metadata = ""
-	}
-
-	return metadata.(string)
+	return common.SessionNameSpaceDefaultValue
 }

@@ -44,5 +44,9 @@ func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, op
 	i.OperationID = operationID
 	i.Args = arg
 	i.Reply = reply
-	return ri.invoke(i)
+	err := ri.invoke(i)
+	if err == nil {
+		setCookieToCache(*i, getNamespaceFromMetadata(opts.Metadata))
+	}
+	return err
 }

@@ -80,7 +80,7 @@ func (r *SessionStickinessStrategy) Pick() (*registry.MicroServiceInstance, erro
 		}
 
 		for _, instance := range r.instances {
-			if instanceAddr == instance.EndpointsMap["rest"] {
+			if instanceAddr == instance.EndpointsMap[instance.DefaultProtocol] {
 				return instance, nil
 			}
 		}
