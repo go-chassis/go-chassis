@@ -107,14 +107,14 @@ cse:
 4.修改microservice.yaml
 ```yaml
 service_description:
-  name: Server
+  name: RPCServer
 ```
 5.main.go中启动服务
 ```go
 func main() {
     //start all server you register in server/schemas.
     if err := chassis.Init(); err != nil {
-        lager.Logger.Error("Init failed.", err)
+        lager.Logger.Errorf("Init failed: %s", err)
         return
     }
     chassis.Run()
@@ -136,6 +136,7 @@ client/
 1.拿到pb文件生成go代码
 
 protoc --go_out=. hello.proto
+
 2.修改配置文件chassis.yaml
 
 ```yaml
