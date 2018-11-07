@@ -31,30 +31,3 @@ log_rotate_date: 1
 log_rotate_size: 10
 log_backup_count: 7
 ```
-
-## API
-
-通过配置lager.yaml，go-chassis会自动为服务加载日志模块，并默认输出日志到文件或标准输出。
-
-##### Debug和Info级别的日志
-
-```go
-lager.Logger.Info(action string, data ...Data)
-lager.Logger.Debug(action string, data ...Data)
-
-lager.Logger.Debugf(format string, args ...interface{})
-lager.Logger.Infof(format string, args ...interface{})
-```
-
-##### Warn Error Fatal级别的日志
-
-```go
-lager.Logger.Warn(action string, err error, data ...Data)
-lager.Logger.Error(action string, err error, data ...Data)
-lager.Logger.Fatal(action string, err error, data ...Data)
-
-lager.Logger.Warnf(err error, format string, args ...interface{})
-lager.Logger.Errorf(err error, format string, args ...interface{})
-lager.Logger.Fatalf(err error, format string, args ...interface{})
-```
-
