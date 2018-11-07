@@ -15,7 +15,7 @@ ContextDo可以接受一个http request作为参数，开发者可通过request�
 
 ```go
 func NewRestInvoker(opt ...Option) *RestInvoker
-func (ri *RestInvoker) ContextDo(ctx context.Context, req *rest.Request, options ...InvocationOption) (*rest.Response, error)
+func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options ...InvocationOption) (*rest.Response, error)
 ```
 
 #### RPC Invoker
