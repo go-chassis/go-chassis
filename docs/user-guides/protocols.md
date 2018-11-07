@@ -1,7 +1,7 @@
 # Protocol Servers
 
 ## Introduction
-you can extend your own protocol in go chassis, currently support rest(http) and highway
+you can extend your own protocol in go chassis, currently support rest(http) and gRPC
 
 ## Configurations
 
@@ -21,7 +21,7 @@ then go chassis will automatically generate advertise address, it is convenience
 
 
 ## Example
-this config will launch 2 http server and 1 highway server
+this config will launch 2 http server and 1 grpc server
 ```
 cse:
   protocols:
@@ -29,6 +29,6 @@ cse:
       listenAddress: 0.0.0.0:5000
     rest-admin:
       listenAddress: 0.0.0.0:5001
-    highway:
+    grpc:
       listenAddress: 0.0.0.0:6000
 ```
