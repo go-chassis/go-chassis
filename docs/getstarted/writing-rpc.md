@@ -101,7 +101,7 @@ cse:
     registry:
       address: http://127.0.0.1:30100
   protocols:
-    highway:
+    grpc:
       listenAddress: 127.0.0.1:5000
 ```
 4.修改microservice.yaml
