@@ -1,4 +1,0 @@
----
-APPLICATION_ID: registry #optional
-service_description:
-  name: kubeclient

@@ -25,7 +25,7 @@ func GetLocalIP() string {
 			return ""
 		}
 		// Check if Isloopback and IPV4
-		if ip != nil && !ip.IsLoopback() && ip.To4() != nil {
+		if ip != nil && !ip.IsLoopback() && (ip.To4() != nil) {
 			return ip.String()
 		}
 	}
