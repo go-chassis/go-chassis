@@ -2,9 +2,9 @@ package servicecenter
 
 import (
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-chassis/go-sc-client"
 	"gopkg.in/yaml.v2"
@@ -78,10 +78,10 @@ func wrapTagsForServiceCenter(t utiltags.Tags) utiltags.Tags {
 			t.Label += "|" + common.BuildinLabelVersion
 		}
 		if v, ok := t.KV[common.BuildinTagApp]; !ok || v == "" {
-			t.KV[common.BuildinTagApp] = config.GetGlobalAppID()
-			t.Label += "|" + common.BuildinTagApp + ":" + config.GetGlobalAppID()
+			t.KV[common.BuildinTagApp] = runtime.App
+			t.Label += "|" + common.BuildinTagApp + ":" + runtime.App
 		}
 		return t
 	}
-	return utiltags.NewDefaultTag(common.LatestVersion, config.GetGlobalAppID())
+	return utiltags.NewDefaultTag(common.LatestVersion, runtime.App)
 }

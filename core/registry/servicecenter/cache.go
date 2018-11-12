@@ -13,7 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-sc-client"
 
-	"k8s.io/apimachinery/pkg/util/sets"
+	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
 )
 
 // constant values for default expiration time, and refresh interval

@@ -2,7 +2,7 @@ package model
 
 //GlobalCfg chassis.yaml 配置项
 type GlobalCfg struct {
-	AppID      string            `yaml:"APPLICATION_ID"`
+	AppID      string            `yaml:"APPLICATION_ID"` //Deprecated
 	Cse        CseStruct         `yaml:"cse"`
 	Panel      ControlPanel      `yaml:"control"`
 	Ssl        map[string]string `yaml:"ssl"`
@@ -23,7 +23,7 @@ type CseStruct struct {
 	Service     ServiceStruct               `yaml:"service"`
 	Protocols   map[string]Protocol         `yaml:"protocols"`
 	Handler     HandlerStruct               `yaml:"handler"`
-	References  map[string]ReferencesStruct `yaml:"references"`
+	References  map[string]ReferencesStruct `yaml:"references"` //Deprecated
 	FlowControl FlowControl                 `yaml:"flowcontrol"`
 	Monitor     MonitorStruct               `yaml:"monitor"`
 	Metrics     MetricsStruct               `yaml:"metrics"`

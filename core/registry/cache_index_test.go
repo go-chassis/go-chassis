@@ -3,8 +3,8 @@ package registry
 import (
 	"testing"
 
+	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 var microServiceInstances = []*MicroServiceInstance{

@@ -11,9 +11,9 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-archaius"
+	m "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
 	"github.com/go-mesh/openlogging"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rcrowley/go-metrics"
 )
@@ -26,17 +26,11 @@ const (
 )
 
 var metricRegistries = make(map[string]metrics.Registry)
-var prometheusRegistry = prometheus.NewRegistry()
 var l sync.RWMutex
 
 //GetSystemRegistry return metrics registry which go chassis use
 func GetSystemRegistry() metrics.Registry {
 	return GetOrCreateRegistry(defaultName)
-}
-
-//GetSystemPrometheusRegistry return prometheus registry which go chassis use
-func GetSystemPrometheusRegistry() *prometheus.Registry {
-	return prometheusRegistry
 }
 
 //GetOrCreateRegistry return a go-metrics registry which go chassis framework use to report metrics
@@ -53,7 +47,7 @@ func GetOrCreateRegistry(name string) metrics.Registry {
 
 // HTTPHandleFunc is a go-restful handler which can expose metrics in http server
 func HTTPHandleFunc(req *restful.Request, rep *restful.Response) {
-	promhttp.HandlerFor(GetSystemPrometheusRegistry(), promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
+	promhttp.HandlerFor(m.GetSystemPrometheusRegistry(), promhttp.HandlerOpts{}).ServeHTTP(rep.ResponseWriter, req.Request)
 }
 
 //Init prepare the metrics registry and report metrics to other systems

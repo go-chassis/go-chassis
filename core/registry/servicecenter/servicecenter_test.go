@@ -44,7 +44,6 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 }
 
 func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd registry.ServiceDiscovery) {
-	config.GlobalDefinition.AppID = "CSE"
 	microservice := &registry.MicroService{
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",

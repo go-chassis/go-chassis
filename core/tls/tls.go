@@ -11,7 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	secCommon "github.com/go-chassis/go-chassis/security/common"
 
-	"k8s.io/apimachinery/pkg/util/sets"
+	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
 )
 
 var errSSLConfigNotExist = errors.New("No SSL config")
