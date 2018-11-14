@@ -130,6 +130,9 @@ const (
 	DefaultUserName   = "default"
 	DefaultDomainName = "default"
 	DefaultProvider   = "default"
+
+	TRUE  = "true"
+	FALSE = "false"
 )
 
 // const default config for config-center

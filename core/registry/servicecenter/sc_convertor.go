@@ -44,6 +44,7 @@ func ToSCService(cs *registry.MicroService) *client.MicroService {
 		scs.Framework.Name = cs.Framework.Name
 	}
 	scs.RegisterBy = cs.RegisterBy
+	scs.Alias = cs.Alias
 	return scs
 }
 

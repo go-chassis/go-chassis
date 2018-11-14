@@ -45,7 +45,7 @@ func getDefaultSslConfigMap() map[string]string {
 	cipherSuitesKey := strings.Join(cipherSuits, ",")
 	defaultSslConfigMap := map[string]string{
 		common.SslCipherPluginKey: "default",
-		common.SslVerifyPeerKey:   "false",
+		common.SslVerifyPeerKey:   common.FALSE,
 		common.SslCipherSuitsKey:  cipherSuitesKey,
 		common.SslProtocolKey:     "TLSv1.2",
 		common.SslCaFileKey:       "",
