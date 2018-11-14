@@ -16,7 +16,7 @@ require (
 
 	github.com/go-chassis/go-archaius v0.0.0-20181108111652-ab19b4eae276
 	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
-	github.com/go-chassis/go-sc-client v0.0.0-20180925063328-78ad13b4fbef
+	github.com/go-chassis/go-sc-client v0.0.0-20181114031726-ee9485093d80
 	github.com/go-chassis/paas-lager v0.0.0-20180905100939-eff93e5e67db
 	github.com/go-logfmt/logfmt v0.3.0 // indirect
 	github.com/go-mesh/openlogging v0.0.0-20180912071658-0fd4707a75ab
@@ -61,6 +61,7 @@ replace (
 	github.com/kubernetes/client-go => ../k8s.io/client-go
 	golang.org/x/crypto v0.0.0-20180820150726-614d502a4dac => github.com/golang/crypto v0.0.0-20180820150726-614d502a4dac
 	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591 => github.com/golang/net v0.0.0-20180824152047-4bcd98cce591
+	golang.org/x/sys v0.0.0-20180824143301-4910a1d54f87 => github.com/golang/sys v0.0.0-20180824143301-4910a1d54f87
 	golang.org/x/text v0.3.0 => github.com/golang/text v0.3.0
 	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2 => github.com/golang/time v0.0.0-20180412165947-fbb02b2291d2
 	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 => github.com/google/go-genproto v0.0.0-20180817151627-c66870c02cf8

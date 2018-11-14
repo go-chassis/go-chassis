@@ -36,6 +36,9 @@ func RegisterMicroservice() error {
 	if service.ServiceDescription.Level == "" {
 		service.ServiceDescription.Level = common.DefaultLevel
 	}
+	if service.ServiceDescription.Properties == nil {
+		service.ServiceDescription.Properties = make(map[string]string)
+	}
 	framework := metadata.NewFramework()
 
 	microservice := &MicroService{
@@ -52,7 +55,24 @@ func RegisterMicroservice() error {
 			Name:    framework.Name,
 		},
 		RegisterBy: framework.Register,
+		Metadata:   make(map[string]string),
+		// TODO allows to customize microservice alias
+		Alias: "",
 	}
+	//update metadata
+	if len(microservice.Alias) == 0 {
+		// if the microservice is allowed to be called by consumers with different appId,
+		// this means that the governance configuration of the consumer side needs to
+		// support key format with appid, like 'cse.loadbalance.{alias}.strategy.name'.
+		microservice.Alias = microservice.AppID + ":" + microservice.ServiceName
+	}
+	if config.GetRegistratorScope() == common.ScopeFull {
+		microservice.Metadata["allowCrossApp"] = common.TRUE
+		service.ServiceDescription.Properties["allowCrossApp"] = common.TRUE
+	} else {
+		service.ServiceDescription.Properties["allowCrossApp"] = common.FALSE
+	}
+	lager.Logger.Debugf("Update micro service properties%v", service.ServiceDescription.Properties)
 	lager.Logger.Infof("Framework registered is [ %s:%s ]", framework.Name, framework.Version)
 	lager.Logger.Infof("Micro service registered by [ %s ]", framework.Register)
 
@@ -72,21 +92,6 @@ func RegisterMicroservice() error {
 		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
 		DefaultRegistrator.AddSchemas(sid, schemaID, schemaInfo)
 	}
-	if service.ServiceDescription.Properties == nil {
-		service.ServiceDescription.Properties = make(map[string]string)
-	}
-
-	//update metadata
-	if config.GetRegistratorScope() == common.ScopeFull {
-		service.ServiceDescription.Properties["allowCrossApp"] = "true"
-	} else {
-		service.ServiceDescription.Properties["allowCrossApp"] = "false"
-	}
-	if err := DefaultRegistrator.UpdateMicroServiceProperties(sid, service.ServiceDescription.Properties); err != nil {
-		lager.Logger.Errorf("Update micro service properties failed, serviceID = %s. err %s", sid, err)
-		return err
-	}
-	lager.Logger.Debugf("Update micro service properties success, serviceID = %s.", sid)
 
 	return refreshDependency(microservice)
 }

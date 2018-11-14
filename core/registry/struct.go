@@ -13,6 +13,7 @@ type MicroService struct {
 	Metadata    map[string]string
 	Framework   *Framework
 	RegisterBy  string
+	Alias       string
 }
 
 // Framework struct having info about micro-service version, name
