@@ -39,11 +39,12 @@ type Transport struct {
 
 // MetricsStruct metrics struct
 type MetricsStruct struct {
-	APIPath                string `yaml:"apiPath"`
-	FlushInterval          string `yaml:"flushInterval"`
-	Enable                 bool   `yaml:"enable"`
-	EnableGoRuntimeMetrics bool   `yaml:"enableGoRuntimeMetrics"`
-	EnableCircuitMetrics   bool   `yaml:"enableCircuitMetrics"`
+	APIPath                   string `yaml:"apiPath"`
+	FlushInterval             string `yaml:"flushInterval"`
+	Enable                    bool   `yaml:"enable"`
+	EnableGoRuntimeMetrics    bool   `yaml:"enableGoRuntimeMetrics"`
+	EnableCircuitMetrics      bool   `yaml:"enableCircuitMetrics"`
+	CircuitMetricsConsumerNum int    `yaml:"circuitMetricsConsumerNum"`
 }
 
 // MonitorStruct is the struct for monitoring parameters

@@ -4,6 +4,7 @@ cse:
     enable: true
     enableGoRuntimeMetrics: true
     flushInterval: 10s
+    circuitMetricsConsumerNum: 10
 tracing:
   tracer: zipkin
   settings:

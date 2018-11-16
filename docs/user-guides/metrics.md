@@ -25,6 +25,11 @@ default is *false*
 > *(optional, string)* interval flush metrics from go-metrics to prometheus exporter, 
 for example 10s, 1m
 
+**cse.metrics.circuitMetricsConsumerNum**
+> *(optional, int)* should be careful about this option, default is 3, 
+there is 3 go routines consume metrics, if there is so many consumers, during high concurrency, 
+it will affect service performance
+
 ## API
 
 包路径
