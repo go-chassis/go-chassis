@@ -4,10 +4,10 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
 	"github.com/patrickmn/go-cache"
-	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 const (
@@ -98,7 +98,7 @@ func GetProvidersFromCache() []*MicroService {
 // AddProviderToCache refresh provider cache
 func AddProviderToCache(serverName, appID string) {
 	if appID == "" {
-		appID = config.GetGlobalAppID()
+		appID = runtime.App
 		if appID == "" {
 			appID = common.DefaultApp
 		}

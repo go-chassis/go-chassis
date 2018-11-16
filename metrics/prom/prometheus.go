@@ -25,6 +25,7 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/metrics"
+	m "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/prometheus/client_golang/prometheus"
 	gometrics "github.com/rcrowley/go-metrics"
@@ -120,7 +121,7 @@ func (c *PrometheusSinker) gaugeFromNameAndValue(name string, val float64) {
 			Name: c.flattenKey(name),
 			Help: desc[name],
 		})
-		metrics.GetSystemPrometheusRegistry().MustRegister(g)
+		m.GetSystemPrometheusRegistry().MustRegister(g)
 		c.gauges[name] = g
 	}
 	g.Set(val)
@@ -137,7 +138,7 @@ func (c *PrometheusSinker) gaugeVecFromNameAndValue(name string, val float64, la
 			Name: c.flattenKey(name),
 			Help: GetDesc(name),
 		}, labelNames)
-		metrics.GetSystemPrometheusRegistry().MustRegister(gVec)
+		m.GetSystemPrometheusRegistry().MustRegister(gVec)
 		c.gaugeVecs[name] = gVec
 	}
 	gVec.With(labels).Set(val)
@@ -202,8 +203,8 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 
 // EnableRunTimeMetrics enable runtime metrics
 func EnableRunTimeMetrics() {
-	metrics.GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
-	metrics.GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
+	m.GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
+	m.GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
 }
 
 func getEventType(metricName string) string {

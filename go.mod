@@ -54,7 +54,6 @@ require (
 	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 // indirect
 	google.golang.org/grpc v1.14.0
 	gopkg.in/yaml.v2 v2.2.1
-	k8s.io/apimachinery v0.0.0-20180823151430-017bf4f8f588
 )
 
 replace (

@@ -43,7 +43,7 @@ func RegisterMicroservice() error {
 
 	microservice := &MicroService{
 		ServiceID:   runtime.ServiceID,
-		AppID:       config.GlobalDefinition.AppID,
+		AppID:       runtime.App,
 		ServiceName: service.ServiceDescription.Name,
 		Version:     service.ServiceDescription.Version,
 		Environment: service.ServiceDescription.Environment,
@@ -93,31 +93,7 @@ func RegisterMicroservice() error {
 		DefaultRegistrator.AddSchemas(sid, schemaID, schemaInfo)
 	}
 
-	return refreshDependency(microservice)
-}
-
-// refreshDependency refresh dependency
-func refreshDependency(service *MicroService) error {
-	providersDependencyMicroService := make([]*MicroService, 0)
-	if len(config.GlobalDefinition.Cse.References) == 0 {
-		lager.Logger.Info("Don't need add dependency")
-		return nil
-	}
-	for k, v := range config.GlobalDefinition.Cse.References {
-		providerDependencyMicroService := &MicroService{
-			AppID:       config.GlobalDefinition.AppID,
-			ServiceName: k,
-			Version:     v.Version,
-		}
-		providersDependencyMicroService = append(providersDependencyMicroService, providerDependencyMicroService)
-	}
-	microServiceDependency := &MicroServiceDependency{
-		Consumer:  service,
-		Providers: providersDependencyMicroService,
-	}
-	microServiceDependencies = microServiceDependency
-
-	return DefaultRegistrator.AddDependencies(microServiceDependencies)
+	return nil
 }
 
 // RegisterMicroserviceInstances register micro-service instances
@@ -126,10 +102,10 @@ func RegisterMicroserviceInstances() error {
 	service := config.MicroserviceDefinition
 	var err error
 
-	sid, err := DefaultServiceDiscoveryService.GetMicroServiceID(config.GlobalDefinition.AppID, service.ServiceDescription.Name, service.ServiceDescription.Version, service.ServiceDescription.Environment)
+	sid, err := DefaultServiceDiscoveryService.GetMicroServiceID(runtime.App, service.ServiceDescription.Name, service.ServiceDescription.Version, service.ServiceDescription.Environment)
 	if err != nil {
 		lager.Logger.Errorf("Get service failed, key: %s:%s:%s, err %s",
-			config.GlobalDefinition.AppID,
+			runtime.App,
 			service.ServiceDescription.Name,
 			service.ServiceDescription.Version, err)
 		return err

@@ -23,7 +23,6 @@ func TestInit(t *testing.T) {
 	err := config.Init()
 	assert.NoError(t, err)
 
-	assert.Equal(t, "CSE", config.GlobalDefinition.AppID)
 	assert.Equal(t, "servicecenter", config.GlobalDefinition.Cse.Service.Registry.Type)
 	assert.Equal(t, "127.0.0.1:8080", config.GlobalDefinition.Cse.Protocols["highway"].Listen)
 

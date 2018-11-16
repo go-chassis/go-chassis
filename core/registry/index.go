@@ -4,8 +4,8 @@ import (
 	"sync"
 
 	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
 	cache "github.com/patrickmn/go-cache"
-	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 // Index interface provide set and get for microservice instance

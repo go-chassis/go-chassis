@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/go-chassis/go-chassis"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/healthz/client"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
@@ -24,7 +23,7 @@ var (
 func firstRequest() {
 	once.Do(func() {
 		checkReply = &client.Reply{
-			AppId:       config.GlobalDefinition.AppID,
+			AppId:       runtime.App,
 			ServiceName: runtime.ServiceName,
 			Version:     runtime.Version,
 		}

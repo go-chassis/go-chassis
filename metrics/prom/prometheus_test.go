@@ -17,6 +17,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	m "github.com/go-chassis/go-chassis/metrics"
+	mtr "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -52,7 +53,7 @@ func TestPrometheusSinker_UpdatePrometheusMetrics(t *testing.T) {
 	meter, _ := m.GetSystemRegistry().GetOrRegister("foo", makeMeterFunc).(metrics.Meter)
 	meter.Mark(12)
 	prometheusSinker.UpdatePrometheusMetricsOnce()
-	metricsFamilies, _ := m.GetSystemPrometheusRegistry().Gather()
+	metricsFamilies, _ := mtr.GetSystemPrometheusRegistry().Gather()
 	t.Log(metricsFamilies)
 	assert.Equal(t, 6, len(metricsFamilies))
 }

@@ -2,10 +2,10 @@ package handler
 
 import (
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
 
 // RouterHandler router handler
@@ -22,7 +22,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 	for k, v := range i.Metadata {
 		tags[k] = v.(string)
 	}
-	tags[common.BuildinTagApp] = config.GlobalDefinition.AppID
+	tags[common.BuildinTagApp] = runtime.App
 
 	h := make(map[string]string)
 	if i.Ctx != nil {

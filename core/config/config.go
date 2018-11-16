@@ -288,7 +288,7 @@ func Init() error {
 	if err != nil {
 		return err
 	}
-	lager.Logger.Infof("archaius init success")
+	openlogging.GetLogger().Infof("archaius init success")
 
 	var schemaError error
 
@@ -322,11 +322,15 @@ func Init() error {
 	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
 
 	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties
-	runtime.App = GlobalDefinition.AppID
-	if GlobalDefinition.AppID == "" {
-		GlobalDefinition.AppID = common.DefaultApp
+	if MicroserviceDefinition.AppID != "" { //microservice.yaml has first priority
+		runtime.App = MicroserviceDefinition.AppID
+	} else if GlobalDefinition.AppID != "" { //chassis.yaml has second priority
+		runtime.App = GlobalDefinition.AppID
+	}
+	if runtime.App == "" {
 		runtime.App = common.DefaultApp
 	}
+
 	runtime.HostName = MicroserviceDefinition.ServiceDescription.Hostname
 	if runtime.HostName == "" {
 		runtime.HostName, err = os.Hostname()
