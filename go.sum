@@ -13,6 +13,8 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 h1:xJ4a3vCFaGF/jqvzLM
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/cactus/go-statsd-client v3.1.1+incompatible h1:p97okCU2aaeSxQ6KzMdGEwQkiGBMys71/J0XWoirbJY=
 github.com/cactus/go-statsd-client v3.1.1+incompatible/go.mod h1:cMRcwZDklk7hXp+Law83urTHUiHMzCev/r4JMYr/zU0=
+github.com/cactus/go-statsd-client/statsd v0.0.0-20180911231738-23713bd9ff66 h1:9z3ixYqKHBqYfBsiokj/RgCGLQCtsMH9ckWm21CW6F4=
+github.com/cactus/go-statsd-client/statsd v0.0.0-20180911231738-23713bd9ff66/go.mod h1:3/sdo8I67TaOslRGJ6FqQC/ynu+wg7H6IE4WYtr51hk=
 github.com/cenkalti/backoff v2.0.0+incompatible h1:5IIPUHhlnUZbcHQsQou5k1Tn58nJkeJL9U+ig5CHJbY=
 github.com/cenkalti/backoff v2.0.0+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -45,6 +47,8 @@ github.com/go-chassis/go-chassis-plugins v0.0.0-20180731065901-7b05d8d2fbe6/go.m
 github.com/go-chassis/go-sc-client v0.0.0-20180831081217-8135c6df7f96/go.mod h1:IS3XXS6JdNbKP4K7duT+q2Gk8+yJq5EUh+5zTMWnCDg=
 github.com/go-chassis/go-sc-client v0.0.0-20180925063328-78ad13b4fbef h1:zJxjCnDswC4WSXeyv2bPh8MYtqYq9Ns7NLri6zXHVEo=
 github.com/go-chassis/go-sc-client v0.0.0-20180925063328-78ad13b4fbef/go.mod h1:IS3XXS6JdNbKP4K7duT+q2Gk8+yJq5EUh+5zTMWnCDg=
+github.com/go-chassis/go-sc-client v0.0.0-20181114031726-ee9485093d80 h1:hikvFLNW9ahj7igD5/VcfnadurQmJRwSR/x5zHgOxGk=
+github.com/go-chassis/go-sc-client v0.0.0-20181114031726-ee9485093d80/go.mod h1:IS3XXS6JdNbKP4K7duT+q2Gk8+yJq5EUh+5zTMWnCDg=
 github.com/go-chassis/paas-lager v0.0.0-20180831030822-312e8737a225/go.mod h1:tILYbn3+0jjCxhY6/ue9L8eRq+VJ60U6VYIdugqchB4=
 github.com/go-chassis/paas-lager v0.0.0-20180905100939-eff93e5e67db h1:K2jREf+jzNKbjGtpmu9/WrBzGPLLSVHrFhGvY74yXwM=
 github.com/go-chassis/paas-lager v0.0.0-20180905100939-eff93e5e67db/go.mod h1:tILYbn3+0jjCxhY6/ue9L8eRq+VJ60U6VYIdugqchB4=
@@ -67,6 +71,8 @@ github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db h1:woRePGFeVFfLKN/pOkfl+p/TAqKOfFu+7KPlMVpok/w=
 github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
+github.com/golang/sys v0.0.0-20180824143301-4910a1d54f87 h1:Kfu+SJhcKm8P3zmLBxmYj63edaBttRcelyx5CXsdu5A=
+github.com/golang/sys v0.0.0-20180824143301-4910a1d54f87/go.mod h1:5JyrLPvD/ZdaYkT7IqKhsP5xt7aLjA99KXRtk4EIYDk=
 github.com/golang/text v0.3.0 h1:uI5zIUA9cg047ctlTptnVc0Ghjfurf2eZMFrod8R7v8=
 github.com/golang/text v0.3.0/go.mod h1:GUiq9pdJKRKKAZXiVgWFEvocYuREvC14NhI4OPgEjeE=
 github.com/golang/time v0.0.0-20180412165947-fbb02b2291d2/go.mod h1:Goyxmr1dEyuE8J10MyNptB/4WJaypDxCpNr2pf27wjI=
