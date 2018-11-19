@@ -6,6 +6,7 @@ type MicroService struct {
 	AppID       string
 	ServiceName string
 	Version     string
+	Paths       []ServicePath
 	Environment string
 	Status      string
 	Level       string
@@ -14,6 +15,12 @@ type MicroService struct {
 	Framework   *Framework
 	RegisterBy  string
 	Alias       string
+}
+
+// ServicePath has info about service path and property
+type ServicePath struct {
+	Path     string
+	Property map[string]string
 }
 
 // Framework struct having info about micro-service version, name

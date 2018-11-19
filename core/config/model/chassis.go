@@ -135,13 +135,20 @@ type MicroserviceCfg struct {
 
 // MicServiceStruct 设置微服务的私有属性
 type MicServiceStruct struct {
-	Name               string            `yaml:"name"`
-	Hostname           string            `yaml:"hostname"`
-	Version            string            `yaml:"version"`
-	Environment        string            `yaml:"environment"`
-	Level              string            `yaml:"level"`
-	Properties         map[string]string `yaml:"properties"`
-	InstanceProperties map[string]string `yaml:"instance_properties"`
+	Name               string              `yaml:"name"`
+	Hostname           string              `yaml:"hostname"`
+	Version            string              `yaml:"version"`
+	Environment        string              `yaml:"environment"`
+	Level              string              `yaml:"level"`
+	Properties         map[string]string   `yaml:"properties"`
+	InstanceProperties map[string]string   `yaml:"instance_properties"`
+	ServicePaths       []ServicePathStruct `yaml:"paths"`
+}
+
+// ServicePathStruct having info about service path and property
+type ServicePathStruct struct {
+	Path     string            `yaml:"path"`
+	Property map[string]string `yaml:"property"`
 }
 
 // HandlerStruct 调用链信息

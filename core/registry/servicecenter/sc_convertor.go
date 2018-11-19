@@ -38,6 +38,15 @@ func ToSCService(cs *registry.MicroService) *client.MicroService {
 	scs.Schemas = cs.Schemas
 	scs.Level = cs.Level
 	scs.Status = cs.Status
+	svcPaths := cs.Paths
+	regpaths := []*client.ServicePath{}
+	for _, svcPath := range svcPaths {
+		var regpath client.ServicePath
+		regpath.Path = svcPath.Path
+		regpath.Property = svcPath.Property
+		regpaths = append(regpaths, &regpath)
+	}
+	scs.Paths = regpaths
 	if cs.Framework != nil {
 		scs.Framework = &client.Framework{}
 		scs.Framework.Version = cs.Framework.Version

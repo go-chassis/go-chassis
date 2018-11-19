@@ -30,6 +30,9 @@ you can consider a project as an micro service, after compile, build and run, it
 **instance_properties**
 > *(optional, map)* instance metadata, during runtime, if can be different based on environment 
 
+**paths**
+> *(optional, array)* micro service API paths, will be registered with servicecenter
+
 ## Example
 
 ```yaml
@@ -40,4 +43,8 @@ service_description:
     project: X1
   instance_properties:
     nodeIP: 192.168.0.111
+  paths:
+  - path: /rest/demoservice
+    property:
+      checksession: true
 ```
