@@ -10,7 +10,6 @@ require (
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/emicklei/go-restful v2.8.0+incompatible
 	github.com/emicklei/go-restful-swagger12 v0.0.0-20170208215640-dcef7f557305
-	github.com/envoyproxy/go-control-plane v0.5.0
 
 	github.com/go-chassis/go-archaius v0.0.0-20181108111652-ab19b4eae276
 	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
@@ -19,7 +18,6 @@ require (
 	github.com/go-logfmt/logfmt v0.3.0 // indirect
 	github.com/go-mesh/openlogging v0.0.0-20180912071658-0fd4707a75ab
 	github.com/go-ole/go-ole v1.2.1 // indirect
-	github.com/gogo/googleapis v1.1.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 
 	github.com/golang/protobuf v1.2.0
@@ -28,7 +26,6 @@ require (
 	github.com/hashicorp/go-version v1.0.0
 	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
-	github.com/lyft/protoc-gen-validate v0.0.10 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect
@@ -37,7 +34,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v0.8.0
 	github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910 // indirect
-	github.com/prometheus/common v0.0.0-20181020173914-7e9e6cabbd39 // indirect
+	github.com/prometheus/common v0.0.0-20181116084131-1f2c4f3cd6db // indirect
 	github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165
 	github.com/shirou/gopsutil v0.0.0-20180801053943-8048a2e9c577
@@ -48,8 +45,6 @@ require (
 	github.com/stretchr/testify v1.2.2
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277
 	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591
-	golang.org/x/text v0.3.0 // indirect
-	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 // indirect
 	google.golang.org/grpc v1.14.0
 	gopkg.in/yaml.v2 v2.2.1
 )

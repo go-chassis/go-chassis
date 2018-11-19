@@ -9,7 +9,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"github.com/go-chassis/go-chassis/pkg/istio/client"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 )
@@ -71,11 +70,6 @@ type Options struct {
 
 	//TODO: need timeout for client
 	// TimeOut time.Duration
-}
-
-// ToPilotOptions translate options to client options
-func (o Options) ToPilotOptions() *client.PilotOptions {
-	return &client.PilotOptions{Endpoints: o.Endpoints}
 }
 
 func getSpecifiedOptions() (opts Options, err error) {
