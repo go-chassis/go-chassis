@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -24,6 +25,7 @@ type BizKeeperConsumerHandler struct{}
 // Handle function is for to handle the chain
 func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	command, cmdConfig := control.DefaultPanel.GetCircuitBreaker(*i, common.Consumer)
+	cmdConfig.MetricsConsumerNum = archaius.GetInt("cse.metrics.circuitMetricsConsumerNum", hystrix.DefaultMetricsConsumerNum)
 	hystrix.ConfigureCommand(command, cmdConfig)
 
 	finish := make(chan *invocation.Response, 1)

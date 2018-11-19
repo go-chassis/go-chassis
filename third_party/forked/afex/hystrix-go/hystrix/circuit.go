@@ -22,9 +22,8 @@ type CircuitBreaker struct {
 	forceClosed            bool
 	mutex                  *sync.RWMutex
 	openedOrLastTestedTime int64
-
-	executorPool *executorPool
-	metrics      *metricExchange
+	executorPool           *executorPool
+	metrics                *metricExchange
 }
 
 var (
@@ -104,7 +103,7 @@ func Flush() {
 func newCircuitBreaker(name string) *CircuitBreaker {
 	c := &CircuitBreaker{}
 	c.Name = name
-	c.metrics = newMetricExchange(name)
+	c.metrics = newMetricExchange(name, getSettings(name).MetricsConsumerNum)
 	c.executorPool = newExecutorPool(name)
 	c.mutex = &sync.RWMutex{}
 	//定制治理选项forceClosed

@@ -1,10 +1,8 @@
 # Quik start with examples
 
 1. Launch service center
-```sh
-cd examples
-docker-compose up
-```
+
+follow https://github.com/apache/servicecomb-service-center/tree/master/examples/infrastructures/docker
 
 2. Run rest server
 

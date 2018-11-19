@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/rolling"
+	"github.com/go-mesh/openlogging"
 )
 
 type commandExecution struct {
@@ -22,7 +23,7 @@ type metricExchange struct {
 	metricCollectors []metricCollector.MetricCollector
 }
 
-func newMetricExchange(name string) *metricExchange {
+func newMetricExchange(name string, num int) *metricExchange {
 	m := &metricExchange{}
 	m.Name = name
 
@@ -30,9 +31,10 @@ func newMetricExchange(name string) *metricExchange {
 	m.Mutex = &sync.RWMutex{}
 	m.metricCollectors = metricCollector.Registry.InitializeMetricCollectors(name)
 	m.Reset()
-
-	go m.Monitor()
-
+	for i := 0; i < num; i++ {
+		go m.Monitor()
+	}
+	openlogging.GetLogger().Debugf(" launched [%d] metrics consumer", num)
 	return m
 }
 

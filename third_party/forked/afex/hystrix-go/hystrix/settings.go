@@ -22,6 +22,8 @@ var (
 
 	// DefaultErrorPercentThreshold causes circuits to open once the rolling measure of errors exceeds this percent of requests
 	DefaultErrorPercentThreshold = 50
+
+	DefaultMetricsConsumerNum = 3
 )
 
 type Settings struct {
@@ -34,7 +36,7 @@ type Settings struct {
 	RequestVolumeThreshold uint64
 	SleepWindow            time.Duration
 	ErrorPercentThreshold  int
-
+	MetricsConsumerNum     int
 	//动态治理
 	ForceFallback bool
 	ForceOpen     bool
@@ -53,6 +55,7 @@ type CommandConfig struct {
 	CircuitBreakerEnabled bool
 	ForceOpen             bool
 	ForceClose            bool
+	MetricsConsumerNum    int
 }
 
 var circuitSettings map[string]*Settings
@@ -124,7 +127,10 @@ func ConfigureCommand(name string, config CommandConfig) {
 	if config.Timeout != 0 {
 		timeout = config.Timeout
 	}
-
+	ConsumerNum := DefaultMetricsConsumerNum
+	if config.MetricsConsumerNum != 0 {
+		ConsumerNum = config.MetricsConsumerNum
+	}
 	max := DefaultMaxConcurrent
 	if config.MaxConcurrentRequests != 0 {
 		max = config.MaxConcurrentRequests
@@ -154,6 +160,7 @@ func ConfigureCommand(name string, config CommandConfig) {
 		SleepWindow:            time.Duration(sleep) * time.Millisecond,
 		ErrorPercentThreshold:  errorPercent,
 		ForceFallback:          config.ForceFallback,
+		MetricsConsumerNum:     ConsumerNum,
 	}
 }
 

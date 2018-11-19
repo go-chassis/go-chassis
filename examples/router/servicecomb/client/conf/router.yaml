@@ -8,21 +8,13 @@ routeRule:
       - tags:
           version: 2.0 #对接service center的话，如果不填就自动为0.1
         weight: 20 #全重 20%到这里
-    - precedence: 2
       match:
         headers:
           Chassis: # 请求header中有info全部访问1.0
             regex: info
+    - precedence: 2
+
       route: #路由规则列表
       - tags:
           version: 1.0
-        weight: 100 #权重 100%到这里
-    - precedence: 2
-      match:
-        headers:
-          Chassis: # 请求header中有say全部访问2.0
-            regex: say
-      route: #路由规则列表
-      - tags:
-          version: 2.0
         weight: 100 #权重 100%到这里
