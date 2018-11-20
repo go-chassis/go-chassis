@@ -11,6 +11,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestMakeEndpointMap(t *testing.T) {
+	protocols := make(map[string]model.Protocol)
+	protocols[common.ProtocolRest] = model.Protocol{
+		Listen:    "0.0.0.0:1",
+		Advertise: "[2407:c080:17ff:ffff::7274:83a]:8080",
+	}
+	m, err := registry.MakeEndpointMap(protocols)
+	assert.NoError(t, err)
+	assert.Equal(t, "[2407:c080:17ff:ffff::7274:83a]:8080", m[common.ProtocolRest])
+
+	protocols2 := make(map[string]model.Protocol)
+	protocols2[common.ProtocolRest] = model.Protocol{
+		Listen: "[2407:c080:17ff:ffff::7274:83a]:8080",
+	}
+	m, err = registry.MakeEndpointMap(protocols2)
+	assert.NoError(t, err)
+	assert.Equal(t, "[2407:c080:17ff:ffff::7274:83a]:8080", m[common.ProtocolRest])
+}
 func TestUtil(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	var eps = []string{"https://127.0.0.1", "http://0.0.0.0"}
@@ -32,7 +50,7 @@ func TestUtil(t *testing.T) {
 	assert.Equal(t, common.ProtocolHighway+"://"+mapproto[common.ProtocolHighway].Advertise, strArr[0])
 
 	//Advertise address are given in the protocol map for highway
-	protocolArr := registry.MakeEndpointMap(mapproto)
+	protocolArr, _ := registry.MakeEndpointMap(mapproto)
 	t.Log("making endpoints with listen and advertise addr, endpoint : ", protocolArr)
 	assert.NotNil(t, protocolArr)
 	assert.Equal(t, common.ProtocolHighway+":"+mapproto[common.ProtocolHighway].Advertise, common.ProtocolHighway+":"+protocolArr[common.ProtocolHighway])
@@ -43,7 +61,7 @@ func TestUtil(t *testing.T) {
 		Advertise: "0.0.0.1:1",
 	}
 
-	protocolArrRest := registry.MakeEndpointMap(mapprotoRest)
+	protocolArrRest, _ := registry.MakeEndpointMap(mapprotoRest)
 	t.Log("making endpoints with listen and advertise addr, endpoint : ", protocolArrRest)
 	assert.NotNil(t, protocolArrRest)
 	assert.Equal(t, common.ProtocolRest+":"+mapprotoRest[common.ProtocolRest].Advertise, common.ProtocolRest+":"+protocolArrRest[common.ProtocolRest])
@@ -55,7 +73,7 @@ func TestUtil(t *testing.T) {
 		Advertise: "127.0.0.1:1",
 	}
 
-	protocolArrRest = registry.MakeEndpointMap(mapprotoRest)
+	protocolArrRest, _ = registry.MakeEndpointMap(mapprotoRest)
 	t.Log("making endpoints with listen and advertise addr, endpoint : ", protocolArrRest)
 	assert.NotNil(t, protocolArrRest)
 	assert.Equal(t, "127.0.0.1:1", protocolArrRest[common.ProtocolRest])
@@ -64,20 +82,20 @@ func TestUtil(t *testing.T) {
 	// and addr is IPV6 ip. so it should return empty response
 	mapprotoRest[common.ProtocolRest] = model.Protocol{
 		Listen:    "0.0.0.2:1",
-		Advertise: "fe80::3436:b05c:350a:1ccd:1",
+		Advertise: "[fe80::3436:b05c:350a:1ccd]:1",
 	}
 
-	protocolArrRest = registry.MakeEndpointMap(mapprotoRest)
+	protocolArrRest, _ = registry.MakeEndpointMap(mapprotoRest)
 	t.Log("making endpoints with listen and advertise addr, endpoint : ", protocolArrRest)
 	assert.NotNil(t, protocolArrRest)
-	assert.Equal(t, "", protocolArrRest[common.ProtocolRest])
+	assert.Equal(t, "[fe80::3436:b05c:350a:1ccd]:1", protocolArrRest[common.ProtocolRest])
 
 	// Advertise address is not given so based on the listen address it should choose the advertise addr.
 	mapprotoRest[common.ProtocolRest] = model.Protocol{
 		Listen: "0.0.0.2:1",
 	}
 
-	protocolArrRest = registry.MakeEndpointMap(mapprotoRest)
+	protocolArrRest, _ = registry.MakeEndpointMap(mapprotoRest)
 	t.Log("making endpoints with listen and advertise addr, endpoint : ", protocolArrRest)
 	assert.NotNil(t, protocolArrRest)
 	assert.Equal(t, common.ProtocolRest+":"+mapprotoRest[common.ProtocolRest].Listen, common.ProtocolRest+":"+protocolArrRest[common.ProtocolRest])
@@ -87,7 +105,7 @@ func TestUtil(t *testing.T) {
 		Listen: "0.0.0.0:1",
 	}
 
-	protocolArrRest = registry.MakeEndpointMap(mapprotoRest)
+	protocolArrRest, _ = registry.MakeEndpointMap(mapprotoRest)
 	t.Log("making endpoints with listen and advertise addr, endpoint : ", protocolArrRest)
 	assert.NotNil(t, protocolArrRest)
 

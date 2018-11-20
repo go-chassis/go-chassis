@@ -69,51 +69,31 @@ func MakeEndpoints(m map[string]model.Protocol) []string {
 }
 
 //MakeEndpointMap returns the endpoints map
-func MakeEndpointMap(m map[string]model.Protocol) map[string]string {
+func MakeEndpointMap(m map[string]model.Protocol) (map[string]string, error) {
 	eps := make(map[string]string, 0)
 	for name, protocol := range m {
-
 		if len(protocol.Advertise) == 0 {
 			host, port, err := net.SplitHostPort(protocol.Listen)
 			if err != nil {
-				lager.Logger.Warnf("get port from listen addr failed.", err)
-				port = iputil.DefaultPort4Protocol(name)
-				host = iputil.Localhost()
+				return nil, err
 			}
-
-			if host != "" {
-				if host == "0.0.0.0" {
-					host = iputil.GetLocalIP()
-				}
-				eps[name] = strings.Join([]string{host, port}, ":")
-
-			} else {
-				eps[name] = iputil.DefaultEndpoint4Protocol(name)
+			if host == "" || port == "" {
+				return nil, fmt.Errorf("listen address is invalid [%s]", protocol.Listen)
 			}
+			eps[name] = protocol.Listen
 		} else {
-			var (
-				ip  net.IP
-				err error
-			)
-
 			// check the provided Advertise ip is IPV4 or IPV6
-			ipWithoutPort := strings.Split(protocol.Advertise, ":")
-			if len(ipWithoutPort) > 2 {
-				ip, _, err = net.ParseCIDR(protocol.Advertise + "/0")
-			} else {
-				ip, _, err = net.ParseCIDR(ipWithoutPort[0] + "/0")
-			}
-
+			host, port, err := net.SplitHostPort(protocol.Advertise)
 			if err != nil {
-				lager.Logger.Errorf("failed to parse ip address: %s", err)
-			} else {
-				if ip != nil && ip.To4() != nil {
-					eps[name] = ip.String() + ":" + ipWithoutPort[1]
-				}
+				return nil, err
 			}
+			if host == "" || port == "" {
+				return nil, fmt.Errorf("advertise address is invalid [%s]", protocol.Advertise)
+			}
+			eps[name] = protocol.Advertise
 		}
 	}
-	return eps
+	return eps, nil
 }
 
 //Microservice2ServiceKeyStr prepares a microservice key

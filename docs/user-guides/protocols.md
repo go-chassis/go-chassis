@@ -32,3 +32,11 @@ cse:
     grpc:
       listenAddress: 0.0.0.0:6000
 ```
+
+for ipv6, need quotation marks. because [] is object list in yaml format
+```
+cse:
+  protocols:
+    rest:
+      listenAddress: "[2407:c080:17ff:ffff::7274:83a]:5000"
+```

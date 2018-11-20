@@ -110,7 +110,10 @@ func RegisterMicroserviceInstances() error {
 			service.ServiceDescription.Version, err)
 		return err
 	}
-	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
+	eps, err := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
+	if err != nil {
+		return err
+	}
 	lager.Logger.Infof("service support protocols %s", config.GlobalDefinition.Cse.Protocols)
 	if InstanceEndpoints != nil {
 		eps = InstanceEndpoints
