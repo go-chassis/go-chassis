@@ -158,7 +158,10 @@ func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 
 // reRegisterSelfMSI 只重新注册实例
 func reRegisterSelfMSI(sid, iid string) error {
-	eps := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
+	eps, err := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
+	if err != nil {
+		return err
+	}
 	if InstanceEndpoints != nil {
 		eps = InstanceEndpoints
 	}
