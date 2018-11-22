@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-chassis/go-sc-client"
+	"github.com/go-mesh/openlogging"
 )
 
 const (
@@ -321,7 +322,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 		if appID == "" {
 			appID = runtime.App
 		}
-		lager.Logger.Warnf("%s Get instances from remote, key: %s %s", consumerID, appID, microServiceName)
+		openlogging.GetLogger().Warnf("%s Get instances from remote, key: %s %s", consumerID, appID, microServiceName)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
 			findVersionRule(microServiceName), client.WithoutRevision())
 		if err != nil {

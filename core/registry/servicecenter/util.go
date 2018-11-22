@@ -83,5 +83,6 @@ func wrapTagsForServiceCenter(t utiltags.Tags) utiltags.Tags {
 		}
 		return t
 	}
+	//if app and version is empty, need to find with latest version in same app
 	return utiltags.NewDefaultTag(common.LatestVersion, runtime.App)
 }

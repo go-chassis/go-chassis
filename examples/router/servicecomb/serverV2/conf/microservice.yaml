@@ -3,3 +3,5 @@
 service_description:
   name: ROUTERServer
   version: 2.0
+  instance_properties:
+    project: z

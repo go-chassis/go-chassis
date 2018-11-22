@@ -5,8 +5,8 @@ cse:
       address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
   protocols:
     rest:
-      listenAddress: 127.0.0.1:5001
-      advertiseAddress: 127.0.0.1:5001
+      listenAddress: "[fe80::7f28:7160:56cd:3ec9%enp0s3]:5001"
+      advertiseAddress: "[fe80::7f28:7160:56cd:3ec9%25enp0s3]:5001"
   handler:
     chain:
       Provider:

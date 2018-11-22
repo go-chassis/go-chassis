@@ -9,7 +9,7 @@ import (
 // Tags set tags and label
 type Tags struct {
 	KV    map[string]string
-	Label string
+	Label string // format: version:1.0|app:mall|env:prod
 }
 
 // NewDefaultTag returns Tags with version and appID

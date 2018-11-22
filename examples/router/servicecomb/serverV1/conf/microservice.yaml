@@ -3,3 +3,5 @@
 service_description:
   name: ROUTERServer
   version: 1.0
+  instance_properties:
+    project: x

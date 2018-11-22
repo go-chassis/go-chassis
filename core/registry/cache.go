@@ -6,7 +6,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -45,13 +44,11 @@ func enableRegistryCache() {
 	ProvidersMicroServiceCache = initCache()
 }
 
-// CacheIndex defines interface for cache and index used by registry
+// CacheIndex defines interface for simpleCache and index used by registry
 type CacheIndex interface {
-	GetIndexTags() []string
-	SetIndexTags(tags sets.String)
 	Get(k string, tags map[string]string) (interface{}, bool)
 	Set(k string, x interface{})
-	Items() map[string]*cache.Cache
+	Items() *cache.Cache
 	Delete(k string)
 }
 
@@ -73,20 +70,20 @@ func GetIPIndex(ip string) *SourceInfo {
 	return si
 }
 
-// SetNoIndexCache reset microservie instance index to no index cache
-func SetNoIndexCache() { MicroserviceInstanceIndex = newNoIndexCache() }
+// SetNoIndexCache reset microservie instance index to no index simpleCache
+func SetNoIndexCache() { MicroserviceInstanceIndex = newCacheIndex() }
 
 // newCacheIndex returns index implemention according to config
 func newCacheIndex() CacheIndex { return newIndexCache() }
 
-// GetProvidersFromCache get local provider cache
+// GetProvidersFromCache get local provider simpleCache
 func GetProvidersFromCache() []*MicroService {
 	microServices := make([]*MicroService, 0)
 	items := ProvidersMicroServiceCache.Items()
 	for _, item := range items {
 		microService, ok := item.Object.(MicroService)
 		if !ok {
-			lager.Logger.Warn("cache not microService ")
+			lager.Logger.Warn("simpleCache not microService ")
 			continue
 		}
 		microService.Version = common.AllVersion
@@ -95,7 +92,7 @@ func GetProvidersFromCache() []*MicroService {
 	return microServices
 }
 
-// AddProviderToCache refresh provider cache
+// AddProviderToCache refresh provider simpleCache
 func AddProviderToCache(serverName, appID string) {
 	if appID == "" {
 		appID = runtime.App

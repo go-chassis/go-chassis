@@ -48,7 +48,7 @@ type checkResult struct {
 	Err  error
 }
 
-// HealthChecker is the struct judges the instance health in the removing cache
+// HealthChecker is the struct judges the instance health in the removing simpleCache
 type HealthChecker struct {
 	pendingCh chan *WrapInstance
 	delCh     chan map[string]*WrapInstance
@@ -62,7 +62,7 @@ func (hc *HealthChecker) Run() {
 	go hc.check()
 }
 
-// Add is the method adds a key of the instance cache into pending chan
+// Add is the method adds a key of the instance simpleCache into pending chan
 func (hc *HealthChecker) Add(i *WrapInstance) error {
 	select {
 	case hc.pendingCh <- i:
@@ -105,7 +105,7 @@ func (hc *HealthChecker) check() {
 				hc.removeFromCache(cr.Item)
 				continue
 			}
-			lager.Logger.Debugf("Health check instance %s %s is still alive, keep it in cache",
+			lager.Logger.Debugf("Health check instance %s %s is still alive, keep it in simpleCache",
 				cr.Item.ServiceKey(), cr.Item.Instance.EndpointsMap)
 		}
 	}
@@ -164,11 +164,11 @@ func HealthCheck(service, version, appID string, instance *MicroServiceInstance)
 	})
 }
 
-// RefreshCache is the function to filter changes between new pulling instances and cache
+// RefreshCache is the function to filter changes between new pulling instances and simpleCache
 func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]struct{}) {
 	c, ok := MicroserviceInstanceIndex.Get(service, nil)
 	if !ok || c == nil || c.([]*MicroServiceInstance) == nil {
-		// if full new instances or at less one instance, then refresh cache immediately
+		// if full new instances or at less one instance, then refresh simpleCache immediately
 		MicroserviceInstanceIndex.Set(service, ups)
 		return
 	}
@@ -214,7 +214,7 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 
 	lefts = append(lefts, saves...)
 	if len(lefts) == 0 {
-		//todo remove this when the cache struct can delete the key if the input is an empty slice
+		//todo remove this when the simpleCache struct can delete the key if the input is an empty slice
 		MicroserviceInstanceIndex.Delete(service)
 	} else {
 		MicroserviceInstanceIndex.Set(service, lefts)
