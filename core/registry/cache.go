@@ -44,11 +44,11 @@ func enableRegistryCache() {
 	ProvidersMicroServiceCache = initCache()
 }
 
-// CacheIndex defines interface for simpleCache and index used by registry
+// CacheIndex is a unified local instances cache manager
 type CacheIndex interface {
-	Get(k string, tags map[string]string) (interface{}, bool)
-	Set(k string, x interface{})
-	Items() *cache.Cache
+	Get(k string, tags map[string]string) ([]*MicroServiceInstance, bool)
+	Set(k string, instances []*MicroServiceInstance)
+	FullCache() *cache.Cache
 	Delete(k string)
 }
 

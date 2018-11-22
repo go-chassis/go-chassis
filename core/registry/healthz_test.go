@@ -42,7 +42,7 @@ func TestRefreshCache(t *testing.T) {
 
 	is, ok := MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
-	assert.Equal(t, 2, len(is.([]*MicroServiceInstance)))
+	assert.Equal(t, 2, len(is))
 
 	// case: unregister one
 	RefreshCache("test", []*MicroServiceInstance{
@@ -51,7 +51,7 @@ func TestRefreshCache(t *testing.T) {
 
 	is, ok = MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
-	assert.Equal(t, 2, len(is.([]*MicroServiceInstance)))
+	assert.Equal(t, 2, len(is))
 
 	// case: down one with non-up status
 	RefreshCache("test", []*MicroServiceInstance{
@@ -60,7 +60,7 @@ func TestRefreshCache(t *testing.T) {
 
 	is, ok = MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
-	assert.Equal(t, 1, len(is.([]*MicroServiceInstance)))
+	assert.Equal(t, 1, len(is))
 
 	// case: coming in with non-up status
 	RefreshCache("test", []*MicroServiceInstance{
@@ -69,5 +69,5 @@ func TestRefreshCache(t *testing.T) {
 
 	is, ok = MicroserviceInstanceIndex.Get("test", nil)
 	assert.Equal(t, true, ok)
-	assert.Equal(t, 1, len(is.([]*MicroServiceInstance)))
+	assert.Equal(t, 1, len(is))
 }

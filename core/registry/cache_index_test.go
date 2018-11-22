@@ -24,7 +24,7 @@ func TestNoIndexCache(t *testing.T) {
 	cache := newIndexCache()
 	cache.Set("TestServer", microServiceInstances)
 	instance, _ := cache.Get("TestServer", nil)
-	assert.Equal(t, len(microServiceInstances), len(instance.([]*MicroServiceInstance)))
+	assert.Equal(t, len(microServiceInstances), len(instance))
 }
 
 func TestIndexCache(t *testing.T) {
@@ -33,24 +33,24 @@ func TestIndexCache(t *testing.T) {
 	//tag2 := map[string]string{"version": "latest", "project": "dev"}
 
 	x, _ := cache.Get("TestServer", map[string]string{"version": "0.0.2", "project": "dev"})
-	assert.Equal(t, 1, len(x.([]*MicroServiceInstance)))
-	assert.Equal(t, "0.0.2", x.([]*MicroServiceInstance)[0].Metadata[common.BuildinTagVersion])
-	assert.Equal(t, "dev", x.([]*MicroServiceInstance)[0].Metadata["project"])
+	assert.Equal(t, 1, len(x))
+	assert.Equal(t, "0.0.2", x[0].Metadata[common.BuildinTagVersion])
+	assert.Equal(t, "dev", x[0].Metadata["project"])
 
 	x, _ = cache.Get("TestServer", map[string]string{"version": "0.0.1"})
-	assert.Equal(t, 2, len(x.([]*MicroServiceInstance)))
-	assert.Equal(t, "0.0.1", x.([]*MicroServiceInstance)[0].Metadata[common.BuildinTagVersion])
-	assert.Equal(t, "0.0.1", x.([]*MicroServiceInstance)[1].Metadata[common.BuildinTagVersion])
+	assert.Equal(t, 2, len(x))
+	assert.Equal(t, "0.0.1", x[0].Metadata[common.BuildinTagVersion])
+	assert.Equal(t, "0.0.1", x[1].Metadata[common.BuildinTagVersion])
 
 	microServiceInstances = append(microServiceInstances,
 		&MicroServiceInstance{Metadata: map[string]string{"version": "0.0.1", "project": "dev"}})
 	cache.Set("TestServer", microServiceInstances)
 	x, _ = cache.Get("TestServer", map[string]string{"version": "0.0.1"})
-	assert.Equal(t, 3, len(x.([]*MicroServiceInstance)))
+	assert.Equal(t, 3, len(x))
 
 	x, _ = cache.Get("TestServer", map[string]string{"version": "latest"})
-	assert.Equal(t, 1, len(x.([]*MicroServiceInstance)))
-	assert.Equal(t, "0.1", x.([]*MicroServiceInstance)[0].Metadata[common.BuildinTagVersion])
+	assert.Equal(t, 1, len(x))
+	assert.Equal(t, "0.1", x[0].Metadata[common.BuildinTagVersion])
 
 	cache.Delete("TestServer")
 }

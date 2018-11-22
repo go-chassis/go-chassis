@@ -316,8 +316,8 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	// TODO: wrap default tags for service center
 	// because sc need version and appID to generate tags
 	tags = wrapTagsForServiceCenter(tags)
-	value, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
-	if !boo || value == nil {
+	microServiceInstance, boo := registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
+	if !boo || microServiceInstance == nil {
 		appID := tags.AppID()
 		if appID == "" {
 			appID = runtime.App
@@ -330,18 +330,14 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 		}
 
 		filterReIndex(providerInstances, microServiceName, appID)
-		value, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
-		if !boo || value == nil {
+		microServiceInstance, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
+		if !boo || microServiceInstance == nil {
 			lager.Logger.Debugf("Find no microservice instances for %s from cache", microServiceName)
 			return nil, nil
 		}
-		if value != nil {
+		if microServiceInstance != nil {
 			registry.AddProviderToCache(microServiceName, appID)
 		}
-	}
-	microServiceInstance, ok := value.([]*registry.MicroServiceInstance)
-	if !ok {
-		lager.Logger.Errorf("FindMicroServiceInstances failed, Type asserts failed.consumerIDL: %s", consumerID)
 	}
 
 	return microServiceInstance, nil

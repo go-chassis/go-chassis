@@ -14,9 +14,9 @@ require (
 	github.com/go-chassis/go-archaius v0.0.0-20181108111652-ab19b4eae276
 	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
 	github.com/go-chassis/go-sc-client v0.0.0-20181114031726-ee9485093d80
-	github.com/go-chassis/paas-lager v0.0.0-20180905100939-eff93e5e67db
+	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
 	github.com/go-logfmt/logfmt v0.3.0 // indirect
-	github.com/go-mesh/openlogging v0.0.0-20180912071658-0fd4707a75ab
+	github.com/go-mesh/openlogging v0.0.0-20181122085847-3daf3ad8ed35
 	github.com/go-ole/go-ole v1.2.1 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 
