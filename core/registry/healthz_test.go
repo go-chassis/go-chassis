@@ -29,9 +29,9 @@ func TestRefreshCache(t *testing.T) {
 
 	enableRegistryCache()
 
-	// case: new nil cache
+	// case: new nil simpleCache
 	RefreshCache("test", nil, nil)
-	// case: refresh nil cache
+	// case: refresh nil simpleCache
 	RefreshCache("test", nil, nil)
 
 	// case: new instances

@@ -247,7 +247,7 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 }
 
 func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.String) {
-	oldProviders := registry.MicroserviceInstanceIndex.Items()
+	oldProviders := registry.MicroserviceInstanceIndex.Items().Items()
 	for old := range oldProviders {
 		if !newProviders.Has(old) { //provider is outdated, delete it
 			registry.MicroserviceInstanceIndex.Delete(old)

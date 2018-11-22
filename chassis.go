@@ -35,7 +35,6 @@ import (
 
 	// registry
 	_ "github.com/go-chassis/go-chassis/core/registry/file"
-	_ "github.com/go-chassis/go-chassis/core/registry/pilot"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 
 	"github.com/go-chassis/go-chassis/core/router"

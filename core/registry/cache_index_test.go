@@ -3,7 +3,7 @@ package registry
 import (
 	"testing"
 
-	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,63 +21,56 @@ var microServiceInstances = []*MicroServiceInstance{
 }
 
 func TestNoIndexCache(t *testing.T) {
-	cache := newNoIndexCache()
+	cache := newIndexCache()
 	cache.Set("TestServer", microServiceInstances)
-	tag1 := map[string]string{"version": "0.0.2", "project": "dev"}
-	tag2 := map[string]string{"version": "latest", "project": "dev"}
-
-	x, ok1 := cache.Get("TestServer", tag1)
-	m, ok2 := x.([]*MicroServiceInstance)
-	assert.Equal(t, ok1, true)
-	assert.Equal(t, ok2, true)
-	assert.Equal(t, len(m), 1)
-	assert.Equal(t, m[0].Metadata["version"], "0.0.2")
-	assert.Equal(t, m[0].Metadata["project"], "dev")
-
-	x, ok1 = cache.Get("TestServer", tag2)
-	m, ok2 = x.([]*MicroServiceInstance)
-	assert.Equal(t, ok1, true)
-	assert.Equal(t, ok2, true)
-	assert.Equal(t, len(m), 1)
-	assert.Equal(t, m[0].Metadata["version"], "0.1")
-	assert.Equal(t, m[0].Metadata["project"], "dev")
+	instance, _ := cache.Get("TestServer", nil)
+	assert.Equal(t, len(microServiceInstances), len(instance.([]*MicroServiceInstance)))
 }
 
 func TestIndexCache(t *testing.T) {
 	cache := newIndexCache()
-	cache.SetIndexTags(sets.NewString("version", "project"))
 	cache.Set("TestServer", microServiceInstances)
-	tag1 := map[string]string{"version": "0.0.2", "project": "dev"}
-	tag2 := map[string]string{"version": "latest", "project": "dev"}
+	//tag2 := map[string]string{"version": "latest", "project": "dev"}
 
-	x, ok1 := cache.Get("TestServer", tag1)
-	m, ok2 := x.([]*MicroServiceInstance)
-	assert.Equal(t, ok1, true)
-	assert.Equal(t, ok2, true)
-	assert.Equal(t, len(m), 1)
-	assert.Equal(t, m[0].Metadata["version"], "0.0.2")
-	assert.Equal(t, m[0].Metadata["project"], "dev")
+	x, _ := cache.Get("TestServer", map[string]string{"version": "0.0.2", "project": "dev"})
+	assert.Equal(t, 1, len(x.([]*MicroServiceInstance)))
+	assert.Equal(t, "0.0.2", x.([]*MicroServiceInstance)[0].Metadata[common.BuildinTagVersion])
+	assert.Equal(t, "dev", x.([]*MicroServiceInstance)[0].Metadata["project"])
 
-	x, ok1 = cache.Get("TestServer", tag2)
-	m, ok2 = x.([]*MicroServiceInstance)
-	assert.Equal(t, ok1, true)
-	assert.Equal(t, ok2, true)
-	assert.Equal(t, len(m), 1)
-	assert.Equal(t, m[0].Metadata["version"], "0.1")
-	assert.Equal(t, m[0].Metadata["project"], "dev")
+	x, _ = cache.Get("TestServer", map[string]string{"version": "0.0.1"})
+	assert.Equal(t, 2, len(x.([]*MicroServiceInstance)))
+	assert.Equal(t, "0.0.1", x.([]*MicroServiceInstance)[0].Metadata[common.BuildinTagVersion])
+	assert.Equal(t, "0.0.1", x.([]*MicroServiceInstance)[1].Metadata[common.BuildinTagVersion])
 
-	items := cache.Items()
-	assert.Equal(t, len(items), 1)
+	microServiceInstances = append(microServiceInstances,
+		&MicroServiceInstance{Metadata: map[string]string{"version": "0.0.1", "project": "dev"}})
+	cache.Set("TestServer", microServiceInstances)
+	x, _ = cache.Get("TestServer", map[string]string{"version": "0.0.1"})
+	assert.Equal(t, 3, len(x.([]*MicroServiceInstance)))
+
+	x, _ = cache.Get("TestServer", map[string]string{"version": "latest"})
+	assert.Equal(t, 1, len(x.([]*MicroServiceInstance)))
+	assert.Equal(t, "0.1", x.([]*MicroServiceInstance)[0].Metadata[common.BuildinTagVersion])
 
 	cache.Delete("TestServer")
-	items = cache.Items()
-	assert.Equal(t, len(items), 0)
 }
-
+func TestIndexCache_Get(t *testing.T) {
+	cache := newIndexCache()
+	k1 := cache.getIndexedCacheKey("service1", map[string]string{
+		"a": "b",
+		"c": "d",
+	})
+	k2 := cache.getIndexedCacheKey("service1", map[string]string{
+		"c": "d",
+		"a": "b",
+	})
+	t.Log(k1)
+	assert.Equal(t, k2, k1)
+}
 func BenchmarkNoIndexGet(b *testing.B) {
-	cache := newNoIndexCache()
+	cache := newIndexCache()
 	cache.Set("TestServer", microServiceInstances)
-	tag := map[string]string{"version": "0.0.3", "project": "dev"}
+	tag := map[string]string{}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -88,7 +81,6 @@ func BenchmarkNoIndexGet(b *testing.B) {
 
 func BenchmarkIndexCacheGet(b *testing.B) {
 	cache := newIndexCache()
-	cache.SetIndexTags(sets.NewString("version", "project"))
 	cache.Set("TestServer", microServiceInstances)
 
 	tag := map[string]string{"version": "0.0.3", "project": "dev"}
