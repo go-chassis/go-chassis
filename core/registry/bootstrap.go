@@ -41,11 +41,20 @@ func RegisterMicroservice() error {
 	}
 	framework := metadata.NewFramework()
 
+	svcPaths := service.ServiceDescription.ServicePaths
+	var regpaths []ServicePath
+	for _, svcPath := range svcPaths {
+		var regpath ServicePath
+		regpath.Path = svcPath.Path
+		regpath.Property = svcPath.Property
+		regpaths = append(regpaths, regpath)
+	}
 	microservice := &MicroService{
 		ServiceID:   runtime.ServiceID,
 		AppID:       runtime.App,
 		ServiceName: service.ServiceDescription.Name,
 		Version:     service.ServiceDescription.Version,
+		Paths:       regpaths,
 		Environment: service.ServiceDescription.Environment,
 		Status:      common.DefaultStatus,
 		Level:       service.ServiceDescription.Level,
