@@ -27,7 +27,7 @@ type Panel interface {
 	GetLoadBalancing(inv invocation.Invocation) LoadBalancingConfig
 	GetRateLimiting(inv invocation.Invocation, serviceType string) RateLimitingConfig
 	GetFaultInjection(inv invocation.Invocation) model.Fault
-	GetEgressRule(inv invocation.Invocation)
+	GetEgressRule() []EgressConfig
 }
 
 //Options is options
