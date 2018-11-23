@@ -140,7 +140,7 @@ func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
 		return
 	}
 	var is []*MicroServiceInstance
-	for _, inst := range c.([]*MicroServiceInstance) {
+	for _, inst := range c {
 		if inst.InstanceID == i.Instance.InstanceID {
 			continue
 		}
@@ -167,7 +167,7 @@ func HealthCheck(service, version, appID string, instance *MicroServiceInstance)
 // RefreshCache is the function to filter changes between new pulling instances and simpleCache
 func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]struct{}) {
 	c, ok := MicroserviceInstanceIndex.Get(service, nil)
-	if !ok || c == nil || c.([]*MicroServiceInstance) == nil {
+	if !ok || c == nil {
 		// if full new instances or at less one instance, then refresh simpleCache immediately
 		MicroserviceInstanceIndex.Set(service, ups)
 		return
@@ -176,7 +176,7 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 	var (
 		saves   []*MicroServiceInstance
 		lefts   []*MicroServiceInstance
-		exps    = c.([]*MicroServiceInstance)
+		exps    = c
 		mapUps  = make(map[string]*MicroServiceInstance, len(ups))
 		mapExps = make(map[string]*MicroServiceInstance, len(exps))
 	)

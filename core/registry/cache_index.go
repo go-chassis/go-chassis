@@ -8,21 +8,22 @@ import (
 	"sync"
 )
 
-// indexCache return instances based on metadata
+// indexCache return instances by criteria
 type indexCache struct {
 	latestV    map[string]string //save every service's latest version number
 	muxLatestV sync.RWMutex
 
-	simpleCache  *cache.Cache //save service name and correspond instances
-	indexedCache *cache.Cache //key must contain service name, cache key is label key values
+	simpleCache *cache.Cache //save service name and correspond instances
 
-	CriteriaStore []map[string]string //all criteria need to be saved in here so that we can update indexedCache
+	//key must contain service name, cache key includes label key values
+	indexedCache *cache.Cache
+
+	CriteriaStore []map[string]string //all criteria need to be saved in here so that we can update indexedCache, during Set process
 	muxCriteria   sync.RWMutex
 }
 
 func newIndexCache() *indexCache {
 	return &indexCache{
-		// no simpleCache could remove from index simpleCache
 		simpleCache:  cache.New(DefaultExpireTime, 0),
 		latestV:      map[string]string{},
 		indexedCache: cache.New(DefaultExpireTime, 0),
@@ -30,20 +31,14 @@ func newIndexCache() *indexCache {
 	}
 }
 
-// TODO: if tags rebuild, indexers should autoclear to remove
-// index which is built from old tags
-func (ic *indexCache) Items() *cache.Cache { return ic.simpleCache }
+func (ic *indexCache) FullCache() *cache.Cache { return ic.simpleCache }
 func (ic *indexCache) Delete(k string) {
 	ic.simpleCache.Delete(k)
 	ic.indexedCache.Delete(k)
 }
 
-func (ic *indexCache) Set(k string, x interface{}) {
+func (ic *indexCache) Set(k string, instances []*MicroServiceInstance) {
 	latestV, _ := version.NewVersion("0.0.0")
-	instances, ok := x.([]*MicroServiceInstance)
-	if !ok {
-		return
-	}
 	for _, instance := range instances {
 		//update latest version number
 		v, _ := version.NewVersion(instance.version())
@@ -70,14 +65,17 @@ func (ic *indexCache) Set(k string, x interface{}) {
 	}
 	ic.muxCriteria.RUnlock()
 
-	ic.simpleCache.Set(k, x, 0)
+	ic.simpleCache.Set(k, instances, 0)
 
 }
 
-func (ic *indexCache) Get(k string, tags map[string]string) (interface{}, bool) {
+func (ic *indexCache) Get(k string, tags map[string]string) ([]*MicroServiceInstance, bool) {
 	value, ok := ic.simpleCache.Get(k)
-	if len(tags) == 0 || !ok {
-		return value, ok
+	if !ok {
+		return nil, false
+	}
+	if len(tags) == 0 {
+		return value.([]*MicroServiceInstance), ok
 	}
 	//if version is latest, then set it to real version
 	ic.setTagsBeforeQuery(k, tags)
@@ -103,7 +101,7 @@ func (ic *indexCache) Get(k string, tags map[string]string) (interface{}, bool) 
 		ic.muxCriteria.Unlock()
 		return queryResult, true
 	}
-	return savedResult, ok
+	return savedResult.([]*MicroServiceInstance), ok
 
 }
 func (ic *indexCache) setTagsBeforeQuery(k string, tags map[string]string) {
