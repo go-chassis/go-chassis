@@ -28,7 +28,7 @@ func main() {
 	invoker := core.NewRestInvoker()
 
 	for i := 0; i < 500; i++ {
-		req, err := rest.NewRequest("GET", "cse://ErrServer/lock", nil)
+		req, err := rest.NewRequest("GET", "http://ErrServer/lock", nil)
 		if err != nil {
 			lager.Logger.Error("new request failed.")
 			return
@@ -43,7 +43,7 @@ func main() {
 	}
 
 	for {
-		req, err := rest.NewRequest("GET", "cse://ErrServer/sayhimessage", nil)
+		req, err := rest.NewRequest("GET", "http://ErrServer/sayhimessage", nil)
 		if err != nil {
 			lager.Logger.Error("new request failed.")
 			return

@@ -31,7 +31,7 @@ func restTest(ctx context.Context, endpoint string, expected Reply) (err error) 
 		return
 	}
 
-	arg, _ := rest.NewRequest(http.MethodGet, "cse://"+expected.ServiceName+"/healthz", nil)
+	arg, _ := rest.NewRequest(http.MethodGet, "http://"+expected.ServiceName+"/healthz", nil)
 	req := &invocation.Invocation{Args: arg}
 	rsp := rest.NewResponse()
 	defer rsp.Body.Close()

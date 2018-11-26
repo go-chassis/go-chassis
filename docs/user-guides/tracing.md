@@ -40,7 +40,7 @@ in B client you must deliver ctx to C, so that go chassis can keep tracing,
 ```go
 //Trace is a method
 func (r *TracingHello) Trace(b *rf.Context) {
-	req, err := rest.NewRequest("GET", "cse://RESTServerB/sayhello/world")
+	req, err := rest.NewRequest("GET", "http://RESTServerB/sayhello/world")
 	if err != nil {
 		b.WriteError(500, err)
 		return

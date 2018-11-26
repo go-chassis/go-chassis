@@ -48,12 +48,11 @@ invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
 
 #### Rest
 
-与普通的http调用不同的是url参数不使用ip:port而是服务名并且[http://变为cse://](http://变为cse://)
 
 在初始化invoker时还指定了这次请求要经过的处理链名称custom
 
 ```go
-req, _ := rest.NewRequest("GET", "cse://RESTServer/sayhello/world")
+req, _ := rest.NewRequest("GET", "http://RESTServer/sayhello/world")
 defer req.Close()
 resp, err := core.NewRestInvoker(core.ChainName("custom")).ContextDo(context.TODO(), req)
 ```
@@ -70,11 +69,11 @@ cse:
 ```
 then you can use suffix "admin" as port to access rest-admin server
 ```go
-req, _ := rest.NewRequest("GET", "cse://RESTServer:admin/sayhello/world")
+req, _ := rest.NewRequest("GET", "http://RESTServer:admin/sayhello/world")
 ```
 use only service name to access rest server
 ```go
-req, _ := rest.NewRequest("GET", "cse://RESTServer/sayhello/world")
+req, _ := rest.NewRequest("GET", "http://RESTServer/sayhello/world")
 ```
 
 

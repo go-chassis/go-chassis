@@ -69,7 +69,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	}
 
 	reply := rest.NewResponse()
-	arg, _ := rest.NewRequest("GET", "cse://Server/instances", nil)
+	arg, _ := rest.NewRequest("GET", "http://Server/instances", nil)
 	req := &invocation.Invocation{
 		MicroServiceName: "Server",
 		Args:             arg,
@@ -90,7 +90,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	cancel()
 
 	err = c.Call(ctx, addrRest, req, reply)
-	expectedError := rest.ErrCanceled
+	expectedError := client.ErrCanceled
 	if assert.Error(t, err) {
 		assert.Equal(t, expectedError, err)
 	}
@@ -126,7 +126,7 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	}
 
 	reply := rest.NewResponse()
-	arg, _ := rest.NewRequest("GET", "cse://Server1/instances", nil)
+	arg, _ := rest.NewRequest("GET", "http://Server1/instances", nil)
 	req := &invocation.Invocation{
 		MicroServiceName: "Server1",
 		Args:             arg,

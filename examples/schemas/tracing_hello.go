@@ -17,7 +17,7 @@ type TracingHello struct {
 //Trace is a method
 func (r *TracingHello) Trace(b *rf.Context) {
 	log.Println("tracing===", b.Ctx)
-	req, err := rest.NewRequest("GET", "cse://RESTServerB/sayhello/world", nil)
+	req, err := rest.NewRequest("GET", "http://RESTServerB/sayhello/world", nil)
 	if err != nil {
 		b.WriteError(500, err)
 		return

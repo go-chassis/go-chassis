@@ -19,7 +19,7 @@ func main() {
 		return
 	}
 
-	req, err := rest.NewRequest("GET", "cse://RESTServer/hello", nil)
+	req, err := rest.NewRequest("GET", "http://RESTServer/hello", nil)
 	if err != nil {
 		lager.Logger.Error("new request failed." + err.Error())
 		return
@@ -34,7 +34,7 @@ func main() {
 	defer resp.Body.Close()
 	lager.Logger.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 
-	req, err = rest.NewRequest("GET", "cse://RESTServer:legacy/legacy", nil)
+	req, err = rest.NewRequest("GET", "http://RESTServer:legacy/legacy", nil)
 	if err != nil {
 		lager.Logger.Error("new request failed." + err.Error())
 		return

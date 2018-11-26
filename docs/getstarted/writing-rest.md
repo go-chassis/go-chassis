@@ -106,7 +106,7 @@ func main() {
         lager.Logger.Error("Init failed.", err)
         return
     }
-    req, _ := rest.NewRequest("GET", "cse://RESTServer/sayhello/world")
+    req, _ := rest.NewRequest("GET", "http://RESTServer/sayhello/world")
     defer req.Close()
     resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
     if err != nil {

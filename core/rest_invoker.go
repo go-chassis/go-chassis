@@ -12,6 +12,11 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util"
 )
 
+const (
+	//HTTP is url schema name
+	HTTP = "http"
+)
+
 // RestInvoker is rest invoker
 // one invoker for one microservice
 // thread safe
@@ -34,8 +39,8 @@ func NewRestInvoker(opt ...Option) *RestInvoker {
 // ContextDo is for requesting the API
 // by default if http status is 5XX, then it will return error
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options ...InvocationOption) (*http.Response, error) {
-	if string(req.URL.Scheme) != "cse" {
-		return nil, fmt.Errorf("scheme invalid: %s, only support cse://", req.URL.Scheme)
+	if string(req.URL.Scheme) != "cse" && string(req.URL.Scheme) != HTTP {
+		return nil, fmt.Errorf("scheme invalid: %s, only support {cse|http}://", req.URL.Scheme)
 	}
 
 	// set headers to Ctx
