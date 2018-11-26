@@ -6,43 +6,23 @@ This repo consist of a client and a server which is written is Go using go-chass
 
 ### Quick Start
 
-To run this performance benchmark please follow the below steps:
-
-##### Step-1
-Clone Go-Chassis and download the dependency.
-```go
-
-git clone https://github.com/go-chassis/go-chassis $GOPATH/src/github.com/go-chassis/go-chassis
-
-cd $GOPATH/src/github.com/go-chassis/go-chassis
-
-glide install
+1. setup service center
+2. set service center url in chassis.yaml
+3. start your service 
+3. benchmark
+```bash
+cd benchmark
+go build github.com/go-chassis/go-chassis/benchmark
+./benchmark -c 10 -d 30s -u http://service/hello
 ```
 
-##### Step-2
-Start the service-center locally using this [guide](https://github.com/apache/incubator-servicecomb-service-center#quick-start).
-
-##### Step-3
-Build and run server
-```go
-cd benchmark/server
-
-go build
-
-./server
-```
-
-##### Step-4
-Build and run client
-```go
-cd benchmark/client
-
-go build
-
-./client
-```
-
-##### Step-5 Verify the performance report
-
-In client a csv file will be generated naming with the timestamp, the files contains the aggregate value for the performance of client and server.
-
+TPS:  11481.3
+Total request:  114813
+Err request:  0
+latency mean:  0.43261272373540854
+latency p05:  0.14776679999999998
+latency p25:  0.2251135
+latency p50:  0.312795
+latency p75:  0.447414
+latency p90:  0.6835228000000001
+latency p99:  2.7049685300000124

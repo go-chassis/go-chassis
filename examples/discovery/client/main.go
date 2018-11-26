@@ -113,7 +113,7 @@ func call(invoker *core.RPCInvoker) {
 
 func callRest(invoker *core.RestInvoker) {
 	defer wg.Done()
-	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest", nil)
+	req, _ := rest.NewRequest("GET", "http://Server/sayhello/myidtest", nil)
 
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
@@ -124,7 +124,7 @@ func callRest(invoker *core.RestInvoker) {
 	log.Printf("Rest Server sayhello[Get] %s", string(httputil.ReadBody(resp1)))
 	log.Printf("Cookie from LB %s", string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 	httputil.SetCookie(req, common.LBSessionID, string(httputil.GetRespCookie(resp1, common.LBSessionID)))
-	req, _ = rest.NewRequest(http.MethodPost, "cse://Server/sayhi", []byte(`{"name": "peter wang and me"}`))
+	req, _ = rest.NewRequest(http.MethodPost, "http://Server/sayhi", []byte(`{"name": "peter wang and me"}`))
 	req.Header.Set("Content-Type", "application/json")
 	httputil.SetCookie(req, common.LBSessionID, string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
@@ -134,7 +134,7 @@ func callRest(invoker *core.RestInvoker) {
 	}
 	log.Printf("Rest Server sayhi[POST] %s %s", httputil.GetRespCookie(resp1, common.LBSessionID), httputil.ReadBody(resp1))
 
-	req, _ = rest.NewRequest(http.MethodGet, "cse://Server/sayerror", []byte(""))
+	req, _ = rest.NewRequest(http.MethodGet, "http://Server/sayerror", []byte(""))
 	httputil.SetCookie(req, common.LBSessionID, string(httputil.GetRespCookie(resp1, common.LBSessionID)))
 	resp1, err = invoker.ContextDo(context.TODO(), req)
 	if err != nil {

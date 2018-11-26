@@ -30,9 +30,9 @@ func main() {
 }
 
 func callRest(invoker *core.RestInvoker, i int) {
-	url := "cse://istioserver/sayhello/b"
+	url := "http://istioserver/sayhello/b"
 	if i < 10 {
-		url = "cse://istioserver/sayhello/a"
+		url = "http://istioserver/sayhello/a"
 	}
 	req, _ := rest.NewRequest("GET", url, nil)
 	//use the invoker like http client.

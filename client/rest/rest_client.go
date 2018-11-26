@@ -33,8 +33,6 @@ const (
 )
 
 var (
-	//ErrCanceled means Request is canceled by context management
-	ErrCanceled = errors.New("request cancelled")
 
 	//ErrInvalidResp invalid input
 	ErrInvalidResp = errors.New("rest consumer response arg is not *rest.Response type")
@@ -128,7 +126,7 @@ func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocati
 
 	select {
 	case <-ctx.Done():
-		err = ErrCanceled
+		err = client.ErrCanceled
 	case err = <-errChan:
 		if err == nil {
 			*resp = *temp

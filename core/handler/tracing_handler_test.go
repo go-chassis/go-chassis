@@ -220,7 +220,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	consumerChain.AddHandler(tracingConsumerHandler)
 	consumerChain.AddHandler(consumerSpanHandler)
 
-	restClientSentReq, err := rest.NewRequest("GET", "cse://Server/hello")
+	restClientSentReq, err := rest.NewRequest("GET", "http://Server/hello")
 	assert.NoError(t, err)
 
 	inv := &invocation.Invocation{
@@ -259,7 +259,7 @@ func TestTracingHandler_Rest_RestRequest(t *testing.T) {
 	t.Log("========tracing [provider] handler [rest]")
 
 	// copy header from rest client to rest server
-	httpReq, err := http.NewRequest("GET", "cse://Server/hello", bytes.NewReader(make([]byte, 0)))
+	httpReq, err := http.NewRequest("GET", "http://Server/hello", bytes.NewReader(make([]byte, 0)))
 	assert.NoError(t, err)
 	restServerReceivedReq := &restful.Request{
 		Request: httpReq,
@@ -369,7 +369,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 
 	fasthttpRequest := fasthttp.AcquireRequest()
 	fasthttpRequest.Header.SetMethod("GET")
-	fasthttpRequest.Header.SetRequestURI("cse://Server/hello")
+	fasthttpRequest.Header.SetRequestURI("http://Server/hello")
 	assert.NoError(t, err)
 
 	inv := &invocation.Invocation{
@@ -408,7 +408,7 @@ func TestTracingHandler_Rest_FasthttpRequest(t *testing.T) {
 	t.Log("========tracing [provider] handler [rest]")
 
 	// copy header from rest client to rest server
-	httpReq, err := http.NewRequest("GET", "cse://Server/hello", bytes.NewReader(make([]byte, 0)))
+	httpReq, err := http.NewRequest("GET", "http://Server/hello", bytes.NewReader(make([]byte, 0)))
 	assert.NoError(t, err)
 	restServerReceivedReq := &restful.Request{
 		Request: httpReq,

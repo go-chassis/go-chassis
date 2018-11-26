@@ -10,6 +10,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/session"
+	"github.com/go-mesh/openlogging"
 	"net/http"
 )
 
@@ -43,7 +44,9 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	err = c.Call(i.Ctx, i.Endpoint, i, i.Reply)
 	if err != nil {
 		r.Err = err
-		lager.Logger.Errorf("Call got Error, err [%s]", err.Error())
+		if err != client.ErrCanceled {
+			openlogging.GetLogger().Errorf("Call got Error, err [%s]", err.Error())
+		}
 		if i.Strategy == loadbalancer.StrategySessionStickiness {
 			ProcessSpecialProtocol(i)
 			ProcessSuccessiveFailure(i)
