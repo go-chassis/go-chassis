@@ -11,15 +11,15 @@ import (
 
 func TestNewRestRequest(t *testing.T) {
 	t.Log("Testing all the restfull client functions")
-	req, err := rest.NewRequest("GET", "cse://hello", nil)
+	req, err := rest.NewRequest("GET", "http://hello", nil)
 	assert.NoError(t, err)
 
-	req, err = rest.NewRequest("", "cse://hello", []byte("bodypart"))
+	req, err = rest.NewRequest("", "http://hello", []byte("bodypart"))
 	assert.NoError(t, err)
 
-	httputil.SetURI(req, "cse://example/:id")
+	httputil.SetURI(req, "http://example/:id")
 	uri := req.URL.String()
-	assert.Equal(t, uri, "cse://example/:id")
+	assert.Equal(t, uri, "http://example/:id")
 
 	httputil.SetBody(req, []byte("hello"))
 
@@ -52,7 +52,7 @@ func TestNewRestRequest(t *testing.T) {
 	val := httputil.GetRespCookie(resp, "test")
 	assert.Equal(t, c1.Value, string(val))
 
-	req, err = rest.NewRequest("GET", "cse://hello", nil)
+	req, err = rest.NewRequest("GET", "http://hello", nil)
 	assert.NoError(t, err)
 
 	testHeaderKey := "hello"

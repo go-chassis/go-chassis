@@ -26,7 +26,7 @@ func main() {
 	}
 
 	for i := 0; i < 10; i++ {
-		req, err := rest.NewRequest("POST", "cse://ROUTERServer/equal", nil)
+		req, err := rest.NewRequest("POST", "http://ROUTERServer/equal", nil)
 		if err != nil {
 			lager.Logger.Error("new request failed.")
 			return

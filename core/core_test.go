@@ -45,7 +45,7 @@ func TestRPCInvoker_InvokeFailinChainInit(t *testing.T) {
 func TestRestInvoker_ContextDo(t *testing.T) {
 	initenv()
 	restinvoker := core.NewRestInvoker()
-	req, _ := rest.NewRequest("GET", "cse://Server/sayhello/myidtest", nil)
+	req, _ := rest.NewRequest("GET", "http://Server/sayhello/myidtest", nil)
 	httputil.SetContentType(req, "application/json")
 	//use the invoker like http client.
 	_, err := restinvoker.ContextDo(context.TODO(), req, core.WithEndpoint("0.0.0.0"), core.WithProtocol("rest"), core.WithFilters(""))

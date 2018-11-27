@@ -27,9 +27,9 @@ go build main.go
 ```
 client use different adress to access API server
 ```go
-	req, err := rest.NewRequest("GET", "cse://RESTServer/hello")
+	req, err := rest.NewRequest("GET", "http://RESTServer/hello")
 
-	req, err = rest.NewRequest("GET", "cse://RESTServer:legacy/legacy")
+	req, err = rest.NewRequest("GET", "http://RESTServer:legacy/legacy")
 
 ```
 build and run client

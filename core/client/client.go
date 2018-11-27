@@ -3,8 +3,12 @@ package client
 
 import (
 	"context"
+	"errors"
 	"github.com/go-chassis/go-chassis/core/invocation"
 )
+
+//ErrCanceled means Request is canceled by context management
+var ErrCanceled = errors.New("request cancelled")
 
 // ProtocolClient is the interface to communicate with one kind of ProtocolServer, it is used in transport handler
 // rcp protocol client,http protocol client,or you can implement your own

@@ -1,7 +1,0 @@
----
-threadcount: 55
-messagesize: 1024
-printcount: 500
-registryenable: true
-gomaxprocs: 4
-protocol: rest

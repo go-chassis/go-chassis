@@ -20,7 +20,7 @@ func main() {
 		return
 	}
 
-	req, err := rest.NewRequest("GET", "cse://RESTServerA/trace", nil)
+	req, err := rest.NewRequest("GET", "http://RESTServerA/trace", nil)
 	if err != nil {
 		lager.Logger.Error("new request failed." + err.Error())
 		return

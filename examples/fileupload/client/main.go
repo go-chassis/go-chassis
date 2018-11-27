@@ -46,7 +46,7 @@ func uploadfile(filename string) {
 		return
 	}
 
-	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadfile", body.Bytes())
+	req, err := rest.NewRequest("POST", "http://FileUploadServer/uploadfile", body.Bytes())
 	if err != nil {
 		lager.Logger.Error("new request failed." + err.Error())
 		return
@@ -91,7 +91,7 @@ func uploadform(filename string) {
 
 	bodyReader := io.MultiReader(headBuf, f, lastBoundary)
 
-	req, err := rest.NewRequest("POST", "cse://FileUploadServer/uploadform", nil)
+	req, err := rest.NewRequest("POST", "http://FileUploadServer/uploadform", nil)
 	if err != nil {
 		lager.Logger.Error("new request failed." + err.Error())
 		return

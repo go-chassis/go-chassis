@@ -10,8 +10,7 @@ cse:
   handler:
     chain:
       Consumer:
-        #default: loadbalance,transport
-        default: bizkeeper-consumer,loadbalance,transport
+        default: loadbalance,transport
   protocols:
     rest-metrics:
       listenAddress: 127.0.0.1:7000
