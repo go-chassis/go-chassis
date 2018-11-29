@@ -28,7 +28,6 @@ var (
 
 type Settings struct {
 	// isolation 属性
-	Timeout               time.Duration
 	MaxConcurrentRequests int
 
 	// circuit break 属性
@@ -45,7 +44,6 @@ type Settings struct {
 
 // CommandConfig is used to tune circuit settings at runtime
 type CommandConfig struct {
-	Timeout                int `json:"timeout"`
 	MaxConcurrentRequests  int `json:"max_concurrent_requests"`
 	RequestVolumeThreshold int `json:"request_volume_threshold"`
 	SleepWindow            int `json:"sleep_window"`
@@ -87,12 +85,6 @@ func NewCommandConfig(opt ...CommandConfigOption) CommandConfig {
 	return cmdconfig
 }
 
-func WithTimeOut(timeout int) CommandConfigOption {
-	return func(c *CommandConfig) {
-		c.Timeout = timeout
-	}
-}
-
 func WithMaxRequests(maxrequests int) CommandConfigOption {
 	return func(c *CommandConfig) {
 		c.MaxConcurrentRequests = maxrequests
@@ -123,10 +115,6 @@ func ConfigureCommand(name string, config CommandConfig) {
 	settingsMutex.Lock()
 	defer settingsMutex.Unlock()
 
-	timeout := DefaultTimeout
-	if config.Timeout != 0 {
-		timeout = config.Timeout
-	}
 	ConsumerNum := DefaultMetricsConsumerNum
 	if config.MetricsConsumerNum != 0 {
 		ConsumerNum = config.MetricsConsumerNum
@@ -154,7 +142,6 @@ func ConfigureCommand(name string, config CommandConfig) {
 		ForceClose:             config.ForceClose,
 		ForceOpen:              config.ForceOpen,
 		CircuitBreakerEnabled:  config.CircuitBreakerEnabled,
-		Timeout:                time.Duration(timeout) * time.Millisecond,
 		MaxConcurrentRequests:  max,
 		RequestVolumeThreshold: uint64(volume),
 		SleepWindow:            time.Duration(sleep) * time.Millisecond,

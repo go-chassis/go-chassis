@@ -67,5 +67,5 @@ func TestSaveToCBCache(t *testing.T) {
 	err = control.Init()
 	archaius.SaveToCBCache(config.GetHystrixConfig())
 	c, _ := archaius.CBConfigCache.Get("Consumer")
-	assert.Equal(t, 1000, c.(hystrix.CommandConfig).Timeout)
+	assert.Equal(t, 100, c.(hystrix.CommandConfig).MaxConcurrentRequests)
 }

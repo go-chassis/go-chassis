@@ -99,7 +99,6 @@ func saveEachCB(serviceName, serviceType string) string { //return updated key
 	}
 	c := hystrix.CommandConfig{
 		ForceFallback:          config.GetForceFallback(serviceName, serviceType),
-		Timeout:                config.GetTimeout(command, serviceType),
 		MaxConcurrentRequests:  config.GetMaxConcurrentRequests(command, serviceType),
 		ErrorPercentThreshold:  config.GetErrorPercentThreshold(command, serviceType),
 		RequestVolumeThreshold: config.GetRequestVolumeThreshold(command, serviceType),

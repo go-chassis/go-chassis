@@ -23,7 +23,8 @@ func callHTTP(ctx context.Context, restInvoker *core.RestInvoker, method string,
 			}
 			continue
 		}
-		httputil.ReadBody(resp)
+		_ = httputil.ReadBody(resp)
+		resp.Body.Close()
 		totalRequest++
 		latency.UpdateSince(start)
 

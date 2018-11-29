@@ -37,13 +37,12 @@ require (
 	github.com/prometheus/common v0.0.0-20181116084131-1f2c4f3cd6db // indirect
 	github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165
-	github.com/shirou/gopsutil v0.0.0-20180801053943-8048a2e9c577
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/smartystreets/goconvey v0.0.0-20170602164621-9e8dc3f972df
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.2.2
-	github.com/urfave/cli v1.20.1-0.20181029213200-b67dcf995b6a // indirect
+	github.com/urfave/cli v1.20.1-0.20181029213200-b67dcf995b6a
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277
 	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591
 	golang.org/x/text v0.3.0 // indirect

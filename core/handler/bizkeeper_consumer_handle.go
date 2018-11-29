@@ -58,7 +58,7 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invoca
 		return func(err error) error {
 			// if err is type of hystrix error, return a new response
 			if err.Error() == hystrix.ErrForceFallback.Error() || err.Error() == hystrix.ErrCircuitOpen.Error() ||
-				err.Error() == hystrix.ErrMaxConcurrency.Error() || err.Error() == hystrix.ErrTimeout.Error() {
+				err.Error() == hystrix.ErrMaxConcurrency.Error() {
 				// isolation happened, so lead to callback
 				lager.Logger.Errorf(fmt.Sprintf("fallback for %v, error [%s]", cmd, err.Error()))
 				resp := &invocation.Response{}
