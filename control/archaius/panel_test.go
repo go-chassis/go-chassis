@@ -47,9 +47,8 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 
 	t.Log("cb ")
 	command, cb := control.DefaultPanel.GetCircuitBreaker(inv, common.Consumer)
-	assert.Equal(t, 1000, cb.Timeout)
 	assert.Equal(t, "Consumer.fake", command)
-
+	assert.Equal(t, 100, cb.MaxConcurrentRequests)
 	t.Log("rl ")
 	inv.MicroServiceName = "Server"
 	rl := control.DefaultPanel.GetRateLimiting(inv, common.Consumer)

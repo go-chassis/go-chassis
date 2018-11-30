@@ -16,12 +16,21 @@ go build github.com/go-chassis/go-chassis/benchmark
 ```
 
 TPS:  11481.3
+
 Total request:  114813
+
 Err request:  0
+
 latency mean:  0.43261272373540854
+
 latency p05:  0.14776679999999998
+
 latency p25:  0.2251135
+
 latency p50:  0.312795
+
 latency p75:  0.447414
+
 latency p90:  0.6835228000000001
+
 latency p99:  2.7049685300000124

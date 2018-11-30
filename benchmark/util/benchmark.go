@@ -51,8 +51,10 @@ func Benchmark() {
 	if err != nil {
 		panic(err)
 	}
-	chassis.Init()
-	go chassis.Run()
+	err = chassis.Init()
+	if err != nil {
+		panic(err)
+	}
 	prepareMetrics()
 	cancels := make([]context.CancelFunc, 0)
 	switch u.Scheme {

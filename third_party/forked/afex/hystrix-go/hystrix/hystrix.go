@@ -53,8 +53,6 @@ var (
 	ErrMaxConcurrency = CircuitError{Message: "max concurrency"}
 	// ErrCircuitOpen returns when an execution attempt "short circuits". This happens due to the circuit being measured as unhealthy.
 	ErrCircuitOpen = CircuitError{Message: "circuit open"}
-	// ErrTimeout occurs when the provided function takes too long to execute.
-	ErrTimeout = CircuitError{Message: "timeout"}
 	// ErrForceFallback occurs when force fallback is true
 	ErrForceFallback = CircuitError{Message: "force fallback"}
 )
@@ -123,16 +121,14 @@ func Go(name string, run runFunc, fallback fallbackFunc) chan error {
 		runStart := time.Now()
 		runErr := run()
 
-		if !cmd.isTimedOut() {
-			cmd.runDuration = time.Since(runStart)
+		cmd.runDuration = time.Since(runStart)
 
-			if runErr != nil {
-				cmd.errorWithFallback(runErr)
-				return
-			}
-
-			cmd.reportEvent("success")
+		if runErr != nil {
+			cmd.errorWithFallback(runErr)
+			return
 		}
+
+		cmd.reportEvent("success")
 	}()
 
 	go func() {
@@ -146,19 +142,10 @@ func Go(name string, run runFunc, fallback fallbackFunc) chan error {
 				openlogging.GetLogger().Warnf("can not report metrics [%s]", err.Error())
 			}
 		}()
-		timer := time.NewTimer(getSettings(name).Timeout)
-		defer timer.Stop()
 
 		select {
 		case <-cmd.finished:
-		case <-timer.C:
 
-			cmd.Lock()
-			cmd.timedOut = true
-			cmd.Unlock()
-			cmd.errorWithFallback(ErrTimeout)
-
-			return
 		}
 	}()
 
@@ -212,13 +199,6 @@ func (c *command) reportEvent(eventType string) {
 	c.events = append(c.events, eventType)
 }
 
-func (c *command) isTimedOut() bool {
-	c.Lock()
-	defer c.Unlock()
-
-	return c.timedOut
-}
-
 // errorWithFallback triggers the fallback while reporting the appropriate metric events.
 // If called multiple times for a single command, only the first will execute to insure
 // accurate metrics and prevent the fallback from executing more than once.
@@ -229,8 +209,6 @@ func (c *command) errorWithFallback(err error) {
 			eventType = "short-circuit"
 		} else if err == ErrMaxConcurrency {
 			eventType = "rejected"
-		} else if err == ErrTimeout {
-			eventType = "timeout"
 		} else if err == ErrForceFallback {
 			eventType = "force fallback"
 		}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -16,26 +17,29 @@ func init() {
 
 //Client is grpc client holder
 type Client struct {
-	c    *grpc.ClientConn
-	opts client.Options
+	c       *grpc.ClientConn
+	opts    client.Options
+	service string
 }
 
 //New create new grpc client
 func New(opts client.Options) (client.ProtocolClient, error) {
 	var err error
 	var conn *grpc.ClientConn
+	ctx, _ := context.WithTimeout(context.Background(), config.GetTimeoutDuration(opts.Service, common.Consumer))
 	if opts.TLSConfig == nil {
-		conn, err = grpc.Dial(opts.Endpoint, grpc.WithInsecure())
+		conn, err = grpc.DialContext(ctx, opts.Endpoint, grpc.WithInsecure())
 	} else {
-		conn, err = grpc.Dial(opts.Endpoint,
+		conn, err = grpc.DialContext(ctx, opts.Endpoint,
 			grpc.WithTransportCredentials(credentials.NewTLS(opts.TLSConfig)))
 	}
 	if err != nil {
 		return nil, err
 	}
 	return &Client{
-		c:    conn,
-		opts: opts,
+		c:       conn,
+		service: opts.Service,
+		opts:    opts,
 	}, nil
 }
 
@@ -49,6 +53,7 @@ func TransformContext(ctx context.Context) context.Context {
 //Call remote server
 func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
 	ctx = TransformContext(ctx)
+	ctx, _ = context.WithTimeout(ctx, config.GetTimeoutDuration(c.service, common.Consumer))
 	return c.c.Invoke(ctx, "/"+inv.SchemaID+"/"+inv.OperationID, inv.Args, rsp)
 }
 

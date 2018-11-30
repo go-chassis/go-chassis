@@ -21,6 +21,7 @@ const DefaultPoolSize = 50
 
 //Options is configs for client creation
 type Options struct {
+	Service   string
 	PoolSize  int
 	Endpoint  string
 	PoolTTL   time.Duration
@@ -61,6 +62,7 @@ func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 	poolSize := DefaultPoolSize
 
 	return f(Options{
+		Service:   service,
 		TLSConfig: tlsConfig,
 		PoolSize:  poolSize,
 		Failure:   GetFailureMap(protocol),

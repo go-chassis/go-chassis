@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"net"
@@ -61,7 +62,9 @@ func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 	}
 	rc := &Client{
 		opts: opts,
+
 		c: &http.Client{
+			Timeout:   config.GetTimeoutDuration(opts.Service, common.Consumer),
 			Transport: tp,
 		},
 	}

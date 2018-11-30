@@ -6,6 +6,7 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config/model"
+	"time"
 )
 
 // constant for hystrix parameters
@@ -70,15 +71,21 @@ func GetForceOpen(service, t string) bool {
 }
 
 // GetTimeout get timeout durations
-func GetTimeout(command, t string) int {
+func GetTimeout(service, t string) int {
 	cbMutex.RLock()
 	global := getIsolationSpec(t).TimeoutInMilliseconds
 	if global == 0 {
 		global = DefaultTimeout
 	}
-	m := archaius.GetInt(GetTimeoutKey(command), global)
+	m := archaius.GetInt(GetTimeoutKey(service), global)
 	cbMutex.RUnlock()
 	return m
+}
+
+// GetTimeoutDuration get timeout durations
+func GetTimeoutDuration(service, t string) time.Duration {
+	timeout := GetTimeout(service, t)
+	return time.Duration(timeout*1000000) * time.Millisecond
 }
 
 // GetMaxConcurrentRequests get max concurrent requests
