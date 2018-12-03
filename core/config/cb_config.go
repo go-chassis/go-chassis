@@ -2,7 +2,7 @@ package config
 
 import (
 	"sync"
-
+    "github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -76,6 +76,13 @@ func GetTimeout(service, t string) int {
 	global := getIsolationSpec(t).TimeoutInMilliseconds
 	if global == 0 {
 		global = DefaultTimeout
+	}
+	key := GetTimeEnabledKey(command)
+	enable := archaius.GetBool(key, false)
+	lager.Logger.Infof("GetTimeout %v: %v", key, enable)
+	//load default timeout value
+	if !enable {
+		return DefaultTimeout
 	}
 	m := archaius.GetInt(GetTimeoutKey(service), global)
 	cbMutex.RUnlock()
