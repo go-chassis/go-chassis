@@ -48,11 +48,11 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 		switch i.Reply.(type) {
 		case *http.Response:
 			resp := i.Reply.(*http.Response)
-			resp.StatusCode = http.StatusServiceUnavailable
+			resp.StatusCode = http.StatusTooManyRequests
 		}
 
 		r := &invocation.Response{}
-		r.Status = http.StatusServiceUnavailable
+		r.Status = http.StatusTooManyRequests
 		r.Err = errors.New(fmt.Sprintf("%s | %v", key, rate))
 		cb(r)
 		return
