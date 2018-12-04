@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/qpslimiter"
+	"net/http"
 )
 
 // ConsumerRateLimiterHandler consumer rate limiter handler
@@ -16,6 +18,19 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 	if !rlc.Enabled {
 		chain.Next(i, cb)
 
+		return
+	}
+	//qps rate <=0
+	if rlc.Rate <= 0 {
+		switch i.Reply.(type) {
+		case *http.Response:
+			resp := i.Reply.(*http.Response)
+			resp.StatusCode = http.StatusTooManyRequests
+		}
+		r := &invocation.Response{}
+		r.Status = http.StatusTooManyRequests
+		r.Err = fmt.Errorf("%s | %v", rlc.Key, rlc.Rate)
+		cb(r)
 		return
 	}
 	//get operation meta info ms.schema, ms.schema.operation, ms
