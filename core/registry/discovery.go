@@ -3,9 +3,11 @@ package registry
 import (
 	"log"
 
+	"fmt"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-mesh/openlogging"
 )
 
 var sdFunc = make(map[string]func(opts Options) ServiceDiscovery)
@@ -16,6 +18,15 @@ var cdFunc = make(map[string]func(opts Options) ContractDiscovery)
 func InstallServiceDiscovery(name string, f func(opts Options) ServiceDiscovery) {
 	sdFunc[name] = f
 	log.Printf("Installed service discovery plugin: %s.\n", name)
+}
+
+//NewDiscovery create discovery service
+func NewDiscovery(name string, opts Options) (ServiceDiscovery, error) {
+	f := sdFunc[name]
+	if f == nil {
+		return nil, fmt.Errorf("no service discovery plugin: %s", name)
+	}
+	return f(opts), nil
 }
 
 //InstallContractDiscovery install contract service client
@@ -49,9 +60,10 @@ type ContractDiscovery interface {
 	Close() error
 }
 
-func enableServiceDiscovery(opts Options) {
+func enableServiceDiscovery(opts Options) error {
 	if config.GetServiceDiscoveryDisable() {
-		return
+		openlogging.Warn("discovery is disabled")
+		return nil
 	}
 
 	t := config.GetServiceDiscoveryType()
@@ -62,11 +74,16 @@ func enableServiceDiscovery(opts Options) {
 	if f == nil {
 		panic("No service discovery plugin")
 	}
-	DefaultServiceDiscoveryService = f(opts)
+	var err error
+	DefaultServiceDiscoveryService, err = NewDiscovery(t, opts)
+	if err != nil {
+		return err
+	}
 
 	DefaultServiceDiscoveryService.AutoSync()
 
 	lager.Logger.Infof("Enable %s service discovery.", t)
+	return nil
 }
 
 func enableContractDiscovery(opts Options) {

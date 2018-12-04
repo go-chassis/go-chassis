@@ -59,28 +59,29 @@ type Registrator interface {
 	AddSchemas(microServiceID, schemaName, schemaInfo string) error
 }
 
-func enableRegistrator(opts Options) {
+func enableRegistrator(opts Options) error {
 	if config.GetRegistratorDisable() {
-		return
+		return nil
 	}
 
 	rt := config.GetRegistratorType()
 	if rt == "" {
 		rt = DefaultRegistratorPlugin
 	}
-	f := registryFunc[rt]
-	if f == nil {
-		panic("No registry plugin")
+	var err error
+	DefaultRegistrator, err = NewRegistrator(rt, opts)
+	if err != nil {
+		return err
 	}
-	DefaultRegistrator = f(opts)
 
 	if err := RegisterMicroservice(); err != nil {
-		lager.Logger.Errorf("start bacskoff for register microservice: %s", err)
+		lager.Logger.Errorf("start backoff for register microservice: %s", err)
 		startBackOff(RegisterMicroservice)
 	}
 	go HBService.Start()
 
 	lager.Logger.Infof("Enable [%s] registrator.", rt)
+	return nil
 }
 
 // InstallRegistrator install registrator plugin
@@ -89,6 +90,14 @@ func InstallRegistrator(name string, f func(opts Options) Registrator) {
 	log.Printf("Installed registry plugin: %s.\n", name)
 }
 
+//NewRegistrator return registrator
+func NewRegistrator(name string, opts Options) (Registrator, error) {
+	f := registryFunc[name]
+	if f == nil {
+		return nil, fmt.Errorf("no registry plugin: %s", name)
+	}
+	return f(opts), nil
+}
 func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 	hostsR, schemeR, err := URIs2Hosts(strings.Split(config.GetRegistratorAddress(), ","))
 	if err != nil {
@@ -150,8 +159,12 @@ func Enable() (err error) {
 	}
 
 	enableRegistryCache()
-	enableRegistrator(oR)
-	enableServiceDiscovery(oSD)
+	if err := enableRegistrator(oR); err != nil {
+		return err
+	}
+	if err := enableServiceDiscovery(oSD); err != nil {
+		return err
+	}
 	enableContractDiscovery(oCD)
 
 	lager.Logger.Info("Enabled Registry")
