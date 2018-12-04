@@ -16,6 +16,8 @@ import (
 )
 
 //SignRequest sign a http request so that it can talk to API server
+//this is global implementation, if you do not set SignRequest in URLClientOption
+//client will use this function
 var SignRequest func(*http.Request) error
 
 //URLClientOption is a struct which provides options for client
@@ -26,6 +28,7 @@ type URLClientOption struct {
 	HandshakeTimeout      time.Duration
 	ResponseHeaderTimeout time.Duration
 	Verbose               bool
+	SignRequest           func(*http.Request) error
 }
 
 //URLClient is a struct used for storing details of a client
@@ -58,8 +61,13 @@ func (client *URLClient) HTTPDo(method string, rawURL string, headers http.Heade
 	client.Request = req
 
 	req.Header = headers
-	//sign a request
-	if SignRequest != nil {
+	//sign a request, first use function in client options
+	//if there is not, use global function
+	if client.options.SignRequest != nil {
+		if err = client.options.SignRequest(req); err != nil {
+			return nil, errors.New("Add auth info failed, err: " + err.Error())
+		}
+	} else if SignRequest != nil {
 		if err = SignRequest(req); err != nil {
 			return nil, errors.New("Add auth info failed, err: " + err.Error())
 		}
