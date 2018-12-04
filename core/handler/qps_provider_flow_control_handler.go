@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/qpslimiter"
+	"net/http"
 )
 
 // ProviderRateLimiterHandler provider rate limiter handler
@@ -23,22 +26,37 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 	}
 
 	//provider has limiter only on microservice name.
+	key := ProviderLimitKeyGlobal
+	rate := qpslimiter.DefaultRate
+	ok := false
 	if i.SourceMicroService != "" {
 		//use chassis Invoker will send SourceMicroService through network
-		qpsRate, ok := qpslimiter.GetQPSRate(ProviderQPSLimit + "." + i.SourceMicroService)
-		if !ok {
-			qpsRate, _ = qpslimiter.GetQPSRate(ProviderLimitKeyGlobal)
-			qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(ProviderLimitKeyGlobal, qpsRate)
-		} else {
-			qpsRate, _ = qpslimiter.GetQPSRate(ProviderQPSLimit + "." + i.SourceMicroService)
-			qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(ProviderQPSLimit+"."+i.SourceMicroService, qpsRate)
+		key = ProviderQPSLimit + "." + i.SourceMicroService
+		if rate, ok = qpslimiter.GetQPSRate(key); !ok {
+			key = ProviderLimitKeyGlobal
+			rate, _ = qpslimiter.GetQPSRate(ProviderLimitKeyGlobal)
 		}
 
 	} else {
-		qpsRate, _ := qpslimiter.GetQPSRate(ProviderLimitKeyGlobal)
-		qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(ProviderLimitKeyGlobal, qpsRate)
+		key = ProviderLimitKeyGlobal
+		rate, _ = qpslimiter.GetQPSRate(key)
 	}
 
+	//qps rate <=0
+	if rate <= 0 {
+		switch i.Reply.(type) {
+		case *http.Response:
+			resp := i.Reply.(*http.Response)
+			resp.StatusCode = http.StatusTooManyRequests
+		}
+
+		r := &invocation.Response{}
+		r.Status = http.StatusTooManyRequests
+		r.Err = errors.New(fmt.Sprintf("%s | %v", key, rate))
+		cb(r)
+		return
+	}
+	qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(key, rate)
 	//call next chain
 	chain.Next(i, cb)
 
