@@ -583,7 +583,9 @@ func (r *ContractDiscovery) GetSchema(microServiceID, schemaName string) ([]byte
 func (r *ContractDiscovery) Close() error {
 	return closeClient(r.registryClient)
 }
-func newRegistrator(options registry.Options) registry.Registrator {
+
+//NewRegistrator new Service center registrator
+func NewRegistrator(options registry.Options) registry.Registrator {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
@@ -596,7 +598,9 @@ func newRegistrator(options registry.Options) registry.Registrator {
 		opts:           sco,
 	}
 }
-func newServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
+
+//NewServiceDiscovery new service center discovery
+func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
@@ -625,8 +629,8 @@ func newContractDiscovery(options registry.Options) registry.ContractDiscovery {
 
 // init initialize the plugin of service center registry
 func init() {
-	registry.InstallRegistrator(ServiceCenter, newRegistrator)
-	registry.InstallServiceDiscovery(ServiceCenter, newServiceDiscovery)
+	registry.InstallRegistrator(ServiceCenter, NewRegistrator)
+	registry.InstallServiceDiscovery(ServiceCenter, NewServiceDiscovery)
 	registry.InstallContractDiscovery(ServiceCenter, newContractDiscovery)
 
 }
