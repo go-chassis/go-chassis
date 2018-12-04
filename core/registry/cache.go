@@ -36,7 +36,7 @@ var ProvidersMicroServiceCache *cache.Cache
 func initCache() *cache.Cache { return cache.New(DefaultExpireTime, 0) }
 
 func enableRegistryCache() {
-	MicroserviceInstanceIndex = newCacheIndex()
+	MicroserviceInstanceIndex = NewIndexCache()
 	SelfInstancesCache = initCache()
 	ipIndexedCache = initCache()
 	SchemaServiceIndexedCache = initCache()
@@ -69,12 +69,6 @@ func GetIPIndex(ip string) *SourceInfo {
 	}
 	return si
 }
-
-// SetNoIndexCache reset microservie instance index to no index simpleCache
-func SetNoIndexCache() { MicroserviceInstanceIndex = newCacheIndex() }
-
-// newCacheIndex returns index implemention according to config
-func newCacheIndex() CacheIndex { return newIndexCache() }
 
 // GetProvidersFromCache get local provider simpleCache
 func GetProvidersFromCache() []*MicroService {

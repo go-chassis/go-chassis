@@ -8,8 +8,8 @@ import (
 	"sync"
 )
 
-// indexCache return instances by criteria
-type indexCache struct {
+// IndexCache return instances by criteria
+type IndexCache struct {
 	latestV    map[string]string //save every service's latest version number
 	muxLatestV sync.RWMutex
 
@@ -22,8 +22,9 @@ type indexCache struct {
 	muxCriteria   sync.RWMutex
 }
 
-func newIndexCache() *indexCache {
-	return &indexCache{
+//NewIndexCache create a cache which saves and manage instances
+func NewIndexCache() *IndexCache {
+	return &IndexCache{
 		simpleCache:  cache.New(DefaultExpireTime, 0),
 		latestV:      map[string]string{},
 		indexedCache: cache.New(DefaultExpireTime, 0),
@@ -31,13 +32,17 @@ func newIndexCache() *indexCache {
 	}
 }
 
-func (ic *indexCache) FullCache() *cache.Cache { return ic.simpleCache }
-func (ic *indexCache) Delete(k string) {
+//FullCache return all instances
+func (ic *IndexCache) FullCache() *cache.Cache { return ic.simpleCache }
+
+//Delete remove one service's instances
+func (ic *IndexCache) Delete(k string) {
 	ic.simpleCache.Delete(k)
 	ic.indexedCache.Delete(k)
 }
 
-func (ic *indexCache) Set(k string, instances []*MicroServiceInstance) {
+//Set overwrite instances cache
+func (ic *IndexCache) Set(k string, instances []*MicroServiceInstance) {
 	latestV, _ := version.NewVersion("0.0.0")
 	for _, instance := range instances {
 		//update latest version number
@@ -50,26 +55,27 @@ func (ic *indexCache) Set(k string, instances []*MicroServiceInstance) {
 		}
 
 	}
-	// update indexed cache
-	ic.muxCriteria.RLock()
-	for _, criteria := range ic.CriteriaStore {
-		indexKey := ic.getIndexedCacheKey(k, criteria)
-		result := make([]*MicroServiceInstance, 0)
-		for _, instance := range instances {
-			if instance.Has(criteria) {
-				result = append(result, instance)
-			}
-		}
-		//forcely overwrite indexed cache, that is safe
-		ic.indexedCache.Set(indexKey, result, 0)
-	}
-	ic.muxCriteria.RUnlock()
+	////TODO update indexed cache
+	//ic.muxCriteria.RLock()
+	//for _, criteria := range ic.CriteriaStore {
+	//	indexKey := ic.getIndexedCacheKey(k, criteria)
+	//	result := make([]*MicroServiceInstance, 0)
+	//	for _, instance := range instances {
+	//		if instance.Has(criteria) {
+	//			result = append(result, instance)
+	//		}
+	//	}
+	//	//forcely overwrite indexed cache, that is safe
+	//	ic.indexedCache.Set(indexKey, result, 0)
+	//}
+	//ic.muxCriteria.RUnlock()
 
 	ic.simpleCache.Set(k, instances, 0)
 
 }
 
-func (ic *indexCache) Get(k string, tags map[string]string) ([]*MicroServiceInstance, bool) {
+//Get return instances cache by criteria
+func (ic *IndexCache) Get(k string, tags map[string]string) ([]*MicroServiceInstance, bool) {
 	value, ok := ic.simpleCache.Get(k)
 	if !ok {
 		return nil, false
@@ -95,16 +101,16 @@ func (ic *indexCache) Get(k string, tags map[string]string) ([]*MicroServiceInst
 			return nil, false
 		}
 
-		ic.indexedCache.Set(indexKey, queryResult, 0)
-		ic.muxCriteria.Lock()
-		ic.CriteriaStore = append(ic.CriteriaStore, tags)
-		ic.muxCriteria.Unlock()
+		//ic.indexedCache.Set(indexKey, queryResult, 0)
+		//ic.muxCriteria.Lock()
+		//ic.CriteriaStore = append(ic.CriteriaStore, tags)
+		//ic.muxCriteria.Unlock()
 		return queryResult, true
 	}
 	return savedResult.([]*MicroServiceInstance), ok
 
 }
-func (ic *indexCache) setTagsBeforeQuery(k string, tags map[string]string) {
+func (ic *IndexCache) setTagsBeforeQuery(k string, tags map[string]string) {
 	//must set version before query
 	if v, ok := tags[common.BuildinTagVersion]; ok && v == common.LatestVersion && ic.latestV[k] != "" {
 		tags[common.BuildinTagVersion] = ic.latestV[k]
@@ -112,7 +118,7 @@ func (ic *indexCache) setTagsBeforeQuery(k string, tags map[string]string) {
 }
 
 //must combine in order
-func (ic *indexCache) getIndexedCacheKey(service string, tags map[string]string) (ss string) {
+func (ic *IndexCache) getIndexedCacheKey(service string, tags map[string]string) (ss string) {
 	ss = "service:" + service
 	keys := sets.NewString()
 	for k := range tags {

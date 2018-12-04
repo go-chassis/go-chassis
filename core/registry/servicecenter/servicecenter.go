@@ -3,7 +3,6 @@ package servicecenter
 import (
 	"fmt"
 
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
@@ -29,18 +28,18 @@ func (r *Registrator) RegisterService(ms *registry.MicroService) (string, error)
 	microservice := ToSCService(ms)
 	sid, err := r.registryClient.GetMicroServiceID(microservice.AppID, microservice.ServiceName, microservice.Version, microservice.Environment)
 	if err != nil {
-		lager.Logger.Errorf("Get service [%s] failed, err %s", serviceKey, err)
+		openlogging.GetLogger().Errorf("Get service [%s] failed, err %s", serviceKey, err)
 		return "", err
 	}
 	if sid == "" {
-		lager.Logger.Warnf("service [%s] not exists in registry, register it", serviceKey, err)
+		openlogging.GetLogger().Warnf("service [%s] not exists in registry, register it", serviceKey, err)
 		sid, err = r.registryClient.RegisterService(microservice)
 		if err != nil {
-			lager.Logger.Errorf("Register service [%s] failed, err %s", serviceKey, err)
+			openlogging.GetLogger().Errorf("Register service [%s] failed, err %s", serviceKey, err)
 			return "", err
 		}
 	} else {
-		lager.Logger.Infof("[%s] exists in registry", serviceKey)
+		openlogging.GetLogger().Infof("[%s] exists in registry", serviceKey)
 	}
 
 	return sid, nil
@@ -52,16 +51,16 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 	instance.ServiceID = sid
 	instanceID, err := r.registryClient.RegisterMicroServiceInstance(instance)
 	if err != nil {
-		lager.Logger.Errorf("RegisterMicroServiceInstance failed.")
+		openlogging.GetLogger().Errorf("RegisterMicroServiceInstance failed.")
 		return "", err
 	}
 	value, ok := registry.SelfInstancesCache.Get(instance.ServiceID)
 	if !ok {
-		lager.Logger.Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	var isRepeat bool
 	for _, va := range instanceIDs {
@@ -73,13 +72,13 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	registry.SelfInstancesCache.Set(instance.ServiceID, instanceIDs, 0)
-	lager.Logger.Infof("RegisterMicroServiceInstance success, MicroServiceID: %s", instance.ServiceID)
+	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, MicroServiceID: %s", instance.ServiceID)
 
 	if instance.HealthCheck == nil ||
 		instance.HealthCheck.Mode == client.CheckByHeartbeat {
 		registry.HBService.AddTask(sid, instanceID)
 	}
-	lager.Logger.Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
+	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
 	return instanceID, nil
 }
 
@@ -91,25 +90,25 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 	if microServiceID == "" {
 		microServiceID, err = r.registryClient.RegisterService(microService)
 		if err != nil {
-			lager.Logger.Errorf("RegisterMicroService failed %s", err)
+			openlogging.GetLogger().Errorf("RegisterMicroService failed %s", err)
 			return "", "", err
 		}
-		lager.Logger.Debugf("RegisterMicroService success, microServiceID: %s", microServiceID)
+		openlogging.GetLogger().Debugf("RegisterMicroService success, microServiceID: %s", microServiceID)
 	}
 	instance.ServiceID = microServiceID
 	instanceID, err := r.registryClient.RegisterMicroServiceInstance(instance)
 	if err != nil {
-		lager.Logger.Errorf("RegisterMicroServiceInstance failed. %s", err)
+		openlogging.GetLogger().Errorf("RegisterMicroServiceInstance failed. %s", err)
 		return microServiceID, "", err
 	}
 
 	value, ok := registry.SelfInstancesCache.Get(instance.ServiceID)
 	if !ok {
-		lager.Logger.Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
+		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceID, instanceID)
 	}
 	var isRepeat bool
 	for _, va := range instanceIDs {
@@ -121,13 +120,13 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	registry.SelfInstancesCache.Set(instance.ServiceID, instanceIDs, 0)
-	lager.Logger.Infof("RegisterMicroServiceInstance success, MicroServiceID: %s", instance.ServiceID)
+	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, MicroServiceID: %s", instance.ServiceID)
 
 	if instance.HealthCheck == nil ||
 		instance.HealthCheck.Mode == client.CheckByHeartbeat {
 		registry.HBService.AddTask(microServiceID, instanceID)
 	}
-	lager.Logger.Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID)
+	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID)
 	return microServiceID, instanceID, nil
 }
 
@@ -135,17 +134,17 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error {
 	isSuccess, err := r.registryClient.UnregisterMicroServiceInstance(microServiceID, microServiceInstanceID)
 	if !isSuccess || err != nil {
-		lager.Logger.Errorf("unregisterMicroServiceInstance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		openlogging.GetLogger().Errorf("unregisterMicroServiceInstance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 		return err
 	}
 
 	value, ok := registry.SelfInstancesCache.Get(microServiceID)
 	if !ok {
-		lager.Logger.Warnf("UnregisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
+		openlogging.GetLogger().Warnf("UnregisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		lager.Logger.Warnf("UnregisterMicroServiceInstance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
+		openlogging.GetLogger().Warnf("UnregisterMicroServiceInstance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
 	}
 	var newInstanceIDs = make([]string, 0)
 	for _, v := range instanceIDs {
@@ -155,7 +154,7 @@ func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServic
 	}
 	registry.SelfInstancesCache.Set(microServiceID, newInstanceIDs, 0)
 
-	lager.Logger.Debugf("unregisterMicroServiceInstance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	openlogging.GetLogger().Debugf("unregisterMicroServiceInstance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 	return nil
 }
 
@@ -163,14 +162,14 @@ func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServic
 func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (bool, error) {
 	bo, err := r.registryClient.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
-		lager.Logger.Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
+		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
 		return false, err
 	}
 	if bo == false {
-		lager.Logger.Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
+		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
 		return bo, err
 	}
-	lager.Logger.Debugf("Heartbeat success, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
+	openlogging.GetLogger().Debugf("Heartbeat success, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
 	return bo, nil
 }
 
@@ -179,20 +178,20 @@ func (r *Registrator) AddDependencies(cDep *registry.MicroServiceDependency) err
 	request := ToSCDependency(cDep)
 	err := r.registryClient.AddDependencies(request)
 	if err != nil {
-		lager.Logger.Errorf("AddDependencies failed: %s", err)
+		openlogging.GetLogger().Errorf("AddDependencies failed: %s", err)
 		return err
 	}
-	lager.Logger.Debugf("AddDependencies success.")
+	openlogging.GetLogger().Debugf("AddDependencies success.")
 	return nil
 }
 
 // AddSchemas to service center
 func (r *Registrator) AddSchemas(microServiceID, schemaName, schemaInfo string) error {
 	if err := r.registryClient.AddSchemas(microServiceID, schemaName, schemaInfo); err != nil {
-		lager.Logger.Errorf("AddSchemas failed: %s", err)
+		openlogging.GetLogger().Errorf("AddSchemas failed: %s", err)
 		return err
 	}
-	lager.Logger.Debugf("AddSchemas success.")
+	openlogging.GetLogger().Debugf("AddSchemas success.")
 	return nil
 }
 
@@ -200,10 +199,10 @@ func (r *Registrator) AddSchemas(microServiceID, schemaName, schemaInfo string) 
 func (r *Registrator) UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error {
 	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status)
 	if !isSuccess {
-		lager.Logger.Errorf("UpdateMicroServiceInstanceStatus failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		openlogging.GetLogger().Errorf("UpdateMicroServiceInstanceStatus failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 		return err
 	}
-	lager.Logger.Debugf("UpdateMicroServiceInstanceStatus success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceStatus success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 	return nil
 }
 
@@ -214,10 +213,10 @@ func (r *Registrator) UpdateMicroServiceProperties(microServiceID string, proper
 	}
 	isSuccess, err := r.registryClient.UpdateMicroServiceProperties(microServiceID, microService)
 	if !isSuccess {
-		lager.Logger.Errorf("UpdateMicroService Properties failed, microServiceID/instanceID = %s.", microServiceID)
+		openlogging.GetLogger().Errorf("UpdateMicroService Properties failed, microServiceID/instanceID = %s.", microServiceID)
 		return err
 	}
-	lager.Logger.Debugf("UpdateMicroService Properties success, microServiceID/instanceID = %s.", microServiceID)
+	openlogging.GetLogger().Debugf("UpdateMicroService Properties success, microServiceID/instanceID = %s.", microServiceID)
 	return nil
 }
 
@@ -228,10 +227,10 @@ func (r *Registrator) UpdateMicroServiceInstanceProperties(microServiceID, micro
 	}
 	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID, microServiceInstance)
 	if !isSuccess {
-		lager.Logger.Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		openlogging.GetLogger().Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 		return err
 	}
-	lager.Logger.Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 	return nil
 }
 
@@ -251,10 +250,10 @@ type ServiceDiscovery struct {
 func (r *ServiceDiscovery) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
 	microServiceID, err := r.registryClient.GetMicroServiceID(appID, microServiceName, version, env)
 	if err != nil {
-		lager.Logger.Errorf("GetMicroServiceID failed: %s", err.Error())
+		openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err.Error())
 		return "", err
 	}
-	lager.Logger.Debugf("GetMicroServiceID success")
+	openlogging.GetLogger().Debugf("GetMicroServiceID success")
 	return microServiceID, nil
 }
 
@@ -262,14 +261,14 @@ func (r *ServiceDiscovery) GetMicroServiceID(appID, microServiceName, version, e
 func (r *ServiceDiscovery) GetAllMicroServices() ([]*registry.MicroService, error) {
 	microServices, err := r.registryClient.GetAllMicroServices()
 	if err != nil {
-		lager.Logger.Errorf("GetAllMicroServices failed: %s", err)
+		openlogging.GetLogger().Errorf("GetAllMicroServices failed: %s", err)
 		return nil, err
 	}
 	mss := []*registry.MicroService{}
 	for _, s := range microServices {
 		mss = append(mss, ToMicroService(s))
 	}
-	lager.Logger.Debugf("GetAllMicroServices success, MicroService: %s", microServices)
+	openlogging.GetLogger().Debugf("GetAllMicroServices success, MicroService: %s", microServices)
 	return mss, nil
 }
 
@@ -277,14 +276,14 @@ func (r *ServiceDiscovery) GetAllMicroServices() ([]*registry.MicroService, erro
 func (r *ServiceDiscovery) GetAllApplications() ([]string, error) {
 	apps, err := r.registryClient.GetAllApplications()
 	if err != nil {
-		lager.Logger.Errorf("GetAllApplications failed: %s", err)
+		openlogging.GetLogger().Errorf("GetAllApplications failed: %s", err)
 		return nil, err
 	}
 	appArray := []string{}
 	for _, s := range apps {
 		appArray = append(appArray, s)
 	}
-	lager.Logger.Debugf("GetAllApplications success, Applications: %s", apps)
+	openlogging.GetLogger().Debugf("GetAllApplications success, Applications: %s", apps)
 	return appArray, nil
 }
 
@@ -292,10 +291,10 @@ func (r *ServiceDiscovery) GetAllApplications() ([]string, error) {
 func (r *ServiceDiscovery) GetMicroService(microServiceID string) (*registry.MicroService, error) {
 	microService, err := r.registryClient.GetMicroService(microServiceID)
 	if err != nil {
-		lager.Logger.Errorf("GetMicroService failed: %s", err)
+		openlogging.GetLogger().Errorf("GetMicroService failed: %s", err)
 		return nil, err
 	}
-	lager.Logger.Debugf("GetMicroServices success, MicroService: %s", microService)
+	openlogging.GetLogger().Debugf("GetMicroServices success, MicroService: %s", microService)
 	return ToMicroService(microService), nil
 }
 
@@ -303,11 +302,11 @@ func (r *ServiceDiscovery) GetMicroService(microServiceID string) (*registry.Mic
 func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID string) ([]*registry.MicroServiceInstance, error) {
 	providerInstances, err := r.registryClient.GetMicroServiceInstances(consumerID, providerID)
 	if err != nil {
-		lager.Logger.Errorf("GetMicroServiceInstances failed: %s", err)
+		openlogging.GetLogger().Errorf("GetMicroServiceInstances failed: %s", err)
 		return nil, err
 	}
 	instances := filterInstances(providerInstances)
-	lager.Logger.Debugf("GetMicroServiceInstances success, consumerID/providerID: %s/%s", consumerID, providerID)
+	openlogging.GetLogger().Debugf("GetMicroServiceInstances success, consumerID/providerID: %s/%s", consumerID, providerID)
 	return instances, nil
 }
 
@@ -332,7 +331,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 		filterReIndex(providerInstances, microServiceName, appID)
 		microServiceInstance, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 		if !boo || microServiceInstance == nil {
-			lager.Logger.Debugf("Find no microservice instances for %s from cache", microServiceName)
+			openlogging.GetLogger().Debugf("Find no microservice instances for %s from cache", microServiceName)
 			return nil, nil
 		}
 		if microServiceInstance != nil {
@@ -348,30 +347,30 @@ func (r *ServiceDiscovery) GetDependentMicroServiceInstances(appID, consumerMicr
 	var instancesAll []*client.MicroServiceInstance
 	microServiceConsumerID, err := r.GetMicroServiceID(appID, consumerMicroServiceName, version, env)
 	if err != nil {
-		lager.Logger.Errorf("GetMicroServiceID failed: %s", err)
+		openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err)
 		return nil, err
 	}
 	providers, err := r.registryClient.GetProviders(microServiceConsumerID)
 	if err != nil {
-		lager.Logger.Errorf("Get Provider failed: %s", err)
+		openlogging.GetLogger().Errorf("Get Provider failed: %s", err)
 		return nil, err
 	}
 	for _, provider := range providers.Services {
 		microServiceProviderID, err := r.GetMicroServiceID(provider.AppID, provider.ServiceName, provider.Version, env)
 		if err != nil {
-			lager.Logger.Errorf("GetMicroServiceID failed: %s", err)
+			openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err)
 			return nil, err
 		}
 		instances, err := r.GetMicroServiceInstances(microServiceConsumerID, microServiceProviderID)
 		if err != nil {
-			lager.Logger.Errorf("GetMicroServiceInstances failed: %s", err)
+			openlogging.GetLogger().Errorf("GetMicroServiceInstances failed: %s", err)
 			return nil, err
 		}
 		for _, value := range instances {
 			instancesAll = append(instancesAll, ToSCInstance(value))
 		}
 	}
-	lager.Logger.Debugf("GetDependentMicroServiceInstances success, appID/microServiceName/version: %s/%s/%s", appID, consumerMicroServiceName, version)
+	openlogging.GetLogger().Debugf("GetDependentMicroServiceInstances success, appID/microServiceName/version: %s/%s/%s", appID, consumerMicroServiceName, version)
 	return instancesAll, nil
 }
 
@@ -411,7 +410,7 @@ func (r *ContractDiscovery) GetMicroServicesByInterface(interfaceName string) (m
 	microServiceModel, ok := value.([]*client.MicroService)
 
 	if !ok {
-		lager.Logger.Errorf("GetMicroServicesByInterface failed, Type asserts failed")
+		openlogging.GetLogger().Errorf("GetMicroServicesByInterface failed, Type asserts failed")
 	}
 
 	for _, v := range microServiceModel {
@@ -464,7 +463,7 @@ func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*client.MicroServic
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
-			lager.Logger.Errorf("Get instances failed: %s", err)
+			openlogging.GetLogger().Errorf("Get instances failed: %s", err)
 			return content
 		}
 
@@ -510,7 +509,7 @@ func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*client.MicroServ
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
-			lager.Logger.Errorf("Get instances failed: %s", err)
+			openlogging.GetLogger().Errorf("Get instances failed: %s", err)
 			return content
 		}
 
@@ -571,10 +570,10 @@ func (r *ContractDiscovery) GetSchema(microServiceID, schemaName string) ([]byte
 	var schemaContent []byte
 	var err error
 	if schemaContent, err = r.registryClient.GetSchema(microServiceID, schemaName); err != nil {
-		lager.Logger.Errorf("GetSchema failed: %s", err)
+		openlogging.GetLogger().Errorf("GetSchema failed: %s", err)
 		return []byte(""), err
 	}
-	lager.Logger.Debugf("GetSchema success.")
+	openlogging.GetLogger().Debugf("GetSchema success.")
 	return schemaContent, nil
 
 }
@@ -589,7 +588,7 @@ func NewRegistrator(options registry.Options) registry.Registrator {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
-		lager.Logger.Errorf("RegistryClient initialization failed, err %s", err)
+		openlogging.GetLogger().Errorf("RegistryClient initialization failed, err %s", err)
 	}
 
 	return &Registrator{
@@ -604,7 +603,7 @@ func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
-		lager.Logger.Errorf("RegistryClient initialization failed. %s", err)
+		openlogging.GetLogger().Errorf("RegistryClient initialization failed. %s", err)
 	}
 
 	return &ServiceDiscovery{
@@ -617,7 +616,7 @@ func newContractDiscovery(options registry.Options) registry.ContractDiscovery {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
-		lager.Logger.Errorf("RegistryClient initialization failed: %s", err)
+		openlogging.GetLogger().Errorf("RegistryClient initialization failed: %s", err)
 	}
 
 	return &ContractDiscovery{
