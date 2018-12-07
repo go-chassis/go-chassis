@@ -189,7 +189,7 @@ func (circuit *CircuitBreaker) setOpen() {
 		return
 	}
 
-	log.Printf("hystrix-go: opening circuit %v", circuit.Name)
+	openlogging.GetLogger().Infof("hystrix-go: opening circuit %v", circuit.Name)
 
 	circuit.openedOrLastTestedTime = time.Now().UnixNano()
 	circuit.open = true

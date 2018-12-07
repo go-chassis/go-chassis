@@ -58,8 +58,8 @@ import (
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/metrics"
+	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-
 	//tracers
 	_ "github.com/go-chassis/go-chassis/tracing/zipkin"
 )
@@ -170,6 +170,7 @@ func (c *chassis) initialize() error {
 	if err = metrics.Init(); err != nil {
 		return err
 	}
+	circuit.Init()
 	eventlistener.Init()
 	c.Initialized = true
 	return nil

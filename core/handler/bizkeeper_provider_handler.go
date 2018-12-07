@@ -28,7 +28,7 @@ func (bk *BizKeeperProviderHandler) Handle(chain *Chain, i *invocation.Invocatio
 			return err
 		})
 		return
-	}, GetFallbackFun(command, common.Provider, i, finish, cmdConfig.ForceFallback))
+	}, nil)
 
 	//if err is not nil, means fallback is nil, return original err
 	if err != nil {

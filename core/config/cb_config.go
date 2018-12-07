@@ -85,7 +85,7 @@ func GetTimeout(service, t string) int {
 // GetTimeoutDuration get timeout durations
 func GetTimeoutDuration(service, t string) time.Duration {
 	timeout := GetTimeout(service, t)
-	return time.Duration(timeout*1000000) * time.Millisecond
+	return time.Duration(timeout) * time.Millisecond
 }
 
 // GetMaxConcurrentRequests get max concurrent requests
