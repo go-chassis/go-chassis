@@ -228,7 +228,7 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 		}
 
 		providerInstances, err := c.registryClient.FindMicroServiceInstances(runtime.ServiceID, service[1],
-			service[0], findVersionRule(service[0]))
+			service[0], common.AllVersion)
 		if err != nil {
 			if err == client.ErrNotModified {
 				lager.Logger.Debug(err.Error())
@@ -293,14 +293,6 @@ func filterReIndex(providerInstances []*client.MicroServiceInstance, serviceName
 		}
 	}
 	registry.RefreshCache(serviceName, ups, downs)
-}
-
-// findVersionRule returns version rules for microservice
-func findVersionRule(microservice string) string {
-	if ref, ok := config.GlobalDefinition.Cse.References[microservice]; ok {
-		return ref.Version
-	}
-	return common.AllVersion
 }
 
 // watch watching micro-service instance status

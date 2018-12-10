@@ -323,7 +323,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 		}
 		openlogging.GetLogger().Warnf("%s Get instances from remote, key: %s %s", consumerID, appID, microServiceName)
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
-			findVersionRule(microServiceName), client.WithoutRevision())
+			tags.Version(), client.WithoutRevision())
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", microServiceName, err)
 		}
