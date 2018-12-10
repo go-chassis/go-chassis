@@ -58,12 +58,11 @@ func TestIndexCache(t *testing.T) {
 	cache.Delete("TestServer")
 }
 func TestIndexCache_Get(t *testing.T) {
-	cache := NewIndexCache()
-	k1 := cache.getIndexedCacheKey("service1", map[string]string{
+	k1 := getIndexedCacheKey("service1", map[string]string{
 		"a": "b",
 		"c": "d",
 	})
-	k2 := cache.getIndexedCacheKey("service1", map[string]string{
+	k2 := getIndexedCacheKey("service1", map[string]string{
 		"c": "d",
 		"a": "b",
 	})

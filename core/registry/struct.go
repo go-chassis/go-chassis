@@ -1,5 +1,7 @@
 package registry
 
+import "github.com/go-chassis/go-chassis/core/common"
+
 // MicroService struct having full info about micro-service
 type MicroService struct {
 	ServiceID   string
@@ -40,6 +42,36 @@ type MicroServiceInstance struct {
 	EndpointsMap    map[string]string
 	Metadata        map[string]string
 	DataCenterInfo  *DataCenterInfo
+}
+
+func (m *MicroServiceInstance) appID() string   { return m.Metadata[common.BuildinTagApp] }
+func (m *MicroServiceInstance) version() string { return m.Metadata[common.BuildinTagVersion] }
+
+// Has return whether microservice has tags
+func (m *MicroServiceInstance) Has(tags map[string]string) bool {
+	for k, v := range tags {
+		if mt, ok := m.Metadata[k]; !ok || mt != v {
+			return false
+		}
+	}
+	return true
+}
+
+// WithAppID add app tag for microservice instance
+func (m *MicroServiceInstance) WithAppID(v string) *MicroServiceInstance {
+	m.Metadata[common.BuildinTagApp] = v
+	return m
+}
+
+//Equal compares 2 instances is same or not
+func (m *MicroServiceInstance) Equal(ins *MicroServiceInstance) bool {
+	if m.InstanceID != ins.InstanceID {
+		return false
+	}
+	if m.ServiceID != ins.ServiceID {
+		return false
+	}
+	return true
 }
 
 // MicroServiceDependency is for to represent dependencies of micro-service

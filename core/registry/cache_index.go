@@ -86,7 +86,7 @@ func (ic *IndexCache) Get(k string, tags map[string]string) ([]*MicroServiceInst
 	//if version is latest, then set it to real version
 	ic.setTagsBeforeQuery(k, tags)
 	//find from indexed cache first
-	indexKey := ic.getIndexedCacheKey(k, tags)
+	indexKey := getIndexedCacheKey(k, tags)
 	savedResult, ok := ic.indexedCache.Get(indexKey)
 	if !ok {
 		//no result, then find it and save result
@@ -117,8 +117,8 @@ func (ic *IndexCache) setTagsBeforeQuery(k string, tags map[string]string) {
 	}
 }
 
-//must combine in order
-func (ic *IndexCache) getIndexedCacheKey(service string, tags map[string]string) (ss string) {
+//must combine keys in order, use sets to return sorted list
+func getIndexedCacheKey(service string, tags map[string]string) (ss string) {
 	ss = "service:" + service
 	keys := sets.NewString()
 	for k := range tags {

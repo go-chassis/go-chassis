@@ -14,6 +14,7 @@ import (
 	"github.com/go-chassis/go-sc-client"
 
 	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
+	"github.com/go-mesh/openlogging"
 )
 
 // constant values for default expiration time, and refresh interval
@@ -41,7 +42,7 @@ func (c *CacheManager) AutoSync() {
 		if err != nil {
 			lager.Logger.Errorf("Watch failed. Self Micro service Id:%s. %s", runtime.ServiceID, err)
 		}
-		lager.Logger.Debugf("Watching Intances change events.")
+		lager.Logger.Debugf("Watching Instances change events.")
 	}
 	var ticker *time.Ticker
 	refreshInterval := config.GetServiceDiscoveryRefreshInterval()
@@ -217,31 +218,31 @@ func (c *CacheManager) pullMicroserviceInstance() error {
 			AppID:       service.AppID,
 		})
 	}
-	serviceNameSet, serviceNameAppIDKeySet := c.getServiceSet(services)
+	serviceNameSet, serviceNameAppIDKeySet := getServiceSet(services)
 	c.compareAndDeleteOutdatedProviders(serviceNameSet)
 
-	for key := range serviceNameAppIDKeySet {
-		service := strings.Split(key, ":")
-		if len(service) != 2 {
-			lager.Logger.Errorf("Invalid serviceStore %s for providers %s", key, runtime.ServiceID)
-			continue
-		}
-
-		providerInstances, err := c.registryClient.FindMicroServiceInstances(runtime.ServiceID, service[1],
-			service[0], common.AllVersion)
-		if err != nil {
-			if err == client.ErrNotModified {
-				lager.Logger.Debug(err.Error())
+	for service, apps := range serviceNameAppIDKeySet {
+		ups := make([]*registry.MicroServiceInstance, 0) //append instances from different app and same service name into one unified slice
+		downs := make(map[string]struct{}, 0)
+		for _, app := range apps.List() {
+			//fetch remote based on app and service
+			instances, err := c.registryClient.FindMicroServiceInstances(runtime.ServiceID, app, service,
+				common.AllVersion)
+			if err != nil {
+				if err == client.ErrNotModified {
+					openlogging.Debug(err.Error())
+					continue
+				}
+				if err == client.ErrMicroServiceNotExists {
+					registry.ProvidersMicroServiceCache.Delete(strings.Join([]string{service, app}, "|"))
+				}
+				openlogging.Error("Refresh local instance cache failed: " + err.Error())
 				continue
 			}
-			if err == client.ErrMicroServiceNotExists {
-				registry.ProvidersMicroServiceCache.Delete(strings.Join([]string{service[0], service[1]}, "|"))
-			}
-			lager.Logger.Error("Refresh local instance cache failed: " + err.Error())
-			continue
+			u := filter(instances, app, downs) //set app into instance metadata, split instances into ups and downs
+			ups = append(ups, u...)
 		}
-
-		filterReIndex(providerInstances, service[0], service[1])
+		registry.RefreshCache(service, ups, downs) //save cache after get all instances of a service name
 	}
 	return nil
 }
@@ -256,28 +257,31 @@ func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.Strin
 }
 
 // getServiceSet returns service sets
-func (c *CacheManager) getServiceSet(exist []*client.MicroService) (sets.String, sets.String) {
+func getServiceSet(exist []*client.MicroService) (sets.String, map[string]sets.String) {
 	//get Provider's instances
-	serviceNameSet := sets.NewString()         // key is serviceName
-	serviceNameAppIDKeySet := sets.NewString() // key is "serviceName:appId"
+	serviceNameSet := sets.NewString()                        // key is serviceName
+	serviceNameAppIDKeySet := make(map[string]sets.String, 0) // key is "serviceName" value is app sets
 	if exist == nil || len(exist) == 0 {
 		return serviceNameSet, serviceNameAppIDKeySet
 	}
 
-	for _, microservice := range exist {
-		if microservice == nil {
+	for _, service := range exist {
+		if service == nil {
 			continue
 		}
-		serviceNameSet.Insert(microservice.ServiceName)
-		key := strings.Join([]string{microservice.ServiceName, microservice.AppID}, ":")
-		serviceNameAppIDKeySet.Insert(key)
+		serviceNameSet.Insert(service.ServiceName)
+		m, ok := serviceNameAppIDKeySet[service.ServiceName]
+		if ok {
+			m.Insert(service.AppID)
+		} else {
+			serviceNameAppIDKeySet[service.ServiceName] = sets.NewString()
+			serviceNameAppIDKeySet[service.ServiceName].Insert(service.AppID)
+		}
 	}
 	return serviceNameSet, serviceNameAppIDKeySet
 }
-
-func filterReIndex(providerInstances []*client.MicroServiceInstance, serviceName string, appID string) {
+func filter(providerInstances []*client.MicroServiceInstance, app string, downs map[string]struct{}) []*registry.MicroServiceInstance {
 	ups := make([]*registry.MicroServiceInstance, 0, len(providerInstances))
-	downs := make(map[string]struct{})
 	for _, ins := range providerInstances {
 		switch {
 		case ins.Version == "":
@@ -289,10 +293,11 @@ func filterReIndex(providerInstances []*client.MicroServiceInstance, serviceName
 				ins.Status, ins.ServiceID, ins.InstanceID)
 			continue
 		default:
-			ups = append(ups, ToMicroServiceInstance(ins).WithAppID(appID))
+			ups = append(ups, ToMicroServiceInstance(ins).WithAppID(app))
 		}
 	}
-	registry.RefreshCache(serviceName, ups, downs)
+	return ups
+
 }
 
 // watch watching micro-service instance status

@@ -46,10 +46,11 @@ func enableRegistryCache() {
 
 // CacheIndex is a unified local instances cache manager
 type CacheIndex interface {
-	Get(k string, tags map[string]string) ([]*MicroServiceInstance, bool)
-	Set(k string, instances []*MicroServiceInstance)
+	Get(service string, tags map[string]string) ([]*MicroServiceInstance, bool)
+	//Set will overwrite all instances correspond to a service name
+	Set(service string, instances []*MicroServiceInstance)
 	FullCache() *cache.Cache
-	Delete(k string)
+	Delete(service string)
 }
 
 //SetIPIndex save ip index

@@ -321,14 +321,15 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 		if appID == "" {
 			appID = runtime.App
 		}
-		openlogging.GetLogger().Warnf("%s Get instances from remote, key: %s %s", consumerID, appID, microServiceName)
+		openlogging.GetLogger().Warnf("%s Get instances from remote, key: %s:%s:%s", consumerID, appID, microServiceName, tags.Version())
 		providerInstances, err := r.registryClient.FindMicroServiceInstances(consumerID, appID, microServiceName,
 			tags.Version(), client.WithoutRevision())
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", microServiceName, err)
 		}
-
-		filterReIndex(providerInstances, microServiceName, appID)
+		downs := make(map[string]struct{}, 0)
+		ups := filter(providerInstances, appID, downs)
+		registry.RefreshCache(microServiceName, ups, downs)
 		microServiceInstance, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 		if !boo || microServiceInstance == nil {
 			openlogging.GetLogger().Debugf("Find no microservice instances for %s from cache", microServiceName)
