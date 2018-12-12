@@ -11,6 +11,7 @@ import (
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-mesh/openlogging"
 )
 
 // RouterTLS defines tls prefix
@@ -33,10 +34,10 @@ func Init() error {
 
 	op, err := getSpecifiedOptions()
 	if err != nil {
-		return fmt.Errorf("Router options error: %v", err)
+		return fmt.Errorf("router options error: %v", err)
 	}
 	DefaultRouter.Init(op)
-	lager.Logger.Info("Router init success")
+	openlogging.Info("Router init success")
 	return nil
 }
 

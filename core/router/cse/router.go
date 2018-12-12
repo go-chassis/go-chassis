@@ -11,19 +11,18 @@ import (
 type Router struct {
 }
 
-//FetchRouteRule return all rules
-func (r *Router) FetchRouteRule() map[string][]*model.RouteRule {
-	return GetRouteRule()
-}
-
 //SetRouteRule set rules
 func (r *Router) SetRouteRule(rr map[string][]*model.RouteRule) {
-	SetRouteRule(rr)
+	lock.Lock()
+	defer lock.Unlock()
+	dests = rr
 }
 
 //FetchRouteRuleByServiceName get rules for service
 func (r *Router) FetchRouteRuleByServiceName(service string) []*model.RouteRule {
-	return GetRouteRuleByKey(service)
+	lock.RLock()
+	defer lock.RUnlock()
+	return dests[service]
 }
 
 //Init init router config
@@ -78,26 +77,6 @@ func DeleteRouteRuleByKey(k string) {
 	lock.Unlock()
 }
 
-// GetRouteRuleByKey get route rule by key
-func GetRouteRuleByKey(k string) []*model.RouteRule {
-	lock.RLock()
-	defer lock.RUnlock()
-	return dests[k]
-}
-
-// GetRouteRule get route rule
-func GetRouteRule() map[string][]*model.RouteRule {
-	lock.RLock()
-	defer lock.RUnlock()
-	return dests
-}
-
-// SetRouteRule set route rule
-func SetRouteRule(rule map[string][]*model.RouteRule) {
-	lock.RLock()
-	defer lock.RUnlock()
-	dests = rule
-}
 func init() {
 	router.InstallRouterService("cse", newRouter)
 }

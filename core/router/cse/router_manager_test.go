@@ -284,7 +284,9 @@ func TestInitRouterManager(t *testing.T) {
 // can test svcNone/svcRouter
 func testRouteManager(t *testing.T, svc string) {
 	t.Logf("====Route manager test for [%s]", svc)
-	r := GetRouteRuleByKey(svc)
+	router, err := newRouter()
+	assert.NoError(t, err)
+	r := router.FetchRouteRuleByServiceName(svc)
 	if svc == svcNone {
 		t.Log("After init, route should be nil")
 		assert.Nil(t, r)
@@ -309,7 +311,7 @@ func testRouteManager(t *testing.T, svc string) {
 	t.Log("After add dark launch governance, route should be updated")
 	addDarkLaunchRule(svc)
 	time.Sleep(100 * time.Millisecond)
-	r = GetRouteRuleByKey(svc)
+	r = router.FetchRouteRuleByServiceName(svc)
 	assert.NotNil(t, r)
 	if r == nil {
 		t.FailNow()
@@ -319,13 +321,13 @@ func testRouteManager(t *testing.T, svc string) {
 	t.Log("After update dark launch governance, route should be updated")
 	updateDarkLaunchRule(svc)
 	time.Sleep(100 * time.Millisecond)
-	r = GetRouteRuleByKey(svc)
+	r = router.FetchRouteRuleByServiceName(svc)
 	assert.NotNil(t, r)
 	assert.Equal(t, darkLaunchRuleNumAfterUpdate, len(r[0].Routes))
 
 	deleteDarkLaunchRule(svc)
 	time.Sleep(100 * time.Millisecond)
-	r = GetRouteRuleByKey(svc)
+	r = router.FetchRouteRuleByServiceName(svc)
 	if svc == svcNone || svc == svcDarkLaunch {
 		t.Log("After delete dark launch governance, route should be nil")
 		assert.Nil(t, r)

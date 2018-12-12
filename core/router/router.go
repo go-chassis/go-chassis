@@ -20,8 +20,7 @@ type Router interface {
 	Init(Options) error
 	InitRouteRuleByKey(string)
 	SetRouteRule(map[string][]*model.RouteRule)
-	FetchRouteRule() map[string][]*model.RouteRule
-	FetchRouteRuleByServiceName(string) []*model.RouteRule
+	FetchRouteRuleByServiceName(service string) []*model.RouteRule
 }
 
 // ErrNoExist means if there is no router implementation
@@ -50,9 +49,10 @@ func BuildRouter(name string) error {
 	return nil
 }
 
-// Route route the APIs
+//Route decide the target service metadata
+//it decide based on configration of route rule
+//it will set RouteTag to invocation
 func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.Invocation) error {
-
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {
 		if Match(rule.Match, header, si) {
