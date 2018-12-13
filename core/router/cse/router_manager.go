@@ -57,7 +57,7 @@ type routeFileSource struct {
 func newRouteFileSource() *routeFileSource {
 	r := &routeFileSource{}
 	r.once.Do(func() {
-		routeRules := GetRouteRule()
+		routeRules := dests
 		d := make(map[string]interface{}, 0)
 		if routeRules == nil {
 			r.d = d
