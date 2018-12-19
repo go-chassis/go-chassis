@@ -2,10 +2,10 @@ router:
   infra: cse # router rule comes from where
 routeRule:
   Server: #这里就是请求里的host,也是sc里的service name
-    - precedence: 2
+    - precedence: 1
       route: #路由规则列表
       - tags:
-          version: 0.0.1 #对接service center的话，如果不填就自动为0.1
+          version: latest #对接service center的话，如果不填就自动为0.1
         weight: 100 #全重 80%到这里
 #      - tags:
 #          version: 1.2

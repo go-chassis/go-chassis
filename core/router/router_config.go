@@ -93,8 +93,14 @@ func getSpecifiedOptions() (opts Options, err error) {
 
 // routeTagToTags returns tags from a route tag
 func routeTagToTags(t *model.RouteTag) utiltags.Tags {
+	tag := utiltags.Tags{}
 	if t != nil {
-		return utiltags.Tags{KV: t.Tags, Label: t.Label}
+		tag.KV = make(map[string]string, len(t.Tags))
+		for k, v := range t.Tags {
+			tag.KV[k] = v
+		}
+		tag.Label = t.Label
+		return tag
 	}
-	return utiltags.Tags{}
+	return tag
 }
