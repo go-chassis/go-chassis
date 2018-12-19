@@ -7,22 +7,16 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"sync"
 )
 
 var (
-	faultKeyCount             map[string]int
-	initialKeyCount           map[string]int
-	invokedCount              map[string]int
-	percenStore               map[string]int
+	faultKeyCount             sync.Map
+	initialKeyCount           sync.Map
+	invokedCount              sync.Map
+	percenStore               sync.Map
 	abortNeeded, delayApplied bool
 )
-
-func init() {
-	faultKeyCount = make(map[string]int)
-	initialKeyCount = make(map[string]int)
-	invokedCount = make(map[string]int)
-	percenStore = make(map[string]int)
-}
 
 // constant for default values values of abort and delay percentages
 const (
@@ -107,52 +101,68 @@ func ValidateFaultDelay(fault *model.Fault) error {
 //ApplyFaultInjection abort/delay
 func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configuredPercent int, faultType string) error {
 	key := inv.MicroServiceName + inv.RouteTags.String()
-
-	if oldPercent, ok := percenStore[key]; ok && configuredPercent != oldPercent {
-		resetFaultKeyCount(key)
+	if _, ok := percenStore.Load(key); ok {
+		percenStore.Store(key, configuredPercent)
 	}
-	percenStore[key] = configuredPercent
+	if oldPercent, ok := percenStore.Load(key); ok && configuredPercent != oldPercent {
+		resetFaultKeyCount(key)
+		percenStore.Store(key, configuredPercent)
+	}
 
-	count, exist := invokedCount[key]
+	count, exist := invokedCount.Load(key)
 	if !exist {
 		count = 1
-		faultKeyCount[key]++
+		value, ok := faultKeyCount.Load(key)
+		if ok {
+			faultKeyCount.Store(key, value.(int)+1)
+		} else {
+			faultKeyCount.Store(key, 1)
+		}
 	}
 
 	if exist && count == 1 {
-		faultKeyCount[key]++
+		value, _ := faultKeyCount.Load(key)
+		faultKeyCount.Store(key, value.(int)+1)
 	}
 
-	failureCount := faultKeyCount[key]
-	initialCount, ok := initialKeyCount[key]
+	failureCount, _ := faultKeyCount.Load(key)
+	initialCount, ok := initialKeyCount.Load(key)
 
 	if !ok {
 		initialCount = 0
 	}
 
-	percentage := calculatePercentage(count, configuredPercent)
+	percentage := calculatePercentage(count.(int), configuredPercent)
+
 	if percentage == failureCount && initialCount != 1 {
-		initialKeyCount[key]++
-		incrementKeyCount(key, count+1)
+		value, ok := initialKeyCount.Load(key)
+		if ok {
+			initialKeyCount.Store(key, value.(int)+1)
+		} else {
+			initialKeyCount.Store(key, 1)
+		}
+
+		incrementKeyCount(key, count.(int)+1)
 		err := injectFault(faultType, fault)
 		return err
 
 	}
 
 	if percentage != failureCount && percentage > 1 {
-		faultKeyCount[key]++
-		incrementKeyCount(key, count+1)
+		value, _ := faultKeyCount.Load(key)
+		faultKeyCount.Store(key, value.(int)+1)
+		incrementKeyCount(key, count.(int)+1)
 		err := injectFault(faultType, fault)
 		return err
 	}
+	incrementKeyCount(key, count.(int)+1)
 
-	incrementKeyCount(key, count+1)
 	return nil
 }
 
 //incrementKeyCount increment the key count with respect to the instance which is going to serve the request
 func incrementKeyCount(key string, count int) {
-	invokedCount[key] = count
+	invokedCount.Store(key, count)
 
 }
 
@@ -163,9 +173,9 @@ func calculatePercentage(count, percent int) int {
 
 //resetFaultKeyCount reset the all count records
 func resetFaultKeyCount(key string) {
-	delete(faultKeyCount, key)
-	delete(initialKeyCount, key)
-	delete(invokedCount, key)
+	faultKeyCount.Delete(key)
+	initialKeyCount.Delete(key)
+	invokedCount.Delete(key)
 }
 
 //injectFault apply fault based on the type
