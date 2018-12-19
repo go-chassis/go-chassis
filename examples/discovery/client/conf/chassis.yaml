@@ -20,7 +20,7 @@ cse:
   handler:
     chain:
       Consumer:
-        default: bizkeeper-consumer, router, loadbalance,tracing-consumer,ratelimiter-consumer,transport
+        default: bizkeeper-consumer,router,loadbalance,tracing-consumer,ratelimiter-consumer,transport
   transport:
     failure:
       rest: http_500,http_502
