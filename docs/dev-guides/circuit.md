@@ -1,7 +1,7 @@
 # Circuit breaker
 
 ## Introduction
-go chassis allows you to define how to handle errors, if there is
+go chassis allows you to define how to handle errors, if a remote call fails
 
 ## Usage
 

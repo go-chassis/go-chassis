@@ -6,6 +6,7 @@ Development guides
     :glob:
 
     dev-guides/how-to-implement-handler
+    dev-guides/circuit
     dev-guides/archaius
     dev-guides/archaius-config-source-plugin
     dev-guides/how-to-write-cipher
