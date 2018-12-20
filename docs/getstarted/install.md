@@ -1,6 +1,6 @@
 Minimize Installation
 =====
-1. Install [go 1.8+](https://golang.org/doc/install) 
+1. Install [go 1.10+](https://golang.org/doc/install) 
 
 2. Clone the project
 
