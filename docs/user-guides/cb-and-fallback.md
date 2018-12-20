@@ -55,10 +55,11 @@ if retry failed, circuit will open again.
 > *(optional, bool)* enable fallback or not, default is true
 
 **cse.fallbackpolicy.policy**
-> *(optional, string)* fallback policy  [*returnnull*| *throwexception*]，default is returnnull
+> *(optional, string)* fallback policy  [*returnnull*| *throwexception*]，default is returnnull. 
+you can also [custom fallback policy](http://go-chassis.readthedocs.io/en/latest/dev-guides/circuit.md)
 
 
-## **examples**
+## **Examples**
 ```yaml
 cse:
   isolation:
@@ -93,12 +94,10 @@ cse:
       policy: throwexception
 ```
 you must set bizkeeper-consumer handler in chain before load balancing and transport
-here is a example 
+, here is a example 
 ```yaml
 handler:
   chain:
     Consumer:
       default: bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
 ```
-
-

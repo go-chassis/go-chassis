@@ -1,7 +1,7 @@
 # Fault Tolerance
 ## Introduction
 
-go-chassis support fault-tolerance to resilient your service
+go-chassis support fault-tolerance, so that you can define if error occurs, how to deal with this error.
 
 ## Configuration
 
@@ -14,10 +14,10 @@ set retryEnabled to true to enable it
 > *(optional, bool)* Enable fault tolerance, default is *false*
 
 **retryOnSame**
-> *(optional, int)* if failed, then retry on same instance, default is *0*
+> *(optional, int)* if remote call failed, then retry on same instance, default is *0*
 
 **retryOnNext**
-> *(optional, int)* if failed, then call load balancing again to get next instance, default is *0*
+> *(optional, int)* if remote call failed, then call load balancing again to get next instance, default is *0*
 
 **backoff.kind**
 > *(optional, string)* backoff policy: [jittered|constant|zero] default is *zero*
