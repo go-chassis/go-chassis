@@ -1,5 +1,0 @@
----
-APPLICATION_ID: a
-#微服务的私有属性
-service_description:
-  name: RPCServer

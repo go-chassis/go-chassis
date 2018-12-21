@@ -3,7 +3,24 @@
 
 Go-Chassis is a microservice framework for rapid development of microservices in Go
 
+### Why use Go chassis
 
+go chassis is designed as a protocol-independent framework, any protocol 
+is able to integrate with go chassis and leverage same function like load balancing,
+circuit breaker,rate limiting, routing management, those function resilient your service
+
+go chassis makes service observable by bring open tracing and prometheus to it.
+
+go chassis is flexible, many different modules can be replaced by other implementation, 
+like registry, metrics, handler chain, config center etc 
+
+With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
+your don't need to investigate, implement and integrate many solutions yourself.
+
+go chassis supports Istio platform, Although Istio is a great platform with a service mesh in data plane, 
+it surely decrease the throughput and increase the latency of your service 
+go chassis can bring better performance to go program, 
+you can use Istio configurations to control go chassis.
 
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
@@ -54,7 +71,7 @@ GO111MODULE=on go mod vendor
 # Examples
 You can check examples [here](examples)
 
-Now examples is migrating to [here](https://github.com/go-chassis/go-chassis-examples)
+NOTICE: Now examples is migrating to [here](https://github.com/go-chassis/go-chassis-examples)
 # Communication Protocols
 Go-Chassis supports 3 types of communication protocol.
 1. Rest - REST is an approach that leverages the HTTP protocol for communication.
