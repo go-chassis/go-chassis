@@ -1,5 +1,0 @@
----
-cse:
-  service:
-    registry:
-      address: http://127.0.0.1:30100
