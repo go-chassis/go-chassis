@@ -1,5 +1,6 @@
 Writing gRPC service
 ==========================================
+Checkout full example in [here](https://github.com/go-chassis/go-chassis-examples/tree/master/grpc)
 ### Define grpc contract
 1个工程或者go package，推荐结构如下
 

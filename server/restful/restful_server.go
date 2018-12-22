@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"reflect"
 	"strings"
 	"sync"
@@ -19,10 +18,12 @@ import (
 	"github.com/go-chassis/go-chassis/metrics"
 
 	"github.com/emicklei/go-restful"
-	"github.com/emicklei/go-restful-swagger12"
+	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-mesh/openlogging"
+	"os"
+	"path/filepath"
 )
 
 // constants for metric path and name
@@ -200,23 +201,26 @@ func (r *restfulServer) Start() error {
 	} else {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
 	}
-	// TODO Choose a suitable strategy of transforming code to contract
 	// register to swagger ui
-	var val string
-	if val = os.Getenv("SWAGGER_FILE_PATH"); val == "" {
-		val, err = fileutil.GetWorkDir()
-		if err != nil {
-			return err
-		}
+	var path string
+	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
+		return errors.New("schema path is empty")
+	}
+	if err = os.RemoveAll(path); err != nil {
+		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+	}
+	if err = os.MkdirAll(path, 0760); err != nil {
+		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
 	}
 	swagger.LogInfo = func(format string, v ...interface{}) {
-		lager.Logger.Infof(format, v...)
+		openlogging.GetLogger().Infof(format, v...)
 	}
 	swaggerConfig := swagger.Config{
 		WebServices:     r.container.RegisteredWebServices(),
 		WebServicesUrl:  config.Address,
 		ApiPath:         "/apidocs.json",
-		SwaggerFilePath: val}
+		FileStyle:       "yaml",
+		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
 	swagger.RegisterSwaggerService(swaggerConfig, r.container)
 	go func() {
 		if r.server.TLSConfig != nil {

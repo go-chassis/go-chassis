@@ -9,10 +9,10 @@ require (
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/emicklei/go-restful v2.8.0+incompatible
-	github.com/emicklei/go-restful-swagger12 v0.0.0-20170208215640-dcef7f557305
-
 	github.com/go-chassis/go-archaius v0.0.0-20181108111652-ab19b4eae276
 	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
+
+	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
 	github.com/go-chassis/go-sc-client v0.0.0-20181114031726-ee9485093d80
 	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
 	github.com/go-logfmt/logfmt v0.3.0 // indirect
@@ -27,7 +27,6 @@ require (
 	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.0.0-20180726151020-b85dc675b16b
@@ -44,7 +43,6 @@ require (
 	github.com/stretchr/testify v1.2.2
 	github.com/urfave/cli v1.20.1-0.20181029213200-b67dcf995b6a
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277
-	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591
 	golang.org/x/text v0.3.0 // indirect
 	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 // indirect
 	google.golang.org/grpc v1.14.0

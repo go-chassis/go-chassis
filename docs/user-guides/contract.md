@@ -1,9 +1,13 @@
 # Contract management
 ## 概述
+go chassis follow [Open API 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md)
+you can manually edit documentation and put in go chassis schema folders, 
+then go chassis will automatically upload them to service center.
 
-go-chassis读取服务契约并将其内容上传至注册中心。
+in additional, if you write rest service, go chassis will automatically generate Open API spec, 
+and upload them to service center.
 
-## 配置
+## Configuration
 
 契约文件必须为yaml格式文件，契约文件应放置于go-chassis的schema目录。
 
@@ -29,7 +33,7 @@ import "github.com/go-chassis/go-chassis/core/config/schema"
 var DefaultSchemaIDsMap map[string]string
 ```
 
-## 示例
+## Example
 
     conf
     `-- myservice

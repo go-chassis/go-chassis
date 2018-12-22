@@ -15,6 +15,9 @@ var ServiceID string
 //ServiceName represent self name
 var ServiceName string
 
+//Schemas save schema file names(schema IDs)
+var Schemas []string
+
 //App is app info
 var App string
 

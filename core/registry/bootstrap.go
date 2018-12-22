@@ -9,6 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 )
 
 var errEmptyServiceIDFromRegistry = errors.New("got empty serviceID from registry")
@@ -28,10 +29,11 @@ func RegisterMicroservice() error {
 		lager.Logger.Debug("No microservice environment defined")
 	}
 	microServiceDependencies = &MicroServiceDependency{}
-	schemas, err := schema.GetSchemaIDs(service.ServiceDescription.Name)
+	var err error
+	runtime.Schemas, err = schema.GetSchemaIDs(service.ServiceDescription.Name)
 	if err != nil {
-		lager.Logger.Warnf("No schemas file for microservice [%s].", service.ServiceDescription.Name)
-		schemas = make([]string, 0)
+		openlogging.GetLogger().Warnf("No schemas file for microservice [%s].", service.ServiceDescription.Name)
+		runtime.Schemas = make([]string, 0)
 	}
 	if service.ServiceDescription.Level == "" {
 		service.ServiceDescription.Level = common.DefaultLevel
@@ -58,7 +60,7 @@ func RegisterMicroservice() error {
 		Environment: service.ServiceDescription.Environment,
 		Status:      common.DefaultStatus,
 		Level:       service.ServiceDescription.Level,
-		Schemas:     schemas,
+		Schemas:     runtime.Schemas,
 		Framework: &Framework{
 			Version: framework.Version,
 			Name:    framework.Name,
@@ -97,16 +99,17 @@ func RegisterMicroservice() error {
 	runtime.ServiceID = sid
 	lager.Logger.Infof("Register [%s/%s] success", runtime.ServiceID, microservice.ServiceName)
 
-	for _, schemaID := range schemas {
-		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
-		DefaultRegistrator.AddSchemas(sid, schemaID, schemaInfo)
-	}
-
 	return nil
 }
 
 // RegisterMicroserviceInstances register micro-service instances
 func RegisterMicroserviceInstances() error {
+	for _, schemaID := range runtime.Schemas {
+		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
+		DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
+		openlogging.Info("upload schema to registry, " + schemaID)
+	}
+
 	lager.Logger.Info("Start to register instance.")
 	service := config.MicroserviceDefinition
 	var err error
