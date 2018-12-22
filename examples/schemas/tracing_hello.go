@@ -35,6 +35,6 @@ func (r *TracingHello) Trace(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *TracingHello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{http.MethodGet, "/trace", "Trace"},
+		{Method: http.MethodGet, Path: "/trace", ResourceFuncName: "Trace"},
 	}
 }

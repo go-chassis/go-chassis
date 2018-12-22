@@ -119,7 +119,7 @@ func uploadForm(w http.ResponseWriter, r *http.Request) error {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulUpload) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{http.MethodPost, "/uploadfile", "UploadFile"},
-		{http.MethodPost, "/uploadform", "UploadForm"},
+		{Method: http.MethodPost, Path: "/uploadfile", ResourceFuncName: "UploadFile"},
+		{Method: http.MethodPost, Path: "/uploadform", ResourceFuncName: "UploadForm"},
 	}
 }

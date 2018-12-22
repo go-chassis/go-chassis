@@ -37,8 +37,8 @@ func (r *RestFulMessage) Sayerror(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulMessage) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{http.MethodGet, "/lock", "DeadLock"},
-		{http.MethodGet, "/sayhimessage", "Sayhi"},
-		{http.MethodGet, "/sayerror", "Sayerror"},
+		{Method: http.MethodGet, Path: "/lock", ResourceFuncName: "DeadLock"},
+		{Method: http.MethodGet, Path: "/sayhimessage", ResourceFuncName: "Sayhi"},
+		{Method: http.MethodGet, Path: "/sayerror", ResourceFuncName: "Sayerror"},
 	}
 }
