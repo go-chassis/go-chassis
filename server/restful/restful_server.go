@@ -171,22 +171,39 @@ func transfer(inv *invocation.Invocation, req *restful.Request) {
 
 }
 func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.RouteFunction) error {
+	var rb *restful.RouteBuilder
 	switch routeSpec.Method {
 	case http.MethodGet:
-		r.ws.Route(r.ws.GET(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+		rb = r.ws.GET(routeSpec.Path)
 	case http.MethodPost:
-		r.ws.Route(r.ws.POST(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+		rb = r.ws.POST(routeSpec.Path)
 	case http.MethodHead:
-		r.ws.Route(r.ws.HEAD(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+		rb = r.ws.HEAD(routeSpec.Path)
 	case http.MethodPut:
-		r.ws.Route(r.ws.PUT(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+		rb = r.ws.PUT(routeSpec.Path)
 	case http.MethodPatch:
-		r.ws.Route(r.ws.PATCH(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+		rb = r.ws.PATCH(routeSpec.Path)
 	case http.MethodDelete:
-		r.ws.Route(r.ws.DELETE(routeSpec.Path).To(handler).Doc(routeSpec.ResourceFuncName).Operation(routeSpec.ResourceFuncName))
+		rb = r.ws.DELETE(routeSpec.Path)
 	default:
 		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
+	for _, param := range routeSpec.Parameters {
+		switch param.ParamType {
+		case restful.QueryParameterKind:
+			rb = rb.Param(restful.QueryParameter(param.Name, param.Desc).DataType(param.DataType))
+		case restful.PathParameterKind:
+			rb = rb.Param(restful.PathParameter(param.Name, param.Desc).DataType(param.DataType))
+		}
+
+	}
+	for _, r := range routeSpec.Returns {
+		rb = rb.Returns(r.Code, r.Message, r.Model)
+	}
+	if routeSpec.Read != nil {
+		rb = rb.Reads(routeSpec.Read)
+	}
+	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.FuncDesc))
 	return nil
 }
 func (r *restfulServer) Start() error {

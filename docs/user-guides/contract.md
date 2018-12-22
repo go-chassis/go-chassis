@@ -33,8 +33,10 @@ import "github.com/go-chassis/go-chassis/core/config/schema"
 var DefaultSchemaIDsMap map[string]string
 ```
 
-## Example
 
+
+## Example
+the contract file structure is as below
     conf
     `-- myservice
         `-- schema
@@ -42,4 +44,24 @@ var DefaultSchemaIDsMap map[string]string
             `-- myschema2.yaml
 
 
+define API doc in URLPatterns function 
+check https://github.com/go-chassis/go-chassis/blob/master/server/restful/router.go for more options
 
+```go
+
+func (r *RestFulHello) URLPatterns() []rf.Route {
+	return []rf.Route{
+		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Root",
+			Returns: []*rf.Returns{{Code: 200}}},
+
+		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
+			Returns: []*rf.Returns{{Code: 200}}},
+
+		{Method: http.MethodPost, Path: "/sayhi", ResourceFuncName: "Sayhi",
+			Returns: []*rf.Returns{{Code: 200}}},
+
+		{Method: http.MethodPost, Path: "/sayjson", ResourceFuncName: "SayJSON",
+			Returns: []*rf.Returns{{Code: 200}}},
+	}
+}
+```

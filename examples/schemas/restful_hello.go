@@ -61,10 +61,17 @@ func (r *RestFulHello) SayJSON(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulHello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Root"},
-		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello"},
-		{Method: http.MethodPost, Path: "/sayhi", ResourceFuncName: "Sayhi"},
-		{Method: http.MethodPost, Path: "/sayjson", ResourceFuncName: "SayJSON"},
+		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Root",
+			Returns: []*rf.Returns{{Code: 200}}},
+
+		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
+			Returns: []*rf.Returns{{Code: 200}}},
+
+		{Method: http.MethodPost, Path: "/sayhi", ResourceFuncName: "Sayhi",
+			Returns: []*rf.Returns{{Code: 200}}},
+
+		{Method: http.MethodPost, Path: "/sayjson", ResourceFuncName: "SayJSON",
+			Returns: []*rf.Returns{{Code: 200}}},
 	}
 }
 
@@ -102,9 +109,9 @@ func (r *RestFulMessage) Sayerror(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulMessage) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{http.MethodGet, "/saymessage/{name}", "Saymessage"},
-		{http.MethodPost, "/sayhimessage", "Sayhi"},
-		{http.MethodGet, "/sayerror", "Sayerror"},
+		{Method: http.MethodGet, Path: "/saymessage/{name}", ResourceFuncName: "Saymessage"},
+		{Method: http.MethodPost, Path: "/sayhimessage", ResourceFuncName: "Sayhi"},
+		{Method: http.MethodGet, Path: "/sayerror", ResourceFuncName: "Sayerror"},
 	}
 }
 

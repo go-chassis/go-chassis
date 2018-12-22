@@ -133,11 +133,11 @@ func TestGetURLClientSSLEnabledFalse(t *testing.T) {
 
 }
 
-//func TestGetX509CACertPoolFileNotExist(t *testing.T) {
+//func TestGetX509CACertPoolFileNotExist(t *testing.ParamType) {
 //	_, err := httpclient.GetX509CACertPool("abc.txt")
 //	assert.EqualError(t, err, "read ca cert file abc.txt failed")
 //}
-//func TestGetX509CACertPoolFileExist(t *testing.T) {
+//func TestGetX509CACertPoolFileExist(t *testing.ParamType) {
 //
 //	path := "/home/ca_cert.txt"
 //	var _, err = os.Stat(path)
@@ -163,7 +163,7 @@ func TestLoadTLSCertificateFileNotExist(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//func TestLoadTLSCertificateFileExist(t *testing.T) {
+//func TestLoadTLSCertificateFileExist(t *testing.ParamType) {
 //
 //	path := "/home/tls_cert.txt"
 //	var _, err = os.Stat(path)
@@ -204,7 +204,7 @@ func TestLoadTLSCertificateFileNotExist(t *testing.T) {
 //	err = os.Remove(path)
 //	assert.NoError(t, err)
 //}
-//func TestLoadTLSCertificateCorFileExist(t *testing.T) {
+//func TestLoadTLSCertificateCorFileExist(t *testing.ParamType) {
 //
 //	certpath := "/home/tls_cert.txt"
 //	var _, err = os.Stat(certpath)
@@ -283,7 +283,7 @@ func TestLoadTLSCertificateFileNotExist(t *testing.T) {
 //	err = os.Remove(keypath)
 //	assert.NoError(t, err)
 //}
-//func TestLoadTLSKeyCorFileExist(t *testing.T) {
+//func TestLoadTLSKeyCorFileExist(t *testing.ParamType) {
 //	certpath := "/home/tls_cert.txt"
 //	var _, err = os.Stat(certpath)
 //
@@ -362,7 +362,7 @@ func TestLoadTLSCertificateFileNotExist(t *testing.T) {
 //	err = os.Remove(keypath)
 //	assert.NoError(t, err)
 //}
-//func TestLoadTLSCertificateFileExistDecodeFail(t *testing.T) {
+//func TestLoadTLSCertificateFileExistDecodeFail(t *testing.ParamType) {
 //
 //	path := "/home/tls_cert.txt"
 //	var _, err = os.Stat(path)
@@ -386,7 +386,7 @@ func TestLoadTLSCertificateFileNotExist(t *testing.T) {
 //	assert.NoError(t, err)
 //}
 
-//func TestLoadTLSCertificateKeyFileNotExist(t *testing.T) {
+//func TestLoadTLSCertificateKeyFileNotExist(t *testing.ParamType) {
 //
 //	path := "/home/tls_cert.txt"
 //	var _, err = os.Stat(path)

@@ -5,11 +5,36 @@ import (
 	"reflect"
 )
 
+//const for doc
+const (
+	Path  = "path"
+	Query = "query"
+)
+
 //Route describe http route path and swagger specifications for API
 type Route struct {
-	Method           string // Method is one of the following: GET,PUT,POST,DELETE
-	Path             string // Path contains a path pattern
-	ResourceFuncName string //Resource function name
+	Method           string        //Method is one of the following: GET,PUT,POST,DELETE. required
+	Path             string        //Path contains a path pattern. required
+	ResourceFuncName string        //the func this API calls. required
+	FuncDesc         string        //tells what this route is all about. Optional.
+	Parameters       []*Parameters //Parameters is a slice of request parameters for a single endpoint Optional.
+	Returns          []*Returns    //what kind of response this API returns. Optional.
+	Read             interface{}   //Read tells what resource type will be read from the request payload. Optional.
+}
+
+//Returns describe response doc
+type Returns struct {
+	Code    int // http response code
+	Message string
+	Model   interface{} // response body structure
+}
+
+//Parameters describe parameters in url path or query params
+type Parameters struct {
+	Name      string //parameter name
+	DataType  string // string, int etc
+	ParamType int    //restful.QueryParameterKind or restful.PathParameterKind
+	Desc      string
 }
 
 //GetRouteSpecs is to return a rest API specification of a go struct

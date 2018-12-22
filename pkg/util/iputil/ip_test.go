@@ -33,7 +33,7 @@ func TestDefaultPort4ProtocolNone(t *testing.T) {
 }
 
 //
-//func TestLocalhost2(t *testing.T) {
+//func TestLocalhost2(t *testing.ParamType) {
 //	_, err := net.Dial("tcp", "[fe80::7f28:7160:56cd:3ec9%enp0s3]:5001")
 //	assert.NoError(t, err)
 //	_,err:= url.Parse("http://[fe80::7f28:7160:56cd:3ec9]:5001")
