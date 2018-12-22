@@ -3,7 +3,9 @@ package schema
 import (
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-mesh/openlogging"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -34,8 +36,20 @@ var DefaultSchemaIDsMap map[string]string
 // defaultMicroServiceNames default micro-service names
 var defaultMicroServiceNames = make([]string, 0)
 
+//GetSchemaPath calculate the schema root path and return
+func GetSchemaPath(name string) string {
+	schemaEnv := os.Getenv(common.EnvSchemaRoot)
+	var p string
+	if schemaEnv != "" {
+		p = filepath.Join(schemaEnv, name, fileutil.SchemaDirectory)
+	} else {
+		p = fileutil.SchemaDir(name)
+	}
+	return p
+}
+
 // LoadSchema to load the schema files and micro-service information under the conf directory
-func LoadSchema(path string, schemaEnv bool) error {
+func LoadSchema(path string) error {
 	/*
 		conf/
 		├── chassis.yaml
@@ -56,18 +70,15 @@ func LoadSchema(path string, schemaEnv bool) error {
 			microsvcMeta *MicroserviceMeta
 			schemaError  error
 		)
-
-		if schemaEnv {
-			microsvcMeta, schemaError = loadMicroserviceMeta(path + "/" + msName + "/schema")
-		} else {
-			microsvcMeta, schemaError = loadMicroserviceMeta(fileutil.SchemaDir(msName))
-		}
+		p := GetSchemaPath(msName)
+		microsvcMeta, schemaError = loadMicroserviceMeta(GetSchemaPath(msName))
 
 		if schemaError != nil {
 			return schemaError
 		}
 
 		defaultMicroserviceMetaMgr[msName] = microsvcMeta
+		openlogging.Info(fmt.Sprintf("found schema files in %s %s", p, microsvcMeta))
 	}
 	return nil
 }

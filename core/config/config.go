@@ -295,9 +295,9 @@ func Init() error {
 	//Upload schemas using environment variable SCHEMA_ROOT
 	schemaEnv := archaius.GetString(common.EnvSchemaRoot, "")
 	if schemaEnv != "" {
-		schemaError = schema.LoadSchema(schemaEnv, true)
+		schemaError = schema.LoadSchema(schemaEnv)
 	} else {
-		schemaError = schema.LoadSchema(fileutil.GetConfDir(), false)
+		schemaError = schema.LoadSchema(fileutil.GetConfDir())
 	}
 
 	if schemaError != nil {

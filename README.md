@@ -91,3 +91,19 @@ Chassis customized `debug` tag to resolve dlv debug issue:
 https://github.com/golang/go/issues/23733
 
 https://github.com/derekparker/delve/issues/865
+
+# Eco system
+this part introduce some eco systems that go chassis can run with
+## Apache ServiceComb
+With ServiceComb service center as registry, go chassis supply more features like contract management 
+and [multiple service registry](https://github.com/apache/servicecomb-service-center/blob/master/docs/aggregate.md), 
+highly recommended. that will not prevent you from using kubernetes or Istio, 
+Because service center can aggregate heterogeneous registry 
+and give you a unified service registry entry point.
+
+## Kubenetes and Istio
+go chassis has k8s registry and Istio registry plugins, and support Istio traffic management
+you can use spring cloud or Envoy with go chassis under same service discovery service.
+
+
+

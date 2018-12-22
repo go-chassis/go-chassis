@@ -172,7 +172,7 @@ cse1:
 
 	t.Log(os.Getenv("CHASSIS_HOME"))
 
-	err = schema.LoadSchema(fileutil.GetConfDir(), false)
+	err = schema.LoadSchema(fileutil.GetConfDir())
 	if err != nil {
 		t.Error(err)
 	}

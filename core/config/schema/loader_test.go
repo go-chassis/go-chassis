@@ -43,13 +43,16 @@ func TestLoadSchema(t *testing.T) {
 	Ms3Dir := filepath.Join(fileutil.GetConfDir(), microserviceName3)
 
 	// 创建目录
-	err := os.MkdirAll(schemaDirOfMs1, 0644)
+	os.RemoveAll(schemaDirOfMs1)
+	os.RemoveAll(schemaDirOfMs2)
+	os.RemoveAll(Ms3Dir)
+	err := os.MkdirAll(schemaDirOfMs1, os.ModePerm)
 	assert.Nil(t, err)
 
-	err = os.MkdirAll(schemaDirOfMs2, 0644)
+	err = os.MkdirAll(schemaDirOfMs2, os.ModePerm)
 	assert.Nil(t, err)
 
-	err = os.MkdirAll(Ms3Dir, 0644)
+	err = os.MkdirAll(Ms3Dir, os.ModePerm)
 	assert.Nil(t, err)
 
 	// 创建schema文件
@@ -67,13 +70,14 @@ func TestLoadSchema(t *testing.T) {
 	}
 
 	t.Log("========加载schema")
-	err = schema.LoadSchema(fileutil.GetConfDir(), false)
+	err = schema.LoadSchema(fileutil.GetConfDir())
 	assert.Nil(t, err)
 
 	t.Log("========查询schemaID")
 	t.Log("====查询", microserviceName1)
 	schemaIDs, err := schema.GetSchemaIDs(microserviceName1)
 	sort.Strings(schemaIDs)
+	t.Log(schemaIDs)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(schemaIDs))
 	assert.Equal(t, schemaID1_1, schemaIDs[0], schemaID1_2, schemaIDs[1])
