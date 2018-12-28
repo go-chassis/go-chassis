@@ -1,53 +1,34 @@
 module github.com/go-chassis/go-chassis
 
 require (
-	github.com/Shopify/sarama v1.19.0 // indirect
+	github.com/DataDog/zstd v1.3.4 // indirect
+	github.com/Shopify/sarama v1.20.0 // indirect
 	github.com/apache/thrift v0.0.0-20180829120307-8de3749235db
-	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
 	github.com/cenkalti/backoff v2.0.0+incompatible
-	github.com/eapache/go-resiliency v1.1.0 // indirect
-	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
-	github.com/eapache/queue v1.1.0 // indirect
 	github.com/emicklei/go-restful v2.8.0+incompatible
 	github.com/go-chassis/go-archaius v0.0.0-20181108111652-ab19b4eae276
 	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
-
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
-	github.com/go-chassis/go-sc-client v0.0.0-20181114031726-ee9485093d80
+	github.com/go-chassis/go-sc-client v0.0.0-20181228031719-af4152b153a4
 	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
-	github.com/go-logfmt/logfmt v0.3.0 // indirect
+	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-mesh/openlogging v0.0.0-20181122085847-3daf3ad8ed35
-	github.com/go-ole/go-ole v1.2.1 // indirect
-	github.com/gogo/protobuf v1.1.1 // indirect
-
+	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/golang/protobuf v1.2.0
-	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
-	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/hashicorp/go-version v1.0.0
-	github.com/jtolds/gls v4.2.1+incompatible // indirect
-	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
-	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.0.0-20180726151020-b85dc675b16b
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v0.8.0
-	github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910 // indirect
-	github.com/prometheus/common v0.0.0-20181116084131-1f2c4f3cd6db // indirect
-	github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d // indirect
+	github.com/prometheus/common v0.0.0-20181218105931-67670fe90761 // indirect
+	github.com/prometheus/procfs v0.0.0-20181204211112-1dc9a6cbc91a // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165
-	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
-	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/smartystreets/goconvey v0.0.0-20170602164621-9e8dc3f972df
-	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.2.2
 	github.com/urfave/cli v1.20.1-0.20181029213200-b67dcf995b6a
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277
-	golang.org/x/text v0.3.0 // indirect
-	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 // indirect
 	google.golang.org/grpc v1.14.0
 	gopkg.in/yaml.v2 v2.2.1
-
 )
 
 replace (
