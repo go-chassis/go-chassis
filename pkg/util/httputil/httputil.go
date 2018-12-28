@@ -3,8 +3,10 @@ package httputil
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-mesh/openlogging"
 	"io/ioutil"
 	"net/http"
 )
@@ -70,10 +72,12 @@ func ReadBody(resp *http.Response) []byte {
 	if resp != nil && resp.Body != nil {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
+			openlogging.Error(fmt.Sprintf("read body failed: %s", err.Error()))
 			return nil
 		}
 		return body
 	}
+	openlogging.Error("response body or response is nil")
 	return nil
 }
 
