@@ -7,6 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-sc-client/proto"
 )
 
 // constant string for file
@@ -142,7 +143,7 @@ func (f *Discovery) FindMicroServiceInstances(consumerID, microServiceName strin
 }
 
 // filterInstances filter instances
-func filterInstances(providerInstances []*client.MicroServiceInstance) []*registry.MicroServiceInstance {
+func filterInstances(providerInstances []*proto.MicroServiceInstance) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {
 		msi := servicecenter.ToMicroServiceInstance(ins)

@@ -2,7 +2,6 @@ package servicecenter
 
 import (
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/go-chassis/go-archaius"
@@ -14,6 +13,7 @@ import (
 	"github.com/go-chassis/go-sc-client"
 
 	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
+	"github.com/go-chassis/go-sc-client/proto"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -71,7 +71,7 @@ func (c *CacheManager) refreshCache() {
 			lager.Logger.Errorf("SyncSCEndpoints failed: %s", err)
 		}
 	}
-	err := c.pullMicroserviceInstance()
+	err := c.pullMicroServiceInstance()
 	if err != nil {
 		lager.Logger.Errorf("AutoUpdateMicroserviceInstance failed: %s", err)
 		//connection with sc may lost, reset the revision
@@ -206,44 +206,23 @@ func checkIfMicroServiceExistInList(microserviceList []*client.MicroService, ser
 	return msIsPresentInList
 }
 
-// pullMicroserviceInstance pull micro-service instance
-func (c *CacheManager) pullMicroserviceInstance() error {
+// pullMicroServiceInstance pull micro-service instance
+func (c *CacheManager) pullMicroServiceInstance() error {
 	//Get Providers
-	microServicesCache := registry.GetProvidersFromCache()
-	services := make([]*client.MicroService, 0)
-	for _, service := range microServicesCache {
-		services = append(services, &client.MicroService{
-			ServiceName: service.ServiceName,
-			Version:     service.Version,
-			AppID:       service.AppID,
-		})
-	}
-	serviceNameSet, serviceNameAppIDKeySet := getServiceSet(services)
+	services := GetCriteria()
+	serviceNameSet, _ := getServiceSet(services)
 	c.compareAndDeleteOutdatedProviders(serviceNameSet)
 
-	for service, apps := range serviceNameAppIDKeySet {
-		ups := make([]*registry.MicroServiceInstance, 0) //append instances from different app and same service name into one unified slice
-		downs := make(map[string]struct{}, 0)
-		for _, app := range apps.List() {
-			//fetch remote based on app and service
-			instances, err := c.registryClient.FindMicroServiceInstances(runtime.ServiceID, app, service,
-				common.AllVersion)
-			if err != nil {
-				if err == client.ErrNotModified {
-					openlogging.Debug(err.Error())
-					continue
-				}
-				if err == client.ErrMicroServiceNotExists {
-					registry.ProvidersMicroServiceCache.Delete(strings.Join([]string{service, app}, "|"))
-				}
-				openlogging.Error("Refresh local instance cache failed: " + err.Error())
-				continue
-			}
-			u := filter(instances, app, downs) //set app into instance metadata, split instances into ups and downs
-			ups = append(ups, u...)
+	//fetch remote based on app and service
+	instances, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
+	if err != nil {
+		if err == client.ErrNotModified {
+			openlogging.Debug(err.Error())
 		}
-		registry.RefreshCache(service, ups, downs) //save cache after get all instances of a service name
+		openlogging.Error("Refresh local instance cache failed: " + err.Error())
 	}
+	filter(instances)
+
 	return nil
 }
 
@@ -256,47 +235,58 @@ func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.Strin
 	}
 }
 
-// getServiceSet returns service sets
-func getServiceSet(exist []*client.MicroService) (sets.String, map[string]sets.String) {
+// getServiceSet regroup the providers by service name
+func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.String) {
 	//get Provider's instances
 	serviceNameSet := sets.NewString()                        // key is serviceName
 	serviceNameAppIDKeySet := make(map[string]sets.String, 0) // key is "serviceName" value is app sets
 	if exist == nil || len(exist) == 0 {
 		return serviceNameSet, serviceNameAppIDKeySet
 	}
-
 	for _, service := range exist {
 		if service == nil {
+			openlogging.Warn("FindService info is empty")
 			continue
 		}
-		serviceNameSet.Insert(service.ServiceName)
-		m, ok := serviceNameAppIDKeySet[service.ServiceName]
+		if service.Service == nil {
+			openlogging.Warn("provider info is empty")
+			continue
+		}
+		serviceNameSet.Insert(service.Service.ServiceName)
+		m, ok := serviceNameAppIDKeySet[service.Service.ServiceName]
 		if ok {
-			m.Insert(service.AppID)
+			m.Insert(service.Service.AppId)
 		} else {
-			serviceNameAppIDKeySet[service.ServiceName] = sets.NewString()
-			serviceNameAppIDKeySet[service.ServiceName].Insert(service.AppID)
+			serviceNameAppIDKeySet[service.Service.ServiceName] = sets.NewString()
+			serviceNameAppIDKeySet[service.Service.ServiceName].Insert(service.Service.AppId)
 		}
 	}
 	return serviceNameSet, serviceNameAppIDKeySet
 }
-func filter(providerInstances []*client.MicroServiceInstance, app string, downs map[string]struct{}) []*registry.MicroServiceInstance {
-	ups := make([]*registry.MicroServiceInstance, 0, len(providerInstances))
-	for _, ins := range providerInstances {
-		switch {
-		case ins.Version == "":
-			lager.Logger.Warn("do not support old service center, plz upgrade")
-			continue
-		case ins.Status != common.DefaultStatus:
-			downs[ins.InstanceID] = struct{}{}
-			lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
-				ins.Status, ins.ServiceID, ins.InstanceID)
-			continue
-		default:
-			ups = append(ups, ToMicroServiceInstance(ins).WithAppID(app))
+
+//set app into instance metadata, split instances into ups and downs
+//set instance to cache by service name
+func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
+	//append instances from different app and same service name into one unified slice
+	downs := make(map[string]struct{}, 0)
+	for serviceName, instances := range providerInstances {
+		up := make([]*registry.MicroServiceInstance, 0)
+		for _, ins := range instances {
+			switch {
+			case ins.Version == "":
+				openlogging.Warn("do not support old service center, plz upgrade")
+				continue
+			case ins.Status != common.DefaultStatus:
+				downs[ins.InstanceId] = struct{}{}
+				lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
+					ins.Status, ins.ServiceId, ins.InstanceId)
+				continue
+			default:
+				up = append(up, ToMicroServiceInstance(ins).WithAppID(ins.App))
+			}
 		}
+		registry.RefreshCache(serviceName, up, downs) //save cache after get all instances of a service name
 	}
-	return ups
 
 }
 
@@ -339,13 +329,13 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
 	microServiceInstances = append(microServiceInstances, msi)
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	lager.Logger.Debugf("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceID, len(microServiceInstances))
+	lager.Logger.Debugf("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
 }
 
 // deleteAction delete micro-service instance
 func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
-	lager.Logger.Debugf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceID, response.Instance.Endpoints)
+	lager.Logger.Debugf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints)
 	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppID, ToMicroServiceInstance(response.Instance)); err == nil {
 		return
 	}
@@ -356,7 +346,7 @@ func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 	}
 	var newInstances = make([]*registry.MicroServiceInstance, 0)
 	for _, v := range microServiceInstances {
-		if v.InstanceID != response.Instance.InstanceID {
+		if v.InstanceID != response.Instance.InstanceId {
 			newInstances = append(newInstances, v)
 		}
 	}
@@ -381,7 +371,7 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 	var iidExist = InstanceIDIsNotExist
 	var arrayNum int
 	for k, v := range microServiceInstances {
-		if v.InstanceID == response.Instance.InstanceID {
+		if v.InstanceID == response.Instance.InstanceId {
 			iidExist = InstanceIDIsExist
 			arrayNum = k
 		}
@@ -394,8 +384,8 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 		microServiceInstances = append(microServiceInstances, msi)
 		break
 	default:
-		lager.Logger.Warnf("updateAction error, iid:%s", response.Instance.InstanceID)
+		lager.Logger.Warnf("updateAction error, iid:%s", response.Instance.InstanceId)
 	}
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceID, len(microServiceInstances))
+	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
 }

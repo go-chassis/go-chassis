@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -78,7 +78,7 @@ func GetProvidersFromCache() []*MicroService {
 	for _, item := range items {
 		microService, ok := item.Object.(MicroService)
 		if !ok {
-			lager.Logger.Warn("simpleCache not microService ")
+			openlogging.Warn("not microService type")
 			continue
 		}
 		microService.Version = common.AllVersion

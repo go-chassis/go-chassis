@@ -7,6 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-sc-client/proto"
 	"gopkg.in/yaml.v2"
 )
 
@@ -49,7 +50,7 @@ func unmarshalSchemaContent(content []byte) (*registry.SchemaContent, error) {
 }
 
 // filterInstances filter instances
-func filterInstances(providerInstances []*client.MicroServiceInstance) []*registry.MicroServiceInstance {
+func filterInstances(providerInstances []*proto.MicroServiceInstance) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {
 		if ins.Status != client.MSInstanceUP {
@@ -85,4 +86,37 @@ func wrapTagsForServiceCenter(t utiltags.Tags) utiltags.Tags {
 	}
 	//if app and version is empty, need to find with latest version in same app
 	return utiltags.NewDefaultTag(common.LatestVersion, runtime.App)
+}
+
+//GetCriteria generate batch find criteria from provider cache
+func GetCriteria() []*proto.FindService {
+	services := make([]*proto.FindService, 0)
+	for _, service := range registry.GetProvidersFromCache() {
+		services = append(services, &proto.FindService{
+			Service: &proto.MicroServiceKey{
+				ServiceName: service.ServiceName,
+				Version:     service.Version,
+				AppId:       service.AppID,
+			},
+		})
+	}
+	return services
+}
+
+//GetCriteriaByService generate batch find criteria from provider cache with same service name and different app
+func GetCriteriaByService(sn string) []*proto.FindService {
+	services := make([]*proto.FindService, 0)
+	for _, service := range registry.GetProvidersFromCache() {
+		if sn != service.ServiceName {
+			continue
+		}
+		services = append(services, &proto.FindService{
+			Service: &proto.MicroServiceKey{
+				ServiceName: service.ServiceName,
+				Version:     service.Version,
+				AppId:       service.AppID,
+			},
+		})
+	}
+	return services
 }
