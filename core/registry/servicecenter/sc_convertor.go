@@ -4,6 +4,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 
 	"github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-sc-client/proto"
 )
 
 // ToMicroService assign sc micro-service to go chassis micro-service
@@ -58,9 +59,9 @@ func ToSCService(cs *registry.MicroService) *client.MicroService {
 }
 
 // ToMicroServiceInstance assign model micro-service instance parameters to registry micro-service instance parameters
-func ToMicroServiceInstance(ins *client.MicroServiceInstance) *registry.MicroServiceInstance {
+func ToMicroServiceInstance(ins *proto.MicroServiceInstance) *registry.MicroServiceInstance {
 	msi := &registry.MicroServiceInstance{
-		InstanceID: ins.InstanceID,
+		InstanceID: ins.InstanceId,
 		Metadata:   ins.Properties,
 		Status:     ins.Status,
 	}
@@ -83,16 +84,16 @@ func ToMicroServiceInstance(ins *client.MicroServiceInstance) *registry.MicroSer
 }
 
 // ToSCInstance assign registry micro-service instance parameters to model micro-service instance parameters
-func ToSCInstance(msi *registry.MicroServiceInstance) *client.MicroServiceInstance {
-	si := &client.MicroServiceInstance{}
+func ToSCInstance(msi *registry.MicroServiceInstance) *proto.MicroServiceInstance {
+	si := &proto.MicroServiceInstance{}
 	eps := registry.GetProtocolList(msi.EndpointsMap)
-	si.InstanceID = msi.InstanceID
+	si.InstanceId = msi.InstanceID
 	si.Endpoints = eps
 	si.Properties = msi.Metadata
 	si.HostName = msi.HostName
 	si.Status = msi.Status
 	if msi.DataCenterInfo != nil {
-		si.DataCenterInfo = &client.DataCenterInfo{}
+		si.DataCenterInfo = &proto.DataCenterInfo{}
 		si.DataCenterInfo.Name = msi.DataCenterInfo.Name
 		si.DataCenterInfo.AvailableZone = msi.DataCenterInfo.AvailableZone
 		si.DataCenterInfo.Region = msi.DataCenterInfo.Region
