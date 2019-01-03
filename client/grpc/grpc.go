@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
+	"time"
 )
 
 func init() {
@@ -20,13 +21,16 @@ type Client struct {
 	c       *grpc.ClientConn
 	opts    client.Options
 	service string
+	timeout time.Duration
 }
 
 //New create new grpc client
 func New(opts client.Options) (client.ProtocolClient, error) {
 	var err error
 	var conn *grpc.ClientConn
-	ctx, _ := context.WithTimeout(context.Background(), config.GetTimeoutDuration(opts.Service, common.Consumer))
+	timeout := config.GetTimeoutDuration(opts.Service, common.Consumer)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 	if opts.TLSConfig == nil {
 		conn, err = grpc.DialContext(ctx, opts.Endpoint, grpc.WithInsecure())
 	} else {
@@ -38,6 +42,7 @@ func New(opts client.Options) (client.ProtocolClient, error) {
 	}
 	return &Client{
 		c:       conn,
+		timeout: timeout,
 		service: opts.Service,
 		opts:    opts,
 	}, nil
@@ -53,8 +58,13 @@ func TransformContext(ctx context.Context) context.Context {
 //Call remote server
 func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
 	ctx = TransformContext(ctx)
-	ctx, _ = context.WithTimeout(ctx, config.GetTimeoutDuration(c.service, common.Consumer))
-	return c.c.Invoke(ctx, "/"+inv.SchemaID+"/"+inv.OperationID, inv.Args, rsp)
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	if err := c.c.Invoke(ctx, "/"+inv.SchemaID+"/"+inv.OperationID, inv.Args, rsp); err != nil {
+		cancel()
+		return err
+	}
+	cancel()
+	return nil
 }
 
 //String return name

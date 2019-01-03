@@ -1,6 +1,8 @@
 package common
 
-import "context"
+import (
+	"context"
+)
 
 // constant for provider and consumer
 const (
