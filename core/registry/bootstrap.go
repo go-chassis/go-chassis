@@ -26,7 +26,7 @@ func RegisterMicroservice() error {
 	if e := service.ServiceDescription.Environment; e != "" {
 		lager.Logger.Infof("Microservice environment: [%s]", e)
 	} else {
-		lager.Logger.Debug("No microservice environment defined")
+		openlogging.Debug("No microservice environment defined")
 	}
 	microServiceDependencies = &MicroServiceDependency{}
 	var err error
@@ -93,7 +93,7 @@ func RegisterMicroservice() error {
 		return err
 	}
 	if sid == "" {
-		lager.Logger.Error(errEmptyServiceIDFromRegistry.Error())
+		openlogging.Error(errEmptyServiceIDFromRegistry.Error())
 		return errEmptyServiceIDFromRegistry
 	}
 	runtime.ServiceID = sid
@@ -110,7 +110,7 @@ func RegisterMicroserviceInstances() error {
 		openlogging.Info("upload schema to registry, " + schemaID)
 	}
 
-	lager.Logger.Info("Start to register instance.")
+	openlogging.Info("Start to register instance.")
 	service := config.MicroserviceDefinition
 	var err error
 
@@ -148,7 +148,7 @@ func RegisterMicroserviceInstances() error {
 
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
-		lager.Logger.Errorf("Register instance failed, serviceID: %s, err %s", err)
+		openlogging.GetLogger().Errorf("Register instance failed, serviceID: %s, err %s", err)
 		return err
 	}
 	//Set to runtime
@@ -156,10 +156,11 @@ func RegisterMicroserviceInstances() error {
 	runtime.InstanceStatus = runtime.StatusRunning
 	if service.ServiceDescription.InstanceProperties != nil {
 		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(sid, instanceID, service.ServiceDescription.InstanceProperties); err != nil {
-			lager.Logger.Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", sid, instanceID)
+			openlogging.GetLogger().Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", sid, instanceID)
 			return err
 		}
-		lager.Logger.Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", sid, instanceID)
+		runtime.InstanceMD = service.ServiceDescription.InstanceProperties
+		openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", sid, instanceID)
 	}
 
 	value, _ := SelfInstancesCache.Get(microServiceInstance.ServiceID)
@@ -174,6 +175,6 @@ func RegisterMicroserviceInstances() error {
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	SelfInstancesCache.Set(sid, instanceIDs, 0)
-	lager.Logger.Infof("Register instance success, serviceID/instanceID: %s/%s.", sid, instanceID)
+	openlogging.GetLogger().Infof("Register instance success, serviceID/instanceID: %s/%s.", sid, instanceID)
 	return nil
 }
