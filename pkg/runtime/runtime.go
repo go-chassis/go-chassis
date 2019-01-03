@@ -24,8 +24,11 @@ var App string
 //Version is version info
 var Version string
 
-//MD is instance metadata
+//MD is service metadata
 var MD map[string]string
+
+//InstanceMD is instance metadata
+var InstanceMD map[string]string
 
 //InstanceID is the instance id in registry service
 var InstanceID string

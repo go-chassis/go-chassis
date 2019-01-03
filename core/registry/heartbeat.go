@@ -170,6 +170,7 @@ func reRegisterSelfMSI(sid, iid string) error {
 		EndpointsMap: eps,
 		HostName:     runtime.HostName,
 		Status:       common.DefaultStatus,
+		Metadata:     runtime.InstanceMD,
 	}
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
