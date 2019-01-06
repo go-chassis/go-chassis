@@ -72,3 +72,30 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 	}
 	return hosts, scheme, nil
 }
+
+//GetLocalIP Get IPv6 address of NIC.
+func GetLocalIPv6() string {
+	addresses, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addresses {
+		// Parse IP
+		var ip net.IP
+		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
+			return ""
+		}
+		// Check if Isloopback and IPV4
+		if ip != nil && !ip.IsLoopback() && (ip.To16() != nil) && IsIPv6Address(ip) {
+			return ip.String()
+		}
+	}
+	return ""
+}
+
+func IsIPv6Address(ip net.IP) bool {
+	if ip != nil && strings.Contains(ip.String(), ":") {
+		return true
+	}
+	return false
+}
