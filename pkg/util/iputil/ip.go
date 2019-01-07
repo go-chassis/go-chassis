@@ -24,8 +24,8 @@ func GetLocalIP() string {
 		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
 			return ""
 		}
-		// Check if Isloopback and IPV4
-		if ip != nil && !ip.IsLoopback() && (ip.To4() != nil) {
+		// Check if valid global unicast IPv4 address
+		if ip != nil && (ip.To4() != nil) && ip.IsGlobalUnicast() {
 			return ip.String()
 		}
 	}
@@ -85,8 +85,8 @@ func GetLocalIPv6() string {
 		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
 			return ""
 		}
-		// Check if Isloopback and IPV4
-		if ip != nil && !ip.IsLoopback() && (ip.To16() != nil) && IsIPv6Address(ip) {
+		// Check if valid IPv6 address
+		if ip != nil && (ip.To16() != nil) && IsIPv6Address(ip) && ip.IsGlobalUnicast() {
 			return ip.String()
 		}
 	}

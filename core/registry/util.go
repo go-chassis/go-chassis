@@ -96,24 +96,24 @@ func MakeEndpointMap(m map[string]model.Protocol) (map[string]string, error) {
 
 // fillUnspecifiedIp Replace 0.0.0.0 or :: IPv4 and IPv6 unspecified IP address with local NIC IP.
 func fillUnspecifiedIp(host string) (string, error) {
-	var ipaddr string
+	var addr string
 	ip := net.ParseIP(host)
 	if ip == nil {
 		return "", fmt.Errorf("invalid IP address %s", host)
 	}
 
-	ipaddr = host
+	addr = host
 	if ip.IsUnspecified() {
 		if iputil.IsIPv6Address(ip) {
-			ipaddr = iputil.GetLocalIPv6()
+			addr = iputil.GetLocalIPv6()
 		} else {
-			ipaddr = iputil.GetLocalIP()
+			addr = iputil.GetLocalIP()
 		}
-		if len(ipaddr) == 0 {
-			return ipaddr, fmt.Errorf("failed to get local IP address")
+		if len(addr) == 0 {
+			return addr, fmt.Errorf("failed to get local IP address")
 		}
 	}
-	return ipaddr, nil
+	return addr, nil
 }
 
 //Microservice2ServiceKeyStr prepares a microservice key
