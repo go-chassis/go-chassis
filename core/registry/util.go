@@ -72,28 +72,48 @@ func MakeEndpoints(m map[string]model.Protocol) []string {
 func MakeEndpointMap(m map[string]model.Protocol) (map[string]string, error) {
 	eps := make(map[string]string, 0)
 	for name, protocol := range m {
-		if len(protocol.Advertise) == 0 {
-			host, port, err := net.SplitHostPort(protocol.Listen)
-			if err != nil {
-				return nil, err
-			}
-			if host == "" || port == "" {
-				return nil, fmt.Errorf("listen address is invalid [%s]", protocol.Listen)
-			}
-			eps[name] = protocol.Listen
-		} else {
-			// check the provided Advertise ip is IPV4 or IPV6
-			host, port, err := net.SplitHostPort(protocol.Advertise)
-			if err != nil {
-				return nil, err
-			}
-			if host == "" || port == "" {
-				return nil, fmt.Errorf("advertise address is invalid [%s]", protocol.Advertise)
-			}
-			eps[name] = protocol.Advertise
+		ep := protocol.Listen
+		if len(protocol.Advertise) > 0 {
+			ep = protocol.Advertise
 		}
+
+		host, port, err := net.SplitHostPort(ep)
+		if err != nil {
+			return nil, err
+		}
+		if host == "" || port == "" {
+			return nil, fmt.Errorf("listen address is invalid [%s]", protocol.Listen)
+		}
+
+		ip, err := fillUnspecifiedIP(host)
+		if err != nil {
+			return nil, err
+		}
+		eps[name] = net.JoinHostPort(ip, port)
 	}
 	return eps, nil
+}
+
+// fillUnspecifiedIP replace 0.0.0.0 or :: IPv4 and IPv6 unspecified IP address with local NIC IP.
+func fillUnspecifiedIP(host string) (string, error) {
+	var addr string
+	ip := net.ParseIP(host)
+	if ip == nil {
+		return "", fmt.Errorf("invalid IP address %s", host)
+	}
+
+	addr = host
+	if ip.IsUnspecified() {
+		if iputil.IsIPv6Address(ip) {
+			addr = iputil.GetLocalIPv6()
+		} else {
+			addr = iputil.GetLocalIP()
+		}
+		if len(addr) == 0 {
+			return addr, fmt.Errorf("failed to get local IP address")
+		}
+	}
+	return addr, nil
 }
 
 //Microservice2ServiceKeyStr prepares a microservice key

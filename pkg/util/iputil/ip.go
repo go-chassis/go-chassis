@@ -24,8 +24,8 @@ func GetLocalIP() string {
 		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
 			return ""
 		}
-		// Check if Isloopback and IPV4
-		if ip != nil && !ip.IsLoopback() && (ip.To4() != nil) {
+		// Check if valid global unicast IPv4 address
+		if ip != nil && (ip.To4() != nil) && ip.IsGlobalUnicast() {
 			return ip.String()
 		}
 	}
@@ -71,4 +71,32 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 
 	}
 	return hosts, scheme, nil
+}
+
+//GetLocalIPv6 Get IPv6 address of NIC.
+func GetLocalIPv6() string {
+	addresses, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addresses {
+		// Parse IP
+		var ip net.IP
+		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
+			return ""
+		}
+		// Check if valid IPv6 address
+		if ip != nil && (ip.To16() != nil) && IsIPv6Address(ip) && ip.IsGlobalUnicast() {
+			return ip.String()
+		}
+	}
+	return ""
+}
+
+// IsIPv6Address check whether the IP is IPv6 address.
+func IsIPv6Address(ip net.IP) bool {
+	if ip != nil && strings.Contains(ip.String(), ":") {
+		return true
+	}
+	return false
 }

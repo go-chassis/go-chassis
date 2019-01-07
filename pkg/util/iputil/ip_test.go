@@ -4,6 +4,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/stretchr/testify/assert"
+	"net"
 	"testing"
 )
 
@@ -41,3 +42,14 @@ func TestDefaultPort4ProtocolNone(t *testing.T) {
 //	_,err =http.DefaultClient.Get("http://[fe80::7f28:7160:56cd:3ec9]:5001")
 //	assert.NoError(t,err)
 //}
+
+func Test_IsIPv6Address(t *testing.T) {
+	assert.True(t, false == iputil.IsIPv6Address(nil))
+	assert.True(t, false == iputil.IsIPv6Address(net.ParseIP("abc")))
+	assert.True(t, true == iputil.IsIPv6Address(net.ParseIP("::")))
+	assert.True(t, true == iputil.IsIPv6Address(net.ParseIP("::")))
+	assert.True(t, true == iputil.IsIPv6Address(net.ParseIP("fe80::c706:e006:d53e:f9fb")))
+	assert.True(t, true == iputil.IsIPv6Address(net.ParseIP("fe80::10.25.21.2")))
+	assert.True(t, false == iputil.IsIPv6Address(net.ParseIP("10.25.21.2")))
+	assert.True(t, false == iputil.IsIPv6Address(net.ParseIP("0.0.0.0")))
+}
