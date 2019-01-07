@@ -73,7 +73,7 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 	return hosts, scheme, nil
 }
 
-//GetLocalIP Get IPv6 address of NIC.
+//GetLocalIPv6 Get IPv6 address of NIC.
 func GetLocalIPv6() string {
 	addresses, err := net.InterfaceAddrs()
 	if err != nil {
@@ -93,6 +93,7 @@ func GetLocalIPv6() string {
 	return ""
 }
 
+// IsIPv6Address check whether the IP is IPv6 address.
 func IsIPv6Address(ip net.IP) bool {
 	if ip != nil && strings.Contains(ip.String(), ":") {
 		return true
