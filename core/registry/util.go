@@ -98,7 +98,7 @@ func MakeEndpointMap(m map[string]model.Protocol) (map[string]string, error) {
 func fillUnspecifiedIp(host string) (string, error) {
 	var ipaddr string
 	ip := net.ParseIP(host)
-	if ip != nil {
+	if ip == nil {
 		return "", fmt.Errorf("invalid IP address %s", host)
 	}
 

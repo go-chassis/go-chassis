@@ -15,7 +15,6 @@ require (
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-mesh/openlogging v0.0.0-20181122085847-3daf3ad8ed35
 	github.com/gogo/protobuf v1.2.0 // indirect
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/golang/protobuf v1.2.0
 	github.com/hashicorp/go-version v1.0.0
 	github.com/onsi/ginkgo v1.7.0 // indirect
@@ -31,8 +30,9 @@ require (
 	github.com/stretchr/testify v1.2.2
 	github.com/uber-go/atomic v1.3.2 // indirect
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277
-	golang.org/x/net v0.0.0-20180906233101-161cd47e91fd
-	google.golang.org/grpc v1.14.0
+	golang.org/x/net v0.0.0-20181106065722-10aee1819953
+	google.golang.org/genproto v0.0.0-20181221175505-bd9b4fb69e2f // indirect
+	google.golang.org/grpc v1.16.0
 	gopkg.in/yaml.v2 v2.2.1
 )
 
