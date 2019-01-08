@@ -216,10 +216,11 @@ func (c *CacheManager) pullMicroServiceInstance() error {
 	//fetch remote based on app and service
 	instances, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
 	if err != nil {
-		if err == client.ErrNotModified {
+		if err == client.ErrNotModified || err == client.ErrEmptyCriteria {
 			openlogging.Debug(err.Error())
+		}else{
+			openlogging.Error("Refresh local instance cache failed: " + err.Error())
 		}
-		openlogging.Error("Refresh local instance cache failed: " + err.Error())
 	}
 	filter(instances)
 
@@ -319,7 +320,7 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
-		lager.Logger.Errorf("ServiceID does not exist in MicroserviceInstanceCache,action is EVT_CREATE.key = %s", key)
+		lager.Logger.Errorf("ServiceID does not exist in MicroServiceInstanceCache,action is EVT_CREATE.key = %s", key)
 		return
 	}
 	if response.Instance.Status != client.MSInstanceUP {

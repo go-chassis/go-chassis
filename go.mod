@@ -1,15 +1,13 @@
 module github.com/go-chassis/go-chassis
 
 require (
-	github.com/DataDog/zstd v1.3.4 // indirect
-	github.com/Shopify/sarama v1.20.0 // indirect
 	github.com/apache/thrift v0.0.0-20180829120307-8de3749235db
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.8.0+incompatible
 	github.com/go-chassis/go-archaius v0.0.0-20181108111652-ab19b4eae276
 	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
-	github.com/go-chassis/go-sc-client v0.0.0-20181229093415-d2797ce547c9
+	github.com/go-chassis/go-sc-client v0.0.0-20190108025351-f2e94c5e1ebe
 	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-mesh/openlogging v0.0.0-20181122085847-3daf3ad8ed35
