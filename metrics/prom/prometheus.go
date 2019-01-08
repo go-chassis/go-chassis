@@ -15,7 +15,6 @@ package prom
 // Some parts of this file have been modified to make it functional in this package
 import (
 	"fmt"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -203,7 +202,7 @@ func (c *PrometheusSinker) UpdatePrometheusMetricsOnce() error {
 
 // EnableRunTimeMetrics enable runtime metrics
 func EnableRunTimeMetrics() {
-	m.GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
+	m.GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
 	m.GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
 }
 

@@ -11,7 +11,8 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 )
 
-// GetEndpointFromServiceCenter is used to get the endpoint based on appID, microservice and version
+//GetEndpointFromServiceCenter is used to get the endpoint based on appID, service name and version
+//it will only return endpoints of a service
 func GetEndpointFromServiceCenter(appID, microService, version string) (string, error) {
 	var endPoint string
 
@@ -24,8 +25,6 @@ func GetEndpointFromServiceCenter(appID, microService, version string) (string, 
 	}
 
 	if len(instances) == 0 {
-		lager.Logger.Errorf("No available instance, key: %s:%s:%s",
-			appID, microService, version)
 		instanceError := fmt.Sprintf("No available instance, key: %s:%s:%s",
 			appID, microService, version)
 		return "", errors.New(instanceError)
