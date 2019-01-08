@@ -111,10 +111,12 @@ func (ic *IndexCache) Get(k string, tags map[string]string) ([]*MicroServiceInst
 
 }
 func (ic *IndexCache) setTagsBeforeQuery(k string, tags map[string]string) {
+	ic.muxLatestV.RLock()
 	//must set version before query
 	if v, ok := tags[common.BuildinTagVersion]; ok && v == common.LatestVersion && ic.latestV[k] != "" {
 		tags[common.BuildinTagVersion] = ic.latestV[k]
 	}
+	ic.muxLatestV.RUnlock()
 }
 
 //must combine keys in order, use sets to return sorted list
