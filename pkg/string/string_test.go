@@ -2,7 +2,7 @@ package stringutil_test
 
 import (
 	"container/list"
-	"github.com/go-chassis/go-chassis/core/util/string"
+	"github.com/go-chassis/go-chassis/pkg/string"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -10,6 +10,20 @@ import (
 
 var s = strings.Repeat("a", 1024)
 
+func TestClearByteMemory(t *testing.T) {
+	b := []byte("aaa")
+	assert.Equal(t, "aaa", string(b))
+	stringutil.ClearByteMemory(b)
+	assert.NotEqual(t, "aaa", string(b))
+}
+func TestMinInt(t *testing.T) {
+
+	a := stringutil.MinInt(1, 2)
+	assert.Equal(t, 1, a)
+
+	a = stringutil.MinInt(2, 1)
+	assert.Equal(t, 1, a)
+}
 func BenchmarkTest(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b := []byte(s)

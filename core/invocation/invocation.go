@@ -29,7 +29,7 @@ type ResponseCallBack func(*Response) error
 type Invocation struct {
 	Endpoint           string //service's ip and port, it is decided in load balancing
 	Protocol           string
-	Port               string
+	Port               string //Port is the name of a real service port
 	SourceServiceID    string
 	SourceMicroService string
 	MicroServiceName   string //Target micro service name
@@ -79,18 +79,6 @@ func New(ctx context.Context) *Invocation {
 		inv.Ctx = context.WithValue(inv.Ctx, common.ContextHeaderKey{}, map[string]string{})
 	}
 	return inv
-}
-
-//GetSessionID return session id
-func (inv *Invocation) GetSessionID() string {
-	return inv.Metadata[common.LBSessionID].(string)
-
-}
-
-//SetSessionID set session id to invocation
-func (inv *Invocation) SetSessionID(value string) {
-	headers := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
-	headers[common.LBSessionID] = value
 }
 
 //SetMetadata local scope params
