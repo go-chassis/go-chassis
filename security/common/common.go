@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/util/string"
+	"github.com/go-chassis/go-chassis/pkg/string"
 	"github.com/go-chassis/go-chassis/security"
 	//this import used for plain cipher
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
@@ -77,7 +77,7 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cip
 			return nil, err
 		}
 
-		plainPassphaseBytes := stringutil.StringToBytesWithNoCopy(plainpass)
+		plainPassphaseBytes := stringutil.Str2bytes(plainpass)
 		keyData, err := x509.DecryptPEMBlock(keyBlock, plainPassphaseBytes)
 		stringutil.ClearStringMemory(&plainpass)
 		stringutil.ClearByteMemory(plainPassphaseBytes)

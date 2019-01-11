@@ -45,18 +45,6 @@ func SplitFirstSep(s, sep string) string {
 	return s[:index]
 }
 
-// BytesToStringWithNoCopy convert array of byte to string
-func BytesToStringWithNoCopy(bytes []byte) string {
-	return *(*string)(unsafe.Pointer(&bytes))
-}
-
-// StringToBytesWithNoCopy convert string to byte
-func StringToBytesWithNoCopy(s string) []byte {
-	x := (*[2]uintptr)(unsafe.Pointer(&s))
-	h := [3]uintptr{x[0], x[1], x[1]}
-	return *(*[]byte)(unsafe.Pointer(&h))
-}
-
 // MinInt check the minimum value of two integers
 func MinInt(x, y int) int {
 	if x <= y {
@@ -66,7 +54,8 @@ func MinInt(x, y int) int {
 	return y
 }
 
-// ClearStringMemory clear string memory
+// ClearStringMemory clear string memory, for very sensitive security related data
+////you should clear it in memory after use
 func ClearStringMemory(src *string) {
 	p := (*struct {
 		ptr uintptr
@@ -82,7 +71,8 @@ func ClearStringMemory(src *string) {
 	}
 }
 
-// ClearByteMemory clear byte memory
+//ClearByteMemory clear byte memory, for very sensitive security related data
+//you should clear it in memory after use
 func ClearByteMemory(src []byte) {
 	len := MinInt(len(src), 32)
 	for idx := 0; idx < len; idx = idx + 1 {

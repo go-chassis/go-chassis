@@ -11,6 +11,10 @@ func TestChain(t *testing.T) {
 	var inv = new(invocation.Invocation)
 	inv.Endpoint = "1.2.3.4"
 }
+func TestNew(t *testing.T) {
+	i := invocation.New(nil)
+	assert.NotNil(t, i.Ctx)
+}
 func TestInvocation_Headers(t *testing.T) {
 	inv := invocation.New(context.TODO())
 	inv.SetMetadata("a", "1")

@@ -8,12 +8,12 @@ import (
 )
 
 // ToMicroService assign sc micro-service to go chassis micro-service
-func ToMicroService(scs *client.MicroService) *registry.MicroService {
+func ToMicroService(scs *proto.MicroService) *registry.MicroService {
 	cs := &registry.MicroService{}
-	cs.ServiceID = scs.ServiceID
+	cs.ServiceID = scs.ServiceId
 	cs.ServiceName = scs.ServiceName
 	cs.Version = scs.Version
-	cs.AppID = scs.AppID
+	cs.AppID = scs.AppId
 	cs.Metadata = scs.Properties
 	cs.Schemas = scs.Schemas
 	cs.Level = scs.Level
@@ -28,28 +28,28 @@ func ToMicroService(scs *client.MicroService) *registry.MicroService {
 }
 
 // ToSCService assign go chassis micro-service to the sc micro-service
-func ToSCService(cs *registry.MicroService) *client.MicroService {
-	scs := &client.MicroService{}
-	scs.ServiceID = cs.ServiceID
+func ToSCService(cs *registry.MicroService) *proto.MicroService {
+	scs := &proto.MicroService{}
+	scs.ServiceId = cs.ServiceID
 	scs.ServiceName = cs.ServiceName
 	scs.Version = cs.Version
-	scs.AppID = cs.AppID
+	scs.AppId = cs.AppID
 	scs.Environment = cs.Environment
 	scs.Properties = cs.Metadata
 	scs.Schemas = cs.Schemas
 	scs.Level = cs.Level
 	scs.Status = cs.Status
 	svcPaths := cs.Paths
-	regpaths := []*client.ServicePath{}
+	regpaths := []*proto.ServicePath{}
 	for _, svcPath := range svcPaths {
-		var regpath client.ServicePath
+		var regpath proto.ServicePath
 		regpath.Path = svcPath.Path
 		regpath.Property = svcPath.Property
 		regpaths = append(regpaths, &regpath)
 	}
 	scs.Paths = regpaths
 	if cs.Framework != nil {
-		scs.Framework = &client.Framework{}
+		scs.Framework = &proto.FrameWorkProperty{}
 		scs.Framework.Version = cs.Framework.Version
 		scs.Framework.Name = cs.Framework.Name
 	}

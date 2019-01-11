@@ -16,7 +16,6 @@ cse:
     rest:
       listenAddress: 127.0.0.1:8081
       advertiseAddress: 127.0.0.1:8081
-      failure: http_500,http_502 # Defines what is considered an unsuccessful attempt of communication with a server.
   handler:
     chain:
       Consumer:

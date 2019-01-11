@@ -12,7 +12,7 @@ import (
 	"github.com/go-chassis/go-chassis/client/highway/pb"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/provider"
-	"github.com/go-chassis/go-chassis/core/util/string"
+	"github.com/go-chassis/go-chassis/pkg/string"
 	"github.com/golang/protobuf/proto"
 	"io"
 )

@@ -118,7 +118,7 @@ func (c *CacheManager) MakeIPIndex() error {
 					si.Tags = make(map[string]string)
 				}
 				si.Name = service.MicroService.ServiceName
-				si.Tags[common.BuildinTagApp] = service.MicroService.AppID
+				si.Tags[common.BuildinTagApp] = service.MicroService.AppId
 				si.Tags[common.BuildinTagVersion] = service.MicroService.Version
 				registry.SetIPIndex(u.Hostname(), si)
 				//no need to analyze each endpoint, so break
@@ -140,7 +140,7 @@ func (c *CacheManager) MakeSchemaIndex() error {
 	}
 
 	for _, ms := range microServiceList {
-		serviceID, err := c.registryClient.GetMicroServiceID(ms.AppID, ms.ServiceName, ms.Version, ms.Environment)
+		serviceID, err := c.registryClient.GetMicroServiceID(ms.AppId, ms.ServiceName, ms.Version, ms.Environment)
 		if err != nil {
 			continue
 		}
@@ -161,13 +161,13 @@ func (c *CacheManager) MakeSchemaIndex() error {
 			if interfaceName != "" {
 				value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 				if !ok {
-					var allMicroServices []*client.MicroService
+					var allMicroServices []*proto.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaInterfaceIndexedCache.Set(interfaceName, allMicroServices, 0)
 					lager.Logger.Debugf("New Interface added in the Index Cache : %s", interfaceName)
 				} else {
-					val, _ := value.([]*client.MicroService)
-					if !checkIfMicroServiceExistInList(val, ms.ServiceID) {
+					val, _ := value.([]*proto.MicroService)
+					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaInterfaceIndexedCache.Set(interfaceName, val, 0)
 						lager.Logger.Debugf("New Interface added in the Index Cache : %s", interfaceName)
@@ -176,13 +176,13 @@ func (c *CacheManager) MakeSchemaIndex() error {
 
 				svcValue, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
 				if !ok {
-					var allMicroServices []*client.MicroService
+					var allMicroServices []*proto.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaServiceIndexedCache.Set(serviceID, allMicroServices, 0)
 					lager.Logger.Debugf("New Service added in the Index Cache : %s", serviceID)
 				} else {
-					val, _ := svcValue.([]*client.MicroService)
-					if !checkIfMicroServiceExistInList(val, ms.ServiceID) {
+					val, _ := svcValue.([]*proto.MicroService)
+					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaServiceIndexedCache.Set(serviceID, val, 0)
 						lager.Logger.Debugf("New Service added in the Index Cache : %s", serviceID)
@@ -195,10 +195,10 @@ func (c *CacheManager) MakeSchemaIndex() error {
 }
 
 // This functions checks if the microservices exist in the list passed in argument
-func checkIfMicroServiceExistInList(microserviceList []*client.MicroService, serviceID string) bool {
+func checkIfMicroServiceExistInList(microserviceList []*proto.MicroService, serviceID string) bool {
 	msIsPresentInList := false
 	for _, interfaceMicroserviceList := range microserviceList {
-		if interfaceMicroserviceList.ServiceID == serviceID {
+		if interfaceMicroserviceList.ServiceId == serviceID {
 			msIsPresentInList = true
 			break
 		}
