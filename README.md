@@ -60,7 +60,7 @@ GO111MODULE=on go mod download
 #optional
 GO111MODULE=on go mod vendor
 ```
-
+NOTICE：if you do not use mod, I can not asure you the compability. however you can still maintain your own vendor, which means you have to solve compiling issue your own.
 
 4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
 
