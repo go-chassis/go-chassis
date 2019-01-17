@@ -11,7 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
-	"github.com/go-chassis/go-sc-client/proto"
+	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 )
 
 const (
