@@ -3,8 +3,8 @@ package servicecenter_test
 import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
+	client "github.com/go-chassis/go-chassis/pkg/scclient"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
-	client "github.com/go-chassis/go-sc-client"
 	"github.com/stretchr/testify/assert"
 	"net/url"
 	"os"

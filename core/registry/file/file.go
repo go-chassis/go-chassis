@@ -5,9 +5,9 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/pkg/scclient"
+	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-chassis/go-sc-client"
-	"github.com/go-chassis/go-sc-client/proto"
 )
 
 // constant string for file

@@ -11,10 +11,10 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/rand"
-	"github.com/go-chassis/go-sc-client"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
 )

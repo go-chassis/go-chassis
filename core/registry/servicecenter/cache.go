@@ -10,10 +10,10 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-sc-client"
+	"github.com/go-chassis/go-chassis/pkg/scclient"
 
+	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/third_party/forked/k8s.io/apimachinery/pkg/util/sets"
-	"github.com/go-chassis/go-sc-client/proto"
 	"github.com/go-mesh/openlogging"
 )
 

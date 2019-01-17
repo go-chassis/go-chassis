@@ -2,6 +2,7 @@ module github.com/go-chassis/go-chassis
 
 require (
 	github.com/DataDog/zstd v1.3.5 // indirect
+	github.com/Shopify/sarama v1.20.1 // indirect
 	github.com/apache/thrift v0.0.0-20180829120307-8de3749235db
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/eapache/go-resiliency v1.1.0 // indirect
@@ -11,12 +12,12 @@ require (
 	github.com/go-chassis/go-archaius v0.0.0-20181108111652-ab19b4eae276
 	github.com/go-chassis/go-cc-client v0.0.0-20181102101915-dea430061a34
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
-	github.com/go-chassis/go-sc-client v0.0.0-20190110124355-7e78d2170dca
 	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
 	github.com/go-mesh/openlogging v0.0.0-20181122085847-3daf3ad8ed35
 	github.com/golang/protobuf v1.2.0
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
+	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/go-version v1.0.0
 	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect

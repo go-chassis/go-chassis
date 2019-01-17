@@ -1,0 +1,611 @@
+/*
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed //under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+syntax = "proto3";
+
+package proto;
+
+option go_package = "proto";
+option java_package = "com.huawei.paas.cse.serviceregistry.api";
+
+service ServiceCtrl {
+    rpc exist (GetExistenceRequest) returns (GetExistenceResponse);
+    rpc create (CreateServiceRequest) returns (CreateServiceResponse);
+    rpc delete (DeleteServiceRequest) returns (DeleteServiceResponse);
+    rpc getOne (GetServiceRequest) returns (GetServiceResponse);
+    rpc getServices (GetServicesRequest) returns (GetServicesResponse);
+    rpc updateProperties (UpdateServicePropsRequest) returns (UpdateServicePropsResponse);
+
+    rpc addRule (AddServiceRulesRequest) returns (AddServiceRulesResponse);
+    rpc getRule (GetServiceRulesRequest) returns (GetServiceRulesResponse);
+    rpc updateRule (UpdateServiceRuleRequest) returns (UpdateServiceRuleResponse);
+    rpc deleteRule (DeleteServiceRulesRequest) returns (DeleteServiceRulesResponse);
+
+    rpc addTags (AddServiceTagsRequest) returns (AddServiceTagsResponse);
+    rpc getTags (GetServiceTagsRequest) returns (GetServiceTagsResponse);
+    rpc updateTag (UpdateServiceTagRequest) returns (UpdateServiceTagResponse);
+    rpc deleteTags (DeleteServiceTagsRequest) returns (DeleteServiceTagsResponse);
+
+    rpc getSchemaInfo (GetSchemaRequest) returns (GetSchemaResponse);
+    rpc getAllSchemaInfo (GetAllSchemaRequest) returns (GetAllSchemaResponse);
+    rpc deleteSchema (DeleteSchemaRequest) returns (DeleteSchemaResponse);
+    rpc modifySchema (ModifySchemaRequest) returns (ModifySchemaResponse);
+    rpc modifySchemas (ModifySchemasRequest) returns (ModifySchemasResponse);
+
+    rpc addDependenciesForMicroServices (AddDependenciesRequest) returns (AddDependenciesResponse);
+    rpc createDependenciesForMicroServices (CreateDependenciesRequest) returns (CreateDependenciesResponse);
+    rpc getProviderDependencies (GetDependenciesRequest) returns (GetProDependenciesResponse);
+    rpc getConsumerDependencies (GetDependenciesRequest) returns (GetConDependenciesResponse);
+
+    rpc deleteServices (DelServicesRequest) returns (DelServicesResponse);
+}
+
+service ServiceInstanceCtrl {
+    rpc register (RegisterInstanceRequest) returns (RegisterInstanceResponse);
+    rpc unregister (UnregisterInstanceRequest) returns (UnregisterInstanceResponse);
+    rpc heartbeat (HeartbeatRequest) returns (HeartbeatResponse);
+    rpc find (FindInstancesRequest) returns (FindInstancesResponse);
+    rpc getInstances (GetInstancesRequest) returns (GetInstancesResponse);
+    rpc getOneInstance (GetOneInstanceRequest) returns (GetOneInstanceResponse);
+    rpc updateStatus (UpdateInstanceStatusRequest) returns (UpdateInstanceStatusResponse);
+    rpc updateInstanceProperties (UpdateInstancePropsRequest) returns (UpdateInstancePropsResponse);
+    rpc watch (WatchInstanceRequest) returns (stream WatchInstanceResponse);
+    rpc heartbeatSet (HeartbeatSetRequest) returns (HeartbeatSetResponse);
+}
+
+//治理相关的接口和数据结构
+service GovernServiceCtrl {
+    rpc getServiceDetail (GetServiceRequest) returns (GetServiceDetailResponse);
+    rpc getServicesInfo (GetServicesInfoRequest) returns (GetServicesInfoResponse);
+    rpc getApplications (GetAppsRequest) returns (GetAppsResponse);
+}
+
+message ModifySchemasRequest {
+    string serviceId = 1;
+    repeated Schema schemas = 2;
+}
+
+message Schema {
+    string schemaId = 1;
+    string summary = 2;
+    string schema = 3;
+}
+
+message ModifySchemasResponse {
+    Response response = 1;
+}
+
+message HeartbeatSetRequest {
+    repeated HeartbeatSetElement instances = 1;
+}
+
+message HeartbeatSetElement {
+    string serviceId = 1;
+    string instanceId = 2;
+}
+
+message HeartbeatSetResponse {
+    Response response = 1;
+    repeated InstanceHbRst instances = 2;
+}
+
+message InstanceHbRst {
+    string serviceId = 1;
+    string instanceId = 2;
+    string errMessage = 3;
+}
+
+message StService {
+    int64 count = 1;
+    int64 onlineCount = 2;
+}
+
+message StInstance {
+    int64 count = 1;
+    int64 countByDomain = 2;
+}
+
+message StApp {
+    int64 count = 1;
+}
+
+message Statistics {
+    StService services = 1;
+    StInstance instances = 2;
+    StApp apps = 3;
+}
+
+message GetServicesInfoRequest {
+    repeated string options = 1;
+    string appId = 2;
+    string serviceName = 3;
+    bool countOnly = 4;
+}
+
+message GetServicesInfoResponse {
+    Response response = 1;
+    repeated ServiceDetail allServicesDetail = 2;
+    Statistics statistics = 3;
+
+}
+
+message MicroServiceKey {
+    string tenant = 1;
+    string project = 2;
+    string appId = 3;
+    string serviceName = 4;
+    string version = 5;
+    string environment = 6;
+    string alias = 7;
+}
+
+// Micro service
+
+message MicroService {
+    string serviceId = 1;
+    string appId = 2;
+    string serviceName = 3;
+    string version = 4;
+    string description = 5;
+    string level = 6; // custom
+    repeated string schemas = 7;
+    repeated ServicePath paths = 10;
+    string status = 8; // UP|DOWN
+    map<string, string> properties = 9;
+    string timestamp = 11;
+    repeated MicroServiceKey providers = 12;
+    string alias = 13;
+    map<string, string> LBStrategy = 14;
+    string modTimestamp = 15;
+    string environment = 16;
+    string registerBy = 17;
+    FrameWorkProperty framework = 18;
+}
+
+message FrameWorkProperty {
+    string name = 1;
+    string version = 2;
+}
+
+message ServiceRule {
+    string ruleId = 1;
+    string ruleType = 2; // WHITE|BACK
+    string attribute = 3;
+    string pattern = 4;
+    string description = 5;
+    string timestamp = 6;
+    string modTimestamp = 7;
+}
+
+message AddOrUpdateServiceRule {
+    string ruleType = 1; // WHITE|BACK
+    string attribute = 2;
+    string pattern = 3;
+    string description = 4;
+}
+
+message ServicePath {
+    string path = 1;
+    map<string, string> property = 2;
+}
+
+message Response {
+    int32 code = 1;
+    string message = 2;
+}
+
+message GetExistenceRequest {
+    string type = 1;
+    string appId = 2;
+    string serviceName = 3;
+    string version = 4;
+    string serviceId = 5;
+    string schemaId = 6;
+    string environment = 7;
+}
+
+message GetExistenceResponse {
+    Response response = 1;
+    string serviceId = 2;
+    string schemaId = 3;
+    string summary = 4;
+}
+
+message CreateServiceRequest {
+    MicroService service = 1;
+    repeated AddOrUpdateServiceRule rules = 2;
+    map<string, string> tags = 3;
+    repeated MicroServiceInstance instances = 4;
+}
+
+message CreateServiceResponse {
+    Response response = 1;
+    string serviceId = 2;
+}
+
+message DeleteServiceRequest {
+    string serviceId = 1;
+    bool force = 2;
+}
+
+message DeleteServiceResponse {
+    Response response = 1;
+}
+
+message GetServiceRequest {
+    string serviceId = 1;
+}
+
+message GetServiceResponse {
+    Response response = 1;
+    MicroService service = 2;
+}
+
+message GetServicesRequest {
+}
+
+message GetServicesResponse {
+    Response response = 1;
+    repeated MicroService services = 2;
+}
+
+message UpdateServicePropsRequest {
+    string serviceId = 1;
+    map<string, string> properties = 2;
+}
+
+message UpdateServicePropsResponse {
+    Response response = 1;
+}
+
+message GetServiceRulesRequest {
+    string serviceId = 1;
+}
+
+message GetServiceRulesResponse {
+    Response response = 1;
+    repeated ServiceRule rules = 2;
+}
+
+message UpdateServiceRuleRequest {
+    string serviceId = 1;
+    string ruleId = 2;
+    AddOrUpdateServiceRule rule = 3;
+}
+
+message UpdateServiceRuleResponse {
+    Response response = 1;
+}
+
+message AddServiceRulesRequest {
+    string serviceId = 1;
+    repeated AddOrUpdateServiceRule rules = 2;
+}
+
+message AddServiceRulesResponse {
+    Response response = 1;
+    repeated string RuleIds = 2;
+}
+
+message DeleteServiceRulesRequest {
+    string serviceId = 1;
+    repeated string ruleIds = 2;
+}
+
+message DeleteServiceRulesResponse {
+    Response response = 1;
+}
+
+message GetServiceTagsRequest {
+    string serviceId = 1;
+}
+
+message GetServiceTagsResponse {
+    Response response = 1;
+    map<string, string> tags = 2;
+}
+
+message UpdateServiceTagRequest {
+    string serviceId = 1;
+    string key = 2;
+    string value = 3;
+}
+
+message UpdateServiceTagResponse {
+    Response response = 1;
+}
+
+message AddServiceTagsRequest {
+    string serviceId = 1;
+    map<string, string> tags = 2;
+}
+
+message AddServiceTagsResponse {
+    Response response = 1;
+}
+
+message DeleteServiceTagsRequest {
+    string serviceId = 1;
+    repeated string keys = 2;
+}
+
+message DeleteServiceTagsResponse {
+    Response response = 1;
+}
+
+// Micro service process instance
+
+message HealthCheck {
+    string mode = 1;
+    int32 port = 2;
+    int32 interval = 3;
+    int32 times = 4;
+    string url = 5;
+}
+
+message MicroServiceInstance {
+    string instanceId = 1;
+    string serviceId = 2;
+
+    repeated string endpoints = 3;
+
+    string hostName = 4;
+
+    string status = 5; // UP|DOWN|STARTING|OUTOFSERVICE
+
+    map<string, string> properties = 6; // reserved key list: region|az|stage|group
+
+    HealthCheck healthCheck = 7;
+
+    string timestamp = 8;
+
+    DataCenterInfo dataCenterInfo = 9;
+
+    string modTimestamp = 10;
+
+    string version = 11;
+}
+
+message DataCenterInfo {
+    string name = 1;
+    string region = 2;
+    string availableZone = 3;
+}
+
+message MicroServiceInstanceKey {
+    string instanceId = 1;
+    string serviceId = 2;
+}
+
+message RegisterInstanceRequest {
+    MicroServiceInstance instance = 1;
+}
+
+message RegisterInstanceResponse {
+    Response response = 1;
+    string instanceId = 2;
+}
+
+message UnregisterInstanceRequest {
+    string serviceId = 1;
+    string instanceId = 2;
+}
+
+message UnregisterInstanceResponse {
+    Response response = 1;
+}
+
+message HeartbeatRequest {
+    string serviceId = 1;
+    string instanceId = 2;
+}
+
+message HeartbeatResponse {
+    Response response = 1;
+}
+
+message FindInstancesRequest {
+    string consumerServiceId = 1;
+    string appId = 2;
+    string serviceName = 3;
+    string versionRule = 4; // version rule
+    repeated string tags = 5;
+    string environment = 6;
+}
+
+message FindInstancesResponse {
+    Response response = 1;
+    repeated MicroServiceInstance instances = 2;
+}
+
+message GetOneInstanceRequest {
+    string consumerServiceId = 1;
+    string providerServiceId = 2;
+    string providerInstanceId = 3;
+    repeated string tags = 4;
+}
+
+message GetOneInstanceResponse {
+    Response response = 1;
+    MicroServiceInstance instance = 2;
+}
+
+message GetInstancesRequest {
+    string consumerServiceId = 1;
+    string providerServiceId = 2;
+    repeated string tags = 3;
+}
+
+message GetInstancesResponse {
+    Response response = 1;
+    repeated MicroServiceInstance instances = 2;
+}
+
+message UpdateInstanceStatusRequest {
+    string serviceId = 1;
+    string instanceId = 2;
+    string status = 3;
+}
+
+message UpdateInstanceStatusResponse {
+    Response response = 1;
+}
+
+message UpdateInstancePropsRequest {
+    string serviceId = 1;
+    string instanceId = 2;
+    map<string, string> properties = 3; // reserved key list: region|az|stage|group
+}
+
+message UpdateInstancePropsResponse {
+    Response response = 1;
+}
+
+message WatchInstanceRequest {
+    string selfServiceId = 1;
+}
+
+message WatchInstanceResponse {
+    Response response = 1;
+    string action = 2; // UPDATE|DELETE|CREATE
+    MicroServiceKey key = 3;
+    MicroServiceInstance instance = 4;
+}
+
+message GetSchemaRequest {
+    string serviceId = 1;
+    string schemaId = 2;
+}
+
+message GetAllSchemaRequest {
+    string serviceId = 1;
+    bool withSchema = 2;
+}
+
+message GetSchemaResponse {
+    Response response = 1;
+    string schema = 2;
+    string schemaSummary = 3;
+}
+
+message GetAllSchemaResponse {
+    Response response = 1;
+    repeated Schema schemas = 2;
+}
+
+message DeleteSchemaRequest {
+    string serviceId = 1;
+    string schemaId = 2;
+}
+
+message DeleteSchemaResponse {
+    Response response = 1;
+}
+
+message ModifySchemaRequest {
+    string serviceId = 1;
+    string schemaId = 2;
+    string schema = 3;
+    string summary = 4;
+}
+
+message ModifySchemaResponse {
+    Response response = 1;
+}
+
+message AddDependenciesRequest {
+    repeated ConsumerDependency dependencies = 1;
+}
+
+message AddDependenciesResponse {
+    Response response = 1;
+}
+
+message CreateDependenciesRequest {
+    repeated ConsumerDependency dependencies = 1;
+}
+
+message ConsumerDependency {
+    MicroServiceKey consumer = 1;
+    repeated MicroServiceKey providers = 2;
+    bool override = 3;
+}
+
+message CreateDependenciesResponse {
+    Response response = 1;
+}
+
+message GetDependenciesRequest {
+    string serviceId = 1;
+    bool sameDomain = 2;
+    bool noSelf = 3;
+}
+
+message GetConDependenciesResponse {
+    Response response = 1;
+    repeated MicroService providers = 2;
+}
+
+message GetProDependenciesResponse {
+    Response response = 1;
+    repeated MicroService consumers = 2;
+}
+
+//服务详情
+message ServiceDetail {
+    MicroService microService = 1;
+    repeated MicroServiceInstance instances = 2;
+    repeated Schema schemaInfos = 3;
+    repeated ServiceRule rules = 4;
+    repeated MicroService providers = 5;
+    repeated MicroService consumers = 6;
+    map<string, string> tags = 7;
+    repeated string microServiceVersions = 8;
+    Statistics statics = 9;
+}
+
+//服务详情返回信息
+message GetServiceDetailResponse {
+    Response response = 1;
+    ServiceDetail service = 2;
+}
+
+//删除服务请求
+message DelServicesRequest {
+    repeated string serviceIds = 1;
+    bool force = 2;
+}
+//删除服务响应内容
+message DelServicesRspInfo {
+    string errMessage = 1;
+    string serviceId = 2;
+}
+
+//删除服务响应
+message DelServicesResponse {
+    Response response = 1;
+    repeated DelServicesRspInfo services = 2;
+}
+
+message GetAppsRequest {
+    string environment = 1;
+}
+
+message GetAppsResponse {
+    Response response = 1;
+    repeated string appIds = 2;
+}
