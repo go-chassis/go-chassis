@@ -22,6 +22,7 @@ it surely decrease the throughput and increase the latency of your service
 go chassis can bring better performance to go program, 
 you can use Istio configurations to control go chassis.
 
+Go chassis also has a service mesh solution https://github.com/go-mesh/mesher, it is build on top of go chassis. you can use same registry, configuration to govenance all of service writen in diffrent language.
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
  fit both client side discovery and server side discovery pattern 
