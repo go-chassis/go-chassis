@@ -3,12 +3,11 @@ Writing gRPC service
 Checkout full example in [here](https://github.com/go-chassis/go-chassis-examples/tree/master/grpc)
 ### Define grpc contract
 1个工程或者go package，推荐结构如下
-
+```
 schemas
-
-├── helloworld
-
-│ ├──helloworld.proto
+`-- helloworld
+    `-- helloworld.proto
+```
 
 1.定义helloworld.proto文件
 ```proto
@@ -34,17 +33,18 @@ message HelloReply {
 
 ```
 2.通过pb生成go文件 helloworld.pb.go
+```bash
+protoc --go_out=plugins=grpc:. helloworld.proto
+```
 
-protoc --go_out=. helloworld.proto
 将生成的go文件拷贝到目录中
 
+```
 schemas
-
-├── helloworld
-
-│ ├──helloworld.proto
-
-│ └──helloworld.pb.go
+`-- helloworld
+    |-- helloworld.pb.go
+    `-- helloworld.proto
+```
 
 After generated, need to change one variable name
 ```go
@@ -66,16 +66,13 @@ change _Greeter_serviceDesc to *Greeter_serviceDesc*
 
 ### Provider Side
 1个工程或者go package，推荐结构如下
-
-server/
-
-├── conf
-
-│ ├── chassis.yaml
-
-│ └── microservice.yaml
-
-└── main.go
+```
+server
+|-- conf
+|   |-- chassis.yaml
+|   `-- microservice.yaml
+`-- main.go
+```
 
 1.编写接口
 ```go
@@ -123,35 +120,29 @@ func main() {
 ```
 ### Consumer Side
 1个工程或者go package，推荐结构如下
+```
+client
+|-- conf
+|   |-- chassis.yaml
+|   `-- microservice.yaml
+`-- main.go
+```
 
-client/
-
-├── conf
-
-│ ├── chassis.yaml
-
-│ └── microservice.yaml
-
-└── main.go
-
-1.拿到pb文件生成go代码
-
-protoc --go_out=. hello.proto
-
-2.修改配置文件chassis.yaml
-
+1.修改配置文件chassis.yaml
 ```yaml
 cse:
   service:
     registry:
       address: http://127.0.0.1:30100
 ```
-3.修改microservice.yaml
+
+2.修改microservice.yaml
 ```yaml
 service_description:
   name: Client
 ```
-4.main中调用服务端，指定微服务名，schema，operation与参数和返回
+
+3.main中调用服务端，指定微服务名，schema，operation与参数和返回
 ```go
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
