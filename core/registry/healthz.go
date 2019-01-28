@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	chassisClient "github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/healthz/client"
+	"github.com/go-mesh/openlogging"
 )
 
 const (
@@ -153,7 +155,7 @@ func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
 // HealthCheck is the function adds the instance to HealthChecker
 func HealthCheck(service, version, appID string, instance *MicroServiceInstance) error {
 	if !config.GetServiceDiscoveryHealthCheck() {
-		return fmt.Errorf("Health check is disabled")
+		return fmt.Errorf("health check is disabled")
 	}
 
 	return defaultHealthChecker.Add(&WrapInstance{
@@ -192,7 +194,20 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 		// case: keep still alive instances
 		if _, ok := mapUps[exp.InstanceID]; ok {
 			lefts = append(lefts, exp)
+			openlogging.Debug(fmt.Sprintf("cache instance: %s", exp))
 			continue
+		} else {
+			for p, ep := range exp.EndpointsMap {
+				if err := chassisClient.Close(p, service, ep); err != nil {
+					if err != chassisClient.ErrClientNotExist {
+						openlogging.Error(fmt.Sprintf("can not close [%s] client for service [%s],intance [%s,%s,%s]: %s",
+							p, service, exp.InstanceID, ep, exp.HostName, err))
+					}
+				} else {
+					openlogging.Debug(fmt.Sprintf("closed [%s] client for service [%s],intance [%s,%s,%s]",
+						p, service, exp.InstanceID, ep, exp.HostName))
+				}
+			}
 		}
 		// case: remove instances with the non-up status
 		if _, ok := downs[exp.InstanceID]; ok {
@@ -219,5 +234,6 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 	} else {
 		MicroserviceInstanceIndex.Set(service, lefts)
 	}
+
 	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(lefts), service)
 }

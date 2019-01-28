@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"crypto/tls"
+	"errors"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -15,6 +16,9 @@ import (
 
 var clients = make(map[string]ProtocolClient)
 var sl sync.RWMutex
+
+//ErrClientNotExist happens if client do not exist
+var ErrClientNotExist = errors.New("client not exists")
 
 //DefaultPoolSize is 500
 const DefaultPoolSize = 50
@@ -101,7 +105,7 @@ func Close(protocol, service, endpoint string) error {
 	c, ok := clients[key]
 	sl.RUnlock()
 	if !ok {
-		return fmt.Errorf("client not exists")
+		return ErrClientNotExist
 	}
 	if err := c.Close(); err != nil {
 		lager.Logger.Errorf("can not close client %s:%s%:s, err [%s]", protocol, service, endpoint, err.Error())
