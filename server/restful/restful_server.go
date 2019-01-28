@@ -246,8 +246,7 @@ func (r *restfulServer) Start() error {
 			err = r.server.ListenAndServe()
 		}
 		if err != nil {
-			openlogging.GetLogger().Error("Can't start http server",
-				openlogging.WithTags(openlogging.Tags{"err": err.Error()}))
+			openlogging.GetLogger().Error("http server err: " + err.Error())
 			server.ErrRuntime <- err
 		}
 
@@ -259,10 +258,10 @@ func (r *restfulServer) Start() error {
 
 func (r *restfulServer) Stop() error {
 	if r.server == nil {
-		openlogging.GetLogger().Info("http server never started")
+		openlogging.Info("http server never started")
 		return nil
 	}
-	//only golang 1.8 is support graceful shutdown.
+	//only golang 1.8 support graceful shutdown.
 	if err := r.server.Shutdown(nil); err != nil {
 		return err // failure/timeout shutting down the server gracefully
 	}
