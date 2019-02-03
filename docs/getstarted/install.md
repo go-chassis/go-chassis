@@ -17,11 +17,11 @@ Minimize Installation
 
 1. Install [service-center](http://servicecomb.incubator.apache.org/release/)
 
-1. [Write your first http micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
+1. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 
 
 Use gRPC communication
 ===================
 follow https://developers.google.com/protocol-buffers/docs/gotutorial to install grpc 
 
-[Write your first grpc micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rpc.html)
+[Write your first grpc micro service](http://docs.go-chassis.com/getstarted/writing-rpc.html)
