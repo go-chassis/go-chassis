@@ -4,7 +4,7 @@
 Circuit breaker help to isolate upstream services during runtime,
 all of invocation will be executed by circuit, under its protection, if there is too much error, time out or concurrency,
 circuit will open to stop network communication
-it also monitor each service call to make service [observable](https://go-chassis.readthedocs.io/en/latest/user-guides/metrics.html)
+it also monitor each service call to make service [observable](https://docs.go-chassis.com/user-guides/metrics.html)
 
 ## **Configuration**
 
@@ -56,7 +56,7 @@ if retry failed, circuit will open again.
 
 **cse.fallbackpolicy.policy**
 > *(optional, string)* fallback policy  [*returnnull*| *throwexception*]，default is returnnull. 
-you can also [custom fallback policy](http://go-chassis.readthedocs.io/en/latest/dev-guides/circuit.md)
+you can also [custom fallback policy](http://docs.go-chassis.com/dev-guides/circuit.md)
 
 
 ## **Examples**

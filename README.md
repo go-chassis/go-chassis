@@ -45,7 +45,7 @@ Go chassis also has a service mesh solution https://github.com/go-mesh/mesher, i
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
 # Quick Start
-You can see more documentations in [here](http://go-chassis.readthedocs.io/en/latest/)
+You can see more documentations in [here](http://docs.go-chassis.com/)
 
 1. Install [go 1.10+](https://golang.org/doc/install) 
 
@@ -66,7 +66,7 @@ NOTICE：if you do not use mod, I can not asure you the compability. however you
 
 4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
 
-5. [Write your first http micro service](http://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
+5. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 
 
 
