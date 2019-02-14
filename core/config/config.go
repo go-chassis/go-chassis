@@ -12,6 +12,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-mesh/openlogging"
@@ -338,6 +339,8 @@ func Init() error {
 			lager.Logger.Error("Get hostname failed:" + err.Error())
 			return err
 		}
+	} else if runtime.HostName == "0.0.0.0" {
+		runtime.HostName = iputil.GetLocalIP()
 	}
 	lager.Logger.Info("Host name is " + runtime.HostName)
 	return err
