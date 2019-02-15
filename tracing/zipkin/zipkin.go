@@ -2,13 +2,14 @@ package zipkin
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/opentracing/opentracing-go"
 	"github.com/openzipkin-contrib/zipkin-go-opentracing"
-	"strconv"
-	"time"
 )
 
 //const for default values
@@ -48,7 +49,7 @@ func NewTracer(options map[string]string) (opentracing.Tracer, error) {
 	if collectorOption == "" {
 		collectorOption = DefaultCollector
 	}
-	lager.Logger.Infof("New Zipkin tracer with options %s,%s,%s", uri, batchSize, batchInterval)
+	lager.Logger.Infof("New Zipkin tracer with options %s,%d,%s", uri, batchSize, batchInterval)
 	if collectorOption == DefaultCollector {
 		var err error
 		collector, err = zipkintracer.NewHTTPCollector(uri, zipkintracer.HTTPBatchSize(batchSize), zipkintracer.HTTPBatchInterval(batchInterval))
