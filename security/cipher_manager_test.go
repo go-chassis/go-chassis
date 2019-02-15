@@ -1,6 +1,7 @@
 package security_test
 
 import (
+	security2 "github.com/go-chassis/foundation/security"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/security"
 	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
@@ -15,7 +16,7 @@ type DefaultCipher struct {
 func init() {
 	security.InstallCipherPlugin("default", new)
 }
-func new() security.Cipher {
+func new() security2.Cipher {
 
 	return &DefaultCipher{}
 }

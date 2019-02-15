@@ -4,8 +4,9 @@ require (
 	github.com/apache/thrift v0.0.0-20180829120307-8de3749235db
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.8.0+incompatible
-	github.com/go-chassis/go-archaius v0.0.0-20190125073214-ee4ab306b14e
-	github.com/go-chassis/go-cc-client v0.0.0-20181109091810-e4f730e7ed13
+	github.com/go-chassis/foundation v0.0.0-20190203091418-304855ea28bf
+	github.com/go-chassis/go-archaius v0.7.0
+	github.com/go-chassis/go-cc-client v0.5.0
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
 	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
