@@ -28,4 +28,5 @@ User guides
    user-guides/tls
    user-guides/contract
    user-guides/go-java-highway
+   user-guides/env
 

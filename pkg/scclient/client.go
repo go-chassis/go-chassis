@@ -1,6 +1,7 @@
 package client
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,9 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"crypto/sha256"
 	"github.com/cenkalti/backoff"
-	"github.com/go-chassis/go-chassis/pkg/httpclient"
+	"github.com/go-chassis/foundation/httpclient"
 	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"

@@ -16,7 +16,10 @@
 // Package plain created on 2017/6/22
 package plain
 
-import "github.com/go-chassis/go-chassis/security"
+import (
+	security2 "github.com/go-chassis/foundation/security"
+	"github.com/go-chassis/go-chassis/security"
+)
 
 //DefaultCipher is a struct
 type DefaultCipher struct {
@@ -25,7 +28,7 @@ type DefaultCipher struct {
 func init() {
 	security.InstallCipherPlugin("default", new)
 }
-func new() security.Cipher {
+func new() security2.Cipher {
 
 	return &DefaultCipher{}
 }
