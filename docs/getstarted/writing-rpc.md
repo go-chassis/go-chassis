@@ -107,7 +107,11 @@ cse:
 service_description:
   name: RPCServer
 ```
-5.main.go中启动服务
+5.In main.go import grpc server to enable grpc protocol and start go chassis
+```go
+import _ "github.com/go-chassis/go-chassis/server/grpc"
+```
+
 ```go
 func main() {
     //start all server you register in server/schemas.
@@ -142,7 +146,12 @@ service_description:
   name: Client
 ```
 
-3.main中调用服务端，指定微服务名，schema，operation与参数和返回
+3.5.In main.go import grpc client to enable grpc protocol.
+```go
+import _ "github.com/go-chassis/go-chassis/client/grpc"
+```
+
+Use invoker to call remote function
 ```go
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
