@@ -5,11 +5,12 @@ package hystrix
 import (
 	"errors"
 	"fmt"
-	"github.com/go-mesh/openlogging"
 	"log"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/go-mesh/openlogging"
 )
 
 // CircuitBreaker is created for each ExecutorPool to track whether requests
@@ -66,7 +67,7 @@ func GetCircuit(name string) (*CircuitBreaker, bool, error) {
 		if cb, ok := circuitBreakers[name]; ok {
 			return cb, false, nil
 		}
-		openlogging.GetLogger().Infof("new circuit [%s] is protecting you service", name)
+		openlogging.GetLogger().Infof("new circuit [%s] is protecting your service", name)
 		circuitBreakers[name] = newCircuitBreaker(name)
 	} else {
 		defer circuitBreakersMutex.RUnlock()

@@ -7,11 +7,12 @@ import (
 
 	"crypto/tls"
 	"errors"
+	"time"
+
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"time"
 )
 
 var clients = make(map[string]ProtocolClient)
@@ -50,7 +51,7 @@ func GetFailureMap(p string) map[string]bool {
 func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
-		lager.Logger.Error(fmt.Sprintf("don not Support [%s] client", protocol))
+		lager.Logger.Error(fmt.Sprintf("do not Support [%s] client", protocol))
 		return nil, err
 	}
 	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
