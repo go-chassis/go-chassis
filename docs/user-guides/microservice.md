@@ -16,7 +16,8 @@ you can consider a project as an micro service, after compile, build and run, it
 > *(required, string)* Micro service name
 
 **hostname**
-> *(optional, string)* hostname of host, it can be IP or hostname,default is hostname return by os.hostname()
+> *(optional, string)* hostname of host, it can be IP, $INTERNAL_IP placeholder or hostname, default is hostname return by os.hostname()
+> When specify `hostname: $INTERNAL_IP` go-chassis will report ip address instead of hostname to service center, this is useful when hostname is meaningless in some scenes, such as a docker host.
 
 **APPLICATION_ID**
 > *(optional, string)* Application ID, default value is "default"

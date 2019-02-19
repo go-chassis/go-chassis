@@ -69,6 +69,11 @@ const (
 	LBSessionID     = "go-chassisLB"
 )
 
+// configuration placeholders
+const (
+	PlaceholderInternalIP = "$INTERNAL_IP"
+)
+
 // SessionNameSpaceKey metadata session namespace key
 const SessionNameSpaceKey = "_Session_Namespace"
 
