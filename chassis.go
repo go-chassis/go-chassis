@@ -205,10 +205,10 @@ func (c *chassis) start() error {
 			return err
 		}
 	}
-	err := server.StartServer()
-	if err != nil {
-		return err
-	}
+	//err := server.StartServer()
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 

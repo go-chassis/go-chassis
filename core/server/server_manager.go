@@ -137,5 +137,7 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 	}
 	s = f(o)
 	servers[name] = s
+	// 直接启动
+	s.Start()
 	return nil
 }

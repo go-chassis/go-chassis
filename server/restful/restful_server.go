@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
+	"net"
 	"net/http"
 	"reflect"
 	"strings"
@@ -239,11 +242,33 @@ func (r *restfulServer) Start() error {
 		FileStyle:       "yaml",
 		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
 	swagger.RegisterSwaggerService(swaggerConfig, r.container)
+
+	l, err := net.Listen("tcp", config.Address)
+	if err != nil {
+		return fmt.Errorf("failed to start listener: %s", err.Error())
+	}
+
+	// register real port
+	realAddr := l.Addr().String()
+	host, port, _ := net.SplitHostPort(realAddr)
+	ip := net.ParseIP(host)
+	if ip.IsUnspecified() {
+		if iputil.IsIPv6Address(ip) {
+			host = iputil.GetLocalIPv6()
+			if host == "" {
+				host = iputil.GetLocalIP()
+			}
+		} else {
+			host = iputil.GetLocalIP()
+		}
+	}
+	registry.InstanceEndpoints[Name] = net.JoinHostPort(host, port)
+
 	go func() {
 		if r.server.TLSConfig != nil {
-			err = r.server.ListenAndServeTLS("", "")
+			err = r.server.ServeTLS(l, "", "")
 		} else {
-			err = r.server.ListenAndServe()
+			err = r.server.Serve(l)
 		}
 		if err != nil {
 			openlogging.GetLogger().Error("http server err: " + err.Error())
@@ -252,7 +277,7 @@ func (r *restfulServer) Start() error {
 
 	}()
 
-	lager.Logger.Infof("Restful server listening on: %s", config.Address)
+	lager.Logger.Infof("Restful server listening on: %s", registry.InstanceEndpoints[Name])
 	return nil
 }
 

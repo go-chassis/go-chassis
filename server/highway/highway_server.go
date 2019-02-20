@@ -3,6 +3,8 @@ package highway
 import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/yockii/go-chassis/core/registry"
+	"github.com/yockii/go-chassis/pkg/util/iputil"
 	"sync"
 
 	"crypto/tls"
@@ -79,6 +81,20 @@ func (s *highwayServer) Start() error {
 		lager.Logger.Error("listening failed, reason:" + lisErr.Error())
 		return lisErr
 	}
+
+	// register real port
+	realAddr := listener.Addr().String()
+	host, port, _ := net.SplitHostPort(realAddr)
+	ip := net.ParseIP(host)
+	if ip.IsUnspecified() {
+		if iputil.IsIPv6Address(ip) {
+			host = iputil.GetLocalIPv6()
+		} else {
+			host = iputil.GetLocalIP()
+		}
+	}
+	registry.InstanceEndpoints[Name] = net.JoinHostPort(host, port)
+
 	go s.acceptLoop(listener)
 	return nil
 }

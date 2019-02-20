@@ -10,6 +10,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-mesh/openlogging"
+	"github.com/yockii/go-chassis/core/registry"
+	"github.com/yockii/go-chassis/pkg/util/iputil"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -106,6 +108,20 @@ func (s *Server) Start() error {
 		openlogging.GetLogger().Error("listening failed, reason:" + lisErr.Error())
 		return lisErr
 	}
+
+	// register real port
+	realAddr := listener.Addr().String()
+	host, port, _ := net.SplitHostPort(realAddr)
+	ip := net.ParseIP(host)
+	if ip.IsUnspecified() {
+		if iputil.IsIPv6Address(ip) {
+			host = iputil.GetLocalIPv6()
+		} else {
+			host = iputil.GetLocalIP()
+		}
+	}
+	registry.InstanceEndpoints[Name] = net.JoinHostPort(host, port)
+
 	go func() {
 		if err := s.s.Serve(listener); err != nil {
 			server.ErrRuntime <- err
