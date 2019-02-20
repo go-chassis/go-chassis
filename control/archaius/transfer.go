@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/control"
+	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -82,6 +83,9 @@ func SaveToCBCache(raw *model.HystrixConfig) {
 	newKeys := make(map[string]bool)
 	// if there is no config, none key will be updated
 	if raw != nil {
+		for _, v := range client.GetAllClient() {
+			v.SetTimeOut(raw.IsolationProperties.Consumer.TimeoutInMilliseconds)
+		}
 		newKeys = reloadCBCache(raw)
 	}
 	// remove outdated keys

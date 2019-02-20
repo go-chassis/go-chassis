@@ -45,6 +45,11 @@ func (c *highwayClient) String() string {
 func (c *highwayClient) Close() error {
 	return nil
 }
+
+// SetTimeOut set timeout
+func (c *highwayClient) SetTimeOut(i int) {
+
+}
 func invocation2Req(inv *invocation.Invocation) *Request {
 	highwayReq := &Request{}
 	highwayReq.MsgID = uint64(int(GenerateMsgID()))

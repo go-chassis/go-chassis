@@ -4,6 +4,7 @@ package client
 import (
 	"context"
 	"errors"
+
 	"github.com/go-chassis/go-chassis/core/invocation"
 )
 
@@ -29,4 +30,5 @@ type ProtocolClient interface {
 	Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error
 	String() string
 	Close() error
+	SetTimeOut(int)
 }

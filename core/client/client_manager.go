@@ -117,3 +117,8 @@ func Close(protocol, service, endpoint string) error {
 	sl.Unlock()
 	return nil
 }
+
+// GetAllClient get all client cache for cache
+func GetAllClient() map[string]ProtocolClient {
+	return clients
+}

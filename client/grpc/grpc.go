@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"time"
+
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -9,7 +11,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
-	"time"
 )
 
 func init() {
@@ -42,7 +43,6 @@ func New(opts client.Options) (client.ProtocolClient, error) {
 	}
 	return &Client{
 		c:       conn,
-		timeout: timeout,
 		service: opts.Service,
 		opts:    opts,
 	}, nil
@@ -75,4 +75,9 @@ func (c *Client) String() string {
 // Close close conn
 func (c *Client) Close() error {
 	return c.c.Close()
+}
+
+// SetTimeOut set timeout
+func (c *Client) SetTimeOut(i int) {
+	c.timeout = time.Duration(i) * time.Millisecond
 }
