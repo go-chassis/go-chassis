@@ -3,8 +3,8 @@ package highway
 import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/yockii/go-chassis/core/registry"
-	"github.com/yockii/go-chassis/pkg/util/iputil"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"sync"
 
 	"crypto/tls"
