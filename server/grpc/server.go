@@ -1,14 +1,15 @@
 package grpc
 
 import (
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/go-mesh/openlogging"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -95,17 +96,15 @@ func (s *Server) Register(schema interface{}, options ...server.RegisterOption) 
 
 //Start launch the server
 func (s *Server) Start() error {
-	var listener net.Listener
-	var lisErr error
-	if s.opts.TLSConfig == nil {
-		listener, lisErr = net.Listen("tcp", s.opts.Address)
-	} else {
-		listener, lisErr = tls.Listen("tcp", s.opts.Address, s.opts.TLSConfig)
-	}
+	listener, host, port, lisErr := iputil.StartListener(s.opts.Address, s.opts.TLSConfig)
+
 	if lisErr != nil {
-		openlogging.GetLogger().Error("listening failed, reason:" + lisErr.Error())
+		openlogging.Error("listening failed, reason:" + lisErr.Error())
 		return lisErr
 	}
+
+	registry.InstanceEndpoints[Name] = net.JoinHostPort(host, port)
+
 	go func() {
 		if err := s.s.Serve(listener); err != nil {
 			server.ErrRuntime <- err
