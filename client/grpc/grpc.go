@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"time"
+
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -9,7 +11,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
-	"time"
 )
 
 func init() {
@@ -26,8 +27,23 @@ type Client struct {
 
 //New create new grpc client
 func New(opts client.Options) (client.ProtocolClient, error) {
-	var err error
+
+	conn, err := newClientConn(opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		c:       conn,
+		timeout: config.GetTimeoutDuration(opts.Service, common.Consumer),
+		service: opts.Service,
+		opts:    opts,
+	}, nil
+}
+func newClientConn(opts client.Options) (*grpc.ClientConn, error) {
 	var conn *grpc.ClientConn
+	var err error
 	timeout := config.GetTimeoutDuration(opts.Service, common.Consumer)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -37,15 +53,7 @@ func New(opts client.Options) (client.ProtocolClient, error) {
 		conn, err = grpc.DialContext(ctx, opts.Endpoint,
 			grpc.WithTransportCredentials(credentials.NewTLS(opts.TLSConfig)))
 	}
-	if err != nil {
-		return nil, err
-	}
-	return &Client{
-		c:       conn,
-		timeout: timeout,
-		service: opts.Service,
-		opts:    opts,
-	}, nil
+	return conn, err
 }
 
 //TransformContext will deliver header in chassis context key to grpc context key
@@ -75,4 +83,24 @@ func (c *Client) String() string {
 // Close close conn
 func (c *Client) Close() error {
 	return c.c.Close()
+}
+
+// ReloadConfigs reload configs for timeout and tls
+func (c *Client) ReloadConfigs(opts client.Options) {
+	newOpts := client.EqualOpts(c.opts, opts)
+	if newOpts.Service != c.service &&
+		newOpts.TLSConfig != c.opts.TLSConfig && newOpts.Endpoint != c.opts.Endpoint {
+		conn, err := newClientConn(opts)
+		if err == nil && conn != nil {
+			c.c = conn
+		}
+	}
+
+	c.opts = newOpts
+	c.timeout = newOpts.Timeout
+}
+
+// GetOptions method return opts
+func (c *Client) GetOptions() client.Options {
+	return c.opts
 }

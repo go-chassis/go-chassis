@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 )
@@ -28,6 +29,7 @@ const DefaultPoolSize = 50
 type Options struct {
 	Service   string
 	PoolSize  int
+	Timeout   time.Duration
 	Endpoint  string
 	PoolTTL   time.Duration
 	TLSConfig *tls.Config
@@ -96,6 +98,7 @@ func GetClient(protocol, service, endpoint string) (ProtocolClient, error) {
 		clients[key] = c
 		sl.Unlock()
 	}
+
 	return c, nil
 }
 
@@ -116,4 +119,40 @@ func Close(protocol, service, endpoint string) error {
 	delete(clients, key)
 	sl.Unlock()
 	return nil
+}
+
+// SetTimeoutToClientCache set timeout to client
+func SetTimeoutToClientCache(spec *model.IsolationWrapper) {
+	for k := range clients {
+		c := clients[k]
+		if c != nil {
+			if v, ok := spec.Consumer.AnyService[c.GetOptions().Service]; ok {
+				clients[k].ReloadConfigs(Options{Timeout: time.Duration(v.TimeoutInMilliseconds) * time.Millisecond})
+			} else {
+				clients[k].ReloadConfigs(Options{Timeout: time.Duration(spec.Consumer.TimeoutInMilliseconds) * time.Millisecond})
+			}
+		}
+	}
+}
+
+// EqualOpts equal newOpts and oldOpts
+func EqualOpts(oldOpts, newOpts Options) Options {
+	if newOpts.Timeout != oldOpts.Timeout {
+		oldOpts.Timeout = newOpts.Timeout
+	}
+
+	if newOpts.PoolSize != 0 {
+		oldOpts.PoolSize = newOpts.PoolSize
+	}
+	if newOpts.PoolTTL != 0 {
+		oldOpts.PoolTTL = newOpts.PoolTTL
+	}
+	if newOpts.TLSConfig != nil {
+		oldOpts.TLSConfig = newOpts.TLSConfig
+	}
+
+	for k, v := range newOpts.Failure {
+		oldOpts.Failure[k] = v
+	}
+	return oldOpts
 }

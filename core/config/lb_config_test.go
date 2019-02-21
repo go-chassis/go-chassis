@@ -2,10 +2,12 @@ package config_test
 
 import (
 	// "github.com/go-chassis/go-chassis/core/common"
+	"testing"
+
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestGetStrategyName(t *testing.T) {
@@ -59,4 +61,25 @@ func BenchmarkGetStrategyName(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = config.GetStrategyName("", "")
 	}
+}
+func TestRetryEnabled(t *testing.T) {
+	b := config.RetryEnabled("source", "service")
+	assert.Equal(t, false, b)
+}
+func TestBackOffKind(t *testing.T) {
+	s := config.BackOffKind("source", "service")
+	assert.Equal(t, backoff.BackoffConstant, s)
+}
+
+func TestBackOffMaxMs(t *testing.T) {
+	max := config.BackOffMaxMs("source", "service")
+	assert.Equal(t, 400, max)
+}
+func TestBackOffMinMs(t *testing.T) {
+	min := config.BackOffMinMs("source", "service")
+	assert.Equal(t, 200, min)
+}
+func TestGetRetryOnSame(t *testing.T) {
+	i := config.GetRetryOnSame("source", "service")
+	assert.Equal(t, 0, i)
 }

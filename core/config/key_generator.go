@@ -1,6 +1,10 @@
 package config
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/go-chassis/go-chassis/core/common"
+)
 
 // constant for hystrix keys
 const (
@@ -42,8 +46,10 @@ Hystrix Keys
 */
 
 // GetHystrixSpecificKey get hystrix specific key
-func GetHystrixSpecificKey(namespace, cmd, property string) string {
-	return strings.Join([]string{FixedPrefix, namespace, cmd, property}, ".")
+// get service timeout config key , input `prefix(cse) , namespace , service , cmd , property`
+// get global timeout conifg , please input `prefix(cse) , namespace , cmd , property`
+func GetHystrixSpecificKey(keys ...string) string {
+	return strings.Join(keys, ".")
 }
 
 // GetForceFallbackKey get force fallback key
@@ -56,34 +62,24 @@ func GetDefaultForceFallbackKey(t string) string {
 	return GetHystrixSpecificKey(NamespaceFallback, t, PropertyForce)
 }
 
-// GetTimeEnabledKey get time enabled key
-func GetTimeEnabledKey(command string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, command, PropertyTimeoutEnabled)
-}
-
-// GetDefaultTimeEnabledKey get default time enabled key
-func GetDefaultTimeEnabledKey(t string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, t, PropertyTimeoutEnabled)
-}
-
 // GetTimeoutKey get timeout key
 func GetTimeoutKey(command string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, command, PropertyTimeoutInMilliseconds)
+	return GetHystrixSpecificKey(FixedPrefix, NamespaceIsolation, common.Consumer, command, PropertyTimeoutInMilliseconds)
 }
 
 // GetDefaultTimeoutKey get default timeout key
 func GetDefaultTimeoutKey(t string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, t, PropertyTimeoutInMilliseconds)
+	return GetHystrixSpecificKey(FixedPrefix, NamespaceIsolation, t, PropertyTimeoutInMilliseconds)
 }
 
 // GetMaxConcurrentKey get maximum concurrent key
 func GetMaxConcurrentKey(command string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, command, PropertyMaxConcurrentRequests)
+	return GetHystrixSpecificKey(FixedPrefix, NamespaceIsolation, command, PropertyMaxConcurrentRequests)
 }
 
 // GetDefaultMaxConcurrentKey get default maximum concurrent key
 func GetDefaultMaxConcurrentKey(t string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, t, PropertyMaxConcurrentRequests)
+	return GetHystrixSpecificKey(FixedPrefix, NamespaceIsolation, t, PropertyMaxConcurrentRequests)
 }
 
 // GetErrorPercentThresholdKey get error percentage threshold key
