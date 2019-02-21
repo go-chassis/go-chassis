@@ -58,11 +58,13 @@ git clone git@github.com:go-chassis/go-chassis.git
 3. Use go mod(go 1.11+, experimental but a recommended way)
 ```shell
 cd go-chassis
-GO111MODULE=on go mod download
+export GO111MODULE=on 
+go mod download
 #optional
-GO111MODULE=on go mod vendor
+export GO111MODULE=on 
+go mod vendor
 ```
-NOTICE：if you do not use mod, I can not asure you the compability. however you can still maintain your own vendor, which means you have to solve compiling issue your own.
+NOTICE：if you do not use mod, We can not ensure you the compatibility. however you can still maintain your own vendor, which means you have to solve compiling issue your own.
 
 4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
 
