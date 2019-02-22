@@ -49,12 +49,12 @@ Decrypt(src string) (string, error)
 ---
 
 #### 使用AES Cipher示例
-
+AES algorithem is supplied by Huawei Cloud CSE 
 ```go
 import (
-    _ "github.com/servicecomb/security/plugins/aes"
+    _ "github.com/go-chassis/security/plugins/aes"
     "testing"
-    "github.com/servicecomb/security"
+    "github.com/go-chassis/foundation/security"
     "github.com/stretchr/testify/assert"
     "log"
 )
@@ -75,7 +75,7 @@ func TestAESCipher_Decrypt(t *testing.T) {
 ```go
 package plain
 
-import "github.com/servicecomb/security"
+import "github.com/go-chassis/foundation/security"
 
 type DefaultCipher struct {
 }

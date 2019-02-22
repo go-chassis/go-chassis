@@ -14,6 +14,7 @@ Welcome to go-chassis's documentation!
    get-started
    user-guides
    istio-guides
+   huawei-guides
    discovery-guides
    plugin-tracing-guides
 
