@@ -43,7 +43,10 @@ tag为空时ssl配置为公共配置。registry.consumer及configcenter.consumer
 ssl支持以下配置项，其中若私钥KEY文件加密，则需要指定加解密插件及密码套件等信息进行解密。
 
 **cipherPlugin**
-> *(optional, string)* 指定加解密插件 内部插件支持 *default* *aes*， 默认*default*                                  |
+> *(optional, string)* you can custom 
+[Cipher](https://docs.go-chassis.com/dev-guides/how-to-write-cipher.html) 
+to decrypt "certPwdFile" content,
+ default is *default*                                  |
 
 **verifyPeer**
 >*(optional, bool)* | 是否验证对端,默认*false*
@@ -56,16 +59,16 @@ ssl支持以下配置项，其中若私钥KEY文件加密，则需要指定加�
 > *(optional, string)* TLS协议的最小版本,默认为*TLSv1.2*
 
 **caFile**
-> *(optional, string)* ca文件路径
+> *(optional, string)* Certificate Signing Request file path
 
 **certFile**
-> *(optional, string)* 私钥cert文件路径
+> *(optional, string)* Certificate file path
 
 **keyFile**
-> *(optional, string)*  私钥key文件路径
+> *(optional, string)* RSA Private Key file path
 
 **certPwdFile**
-> *(optional, string)* 私钥key加密的密码文件
+> *(optional, string)* file path which's content is Passphrase of key file
 
 ## API
 
@@ -91,6 +94,14 @@ GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *common.S
 
 ## 示例
 
+### Generate files
+```bash
+openssl genrsa -des3 -out server.key 1024
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+```
+
 ### Provider配置
 
 以下为rest类型provider提供HTTPS访问的ssl配置，其中tag为protocol.serviceType的形式。
@@ -98,13 +109,12 @@ GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *common.S
 ```yaml
 ssl:
   rest.Provider.cipherPlugin: default
-  rest.Provider.verifyPeer: true
   rest.Provider.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
   rest.Provider.protocol: TLSv1.2
-  rest.Provider.keyFile: /etc/ssl/server_key.pem
-  rest.Provider.certFile: /etc/ssl/server.cer
-  rest.Provider.certPwdFile: /etc/ssl/cert_pwd_plain
-  rest.Provider.caFile: /etc/ssl/trust.cer
+  rest.Provider.keyFile: server.key
+  rest.Provider.certFile: server.crt
+  rest.Provider.certPwdFile: pwd # include Passphrase
+  rest.Provider.caFile: server.csr
 ```
 
 ### Consumer配置
