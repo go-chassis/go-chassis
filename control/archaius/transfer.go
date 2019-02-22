@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/control"
+	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -31,6 +32,7 @@ func SaveToLBCache(raw *model.LoadBalancing) {
 			LBConfigCache.Delete(old)
 		}
 	}
+
 }
 func saveDefaultLB(raw *model.LoadBalancing) string { // return updated key
 	c := control.LoadBalancingConfig{
@@ -82,6 +84,7 @@ func SaveToCBCache(raw *model.HystrixConfig) {
 	newKeys := make(map[string]bool)
 	// if there is no config, none key will be updated
 	if raw != nil {
+		client.SetTimeoutToClientCache(raw.IsolationProperties)
 		newKeys = reloadCBCache(raw)
 	}
 	// remove outdated keys

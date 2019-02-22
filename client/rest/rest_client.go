@@ -4,16 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
-	"net"
-	"time"
 )
 
 const (
@@ -147,6 +147,18 @@ func (c *Client) String() string {
 func (c *Client) Close() error {
 	return nil
 }
+
+// ReloadConfigs  reload configs for timeout and tls
+func (c *Client) ReloadConfigs(opts client.Options) {
+	c.opts = client.EqualOpts(c.opts, opts)
+	c.c.Timeout = c.opts.Timeout
+}
+
+// GetOptions method return opts
+func (c *Client) GetOptions() client.Options {
+	return c.opts
+}
+
 func (c *Client) contextToHeader(ctx context.Context, req *http.Request) {
 	for k, v := range common.FromContext(ctx) {
 		req.Header.Set(k, v)
