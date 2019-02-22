@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"sync"
 
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 )
 
@@ -18,7 +19,7 @@ func newRoundRobinStrategy() Strategy {
 }
 
 //ReceiveData receive data
-func (r *RoundRobinStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceKey, protocol, sessionID string) {
+func (r *RoundRobinStrategy) ReceiveData(inv *invocation.Invocation, instances []*registry.MicroServiceInstance, serviceKey string) {
 	r.instances = instances
 	r.key = serviceKey
 }

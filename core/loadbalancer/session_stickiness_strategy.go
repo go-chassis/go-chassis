@@ -3,6 +3,8 @@ package loadbalancer
 import (
 	"sync"
 
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/session"
 )
@@ -66,9 +68,17 @@ func newSessionStickinessStrategy() Strategy {
 }
 
 // ReceiveData receive data
-func (r *SessionStickinessStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string) {
+func (r *SessionStickinessStrategy) ReceiveData(inv *invocation.Invocation, instances []*registry.MicroServiceInstance, serviceName string) {
 	r.instances = instances
-	r.sessionID = sessionID
+	r.sessionID = session.GetSessionID(getNamespace(inv))
+}
+func getNamespace(i *invocation.Invocation) string {
+	if metadata, ok := i.Metadata[common.SessionNameSpaceKey]; ok {
+		if v, ok := metadata.(string); ok {
+			return v
+		}
+	}
+	return common.SessionNameSpaceDefaultValue
 }
 
 // Pick return instance

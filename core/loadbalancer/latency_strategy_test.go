@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	_ "github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
@@ -47,7 +48,10 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	loadbalancer.Enable()
 	f, _ := loadbalancer.GetStrategyPlugin(loadbalancer.StrategyLatency)
 	s := f()
-	s.ReceiveData(instances, "Server", common.ProtocolRest, "")
+	inv := &invocation.Invocation{
+		Protocol: common.ProtocolRest,
+	}
+	s.ReceiveData(inv, instances, "Server")
 	time.Sleep(31 * time.Second)
 	var count int
 	for i := 0; i < 100; i++ {
@@ -62,7 +66,10 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 		t.Error(count)
 	}
 	s = f()
-	s.ReceiveData(instances, "Server", common.ProtocolHighway, "")
+	inv = &invocation.Invocation{
+		Protocol: common.ProtocolHighway,
+	}
+	s.ReceiveData(inv, instances, "Server")
 	count = 0
 	for i := 0; i < 1000; i++ {
 		instance, err := s.Pick()

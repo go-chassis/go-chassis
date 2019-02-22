@@ -10,12 +10,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
-
 	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
-
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/util"
-	"github.com/go-chassis/go-chassis/session"
 )
 
 // LBHandler loadbalancer handler struct
@@ -42,13 +38,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		i.Filters = lbConfig.Filters
 	}
 
-	var sessionID string
-	if i.Strategy == loadbalancer.StrategySessionStickiness {
-		sessionID = session.GetSessionID(getNamespace(i))
-	}
-
-	s, err := loadbalancer.BuildStrategy(i.SourceServiceID, i.MicroServiceName, i.Protocol,
-		sessionID, i.Filters, strategyFun(), i.RouteTags)
+	s, err := loadbalancer.BuildStrategy(i, strategyFun())
 	if err != nil {
 		return "", err
 	}
@@ -152,13 +142,4 @@ func (lb *LBHandler) Name() string {
 
 func newLBHandler() Handler {
 	return &LBHandler{}
-}
-
-func getNamespace(i *invocation.Invocation) string {
-	if metadata, ok := i.Metadata[common.SessionNameSpaceKey]; ok {
-		if v, ok := metadata.(string); ok {
-			return v
-		}
-	}
-	return common.SessionNameSpaceDefaultValue
 }
