@@ -22,7 +22,7 @@ func TestRandomStrategy_Pick(t *testing.T) {
 		},
 	}
 	s := &loadbalancer.RandomStrategy{}
-	s.ReceiveData(instances, "", "", "")
+	s.ReceiveData(nil, instances, "")
 	var last string = "none"
 	var count int
 	for i := 0; i < 100; i++ {
@@ -48,8 +48,8 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 		},
 	}
 	s := &loadbalancer.RoundRobinStrategy{}
-	s.ReceiveData(instances, "", "", "")
-	var last string = "none"
+	s.ReceiveData(nil, instances, "")
+	var last = "none"
 	for i := 0; i < 100000; i++ {
 		instance, err := s.Pick()
 		assert.NoError(t, err)

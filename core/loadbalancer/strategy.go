@@ -27,7 +27,7 @@ func InstallStrategy(name string, s func() Strategy) {
 func GetStrategyPlugin(name string) (func() Strategy, error) {
 	s, ok := strategies[name]
 	if !ok {
-		return nil, fmt.Errorf("Don't support strategyName [%s]", name)
+		return nil, fmt.Errorf("don't support strategyName [%s]", name)
 	}
 
 	return s, nil

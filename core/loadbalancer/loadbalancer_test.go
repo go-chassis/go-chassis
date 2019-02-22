@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
@@ -89,7 +89,13 @@ func TestBuildStrategy(t *testing.T) {
 	runtime.ServiceID = sid
 	t.Log(runtime.ServiceID)
 	time.Sleep(1 * time.Second)
-	s, err := loadbalancer.BuildStrategy(sid, "test1", "", common.LatestVersion, nil, nil, utiltags.Tags{})
+
+	inv := &invocation.Invocation{
+		SourceServiceID:  sid,
+		MicroServiceName: "test1",
+		RouteTags:        utiltags.Tags{},
+	}
+	s, err := loadbalancer.BuildStrategy(inv, nil)
 	assert.NoError(t, err)
 	ins, err := s.Pick()
 	t.Log(ins.EndpointsMap)
@@ -97,7 +103,13 @@ func TestBuildStrategy(t *testing.T) {
 	ins, err = s.Pick()
 	assert.NoError(t, err)
 	t.Log(ins.EndpointsMap)
-	s, err = loadbalancer.BuildStrategy(sid, "fake", "", "0.1", nil, nil, utiltags.Tags{})
+
+	inv = &invocation.Invocation{
+		SourceServiceID:  sid,
+		MicroServiceName: "fake",
+		RouteTags:        utiltags.Tags{},
+	}
+	s, err = loadbalancer.BuildStrategy(inv, nil)
 	assert.Error(t, err)
 	t.Log(err)
 	switch err.(type) {
@@ -141,8 +153,14 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	_, _, _ = registry.DefaultRegistrator.RegisterServiceAndInstance(testData1[0], testData2[1])
 	time.Sleep(1 * time.Second)
 	b.ResetTimer()
+
+	inv := &invocation.Invocation{
+		SourceServiceID:  runtime.ServiceID,
+		MicroServiceName: "test2",
+		RouteTags:        utiltags.Tags{},
+	}
 	for i := 0; i < b.N; i++ {
-		_, _ = loadbalancer.BuildStrategy(runtime.ServiceID, "test2", "", "1.0", nil, nil, utiltags.Tags{})
+		_, _ = loadbalancer.BuildStrategy(inv, nil)
 	}
 
 }

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
@@ -129,10 +130,10 @@ func newWeightedResponseStrategy() Strategy {
 }
 
 // ReceiveData receive data
-func (r *WeightedResponseStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceKey, protocol, sessionID string) {
+func (r *WeightedResponseStrategy) ReceiveData(inv *invocation.Invocation, instances []*registry.MicroServiceInstance, serviceKey string) {
 	r.instances = instances
 	r.serviceName = strings.Split(serviceKey, "|")[0]
-	r.protocol = protocol
+	r.protocol = inv.Protocol
 }
 
 // Pick return instance

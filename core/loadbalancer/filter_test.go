@@ -19,7 +19,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	config.Init()
 	t.Log(config.GlobalDefinition)
-	var datacenter *registry.DataCenterInfo = new(registry.DataCenterInfo)
+	var datacenter = new(registry.DataCenterInfo)
 	if *config.GlobalDefinition.DataCenter == (model.DataCenterInfo{}) {
 		config.GlobalDefinition.DataCenter.AvailableZone = "default-df-1"
 		config.GlobalDefinition.DataCenter.Name = "default-df"
