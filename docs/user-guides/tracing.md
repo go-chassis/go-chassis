@@ -15,6 +15,10 @@ the config is in monitoring.yaml
 >  go chassis tracing pkg is highly extensible, to deal with varies of different tracer settings, 
 it use map to define options, so that developers can freely custom options for tracer
 
+you must import zipkin pkg in main.go
+```go
+import _ "github.com/go-chassis/go-chassis-plugins/tracing/zipkin"
+```
 ## Example
 
 this config means send data to zipkin, tracing-provider must to be added in handler chain
@@ -55,3 +59,5 @@ func (r *TracingHello) Trace(b *rf.Context) {
 	b.Write(resp.ReadBody())
 }
 ```
+
+check [examples](https://github.com/go-chassis/go-chassis-examples/tree/master/monitoring)
