@@ -148,7 +148,7 @@ func RegisterMicroserviceInstances() error {
 
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("Register instance failed, serviceID: %s, err %s", err)
+		lager.Logger.Errorf("Register instance failed, serviceID: %s, err %s", sid, err.Error())
 		return err
 	}
 	//Set to runtime
