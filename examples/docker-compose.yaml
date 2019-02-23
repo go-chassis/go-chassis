@@ -30,5 +30,9 @@ services:
       - "30103:30103"
     environment:
       SC_ADDRESS: http://service-center:30100
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - 9411:9411
 volumes:
   grafana_data:
