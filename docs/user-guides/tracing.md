@@ -7,7 +7,9 @@ the config is in monitoring.yaml
 
 **tracing.tracer**
 
-> *(optional, string)*  what kind of opentracing impl go chassis should use, default is *zipkin*
+> *(optional, string)*  what kind of opentracing plugin go chassis should use, default is *zipkin*.
+But you must import zipkin plugin to enable tracing. otherwise it will report WARN log to say tracing
+is not working.
 
 **tracing.settings**
 
@@ -15,11 +17,13 @@ the config is in monitoring.yaml
 >  go chassis tracing pkg is highly extensible, to deal with varies of different tracer settings, 
 it use map to define options, so that developers can freely custom options for tracer
 
-you must import zipkin pkg in main.go
+
+## Example
+
+you must import tracing plugin pkg in main.go, below use zipkin for tracing
 ```go
 import _ "github.com/go-chassis/go-chassis-plugins/tracing/zipkin"
 ```
-## Example
 
 this config means send data to zipkin, tracing-provider must to be added in handler chain
 
