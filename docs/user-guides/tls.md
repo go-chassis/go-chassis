@@ -1,7 +1,7 @@
 # TLS
 ## 概述
 
-用户可以通过配置SSL/TLS启动HTTPS通信，保障数据的安全传输。包括客户端与服务端TLS，通过配置来自动启用Consumer与Provider的TLS配置。
+用户可以通过配置TLS启动HTTPS通信，保障数据的安全传输。包括客户端与服务端TLS，通过配置来自动启用Consumer与Provider的TLS配置。
 
 ## 配置
 
@@ -32,7 +32,7 @@ tag为空时ssl配置为公共配置。registry.consumer及configcenter.consumer
 >配置中心TLS配置                                     |
 
 **{protocol}.{serviceType}**
->协议为任意协议目前包括 *highway*，*rest*，用户扩展协议后，即可使用新的协议配置。
+>协议为任意协议目前包括 *grpc*，*rest*，用户扩展协议后，即可使用新的协议配置。
 >类型为*Consumer*,*Provider* |
 
 **{name}.{protocol}.{serviceType}**
@@ -42,14 +42,13 @@ tag为空时ssl配置为公共配置。registry.consumer及configcenter.consumer
 
 ssl支持以下配置项，其中若私钥KEY文件加密，则需要指定加解密插件及密码套件等信息进行解密。
 
-**cipherPlugin**
-> *(optional, string)* you can custom 
-[Cipher](https://docs.go-chassis.com/dev-guides/how-to-write-cipher.html) 
-to decrypt "certPwdFile" content,
- default is *default*                                  |
+                       
+**keyFile**
+> *(optional, string)* RSA Private Key file path
 
 **verifyPeer**
->*(optional, bool)* | 是否验证对端,默认*false*
+>*(optional, bool)* 
+是否验证对端,默认*false*
 
 **cipherSuits**
 > *(optional, string)* *TLS\_ECDHE\_RSA\_WITH\_AES\_128\_GCM\_SHA256*, *TLS\_ECDHE\_RSA\_WITH\_AES\_256\_GCM\_SHA384*
@@ -64,11 +63,13 @@ to decrypt "certPwdFile" content,
 **certFile**
 > *(optional, string)* Certificate file path
 
-**keyFile**
-> *(optional, string)* RSA Private Key file path
-
 **certPwdFile**
-> *(optional, string)* file path which's content is Passphrase of key file
+> *(optional, string)* a file path, this file's content is Passphrase of keyFile
+
+**cipherPlugin**
+> *(optional, string)* you can custom 
+[Cipher](https://docs.go-chassis.com/dev-guides/how-to-write-cipher.html) 
+to decrypt "certPwdFile" content, by default no decryption        
 
 ## API
 
@@ -99,7 +100,7 @@ GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *common.S
 openssl genrsa -des3 -out server.key 1024
 openssl req -new -key server.key -out server.csr
 openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
-
+echo {your Passphrase} > pwd
 ```
 
 ### Provider配置
