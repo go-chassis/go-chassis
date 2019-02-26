@@ -58,7 +58,9 @@ ssl支持以下配置项，其中若私钥KEY文件加密，则需要指定加�
 > *(optional, string)* TLS协议的最小版本,默认为*TLSv1.2*
 
 **caFile**
-> *(optional, string)* Certificate Signing Request file path
+> *(optional, string)* if verifyPeer is true, you need to supply ca files in here
+as a consumer, you need server cert files, as a provider, it needs client cert files
+check (example)[https://github.com/go-chassis/go-chassis-examples/tree/master/mutualtls]
 
 **certFile**
 > *(optional, string)* Certificate file path
@@ -93,16 +95,32 @@ GetSSLConfigByService(svcName, protocol, svcType string) (*common.SSLConfig, err
 GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *common.SSLConfig, error)
 ```
 
-## 示例
+## 示例 Simple TLS communication
 
-### Generate files
+### Generate files for a service
+1. you can generate private key file with Passphrase 
 ```bash
+#generate priviate key with passphrase
 openssl genrsa -des3 -out server.key 1024
-openssl req -new -key server.key -out server.csr
-openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+# save your passphrase
 echo {your Passphrase} > pwd
 ```
+or without passphrase
+```bash
+#generate private key without passphrase 
+openssl genrsa -out server.key 2048
+```
 
+2. you can sign cert with csr and key 
+```bash
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+```
+or only with key
+```bash
+openssl req -new -x509 -key server.key -out server.crt -days 3650
+```
 ### Provider配置
 
 以下为rest类型provider提供HTTPS访问的ssl配置，其中tag为protocol.serviceType的形式。
@@ -115,24 +133,54 @@ ssl:
   rest.Provider.keyFile: server.key
   rest.Provider.certFile: server.crt
   rest.Provider.certPwdFile: pwd # include Passphrase
-  rest.Provider.caFile: server.csr
 ```
 
 ### Consumer配置
 
-以下为访问rest类型服务的消费者的ssl配置。tag为name.protocol.serviceType的形式，其中Server为要访问的服务名，rest为协议。verifyPeer若配置为true将启动双向认证，否则客户端将忽略对服务端的校验。
+以下为访问rest类型服务的消费者的ssl配置。tag为name.protocol.serviceType的形式，
+其中TLSService为要访问的服务名，rest为协议。
+
 
 ```yaml
 ssl:
-  Server.rest.Consumer.cipherPlugin: default
-  Server.rest.Consumer.verifyPeer: true
-  Server.rest.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-  Server.rest.Consumer.protocol: TLSv1.2
-  Server.rest.Consumer.keyFile: /etc/ssl/server_key.pem
-  Server.rest.Consumer.certFile: /etc/ssl/server.cer
-  Server.rest.Consumer.certPwdFile: /etc/ssl/cert_pwd_plain
-  Server.rest.Consumer.caFile: /etc/ssl/trust.cer
+  TLSService.rest.Consumer.cipherPlugin: default
+  TLSService.rest.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  TLSService.rest.Consumer.protocol: TLSv1.2
 ```
 
+## 示例 Mutual TLS communication
 
+### Generate client cert file
+```bash
+openssl genrsa -out client.key 2048
+openssl req -new -x509 -key client.key -out client.crt -days 3650
 
+```
+
+### Provider config
+set verifyPeer to true to verify all clients. 
+add client.crt in caFile, it will be used as client CA during verification
+```yaml
+ssl:
+  rest.Provider.cipherPlugin: default
+  rest.Provider.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  rest.Provider.protocol: TLSv1.2
+  rest.Provider.keyFile: server.key
+  rest.Provider.certFile: server.crt
+  rest.Provider.verifyPeer: true
+  rest.Provider.caFile: client.crt
+  rest.Provider.certPwdFile: pwd 
+```
+
+### Consumer config
+set verifyPeer to true to tell go chassis to verify TLSService 
+add server.crt to caFile, it will be used as root CA during verification
+```yaml
+ssl:
+  TLSService.rest.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  TLSService.rest.Consumer.protocol: TLSv1.2
+  TLSService.rest.Consumer.caFile: server.crt
+  TLSService.rest.Consumer.certFile: client.crt
+  TLSService.rest.Consumer.keyFile: client.key
+  TLSService.rest.Provider.verifyPeer: true
+```
