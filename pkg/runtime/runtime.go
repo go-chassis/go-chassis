@@ -15,6 +15,9 @@ var ServiceID string
 //ServiceName represent self name
 var ServiceName string
 
+//Environment is usually represent as development, testing, production and  acceptance
+var Environment string
+
 //Schemas save schema file names(schema IDs)
 var Schemas []string
 
