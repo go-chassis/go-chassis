@@ -19,7 +19,7 @@ type DataCenterInfo struct {
 
 //CseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
 type CseStruct struct {
-	Config      ConfigStruct                `yaml:"config"`
+	Config      Config                      `yaml:"config"`
 	Service     ServiceStruct               `yaml:"service"`
 	Protocols   map[string]Protocol         `yaml:"protocols"`
 	Handler     HandlerStruct               `yaml:"handler"`
@@ -84,13 +84,13 @@ type QPSProps struct {
 	Limit   map[string]string `yaml:"limit"`
 }
 
-// ConfigStruct configuration structure
-type ConfigStruct struct {
-	Client ClientStruct `yaml:"client"`
+// Config represent config center configurations
+type Config struct {
+	Client ConfigClient `yaml:"client"`
 }
 
-// ClientStruct client structure
-type ClientStruct struct {
+// ConfigClient client structure
+type ConfigClient struct {
 	Type              string                 `yaml:"type"`
 	ServerURI         string                 `yaml:"serverUri"`
 	TenantName        string                 `yaml:"tenantName"`

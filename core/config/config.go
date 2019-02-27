@@ -48,6 +48,11 @@ var SelfVersion string
 // ErrNoName is used to represent the service name missing error
 var ErrNoName = errors.New("micro service name is missing in description file")
 
+//GetConfigCenterConf return config center conf
+func GetConfigCenterConf() model.ConfigClient {
+	return GlobalDefinition.Cse.Config.Client
+}
+
 // parse unmarshal configurations on respective structure
 func parse() error {
 	err := readGlobalConfigFile()
@@ -321,7 +326,7 @@ func Init() error {
 	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
 	SelfVersion = MicroserviceDefinition.ServiceDescription.Version
 	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
-
+	runtime.Environment = MicroserviceDefinition.ServiceDescription.Environment
 	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties
 	if MicroserviceDefinition.AppID != "" { //microservice.yaml has first priority
 		runtime.App = MicroserviceDefinition.AppID

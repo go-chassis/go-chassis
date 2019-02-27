@@ -16,6 +16,18 @@ import (
 	"testing"
 )
 
+func TestGetConfigCenterEndpoint(t *testing.T) {
+	config.GlobalDefinition = &model.GlobalCfg{
+		Cse: model.CseStruct{
+			Config: model.Config{
+				Client: model.ConfigClient{},
+			},
+		},
+	}
+	uri, err := configcenter.GetConfigCenterEndpoint()
+	assert.NoError(t, err)
+	t.Log(uri)
+}
 func TestInitConfigCenter(t *testing.T) {
 	t.Log("Testing InitConfigCenter function")
 	gopath := os.Getenv("GOPATH")
