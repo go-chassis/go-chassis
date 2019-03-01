@@ -28,7 +28,7 @@ jobs:
         - bash -x scripts/travis/goConstChecker.sh
     - stage: GoLint Checker
       script:
-        - GO111MODULE=on go get -u github.com/golang/lint/golint
+        - go get -u github.com/golang/lint/golint
         - bash -x scripts/travis/goLintChecker.sh
     - stage: GoCyclo Checker
       script:
