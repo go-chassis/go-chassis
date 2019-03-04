@@ -18,7 +18,7 @@ var errEmptyServiceIDFromRegistry = errors.New("got empty serviceID from registr
 var microServiceDependencies *MicroServiceDependency
 
 // InstanceEndpoints instance endpoints
-var InstanceEndpoints map[string]string
+var InstanceEndpoints = make(map[string]string)
 
 // RegisterMicroservice register micro-service
 func RegisterMicroservice() error {

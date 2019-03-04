@@ -3,9 +3,10 @@ package highway
 import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"sync"
 
-	"crypto/tls"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/provider"
 	"github.com/go-chassis/go-chassis/core/server"
@@ -67,18 +68,16 @@ func (s *highwayServer) Register(schema interface{}, options ...server.RegisterO
 func (s *highwayServer) Start() error {
 	opts := s.opts
 	//TODO lot of options
-	var listener net.Listener
-	var lisErr error
-	if s.opts.TLSConfig == nil {
-		listener, lisErr = net.Listen("tcp", opts.Address)
-	} else {
-		listener, lisErr = tls.Listen("tcp", opts.Address, s.opts.TLSConfig)
-	}
+
+	listener, host, port, lisErr := iputil.StartListener(opts.Address, opts.TLSConfig)
 
 	if lisErr != nil {
 		lager.Logger.Error("listening failed, reason:" + lisErr.Error())
 		return lisErr
 	}
+
+	registry.InstanceEndpoints[Name] = net.JoinHostPort(host, port)
+
 	go s.acceptLoop(listener)
 	return nil
 }
