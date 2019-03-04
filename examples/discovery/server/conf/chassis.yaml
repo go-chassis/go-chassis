@@ -3,6 +3,14 @@ region:
   name: us-east
   availableZone: us-east-1
 cse:
+  flowcontrol:
+    Provider:
+      qps:
+        enabled: true  # enable rate limiting or not
+        global:
+          limit: 100   # default limit of provider
+        limit:
+          benchmark: 200  # rate limit for request from a consumer
   loadbalance:
     strategy:
       name: RoundRobin
@@ -45,9 +53,9 @@ cse:
       listenAddress: 127.0.0.1:8083
       advertiseAddress: 127.0.0.1:8083
   handler:
-    chain:
-      Provider:
-        default: tracing-provider
+#    chain:
+#      Provider:
+#        default: tracing-provider
 # ssl:
   # registry.Consumer.cipherPlugin: default
   # registry.Consumer.verifyPeer: false
