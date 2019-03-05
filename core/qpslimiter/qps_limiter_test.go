@@ -49,12 +49,19 @@ func TestGetQpsRateWithPriority(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	opMeta := qpslimiter.InitSchemaOperations(i)
+	opMeta := qpslimiter.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
 
 	qps := qpslimiter.GetQPSTrafficLimiter()
-	rate, key := qps.GetQPSRateWithPriority(opMeta)
-	log.Println("rate is :", rate)
-	assert.Equal(t, key, "cse.flowcontrol.Consumer.qps.limit.service1")
+	rate, key := qps.GetQPSRateWithPriority(opMeta.OperationQualifiedName, opMeta.SchemaQualifiedName, opMeta.MicroServiceName)
+	t.Log("rate is :", rate)
+	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1", key)
+
+	i = &invocation.Invocation{
+		MicroServiceName: "service1",
+	}
+	keys := qpslimiter.GetProviderKey(i.SourceMicroService)
+	rate, key = qps.GetQPSRateWithPriority(keys.ServiceOriented, keys.Global)
+	assert.Equal(t, "cse.flowcontrol.Provider.qps.global.limit", key)
 }
 
 func TestUpdateRateLimit(t *testing.T) {

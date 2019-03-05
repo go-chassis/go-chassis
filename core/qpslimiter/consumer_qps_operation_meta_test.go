@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestInitSchemaOperations(t *testing.T) {
+func TestGetConsumerKey(t *testing.T) {
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",
@@ -17,19 +17,19 @@ func TestInitSchemaOperations(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	opMeta := qpslimiter.InitSchemaOperations(i)
-	t.Log("initializing schemaoperation from invocation object, OperationMeta = ", *opMeta)
-	sName := opMeta.GetMicroServiceName()
+	opMeta := qpslimiter.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+	t.Log("initializing schemaoperation from invocation object, ConsumerKeys = ", *opMeta)
+	sName := opMeta.MicroServiceName
 	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1", sName)
 
-	schemaOpeartionName := opMeta.GetMicroServiceSchemaOpQualifiedName()
-	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1.schema1.SayHello", schemaOpeartionName)
+	schemaOperationName := opMeta.OperationQualifiedName
+	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1.schema1.SayHello", schemaOperationName)
 
-	schemaName := opMeta.GetSchemaQualifiedName()
+	schemaName := opMeta.SchemaQualifiedName
 	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1.schema1", schemaName)
 
 }
-func TestInitSchemaOperations4Mesher(t *testing.T) {
+func TestGetConsumerKey2(t *testing.T) {
 	i := &invocation.Invocation{
 		SourceMicroService: "client:1.1:sock",
 		MicroServiceName:   "service1",
@@ -38,8 +38,8 @@ func TestInitSchemaOperations4Mesher(t *testing.T) {
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	opMeta := qpslimiter.InitSchemaOperations(i)
-	t.Log("initializing schemaoperation from invocation object with sourceMicroserviceName, OperationMeta = ", *opMeta)
+	opMeta := qpslimiter.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+	t.Log("initializing schemaoperation from invocation object with sourceMicroserviceName, ConsumerKeys = ", *opMeta)
 	sName := opMeta.GetMicroServiceName()
 	assert.Equal(t, "cse.flowcontrol.client:1.1:sock.Consumer.qps.limit.service1", sName)
 

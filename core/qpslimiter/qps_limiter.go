@@ -90,30 +90,19 @@ func GetQPSRate(rateConfig string) (int, bool) {
 }
 
 // GetQPSRateWithPriority get qps rate with priority
-func (qpsL *QPSLimiterMap) GetQPSRateWithPriority(op *OperationMeta) (int, string) {
+func (qpsL *QPSLimiterMap) GetQPSRateWithPriority(cmd ...string) (int, string) {
 	var (
-		key         string
 		qpsVal      int
 		configExist bool
 	)
-	key = op.GetMicroServiceSchemaOpQualifiedName()
-	qpsVal, configExist = GetQPSRate(key)
-	if configExist {
-		return qpsVal, op.GetMicroServiceSchemaOpQualifiedName()
+	for _, c := range cmd {
+		qpsVal, configExist = GetQPSRate(c)
+		if configExist {
+			return qpsVal, c
+		}
 	}
 
-	key = op.GetSchemaQualifiedName()
-	qpsVal, configExist = GetQPSRate(key)
-	if configExist {
-		return qpsVal, op.GetSchemaQualifiedName()
-	}
-
-	key = op.GetMicroServiceName()
-	qpsVal, configExist = GetQPSRate(key)
-	if configExist {
-		return qpsVal, op.GetMicroServiceName()
-	}
-	return DefaultRate, op.GetMicroServiceName()
+	return DefaultRate, cmd[len(cmd)-1]
 
 }
 

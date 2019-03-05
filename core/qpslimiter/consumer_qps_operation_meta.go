@@ -1,64 +1,68 @@
 package qpslimiter
 
 import (
+	"github.com/go-chassis/go-chassis/core/common"
 	"strings"
-
-	"github.com/go-chassis/go-chassis/core/invocation"
 )
 
-// OperationMeta operation meta struct
-type OperationMeta struct {
+// ConsumerKeys contain consumer keys
+type ConsumerKeys struct {
 	MicroServiceName       string
 	SchemaQualifiedName    string
 	OperationQualifiedName string
 }
 
-// GetSpecificKey get specific key
-func GetSpecificKey(sourceName, serviceType, serviceName, schemaID, OperationID string) string {
-	var cmd = "cse.flowcontrol"
-	//for mesher to govern
-	if sourceName != "" {
-		cmd = strings.Join([]string{cmd, sourceName, serviceType, "qps.limit"}, ".")
-	} else {
-		cmd = strings.Join([]string{cmd, serviceType, "qps.limit"}, ".")
-	}
-	if serviceName != "" {
-		cmd = strings.Join([]string{cmd, serviceName}, ".")
-	}
-	if schemaID != "" {
-		cmd = strings.Join([]string{cmd, schemaID}, ".")
-	}
-	if OperationID != "" {
-		cmd = strings.Join([]string{cmd, OperationID}, ".")
-	}
-	return cmd
-
+// ProviderKeys contain provider keys
+type ProviderKeys struct {
+	Global          string
+	ServiceOriented string
 }
 
-// InitSchemaOperations initialize schema operations
-func InitSchemaOperations(i *invocation.Invocation) *OperationMeta {
-	opMeta := new(OperationMeta)
+//Prefix is const
+const Prefix = "cse.flowcontrol"
 
-	opMeta.MicroServiceName = GetSpecificKey(i.SourceMicroService, "Consumer", i.MicroServiceName, "", "")
-	opMeta.SchemaQualifiedName = GetSpecificKey(i.SourceMicroService, "Consumer", i.MicroServiceName, i.SchemaID, "")
-	opMeta.OperationQualifiedName = GetSpecificKey(i.SourceMicroService, "Consumer", i.MicroServiceName, i.SchemaID, i.OperationID)
+// GetConsumerKey get specific key for consumer
+func GetConsumerKey(sourceName, serviceName, schemaID, OperationID string) *ConsumerKeys {
+	keys := new(ConsumerKeys)
+	//for mesher to govern
+	if sourceName != "" {
+		keys.MicroServiceName = strings.Join([]string{Prefix, sourceName, common.Consumer, "qps.limit", serviceName}, ".")
+	} else {
+		if serviceName != "" {
+			keys.MicroServiceName = strings.Join([]string{Prefix, common.Consumer, "qps.limit", serviceName}, ".")
+		}
+	}
+	if schemaID != "" {
+		keys.SchemaQualifiedName = strings.Join([]string{keys.MicroServiceName, schemaID}, ".")
+	}
+	if OperationID != "" {
+		keys.OperationQualifiedName = strings.Join([]string{keys.SchemaQualifiedName, OperationID}, ".")
+	}
+	return keys
+}
 
-	//for mesher server side rate limit
-	//as a proxy,mesher handler request from  instances that belong to different ms
-	return opMeta
+// GetProviderKey get specific key for provider
+func GetProviderKey(sourceServiceName string) *ProviderKeys {
+	keys := &ProviderKeys{}
+	if sourceServiceName != "" {
+		keys.ServiceOriented = strings.Join([]string{Prefix, common.Provider, "qps.limit", sourceServiceName}, ".")
+	}
+
+	keys.Global = strings.Join([]string{Prefix, common.Provider, "qps.global.limit"}, ".")
+	return keys
 }
 
 // GetSchemaQualifiedName get schema qualified name
-func (op *OperationMeta) GetSchemaQualifiedName() string {
+func (op *ConsumerKeys) GetSchemaQualifiedName() string {
 	return op.SchemaQualifiedName
 }
 
 // GetMicroServiceSchemaOpQualifiedName get micro-service schema operation qualified name
-func (op *OperationMeta) GetMicroServiceSchemaOpQualifiedName() string {
+func (op *ConsumerKeys) GetMicroServiceSchemaOpQualifiedName() string {
 	return op.OperationQualifiedName
 }
 
 // GetMicroServiceName get micro-service name
-func (op *OperationMeta) GetMicroServiceName() string {
+func (op *ConsumerKeys) GetMicroServiceName() string {
 	return op.MicroServiceName
 }
