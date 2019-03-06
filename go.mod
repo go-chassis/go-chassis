@@ -4,17 +4,19 @@ require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.8.0+incompatible
 	github.com/go-chassis/foundation v0.0.0-20190203091418-304855ea28bf
-	github.com/go-chassis/go-archaius v0.7.0
+	github.com/go-chassis/go-archaius v0.12.0
 	github.com/go-chassis/go-cc-client v0.5.0
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
 	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
-	github.com/go-mesh/openlogging v0.0.0-20181122085847-3daf3ad8ed35
+	github.com/go-mesh/openlogging v0.0.0-20181205082104-3d418c478b2d
 	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/golang/protobuf v1.2.0
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/go-version v1.0.0
+	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect

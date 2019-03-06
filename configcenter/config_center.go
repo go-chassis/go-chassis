@@ -177,21 +177,21 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 	}
 
 	var ccObj = archaius.ConfigCenterInfo{
-		URL:             ccEndpoint,
-		DimensionInfo:   dimensionInfo,
-		TenantName:      tenantName,
-		EnableSSL:       enableSSL,
-		TLSConfig:       tlsConfig,
-		RefreshMode:     refreshMode,
-		RefreshInterval: interval,
-		Autodiscovery:   config.GetConfigCenterConf().Autodiscovery,
-		ClientType:      clientType,
-		Version:         config.GetConfigCenterConf().APIVersion.Version,
-		RefreshPort:     config.GetConfigCenterConf().RefreshPort,
-		Environment:     config.MicroserviceDefinition.ServiceDescription.Environment,
+		URL:                  ccEndpoint,
+		DefaultDimensionInfo: dimensionInfo,
+		TenantName:           tenantName,
+		EnableSSL:            enableSSL,
+		TLSConfig:            tlsConfig,
+		RefreshMode:          refreshMode,
+		RefreshInterval:      interval,
+		AutoDiscovery:        config.GetConfigCenterConf().Autodiscovery,
+		ClientType:           clientType,
+		Version:              config.GetConfigCenterConf().APIVersion.Version,
+		RefreshPort:          config.GetConfigCenterConf().RefreshPort,
+		Environment:          config.MicroserviceDefinition.ServiceDescription.Environment,
 	}
 
-	err := archaius.InitConfigCenter(ccObj)
+	err := archaius.EnableConfigCenterSource(ccObj, nil)
 
 	if err != nil {
 		return err
