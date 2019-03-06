@@ -253,7 +253,7 @@ func deleteDarkLaunchRule(s string) {
 
 func preInit(t *testing.T) {
 	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
-	err := archaius.InitExternal(archaius.WithExternalSource(NewExternalConfigurationSource()))
+	err := archaius.Mock(NewExternalConfigurationSource())
 	if err != nil {
 		t.Error(err)
 	}

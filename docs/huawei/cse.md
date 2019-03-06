@@ -25,3 +25,5 @@ this pkg will inject header into all of request to CSE engine
 After signing the header with authourization looks like this
 
 Authorization: Credential=XXX, SignedHeaders=XXX, Signature=XXX
+
+Complete [example](https://github.com/go-chassis/go-chassis-examples/tree/master/huaweicse)

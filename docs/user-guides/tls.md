@@ -60,7 +60,7 @@ ssl支持以下配置项，其中若私钥KEY文件加密，则需要指定加�
 **caFile**
 > *(optional, string)* if verifyPeer is true, you need to supply ca files in here
 as a consumer, you need server cert files, as a provider, it needs client cert files
-check (example)[https://github.com/go-chassis/go-chassis-examples/tree/master/mutualtls]
+check [example](https://github.com/go-chassis/go-chassis-examples/tree/master/mutualtls)
 
 **certFile**
 > *(optional, string)* Certificate file path
@@ -95,7 +95,7 @@ GetSSLConfigByService(svcName, protocol, svcType string) (*common.SSLConfig, err
 GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *common.SSLConfig, error)
 ```
 
-## 示例 Simple TLS communication
+## Example1: Simple TLS communication
 
 ### Generate files for a service
 1. you can generate private key file with Passphrase 
@@ -148,8 +148,8 @@ ssl:
   TLSService.rest.Consumer.protocol: TLSv1.2
 ```
 
-## 示例 Mutual TLS communication
-
+## Example2: Mutual TLS communication
+check complete [example](https://github.com/go-chassis/go-chassis-examples/tree/master/mutualtls)
 ### Generate client cert file
 ```bash
 openssl genrsa -out client.key 2048
