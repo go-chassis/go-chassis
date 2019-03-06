@@ -277,7 +277,7 @@ func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
 			case ins.Version == "":
 				openlogging.Warn("do not support old service center, plz upgrade")
 				continue
-			case ins.Status != common.DefaultStatus:
+			case ins.Status != common.DefaultStatus && ins.Status != common.TESTINGStatus:
 				downs[ins.InstanceId] = struct{}{}
 				lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
 					ins.Status, ins.ServiceId, ins.InstanceId)
