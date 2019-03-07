@@ -23,6 +23,8 @@ cse:
   transport:
     failure:
       rest: http_500,http_502
+    maxIdleCon:
+      rest: 1024
 # ssl:
 #   registry.Consumer.cipherPlugin: default
 #   registry.Consumer.verifyPeer: false

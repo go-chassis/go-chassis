@@ -53,6 +53,11 @@ func GetConfigCenterConf() model.ConfigClient {
 	return GlobalDefinition.Cse.Config.Client
 }
 
+//GetTransportConf return transport settings
+func GetTransportConf() model.Transport {
+	return GlobalDefinition.Cse.Transport
+}
+
 // parse unmarshal configurations on respective structure
 func parse() error {
 	err := readGlobalConfigFile()
