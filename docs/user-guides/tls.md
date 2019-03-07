@@ -13,17 +13,21 @@ by setting this trust bundle, you can simply protect your services.
 
 use tls.yaml to set tls config
 the format is as below, will explain what is tag and key
-
+role has only 2 type, Consumer and Provider
 ```yaml
 ssl:
-  [tag].[key]: [configuration]
+  [tag].[role].[key]: [configuration]
 ```
 
-### tag
+### tag and role
 tag indicates what is the tls config target.   
 
 registry.Consumer, configcenter.Consumer etc is build-in config to define the tls settings for 
 control plane services(like service center, config center), you can not use them.
+
+you can custom tls settings by following rules. 
+
+tag usually comprises of service name, role(Consumer or Provider) and protocol. 
 
 **registry.Consumer**
 > 服务注册中心TLS配置
@@ -41,9 +45,6 @@ control plane services(like service center, config center), you can not use them
 >配置中心TLS配置                                     |
 
 
-you can custom tls settings by following rules. 
-
-tag usually comprises of service name, role(Consumer or Provider) and protocol. 
 
 **{protocol}.{Consumer|Provider}**
 >define which protocol should use TLS communication
@@ -51,39 +52,47 @@ tag usually comprises of service name, role(Consumer or Provider) and protocol.
 **{service_name}.{protocol}.{Consumer}**
 >only works for consumer, it means using TLS communication to call serviceXX
 
-### key
+###  key
 
 
                        
-**keyFile**
-> *(required, string)* RSA Private Key file path
+**Provider.keyFile**
+> *(required, string)* RSA Private Key file path for server
 
-**verifyPeer**
+**Provider.certFile**
+> *(required, string)* Certificate file path for server
+
+**Consumer.keyFile**
+> *(optional, string)* RSA Private Key file path for client
+
+**Consumer.certFile**
+> *(optional, string)* Certificate file path for client
+
+**{Consumer|Provider}.verifyPeer**
 >*(optional, bool)* 
 verify the other service or not, default is false.
 
-**cipherSuits**
+**{Consumer|Provider}.cipherSuits**
 > *(optional, string)* *TLS\_ECDHE\_RSA\_WITH\_AES\_128\_GCM\_SHA256*, *TLS\_ECDHE\_RSA\_WITH\_AES\_256\_GCM\_SHA384*
 > 密码套件                           |
 
-**protocol**
+**{Consumer|Provider}.protocol**
 > *(optional, string)* TLS protocol version, default is *TLSv1.2*
 
-**caFile**
+**{Consumer|Provider}.caFile**
 > *(optional, string)* Define trust CA bundle in here. if verifyPeer is true, 
 you must supply ca file list in here. 
 During communication as a consumer, you need to add server cert files.
 as a provider, it need to add client cert files
 check [example](https://github.com/go-chassis/go-chassis-examples/tree/master/mutualtls)
 
-**certFile**
-> *(required, string)* Certificate file path
 
-**certPwdFile**
+
+**{Consumer|Provider}.certPwdFile**
 > *(optional, string)* a file path, this file's content is Passphrase of keyFile, 
 if you set Passphrase for you keyFile, you must set this config
 
-**cipherPlugin**
+**{Consumer|Provider}.cipherPlugin**
 > *(optional, string)* you can custom 
 [Cipher](https://docs.go-chassis.com/dev-guides/how-to-write-cipher.html) 
 to decrypt "certPwdFile" content, by default no decryption        
