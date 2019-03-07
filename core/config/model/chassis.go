@@ -34,7 +34,8 @@ type CseStruct struct {
 //Transport defines failure
 //TODO support TLS config
 type Transport struct {
-	Failure map[string]string `yaml:"failure"`
+	Failure    map[string]string `yaml:"failure"`
+	MaxIdlCons map[string]int    `yaml:"maxIdleCon"`
 }
 
 // MetricsStruct metrics struct

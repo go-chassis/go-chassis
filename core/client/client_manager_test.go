@@ -24,6 +24,18 @@ func TestGetFailureMap(t *testing.T) {
 	assert.True(t, m["http_500"])
 	assert.False(t, m["http_540"])
 }
+func TestGetMaxIdleCon(t *testing.T) {
+	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	config.GlobalDefinition = &model.GlobalCfg{}
+	config.GlobalDefinition.Cse.Transport.MaxIdlCons = map[string]int{
+		"rest": 1,
+	}
+	n := client.GetMaxIdleCon("rest")
+	assert.Equal(t, 1, n)
+	config.GlobalDefinition.Cse.Transport.MaxIdlCons = map[string]int{}
+	n = client.GetMaxIdleCon("rest")
+	assert.Equal(t, 512, n)
+}
 func TestInitError(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
