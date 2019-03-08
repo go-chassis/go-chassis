@@ -7,7 +7,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/session"
 	"github.com/go-mesh/openlogging"
@@ -25,7 +24,7 @@ func errNotNill(err error, cb invocation.ResponseCallBack) {
 	r := &invocation.Response{
 		Err: err,
 	}
-	lager.Logger.Error("GetClient got Error: " + err.Error())
+	openlogging.Error("GetClient got Error: " + err.Error())
 	cb(r)
 	return
 }
@@ -35,6 +34,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	c, err := client.GetClient(i.Protocol, i.MicroServiceName, i.Endpoint)
 	if err != nil {
 		errNotNill(err, cb)
+		return
 	}
 
 	r := &invocation.Response{}
