@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -16,6 +16,8 @@ import (
 func init() {
 	client.InstallPlugin("grpc", New)
 }
+
+const errPrefix = "grpc client: "
 
 //Client is grpc client holder
 type Client struct {
@@ -27,13 +29,12 @@ type Client struct {
 
 //New create new grpc client
 func New(opts client.Options) (client.ProtocolClient, error) {
-
 	conn, err := newClientConn(opts)
-
 	if err != nil {
+		err = errors.New(errPrefix + err.Error())
 		return nil, err
 	}
-	opts.Timeout = config.GetTimeoutDuration(opts.Service, common.Consumer)
+
 	return &Client{
 		c:       conn,
 		timeout: opts.Timeout,

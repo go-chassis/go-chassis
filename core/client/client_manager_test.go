@@ -13,6 +13,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	config.HystrixConfig = &model.HystrixConfigWrapper{
+		HystrixConfig: &model.HystrixConfig{
+			IsolationProperties: &model.IsolationWrapper{
+				Consumer: &model.IsolationSpec{},
+			},
+		},
+	}
+}
 func TestGetFailureMap(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.GlobalDefinition = &model.GlobalCfg{}

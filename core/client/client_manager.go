@@ -76,12 +76,12 @@ func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 		lager.Logger.Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
 			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
-
 	return f(Options{
 		Service:   service,
 		TLSConfig: tlsConfig,
 		PoolSize:  GetMaxIdleCon(protocol),
 		Failure:   GetFailureMap(protocol),
+		Timeout:   config.GetTimeoutDuration(service, common.Consumer),
 		Endpoint:  endpoint,
 	})
 }
