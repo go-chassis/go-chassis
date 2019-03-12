@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/pkg/util"
+	"io/ioutil"
+	"net/http"
 )
 
 // LBHandler loadbalancer handler struct
@@ -96,6 +99,12 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 	retryOnNext := lbConfig.RetryOnNext
 	handlerIndex := chain.HandlerIndex
 	var invResp *invocation.Response
+	var reqBytes []byte
+
+	if req, ok := i.Args.(*http.Request); ok {
+		reqBytes, _ = ioutil.ReadAll(req.Body)
+	}
+
 	for j := 0; j < retryOnNext+1; j++ {
 		// exchange and retry on the next server
 		ep, err := lb.getEndpoint(i, lbConfig)
@@ -107,14 +116,20 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		// retry on the same server
 		lbBackoff := backoffUtil.GetBackOff(lbConfig.BackOffKind, lbConfig.BackOffMin, lbConfig.BackOffMax)
 		callTimes := 0
+
 		operation := func() error {
-			if callTimes == retryOnSame+1 {
+			if callTimes >= retryOnSame+1 {
 				return backoff.Permanent(errors.New("retry times expires"))
 			}
 			callTimes++
 			i.Endpoint = ep
 			var respErr error
 			chain.HandlerIndex = handlerIndex
+
+			if _, ok := i.Args.(*http.Request); ok {
+				i.Args.(*http.Request).Body = ioutil.NopCloser(bytes.NewBuffer(reqBytes))
+			}
+
 			chain.Next(i, func(r *invocation.Response) error {
 				if r != nil {
 					invResp = r
