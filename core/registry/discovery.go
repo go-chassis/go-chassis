@@ -1,8 +1,6 @@
 package registry
 
 import (
-	"log"
-
 	"fmt"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -17,7 +15,7 @@ var cdFunc = make(map[string]func(opts Options) ContractDiscovery)
 //InstallServiceDiscovery install service discovery client
 func InstallServiceDiscovery(name string, f func(opts Options) ServiceDiscovery) {
 	sdFunc[name] = f
-	log.Printf("Installed service discovery plugin: %s.\n", name)
+	openlogging.Info("Installed service discovery plugin: " + name)
 }
 
 //NewDiscovery create discovery service
@@ -32,7 +30,7 @@ func NewDiscovery(name string, opts Options) (ServiceDiscovery, error) {
 //InstallContractDiscovery install contract service client
 func InstallContractDiscovery(name string, f func(opts Options) ContractDiscovery) {
 	cdFunc[name] = f
-	log.Printf("Installed contract discovery plugin: %s.\n", name)
+	openlogging.Info("Installed contract discovery plugin: " + name)
 }
 
 //ServiceDiscovery fetch service and instances from remote or local

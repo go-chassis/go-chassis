@@ -93,6 +93,10 @@ func (r *RouteDarkLaunchGovernSource) GetPriority() int {
 	return RouteDarkLaunchGovernSourcePriority
 }
 
+//SetPriority has no function
+func (r *RouteDarkLaunchGovernSource) SetPriority(int) {
+}
+
 //Cleanup implements ConfigSource.Cleanup
 func (r *RouteDarkLaunchGovernSource) Cleanup() error { return nil }
 

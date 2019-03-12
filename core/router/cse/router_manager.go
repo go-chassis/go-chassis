@@ -36,7 +36,7 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 	}
 	routeRules, ok := v.([]*model.RouteRule)
 	if !ok {
-		lager.Logger.Error("value is not type []*RouteRule")
+		openlogging.Error("value is not type []*RouteRule")
 		return
 	}
 
@@ -61,7 +61,7 @@ func newRouteFileSource() *routeFileSource {
 		d := make(map[string]interface{}, 0)
 		if routeRules == nil {
 			r.d = d
-			lager.Logger.Error("Can not get any router config")
+			openlogging.Error("Can not get any router config")
 			return
 		}
 		for k, v := range routeRules {
@@ -103,6 +103,8 @@ func (r *routeFileSource) DynamicConfigHandler(core.DynamicConfigCallback) error
 }
 func (r *routeFileSource) GetPriority() int {
 	return routeFileSourcePriority
+}
+func (r *routeFileSource) SetPriority(int) {
 }
 func (r *routeFileSource) Cleanup() error { return nil }
 
