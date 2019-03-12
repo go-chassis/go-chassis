@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"log"
+	"github.com/go-mesh/openlogging"
 )
 
 // NewFunc is function for the client
@@ -21,6 +21,6 @@ func GetClientNewFunc(name string) (NewFunc, error) {
 
 // InstallPlugin is plugin for the new function
 func InstallPlugin(protocol string, f NewFunc) {
-	log.Printf("Install client plugin, protocol=%s", protocol)
+	openlogging.Info("Install client plugin, protocol: " + protocol)
 	plugins[protocol] = f
 }

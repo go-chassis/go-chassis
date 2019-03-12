@@ -13,6 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
+	"github.com/go-mesh/openlogging"
 )
 
 //NewFunc returns a ProtocolServer
@@ -24,7 +25,7 @@ var servers = make(map[string]ProtocolServer)
 //InstallPlugin For developer
 func InstallPlugin(protocol string, newFunc NewFunc) {
 	serverPlugins[protocol] = newFunc
-	log.Printf("Installed Server Plugin, protocol=%s", protocol)
+	openlogging.Info("Installed Server Plugin, protocol:" + protocol)
 }
 
 //GetServerFunc returns the server function

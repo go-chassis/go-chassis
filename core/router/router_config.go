@@ -21,7 +21,11 @@ const RouterTLS = "router"
 func Init() error {
 	// init dests and templates
 	routerConfigFromFile := config.RouterDefinition
-	BuildRouter(config.GetRouterType())
+	err := BuildRouter(config.GetRouterType())
+	if err != nil {
+		openlogging.Error("can not new router: " + err.Error())
+		return err
+	}
 
 	if routerConfigFromFile != nil {
 		if routerConfigFromFile.Destinations != nil {

@@ -3,14 +3,14 @@ region:
   name: us-east
   availableZone: us-east-1
 cse:
-  flowcontrol:
-    Provider:
-      qps:
-        enabled: true  # enable rate limiting or not
-        global:
-          limit: 100   # default limit of provider
-        limit:
-          benchmark: 200  # rate limit for request from a consumer
+#  flowcontrol:
+#    Provider:
+#      qps:
+#        enabled: true  # enable rate limiting or not
+#        global:
+#          limit: 100   # default limit of provider
+#        limit:
+#          benchmark: 200  # rate limit for request from a consumer
   loadbalance:
     strategy:
       name: RoundRobin

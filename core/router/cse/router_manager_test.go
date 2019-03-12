@@ -68,6 +68,10 @@ func (*ExternalConfigurationSource) GetPriority() int {
 	return 100
 }
 
+//GetPriority returns priority of the external configuration
+func (*ExternalConfigurationSource) SetPriority(int) {
+}
+
 //GetSourceName returns name of external configuration
 func (*ExternalConfigurationSource) GetSourceName() string {
 	return "ExternalConfigurationSource"
@@ -253,7 +257,7 @@ func deleteDarkLaunchRule(s string) {
 
 func preInit(t *testing.T) {
 	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
-	err := archaius.Mock(NewExternalConfigurationSource())
+	err := archaius.CustomInit(NewExternalConfigurationSource())
 	if err != nil {
 		t.Error(err)
 	}
