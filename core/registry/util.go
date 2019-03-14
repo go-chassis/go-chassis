@@ -14,6 +14,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
+	"github.com/go-mesh/openlogging"
 )
 
 const protocolSymbol = "://"
@@ -175,7 +176,7 @@ func getTLSConfig(scheme, t string) (*tls.Config, error) {
 		if err != nil {
 			if chassisTLS.IsSSLConfigNotExist(err) {
 				tmpErr := fmt.Errorf("%s tls mode, but no ssl config", sslTag)
-				lager.Logger.Error(tmpErr.Error() + ", err: " + err.Error())
+				openlogging.Error(tmpErr.Error() + ", err: " + err.Error())
 				return nil, tmpErr
 			}
 			lager.Logger.Errorf("Load %s TLS config failed: %s", err)

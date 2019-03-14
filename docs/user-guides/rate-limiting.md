@@ -31,14 +31,14 @@ cse:
 
 ```yaml
 cse:
-  flowcontrol
+  flowcontrol:
     Provider:
       qps:
         enabled: true  # enable rate limiting or not
         global:
           limit: 100   # default limit of provider
         limit:
-          Server: 100  # rate limit for request from a provider
+          Client: 100  # rate limit for request from a consumer
 ```
 
 #### Consumer示例

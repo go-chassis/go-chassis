@@ -8,15 +8,15 @@ import (
 
 var initArchaiusOnce = sync.Once{}
 
-// InitArchaius is to initialize the archaius
+// InitArchaius initialize the archaius
 func InitArchaius() error {
 	var err error
 	initArchaiusOnce.Do(func() {
-		essentialfiles := []string{
+		requiredFiles := []string{
 			fileutil.GlobalDefinition(),
 			fileutil.GetMicroserviceDesc(),
 		}
-		commonfiles := []string{
+		optionalFiles := []string{
 			fileutil.HystrixDefinition(),
 			fileutil.GetLoadBalancing(),
 			fileutil.GetRateLimiting(),
@@ -26,7 +26,12 @@ func InitArchaius() error {
 			fileutil.GetTracing(),
 		}
 
-		err = archaius.Init(archaius.WithRequiredFiles(essentialfiles), archaius.WithOptionalFiles(commonfiles))
+		err = archaius.Init(
+			archaius.WithCommandLineSource(),
+			archaius.WithMemorySource(),
+			archaius.WithENVSource(),
+			archaius.WithRequiredFiles(requiredFiles),
+			archaius.WithOptionalFiles(optionalFiles))
 	})
 
 	return err

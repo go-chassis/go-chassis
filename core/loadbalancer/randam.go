@@ -1,6 +1,7 @@
 package loadbalancer
 
 import (
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"math/rand"
 	"sync"
@@ -17,7 +18,7 @@ func newRandomStrategy() Strategy {
 }
 
 // ReceiveData receive data
-func (r *RandomStrategy) ReceiveData(instances []*registry.MicroServiceInstance, serviceName, protocol, sessionID string) {
+func (r *RandomStrategy) ReceiveData(inv *invocation.Invocation, instances []*registry.MicroServiceInstance, serviceName string) {
 	r.instances = instances
 }
 

@@ -115,6 +115,7 @@ const (
 	LatestVersion     = "latest"
 	AllVersion        = "0+"
 	DefaultStatus     = "UP"
+	TESTINGStatus     = "TESTING"
 	DefaultLevel      = "BACK"
 	DefaultHBInterval = 30
 )

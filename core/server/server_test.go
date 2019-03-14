@@ -39,6 +39,7 @@ func TestWithOptions(t *testing.T) {
 
 const MockError = "movk error"
 
+// TestSrcMgr Test for server_manager.go
 func TestSrcMgr(t *testing.T) {
 
 	gopath := os.Getenv("GOPATH")
@@ -78,7 +79,9 @@ func TestSrcMgr(t *testing.T) {
 	defaultChain["default1"] = ""
 
 	var mp model.Protocol
-	mp.Listen = "127.0.0.1:30100"
+	//mp.Listen = "127.0.0.1:30100"
+	// use random port
+	mp.Listen = "127.0.0.1:0"
 	mp.Advertise = "127.0.0.1:8080"
 	mp.WorkerNumber = 10
 	mp.Transport = "tcp"

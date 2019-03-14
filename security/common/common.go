@@ -83,7 +83,7 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security2.Ci
 		stringutil.ClearStringMemory(&plainpass)
 		stringutil.ClearByteMemory(plainPassphaseBytes)
 		if err != nil {
-			return nil, fmt.Errorf("decrypt key file %s failed", keyFile)
+			return nil, fmt.Errorf("decrypt key file %s failed: %s", keyFile, err)
 		}
 
 		// 解密成功，重新编码为无加密的PEM格式文件
@@ -97,7 +97,7 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security2.Ci
 
 	cert, err := tls.X509KeyPair(certContent, keyContent)
 	if err != nil {
-		return nil, fmt.Errorf("load X509 key pair from cert file %s with key file %s failed", certFile, keyFile)
+		return nil, fmt.Errorf("load X509 key pair from cert file %s with key file %s failed: %s", certFile, keyFile, err)
 	}
 
 	var certs []tls.Certificate
@@ -124,7 +124,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	if sslConfig.CertPWDFile != "" {
 		keyPassphase, err = ioutil.ReadFile(sslConfig.CertPWDFile)
 		if err != nil {
-			return nil, fmt.Errorf("read cert pwd %s failed", sslConfig.CertPWDFile)
+			return nil, fmt.Errorf("read cert pwd %s failed: %s", sslConfig.CertPWDFile, err)
 		}
 	}
 
@@ -133,9 +133,9 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	if !(role == common.Client && sslConfig.KeyFile == "" && sslConfig.CertFile == "") {
 		var cipherPlugin security2.Cipher
 		if f, err := security.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
-			return nil, fmt.Errorf("Get cipher plugin [%s] failed, %v", sslConfig.CipherPlugin, err)
+			return nil, fmt.Errorf("get cipher plugin [%s] failed, %v", sslConfig.CipherPlugin, err)
 		} else if cipherPlugin = f(); cipherPlugin == nil {
-			return nil, errors.New("Invalid cipher plugin")
+			return nil, errors.New("invalid cipher plugin")
 		}
 		certs, err = LoadTLSCertificate(sslConfig.CertFile, sslConfig.KeyFile, strings.TrimSpace(string(keyPassphase)), cipherPlugin)
 		if err != nil {

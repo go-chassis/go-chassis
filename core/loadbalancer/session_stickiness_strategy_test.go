@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/session"
@@ -38,8 +39,13 @@ func TestSessionStickinessStrategy_Pick(t *testing.T) {
 	}
 
 	s := &loadbalancer.SessionStickinessStrategy{}
-	s.ReceiveData(instances, "", "", "dummy")
-	var last string = "none"
+	inv := &invocation.Invocation{
+		Metadata: map[string]interface{}{
+			"_Session_Namespace": "default",
+		}}
+
+	s.ReceiveData(inv, instances, "dummy")
+	var last = "none"
 	for i := 0; i < 100; i++ {
 		instance, err := s.Pick()
 		assert.NoError(t, err)

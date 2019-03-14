@@ -35,7 +35,7 @@ release = u''
 #
 # needs_sphinx = '1.0'
 from recommonmark.parser import CommonMarkParser
-
+from recommonmark.transform import AutoStructify
 source_parsers = {
     '.md': CommonMarkParser,
 }
@@ -45,6 +45,11 @@ source_suffix = ['.rst', '.md']
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.imgconverter',
+    'sphinx.ext.viewcode',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -166,3 +171,12 @@ texinfo_documents = [
      author, 'go-chassis', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+        #'url_resolver': lambda url: github_doc_root + url,
+        'auto_toc_tree_section': 'Contents',
+        'enable_eval_rst': True,
+        'enable_auto_doc_ref': True,
+    }, True)
+    app.add_transform(AutoStructify)

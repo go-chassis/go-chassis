@@ -5,7 +5,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/tracing"
-	_ "github.com/go-chassis/go-chassis/tracing/zipkin"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

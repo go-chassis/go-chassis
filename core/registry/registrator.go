@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"log"
+	"github.com/go-mesh/openlogging"
 )
 
 // constant values for registry parameters
@@ -87,7 +87,7 @@ func enableRegistrator(opts Options) error {
 // InstallRegistrator install registrator plugin
 func InstallRegistrator(name string, f func(opts Options) Registrator) {
 	registryFunc[name] = f
-	log.Printf("Installed registry plugin: %s.\n", name)
+	openlogging.Info("Installed registry plugin: " + name)
 }
 
 //NewRegistrator return registrator

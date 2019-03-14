@@ -17,6 +17,7 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 )
 
 const (
@@ -33,7 +34,7 @@ var ErrRefreshMode = errors.New("refreshMode must be 0 or 1")
 
 // InitConfigCenter initialize config center
 func InitConfigCenter() error {
-	configCenterURL, err := isConfigCenter()
+	configCenterURL, err := GetConfigCenterEndpoint()
 	if err != nil {
 		return nil
 	}
@@ -55,21 +56,21 @@ func InitConfigCenter() error {
 
 	if dimensionInfo == "" {
 		err := errors.New("empty dimension info: " + emptyDimeInfo)
-		lager.Logger.Error("empty dimension info" + err.Error())
+		openlogging.Error("empty dimension info" + err.Error())
 		return err
 	}
-
-	if config.GlobalDefinition.Cse.Config.Client.TenantName == "" {
-		config.GlobalDefinition.Cse.Config.Client.TenantName = common.DefaultTenant
+	TenantName := config.GetConfigCenterConf().TenantName
+	if TenantName == "" {
+		TenantName = common.DefaultTenant
 	}
-
-	if config.GlobalDefinition.Cse.Config.Client.RefreshInterval == 0 {
-		config.GlobalDefinition.Cse.Config.Client.RefreshInterval = 30
+	interval := config.GetConfigCenterConf().RefreshInterval
+	if interval == 0 {
+		interval = 30
 	}
 
 	err = initConfigCenter(configCenterURL,
-		dimensionInfo, config.GlobalDefinition.Cse.Config.Client.TenantName,
-		enableSSL, tlsConfig)
+		dimensionInfo, TenantName,
+		enableSSL, tlsConfig, interval)
 	if err != nil {
 		lager.Logger.Error("failed to init config center" + err.Error())
 		return err
@@ -79,8 +80,10 @@ func InitConfigCenter() error {
 	return nil
 }
 
-func isConfigCenter() (string, error) {
-	configCenterURL := config.GlobalDefinition.Cse.Config.Client.ServerURI
+//GetConfigCenterEndpoint will read local config center uri first, if there is not,
+// it will try to discover config center from registry
+func GetConfigCenterEndpoint() (string, error) {
+	configCenterURL := config.GetConfigCenterConf().ServerURI
 	if configCenterURL == "" {
 		if registry.DefaultServiceDiscoveryService != nil {
 			ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
@@ -159,11 +162,11 @@ func getUniqueIDForDimInfo() string {
 	return serviceName
 }
 
-func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bool, tlsConfig *tls.Config) error {
+func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bool, tlsConfig *tls.Config, interval int) error {
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != 0 && refreshMode != 1 {
-		lager.Logger.Error(ErrRefreshMode.Error())
+		openlogging.Error(ErrRefreshMode.Error())
 		return ErrRefreshMode
 	}
 
@@ -174,21 +177,21 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 	}
 
 	var ccObj = archaius.ConfigCenterInfo{
-		URL:             ccEndpoint,
-		DimensionInfo:   dimensionInfo,
-		TenantName:      tenantName,
-		EnableSSL:       enableSSL,
-		TLSConfig:       tlsConfig,
-		RefreshMode:     refreshMode,
-		RefreshInterval: config.GlobalDefinition.Cse.Config.Client.RefreshInterval,
-		Autodiscovery:   config.GlobalDefinition.Cse.Config.Client.Autodiscovery,
-		ClientType:      clientType,
-		Version:         config.GlobalDefinition.Cse.Config.Client.APIVersion.Version,
-		RefreshPort:     config.GlobalDefinition.Cse.Config.Client.RefreshPort,
-		Environment:     config.MicroserviceDefinition.ServiceDescription.Environment,
+		URL:                  ccEndpoint,
+		DefaultDimensionInfo: dimensionInfo,
+		TenantName:           tenantName,
+		EnableSSL:            enableSSL,
+		TLSConfig:            tlsConfig,
+		RefreshMode:          refreshMode,
+		RefreshInterval:      interval,
+		AutoDiscovery:        config.GetConfigCenterConf().Autodiscovery,
+		ClientType:           clientType,
+		Version:              config.GetConfigCenterConf().APIVersion.Version,
+		RefreshPort:          config.GetConfigCenterConf().RefreshPort,
+		Environment:          config.MicroserviceDefinition.ServiceDescription.Environment,
 	}
 
-	err := archaius.InitConfigCenter(ccObj)
+	err := archaius.EnableConfigCenterSource(ccObj, nil)
 
 	if err != nil {
 		return err

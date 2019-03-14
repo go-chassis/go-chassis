@@ -1,6 +1,7 @@
 package iputil
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"net/url"
@@ -99,4 +100,34 @@ func IsIPv6Address(ip net.IP) bool {
 		return true
 	}
 	return false
+}
+
+// StartListener start listener with address and tls(if has), returns the listener and the real listened ip/port
+func StartListener(listenAddress string, tlsConfig *tls.Config) (listener net.Listener, listenedIP string, port string, err error) {
+	if tlsConfig == nil {
+		listener, err = net.Listen("tcp", listenAddress)
+	} else {
+		listener, err = tls.Listen("tcp", listenAddress, tlsConfig)
+	}
+
+	if err != nil {
+		return
+	}
+	realAddr := listener.Addr().String()
+	listenedIP, port, err = net.SplitHostPort(realAddr)
+	if err != nil {
+		return
+	}
+	ip := net.ParseIP(listenedIP)
+	if ip.IsUnspecified() {
+		if IsIPv6Address(ip) {
+			listenedIP = GetLocalIPv6()
+			if listenedIP == "" {
+				listenedIP = GetLocalIP()
+			}
+		} else {
+			listenedIP = GetLocalIP()
+		}
+	}
+	return
 }

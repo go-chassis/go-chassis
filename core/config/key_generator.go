@@ -56,16 +56,6 @@ func GetDefaultForceFallbackKey(t string) string {
 	return GetHystrixSpecificKey(NamespaceFallback, t, PropertyForce)
 }
 
-// GetTimeEnabledKey get time enabled key
-func GetTimeEnabledKey(command string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, command, PropertyTimeoutEnabled)
-}
-
-// GetDefaultTimeEnabledKey get default time enabled key
-func GetDefaultTimeEnabledKey(t string) string {
-	return GetHystrixSpecificKey(NamespaceIsolation, t, PropertyTimeoutEnabled)
-}
-
 // GetTimeoutKey get timeout key
 func GetTimeoutKey(command string) string {
 	return GetHystrixSpecificKey(NamespaceIsolation, command, PropertyTimeoutInMilliseconds)

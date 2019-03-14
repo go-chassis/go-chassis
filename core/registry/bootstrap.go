@@ -18,7 +18,7 @@ var errEmptyServiceIDFromRegistry = errors.New("got empty serviceID from registr
 var microServiceDependencies *MicroServiceDependency
 
 // InstanceEndpoints instance endpoints
-var InstanceEndpoints map[string]string
+var InstanceEndpoints = make(map[string]string)
 
 // RegisterMicroservice register micro-service
 func RegisterMicroservice() error {
@@ -37,6 +37,9 @@ func RegisterMicroservice() error {
 	}
 	if service.ServiceDescription.Level == "" {
 		service.ServiceDescription.Level = common.DefaultLevel
+	}
+	if service.ServiceDescription.ServicesStatus == "" {
+		service.ServiceDescription.ServicesStatus = common.DefaultStatus
 	}
 	if service.ServiceDescription.Properties == nil {
 		service.ServiceDescription.Properties = make(map[string]string)
@@ -58,7 +61,7 @@ func RegisterMicroservice() error {
 		Version:     service.ServiceDescription.Version,
 		Paths:       regpaths,
 		Environment: service.ServiceDescription.Environment,
-		Status:      common.DefaultStatus,
+		Status:      service.ServiceDescription.ServicesStatus,
 		Level:       service.ServiceDescription.Level,
 		Schemas:     runtime.Schemas,
 		Framework: &Framework{
@@ -130,11 +133,13 @@ func RegisterMicroserviceInstances() error {
 	if InstanceEndpoints != nil {
 		eps = InstanceEndpoints
 	}
-
+	if service.ServiceDescription.ServicesStatus == "" {
+		service.ServiceDescription.ServicesStatus = common.DefaultStatus
+	}
 	microServiceInstance := &MicroServiceInstance{
 		EndpointsMap: eps,
 		HostName:     runtime.HostName,
-		Status:       common.DefaultStatus,
+		Status:       service.ServiceDescription.ServicesStatus,
 		Metadata:     map[string]string{"nodeIP": config.NodeIP},
 	}
 
@@ -148,7 +153,7 @@ func RegisterMicroserviceInstances() error {
 
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("Register instance failed, serviceID: %s, err %s", err)
+		lager.Logger.Errorf("Register instance failed, serviceID: %s, err %s", sid, err.Error())
 		return err
 	}
 	//Set to runtime

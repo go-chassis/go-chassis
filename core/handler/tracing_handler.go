@@ -4,9 +4,9 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"github.com/openzipkin-contrib/zipkin-go-opentracing/thrift/gen-go/zipkincore"
 )
 
 // TracingProviderHandler tracing provider handler
@@ -45,9 +45,9 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		err = cb(r)
 		switch i.Protocol {
 		case common.ProtocolRest:
-			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
-			span.SetTag(zipkincore.HTTP_PATH, i.OperationID)
-			span.SetTag(zipkincore.HTTP_STATUS_CODE, r.Status)
+			span.SetTag(tracing.HTTPMethod, i.Metadata[common.RestMethod])
+			span.SetTag(tracing.HTTPPath, i.OperationID)
+			span.SetTag(tracing.HTTPStatusCode, r.Status)
 		default:
 		}
 		span.Finish()
@@ -102,10 +102,10 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	chain.Next(i, func(r *invocation.Response) (err error) {
 		switch i.Protocol {
 		case common.ProtocolRest:
-			span.SetTag(zipkincore.HTTP_METHOD, i.Metadata[common.RestMethod])
-			span.SetTag(zipkincore.HTTP_PATH, i.OperationID)
-			span.SetTag(zipkincore.HTTP_STATUS_CODE, r.Status)
-			span.SetTag(zipkincore.HTTP_HOST, i.Endpoint)
+			span.SetTag(tracing.HTTPMethod, i.Metadata[common.RestMethod])
+			span.SetTag(tracing.HTTPPath, i.OperationID)
+			span.SetTag(tracing.HTTPStatusCode, r.Status)
+			span.SetTag(tracing.HTTPHost, i.Endpoint)
 		default:
 		}
 		span.Finish()

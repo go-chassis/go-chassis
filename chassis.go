@@ -60,8 +60,6 @@ import (
 	"github.com/go-chassis/go-chassis/metrics"
 	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	//tracers
-	_ "github.com/go-chassis/go-chassis/tracing/zipkin"
 )
 
 var goChassis *chassis

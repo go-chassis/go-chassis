@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 
@@ -10,12 +11,10 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
-
 	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
-
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/util"
-	"github.com/go-chassis/go-chassis/session"
+	"io/ioutil"
+	"net/http"
 )
 
 // LBHandler loadbalancer handler struct
@@ -42,13 +41,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		i.Filters = lbConfig.Filters
 	}
 
-	var sessionID string
-	if i.Strategy == loadbalancer.StrategySessionStickiness {
-		sessionID = session.GetSessionID(getNamespace(i))
-	}
-
-	s, err := loadbalancer.BuildStrategy(i.SourceServiceID, i.MicroServiceName, i.Protocol,
-		sessionID, i.Filters, strategyFun(), i.RouteTags)
+	s, err := loadbalancer.BuildStrategy(i, strategyFun())
 	if err != nil {
 		return "", err
 	}
@@ -106,6 +99,12 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 	retryOnNext := lbConfig.RetryOnNext
 	handlerIndex := chain.HandlerIndex
 	var invResp *invocation.Response
+	var reqBytes []byte
+
+	if req, ok := i.Args.(*http.Request); ok {
+		reqBytes, _ = ioutil.ReadAll(req.Body)
+	}
+
 	for j := 0; j < retryOnNext+1; j++ {
 		// exchange and retry on the next server
 		ep, err := lb.getEndpoint(i, lbConfig)
@@ -117,14 +116,20 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		// retry on the same server
 		lbBackoff := backoffUtil.GetBackOff(lbConfig.BackOffKind, lbConfig.BackOffMin, lbConfig.BackOffMax)
 		callTimes := 0
+
 		operation := func() error {
-			if callTimes == retryOnSame+1 {
+			if callTimes >= retryOnSame+1 {
 				return backoff.Permanent(errors.New("retry times expires"))
 			}
 			callTimes++
 			i.Endpoint = ep
 			var respErr error
 			chain.HandlerIndex = handlerIndex
+
+			if _, ok := i.Args.(*http.Request); ok {
+				i.Args.(*http.Request).Body = ioutil.NopCloser(bytes.NewBuffer(reqBytes))
+			}
+
 			chain.Next(i, func(r *invocation.Response) error {
 				if r != nil {
 					invResp = r
@@ -152,13 +157,4 @@ func (lb *LBHandler) Name() string {
 
 func newLBHandler() Handler {
 	return &LBHandler{}
-}
-
-func getNamespace(i *invocation.Invocation) string {
-	if metadata, ok := i.Metadata[common.SessionNameSpaceKey]; ok {
-		if v, ok := metadata.(string); ok {
-			return v
-		}
-	}
-	return common.SessionNameSpaceDefaultValue
 }

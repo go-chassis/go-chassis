@@ -2,9 +2,8 @@ package provider
 
 import (
 	"fmt"
-	"log"
-
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-mesh/openlogging"
 )
 
 // plugin name and schemas map
@@ -18,7 +17,7 @@ var defaultProviderFunc = NewProvider
 
 // InstallProviderPlugin install provider plugin
 func InstallProviderPlugin(pluginName string, newFunc func(string) Provider) {
-	log.Printf("Install Provider Plugin, name=%s", pluginName)
+	openlogging.Info("Install Provider Plugin, name: " + pluginName)
 	providerPlugins[pluginName] = newFunc
 }
 
