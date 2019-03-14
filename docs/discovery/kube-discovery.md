@@ -26,4 +26,6 @@ cse:
         configPath: /etc/.kube/config
 ```
 
-To see the detailed use case of how to use kube discovery with chassis please refer to this [example](https://github.com/go-chassis/go-chassis/tree/master/examples/kube).
+To see the detailed use case of how to use kube discovery 
+with chassis please refer to this 
+[example](https://github.com/go-chassis/go-chassis-examples/tree/master/kube).

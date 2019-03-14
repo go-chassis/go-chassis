@@ -16,6 +16,7 @@ type PrometheusExporter struct {
 	counters      map[string]*prometheus.CounterVec
 	gauges        map[string]*prometheus.GaugeVec
 	summaries     map[string]*prometheus.SummaryVec
+	histograms    map[string]*prometheus.HistogramVec
 }
 
 //NewPrometheusExporter create a prometheus exporter
@@ -28,6 +29,7 @@ func NewPrometheusExporter(options Options) Registry {
 		summaries:     make(map[string]*prometheus.SummaryVec),
 		counters:      make(map[string]*prometheus.CounterVec),
 		gauges:        make(map[string]*prometheus.GaugeVec),
+		histograms:    make(map[string]*prometheus.HistogramVec),
 	}
 }
 
@@ -46,6 +48,7 @@ func (c *PrometheusExporter) CreateGauge(opts GaugeOpts) error {
 		Help: opts.Help,
 	}, opts.Labels)
 	c.gauges[opts.Name] = gVec
+	GetSystemPrometheusRegistry().MustRegister(gVec)
 	return nil
 }
 
@@ -76,6 +79,7 @@ func (c *PrometheusExporter) CreateCounter(opts CounterOpts) error {
 		Help: opts.Help,
 	}, opts.Labels)
 	c.counters[opts.Name] = v
+	GetSystemPrometheusRegistry().MustRegister(v)
 	return nil
 }
 
@@ -107,6 +111,7 @@ func (c *PrometheusExporter) CreateSummary(opts SummaryOpts) error {
 		Objectives: opts.Objectives,
 	}, opts.Labels)
 	c.summaries[opts.Name] = v
+	GetSystemPrometheusRegistry().MustRegister(v)
 	return nil
 }
 
@@ -114,6 +119,38 @@ func (c *PrometheusExporter) CreateSummary(opts SummaryOpts) error {
 func (c *PrometheusExporter) SummaryObserve(name string, val float64, labels map[string]string) error {
 	c.ls.RLock()
 	v, ok := c.summaries[name]
+	c.ls.RUnlock()
+	if !ok {
+		return fmt.Errorf("metrics do not exists, create it first")
+	}
+	v.With(labels).Observe(val)
+	return nil
+}
+
+//CreateHistogram create collector
+func (c *PrometheusExporter) CreateHistogram(opts HistogramOpts) error {
+	c.ls.RLock()
+	_, ok := c.histograms[opts.Name]
+	c.ls.RUnlock()
+	if ok {
+		return fmt.Errorf("metric [%s] is duplicated", opts.Name)
+	}
+	c.ls.Lock()
+	defer c.ls.Unlock()
+	v := prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Name:    opts.Name,
+		Help:    opts.Help,
+		Buckets: opts.Buckets,
+	}, opts.Labels)
+	c.histograms[opts.Name] = v
+	GetSystemPrometheusRegistry().MustRegister(v)
+	return nil
+}
+
+//HistogramObserve set value
+func (c *PrometheusExporter) HistogramObserve(name string, val float64, labels map[string]string) error {
+	c.ls.RLock()
+	v, ok := c.histograms[name]
 	c.ls.RUnlock()
 	if !ok {
 		return fmt.Errorf("metrics do not exists, create it first")
