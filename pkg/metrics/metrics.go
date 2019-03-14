@@ -18,26 +18,34 @@ type Registry interface {
 	CreateGauge(opts GaugeOpts) error
 	CreateCounter(opts CounterOpts) error
 	CreateSummary(opts SummaryOpts) error
+	CreateHistogram(opts HistogramOpts) error
+
 	GaugeSet(name string, val float64, labels map[string]string) error
 	CounterAdd(name string, val float64, labels map[string]string) error
 	SummaryObserve(name string, val float64, Labels map[string]string) error
+	HistogramObserve(name string, val float64, labels map[string]string) error
 }
 
 var defaultRegistry Registry
 
-//CreateGauge init a new gauge
+//CreateGauge init a new gauge type
 func CreateGauge(opts GaugeOpts) error {
 	return defaultRegistry.CreateGauge(opts)
 }
 
-//CreateCounter init a new counter
+//CreateCounter init a new counter type
 func CreateCounter(opts CounterOpts) error {
 	return defaultRegistry.CreateCounter(opts)
 }
 
-//CreateSummary init a new summary
+//CreateSummary init a new summary type
 func CreateSummary(opts SummaryOpts) error {
 	return defaultRegistry.CreateSummary(opts)
+}
+
+//CreateHistogram init a new summary type
+func CreateHistogram(opts HistogramOpts) error {
+	return defaultRegistry.CreateHistogram(opts)
 }
 
 //GaugeSet set a new value to a collector
@@ -53,6 +61,11 @@ func CounterAdd(name string, val float64, labels map[string]string) error {
 //SummaryObserve gives a value to summary collector
 func SummaryObserve(name string, val float64, labels map[string]string) error {
 	return defaultRegistry.SummaryObserve(name, val, labels)
+}
+
+//HistogramObserve gives a value to histogram collector
+func HistogramObserve(name string, val float64, labels map[string]string) error {
+	return defaultRegistry.HistogramObserve(name, val, labels)
 }
 
 //CounterOpts is options to create a counter options
@@ -77,6 +90,14 @@ type SummaryOpts struct {
 	Objectives map[float64]float64
 }
 
+//HistogramOpts is options to create histogram collector
+type HistogramOpts struct {
+	Name    string
+	Help    string
+	Labels  []string
+	Buckets []float64
+}
+
 //Options control config
 type Options struct {
 	FlushInterval time.Duration
@@ -89,6 +110,7 @@ func InstallPlugin(name string, f NewRegistry) {
 
 //Init load the metrics plugin and initialize it
 func Init() error {
+	//TODO name should be configurable
 	var name string
 	name = "prometheus"
 	f, ok := registries[name]
