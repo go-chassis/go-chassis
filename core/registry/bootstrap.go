@@ -109,7 +109,10 @@ func RegisterMicroservice() error {
 func RegisterMicroserviceInstances() error {
 	for _, schemaID := range runtime.Schemas {
 		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
-		DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
+		err := DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
+		if err != nil {
+			openlogging.Warn("upload contract to registry failed: " + err.Error())
+		}
 		openlogging.Info("upload schema to registry, " + schemaID)
 	}
 

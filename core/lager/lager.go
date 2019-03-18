@@ -51,10 +51,10 @@ func Initialize(writers, loggerLevel, loggerFile, rollingPolicy string, logForma
 		LogRotateSize:  LogRotateSize,
 		LogBackupCount: LogBackupCount,
 	}
-	log.Println("Enable log tool")
 	Logger = newLog(lag)
 	initLogRotate(logFilePath, lag)
 	openlogging.SetLogger(Logger)
+	openlogging.Debug("logger init success")
 	return
 }
 
@@ -119,7 +119,10 @@ func checkPassLagerDefinition(lag *Lager) {
 func createLogFile(localPath, outputpath string) {
 	_, err := os.Stat(strings.Replace(filepath.Dir(filepath.Join(localPath, outputpath)), "\\", "/", -1))
 	if err != nil && os.IsNotExist(err) {
-		os.MkdirAll(strings.Replace(filepath.Dir(filepath.Join(localPath, outputpath)), "\\", "/", -1), os.ModePerm)
+		err := os.MkdirAll(strings.Replace(filepath.Dir(filepath.Join(localPath, outputpath)), "\\", "/", -1), os.ModePerm)
+		if err != nil {
+			panic(err)
+		}
 	} else if err != nil {
 		panic(err)
 	}

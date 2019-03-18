@@ -54,17 +54,12 @@ type restfulServer struct {
 
 func newRestfulServer(opts server.Options) server.ProtocolServer {
 	ws := new(restful.WebService)
-	ws.Path("/").Doc("root path").
-		Consumes(restful.MIME_XML, restful.MIME_JSON, MimeFile, MimeMult).
-		Produces(restful.MIME_JSON, restful.MIME_XML, MimeFile, MimeMult) // you can specify this per route as well
-
 	if archaius.GetBool("cse.metrics.enable", false) {
-
 		metricPath := archaius.GetString("cse.metrics.apiPath", DefaultMetricPath)
 		if !strings.HasPrefix(metricPath, "/") {
 			metricPath = "/" + metricPath
 		}
-		lager.Logger.Info("Enabled metrics API on " + metricPath)
+		openlogging.Info("Enabled metrics API on " + metricPath)
 		ws.Route(ws.GET(metricPath).To(metrics.HTTPHandleFunc))
 	}
 	return &restfulServer{
@@ -74,7 +69,6 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 	}
 }
 func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
-
 	inv := &invocation.Invocation{
 		MicroServiceName:   runtime.ServiceName,
 		SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
@@ -96,7 +90,7 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 	return inv, nil
 }
 func (r *restfulServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
-	lager.Logger.Info("register rest server")
+	openlogging.Info("register rest server")
 	opts := server.RegisterOptions{}
 	r.mux.Lock()
 	defer r.mux.Unlock()

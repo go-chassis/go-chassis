@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/rolling"
+	"github.com/go-mesh/openlogging"
 )
 
 const (
@@ -77,8 +78,14 @@ func (sh *StreamHandler) loop() {
 		case <-tick:
 			circuitBreakersMutex.RLock()
 			for _, cb := range circuitBreakers {
-				sh.publishMetrics(cb)
-				sh.publishThreadPools(cb.executorPool)
+				err := sh.publishMetrics(cb)
+				if err != nil {
+					openlogging.Warn("publishMetrics err: " + err.Error())
+				}
+				err = sh.publishThreadPools(cb.executorPool)
+				if err != nil {
+					openlogging.Warn("publishThreadPools err: " + err.Error())
+				}
 			}
 			circuitBreakersMutex.RUnlock()
 		case <-sh.done:
@@ -169,7 +176,9 @@ func (sh *StreamHandler) publishThreadPools(pool *executorPool) error {
 		return err
 	}
 	err = sh.writeToRequests(eventBytes)
-
+	if err != nil {
+		openlogging.Warn("write err: " + err.Error())
+	}
 	return nil
 }
 

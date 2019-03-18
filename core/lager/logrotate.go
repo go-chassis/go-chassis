@@ -18,7 +18,9 @@ package lager
 import (
 	"archive/zip"
 	"fmt"
+	"github.com/go-mesh/openlogging"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -109,7 +111,12 @@ func compressFile(filePath, fileBaseName string, replaceTimestamp bool) error {
 	if err != nil {
 		return err
 	}
-	defer zipFile.Close()
+	defer func() {
+		err := zipFile.Close()
+		if err != nil {
+			openlogging.Error("can not close log zip file: " + err.Error())
+		}
+	}()
 
 	zipWriter := zip.NewWriter(zipFile)
 	defer zipWriter.Close()
@@ -191,7 +198,7 @@ func doBackup(fPath string, MaxBackupCount int) {
 			err = compressFile(file, filepath.Base(fPath), true)
 		}
 		if err != nil {
-			Logger.Errorf("compress path: %s failed: %s", EscapPath(file), err)
+			openlogging.GetLogger().Errorf("compress path: %s failed: %s", EscapPath(file), err)
 			continue
 		}
 		err = removeFile(file)
@@ -274,18 +281,12 @@ func getTimeStamp() string {
 }
 
 // CopyFile copy file
-func CopyFile(srcFile, destFile string) error {
-	file, err := os.Open(srcFile)
+func CopyFile(srcFile, dstFile string) error {
+	input, err := ioutil.ReadFile(srcFile)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-	dest, err := os.Create(destFile)
-	if err != nil {
-		return err
-	}
-	defer dest.Close()
-	_, err = io.Copy(dest, file)
+	err = ioutil.WriteFile(dstFile, input, 0600)
 	return err
 }
 

@@ -20,6 +20,8 @@ type Route struct {
 	Parameters       []*Parameters //Parameters is a slice of request parameters for a single endpoint Optional.
 	Returns          []*Returns    //what kind of response this API returns. Optional.
 	Read             interface{}   //Read tells what resource type will be read from the request payload. Optional.
+	Consumes         []string      //Consumes specifies that this WebService can consume one or more MIME types.
+	Produces         []string      //Produces specifies that this WebService can produce one or more MIME types.
 }
 
 //Returns describe response doc

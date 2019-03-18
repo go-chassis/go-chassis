@@ -7,6 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/goplugin"
 	"github.com/go-chassis/go-chassis/security"
+	"github.com/go-mesh/openlogging"
 )
 
 const cipherPlugin = "cipher_plugin.so"
@@ -25,7 +26,10 @@ type AESCipher struct {
 
 func init() {
 	if v, exist := os.LookupEnv("CIPHER_ROOT"); exist {
-		os.Setenv("PAAS_CRYPTO_PATH", v)
+		err := os.Setenv("PAAS_CRYPTO_PATH", v)
+		if err != nil {
+			openlogging.Warn("can not set env for cipher: " + err.Error())
+		}
 	}
 	security.InstallCipherPlugin("aes", new)
 }

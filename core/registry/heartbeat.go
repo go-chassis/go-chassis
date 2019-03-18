@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 )
 
 // DefaultRetryTime default retry time
@@ -118,10 +119,9 @@ func (s *HeartbeatService) run() {
 }
 
 // RetryRegister retrying to register micro-service, and instance
-func (s *HeartbeatService) RetryRegister(sid, iid string) error {
+func (s *HeartbeatService) RetryRegister(sid, iid string) {
 	for {
-		time.Sleep(DefaultRetryTime)
-		lager.Logger.Infof("Try to re-register self")
+		openlogging.Info("try to re-register")
 		_, err := DefaultServiceDiscoveryService.GetAllMicroServices()
 		if err != nil {
 			lager.Logger.Errorf("DefaultRegistrator is not healthy %s", err)
@@ -135,9 +135,9 @@ func (s *HeartbeatService) RetryRegister(sid, iid string) error {
 		if err == nil {
 			break
 		}
+		time.Sleep(DefaultRetryTime)
 	}
-	lager.Logger.Warn("Re-register self success")
-	return nil
+	openlogging.Warn("Re-register self success")
 }
 
 // ReRegisterSelfMSandMSI 重新注册微服务和实例
@@ -196,7 +196,7 @@ func reRegisterSelfMSI(sid, iid string) error {
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	SelfInstancesCache.Set(microServiceInstance.ServiceID, instanceIDs, 0)
-	lager.Logger.Warnf("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
+	lager.Logger.Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
 
 	return nil
 }

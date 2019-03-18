@@ -79,9 +79,9 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security2.Ci
 		}
 
 		plainPassphaseBytes := stringutil.Str2bytes(plainpass)
+		defer stringutil.ClearStringMemory(&plainpass)
+		defer stringutil.ClearByteMemory(plainPassphaseBytes)
 		keyData, err := x509.DecryptPEMBlock(keyBlock, plainPassphaseBytes)
-		stringutil.ClearStringMemory(&plainpass)
-		stringutil.ClearByteMemory(plainPassphaseBytes)
 		if err != nil {
 			return nil, fmt.Errorf("decrypt key file %s failed: %s", keyFile, err)
 		}

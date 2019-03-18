@@ -8,10 +8,18 @@ it also monitor each service call to make service [observable](https://docs.go-c
 
 ## **Configuration**
 
-Configuration Format as below：
+Circuit breaker scope is controlled by 
+
+**cse.circuitBreaker.scope**
+> *(optional, string)* service or api, 
+default is api, go chassis create a dedicated circuit for every api, invocation will be isolated based on api. 
+if set to service, all of APIs of each service share one circuit, it will isolate the service.
+
+Configuration Format looks like below：
 
 cse.{namespace}.Consumer.{serviceName}.{property}
-explanation:
+
+Explanation:
 
 {namespace}：it can be isolation\|circuitBreaker\|fallback\|fallbackpolicy. 
 
@@ -24,11 +32,6 @@ explanation:
 
 **cse.isolation.maxConcurrentRequests**
 > *(optional, int)* max concurrency, default is 1000
-
-**cse.circuitBreaker.scope**
-> *(optional, string)* service or api, 
-default is api, go chassis create a dedicated circuit for every api, invocation will be isolated based on api
-if set to service, all of API for each service share one circuit, it will isolate the service.
 
 **cse.circuitBreaker.enabled**
 > *(optional, bool)* enable circuit breaker or not, default is false
