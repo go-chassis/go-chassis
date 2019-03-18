@@ -48,7 +48,6 @@ func Init() error {
 // ValidateRule validate the route rules of each service
 func ValidateRule(rules map[string][]*model.RouteRule) bool {
 	for name, rule := range rules {
-
 		for _, route := range rule {
 			allWeight := 0
 			for _, routeTag := range route.Routes {

@@ -109,7 +109,6 @@ func StartListener(listenAddress string, tlsConfig *tls.Config) (listener net.Li
 	} else {
 		listener, err = tls.Listen("tcp", listenAddress, tlsConfig)
 	}
-
 	if err != nil {
 		return
 	}

@@ -3,6 +3,8 @@ package grpc
 import (
 	"errors"
 	"fmt"
+	"net"
+
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -14,7 +16,6 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"net"
 )
 
 //err define
@@ -97,7 +98,6 @@ func (s *Server) Register(schema interface{}, options ...server.RegisterOption) 
 //Start launch the server
 func (s *Server) Start() error {
 	listener, host, port, lisErr := iputil.StartListener(s.opts.Address, s.opts.TLSConfig)
-
 	if lisErr != nil {
 		openlogging.Error("listening failed, reason:" + lisErr.Error())
 		return lisErr

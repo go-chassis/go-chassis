@@ -26,6 +26,7 @@ import (
 	"github.com/go-chassis/go-chassis/metrics"
 	m "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 	"github.com/prometheus/client_golang/prometheus"
 	gometrics "github.com/rcrowley/go-metrics"
 	"regexp"
@@ -146,7 +147,10 @@ func (c *PrometheusSinker) gaugeVecFromNameAndValue(name string, val float64, la
 // UpdatePrometheusMetrics update prometheus metrics
 func (c *PrometheusSinker) UpdatePrometheusMetrics() {
 	for range time.Tick(c.FlushInterval) {
-		c.UpdatePrometheusMetricsOnce()
+		err := c.UpdatePrometheusMetricsOnce()
+		if err != nil {
+			openlogging.Warn("can not report go-metrics data to prom")
+		}
 	}
 }
 
