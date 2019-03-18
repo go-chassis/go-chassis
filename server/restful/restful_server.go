@@ -246,11 +246,7 @@ func (r *restfulServer) Start() error {
 	registry.InstanceEndpoints[Name] = net.JoinHostPort(lIP, lPort)
 
 	go func() {
-		if r.server.TLSConfig != nil {
-			err = r.server.ServeTLS(l, "", "")
-		} else {
-			err = r.server.Serve(l)
-		}
+		err = r.server.Serve(l)
 		if err != nil {
 			openlogging.Error("http server err: " + err.Error())
 			server.ErrRuntime <- err
