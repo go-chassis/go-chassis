@@ -5,7 +5,9 @@ import (
 	"errors"
 	"regexp"
 	"strconv"
+	"strings"
 
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
@@ -130,22 +132,25 @@ func SourceMatch(match *model.Match, headers map[string]string, source *registry
 
 // isMatch check the route rule
 func isMatch(headers map[string]string, k string, v map[string]string) bool {
-	header := headers[k]
+	header := valueToUpper(v["caseInsensitive"], headers[k])
+
 	if regex, ok := v["regex"]; ok {
-		reg := regexp.MustCompilePOSIX(regex)
+
+		reg := regexp.MustCompilePOSIX(valueToUpper(v["caseInsensitive"], regex))
 		if !reg.Match([]byte(header)) {
 			return false
 		}
 		return true
+
 	}
 	if exact, ok := v["exact"]; ok {
-		if exact != header {
+		if valueToUpper(v["caseInsensitive"], exact) != header {
 			return false
 		}
 		return true
 	}
 	if noEqu, ok := v["noEqu"]; ok {
-		if noEqu == header {
+		if valueToUpper(v["caseInsensitive"], noEqu) == header {
 			return false
 		}
 		return true
@@ -183,6 +188,13 @@ func isMatch(headers map[string]string, k string, v map[string]string) bool {
 		}
 	}
 	return true
+}
+func valueToUpper(b, value string) string {
+	if b == common.TRUE {
+		value = strings.ToUpper(value)
+	}
+
+	return value
 }
 
 // SortRules sort route rules

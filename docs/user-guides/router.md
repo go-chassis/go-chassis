@@ -22,6 +22,7 @@ routeRule:
         headers:          #header匹配
           {key0}:            
             regex: {regex}
+            caseInsensitive: false # 是否区分大小写，默认为false，区分大小写
           {key1}         
             exact: {=？}   
       route: #路由规则
@@ -67,7 +68,7 @@ sourceTemplate:  #定义source模板
 - 如果未定义match，则可匹配任何请求。
 - 转发权重定义在routeRule.{targetServiceName}.route下，由weight配置。
 - 服务分组定义在routeRule.{targetServiceName}.route下，由tags配置，配置内容有version和app。
-
+- caseInsensitive 配置条件是否区分大小写，默认false区分大小写，true则不区分大小写
 ## API
 
 ##### 设置Router Rules

@@ -4,7 +4,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-mesh/openlogging"
 )
 
 // DarkLaunchRule2RouteRule translates dark launch rule to route rule
@@ -34,27 +36,21 @@ func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
 				HTTPHeaders: map[string]map[string]string{},
 				Headers:     map[string]map[string]string{},
 			}
+
 			if strings.Contains(con, "!=") {
-				match.HTTPHeaders[strings.Split(con, "!=")[0]] = map[string]string{"noEqu": strings.Split(con, "!=")[1]}
-				match.Headers[strings.Split(con, "!=")[0]] = map[string]string{"noEqu": strings.Split(con, "!=")[1]}
+				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "noEqu", con, "!=")
 			} else if strings.Contains(con, ">=") {
-				match.HTTPHeaders[strings.Split(con, ">=")[0]] = map[string]string{"noLess": strings.Split(con, ">=")[1]}
-				match.Headers[strings.Split(con, ">=")[0]] = map[string]string{"noLess": strings.Split(con, ">=")[1]}
+				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "noLess", con, ">=")
 			} else if strings.Contains(con, "<=") {
-				match.HTTPHeaders[strings.Split(con, "<=")[0]] = map[string]string{"noGreater": strings.Split(con, "<=")[1]}
-				match.Headers[strings.Split(con, "<=")[0]] = map[string]string{"noGreater": strings.Split(con, "<=")[1]}
+				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "noGreater", con, "<=")
 			} else if strings.Contains(con, "=") {
-				match.HTTPHeaders[strings.Split(con, "=")[0]] = map[string]string{"exact": strings.Split(con, "=")[1]}
-				match.Headers[strings.Split(con, "=")[0]] = map[string]string{"exact": strings.Split(con, "=")[1]}
+				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "exact", con, "=")
 			} else if strings.Contains(con, ">") {
-				match.HTTPHeaders[strings.Split(con, ">")[0]] = map[string]string{"greater": strings.Split(con, ">")[1]}
-				match.Headers[strings.Split(con, ">")[0]] = map[string]string{"greater": strings.Split(con, ">")[1]}
+				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "greater", con, ">")
 			} else if strings.Contains(con, "<") {
-				match.HTTPHeaders[strings.Split(con, "<")[0]] = map[string]string{"less": strings.Split(con, "<")[1]}
-				match.Headers[strings.Split(con, "<")[0]] = map[string]string{"less": strings.Split(con, "<")[1]}
+				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "less", con, "<")
 			} else if strings.Contains(con, "~") {
-				match.HTTPHeaders[strings.Split(con, "~")[0]] = map[string]string{"regex": strings.Split(con, "~")[1]}
-				match.Headers[strings.Split(con, "~")[0]] = map[string]string{"regex": strings.Split(con, "~")[1]}
+				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "regex", con, "~")
 			}
 			newRule := &model.RouteRule{
 				Routes:     generateRouteTags(100, strings.Split(version, ",")),
@@ -86,4 +82,32 @@ func generateRouteTags(weights int, versions []string) []*model.RouteTag {
 		}
 	}
 	return tags
+}
+func caseInsensitiveToString(isCaseInsensitive bool) string {
+	if isCaseInsensitive {
+		return common.TRUE
+	}
+	return common.FALSE
+}
+func setHeadersAndHTTPHeaders(match *model.Match, isCaseInsensitive bool, cKey, con, sp string) {
+	cons := strings.Split(con, sp)
+	if len(cons) != 2 {
+		openlogging.GetLogger().Errorf("set router conf to headers failed , conf : %s", con)
+		return
+	}
+	pkey := toCamelCase(cons[0])
+	(*match).HTTPHeaders[pkey] = map[string]string{
+		cKey:              cons[1],
+		"caseInsensitive": caseInsensitiveToString(isCaseInsensitive),
+	}
+	(*match).Headers[pkey] = map[string]string{
+		cKey:              cons[1],
+		"caseInsensitive": caseInsensitiveToString(isCaseInsensitive),
+	}
+
+}
+func toCamelCase(s string) string {
+	s = strings.Replace(s, "_", " ", -1)
+	s = strings.Title(s)
+	return strings.Replace(s, " ", "", -1)
 }

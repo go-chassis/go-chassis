@@ -44,7 +44,9 @@ type DarkLaunchRule struct {
 
 // RuleItem rule item
 type RuleItem struct {
-	GroupName       string `json:"groupName"`
-	GroupCondition  string `json:"groupCondition"`  // version=0.0.1
-	PolicyCondition string `json:"policyCondition"` // 80/test!=2
+	GroupName       string   `json:"groupName"`
+	GroupCondition  string   `json:"groupCondition"`  // version=0.0.1
+	PolicyCondition string   `json:"policyCondition"` // 80/test!=2
+	CaseInsensitive bool     `json:"caseInsensitive"`
+	Versions        []string `json:"versions"`
 }
