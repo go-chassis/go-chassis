@@ -20,7 +20,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 
 #### RPC Invoker
 
-使用NewRPCInvoker创建invoker实例，可接受chain, filters等自定义选项
+使用NewRPCInvoker创建invoker实例，可接受chain等自定义选项
 
 指定远端的服务名，struct name，以及func name，以及请求参数和返回接口即可进行调用
 
