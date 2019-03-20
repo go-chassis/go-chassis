@@ -26,7 +26,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
 
@@ -60,6 +59,7 @@ import (
 	"github.com/go-chassis/go-chassis/metrics"
 	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 )
 
 var goChassis *chassis
@@ -102,19 +102,19 @@ func (c *chassis) initChains(chainType string) error {
 			handlerNameMap = c.DefaultConsumerChainNames
 		}
 	}
-	lager.Logger.Debugf("Init %s's handlermap", chainType)
+	openlogging.GetLogger().Debugf("Init %s's handlermap", chainType)
 	return handler.CreateChains(chainType, handlerNameMap)
 }
 func (c *chassis) initHandler() error {
 	if err := c.initChains(common.Provider); err != nil {
-		lager.Logger.Errorf("chain int failed: %s", err)
+		openlogging.GetLogger().Errorf("chain int failed: %s", err)
 		return err
 	}
 	if err := c.initChains(common.Consumer); err != nil {
-		lager.Logger.Errorf("chain int failed: %s", err)
+		openlogging.GetLogger().Errorf("chain int failed: %s", err)
 		return err
 	}
-	lager.Logger.Info("Chain init success")
+	openlogging.Info("chain init success")
 	return nil
 }
 
@@ -124,7 +124,7 @@ func (c *chassis) initialize() error {
 		return nil
 	}
 	if err := config.Init(); err != nil {
-		lager.Logger.Error("Failed to initialize conf," + err.Error())
+		openlogging.Error("failed to initialize conf: " + err.Error())
 		return err
 	}
 	if err := runtime.Init(); err != nil {
@@ -133,7 +133,7 @@ func (c *chassis) initialize() error {
 
 	err := c.initHandler()
 	if err != nil {
-		lager.Logger.Errorf("Handler init failed: %s", err)
+		openlogging.GetLogger().Errorf("handler init failed: %s", err)
 		return err
 	}
 
@@ -226,16 +226,19 @@ func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
-//Run bring up the service,it will not return error,instead just waiting for os signal,and shutdown gracefully
-func Run() {
+//Run bring up the service,it waits for os signal,and shutdown gracefully
+//before all protocol server start successfully, it may return error.
+func Run() error {
 	err := goChassis.start()
 	if err != nil {
-		lager.Logger.Error("run chassis fail:" + err.Error())
+		openlogging.Error("run chassis failed:" + err.Error())
+		return err
 	}
 	if !config.GetRegistratorDisable() {
 		//Register instance after Server started
 		if err := registry.DoRegister(); err != nil {
-			lager.Logger.Error("register instance fail:" + err.Error())
+			openlogging.Error("register instance failed:" + err.Error())
+			return err
 		}
 	}
 	//Graceful shutdown
@@ -243,24 +246,25 @@ func Run() {
 	signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
 	select {
 	case s := <-c:
-		lager.Logger.Info("got os signal " + s.String())
+		openlogging.Info("got os signal " + s.String())
 	case err := <-server.ErrRuntime:
-		lager.Logger.Info("got Server Error " + err.Error())
+		openlogging.Info("got server error " + err.Error())
 	}
 	for name, s := range server.GetServers() {
-		lager.Logger.Info("stopping server " + name + "...")
+		openlogging.Info("stopping server " + name + "...")
 		err := s.Stop()
 		if err != nil {
-			lager.Logger.Errorf("servers failed to stop: %s", err)
+			openlogging.GetLogger().Warnf("servers failed to stop: %s", err)
 		}
-		lager.Logger.Info(name + " server stop success")
+		openlogging.Info(name + " server stop success")
 	}
 	if !config.GetRegistratorDisable() {
 		if err = server.UnRegistrySelfInstances(); err != nil {
-			lager.Logger.Errorf("servers failed to unregister: %s", err)
+			openlogging.GetLogger().Warnf("servers failed to unregister: %s", err)
 		}
 	}
-
+	openlogging.Warn("go chassis server gracefully shutdown")
+	return nil
 }
 
 //Init prepare the chassis framework runtime
@@ -290,6 +294,6 @@ func Init() error {
 		log.Println("Init chassis fail:", err)
 		return err
 	}
-	lager.Logger.Infof("Init chassis success, Version is %s", metadata.SdkVersion)
+	openlogging.GetLogger().Infof("Init chassis success, Version is %s", metadata.SdkVersion)
 	return nil
 }
