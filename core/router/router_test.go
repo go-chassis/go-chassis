@@ -1,19 +1,20 @@
 package router_test
 
 import (
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
-	router "github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/core/router"
 	_ "github.com/go-chassis/go-chassis/core/router/cse"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 var file = []byte(`
