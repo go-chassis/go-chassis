@@ -76,6 +76,11 @@ func (bs *Context) ReadQueryParameter(name string) string {
 	return bs.req.QueryParameter(name)
 }
 
+// ReadQueryEntity is used to read query parameters into a specified struct
+func (bs *Context) ReadQueryEntity(schema interface{}) (err error) {
+	return mapForm(schema, bs.req.Request.URL.Query())
+}
+
 //ReadBodyParameter used to read body parameter of a request
 func (bs *Context) ReadBodyParameter(name string) (string, error) {
 	return bs.req.BodyParameter(name)
