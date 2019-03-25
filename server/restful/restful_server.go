@@ -264,7 +264,8 @@ func (r *restfulServer) Stop() error {
 		return nil
 	}
 	//only golang 1.8 support graceful shutdown.
-	if err := r.server.Shutdown(nil); err != nil {
+	if err := r.server.Shutdown(context.TODO()); err != nil {
+		openlogging.Warn("http shutdown error: " + err.Error())
 		return err // failure/timeout shutting down the server gracefully
 	}
 	return nil

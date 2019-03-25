@@ -263,7 +263,7 @@ func Run() error {
 			openlogging.GetLogger().Warnf("servers failed to unregister: %s", err)
 		}
 	}
-	openlogging.Warn("go chassis server gracefully shutdown")
+	openlogging.Info("go chassis server gracefully shutdown")
 	return nil
 }
 

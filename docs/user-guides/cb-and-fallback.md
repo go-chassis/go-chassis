@@ -59,7 +59,7 @@ if retry failed, circuit will open again.
 
 **cse.fallbackpolicy.policy**
 > *(optional, string)* fallback policy  [*returnnull*| *throwexception*]，default is returnnull. 
-you can also [custom fallback policy](http://docs.go-chassis.com/dev-guides/circuit.md)
+you can also [custom fallback policy](http://docs.go-chassis.com/dev-guides/circuit.html)
 
 
 ## **Examples**
