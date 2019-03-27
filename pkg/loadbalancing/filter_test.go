@@ -1,4 +1,4 @@
-package loadbalancer_test
+package loadbalancing_test
 
 import (
 	_ "github.com/go-chassis/go-chassis/initiator"
@@ -7,6 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/loadbalancing"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -41,7 +42,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 			Metadata:     map[string]string{"key": "1"},
 		},
 	}
-	loadbalancer.InstallFilter(loadbalancer.ZoneAware, loadbalancer.FilterAvailableZoneAffinity)
+	loadbalancer.InstallFilter(loadbalancer.ZoneAware, loadbalancing.FilterAvailableZoneAffinity)
 	instances := loadbalancer.Filters[loadbalancer.ZoneAware](testData, nil)
 	assert.NotEqual(t, 0, len(instances))
 
@@ -55,7 +56,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 		},
 	}
 
-	instances = loadbalancer.FilterAvailableZoneAffinity(testData, nil)
+	instances = loadbalancing.FilterAvailableZoneAffinity(testData, nil)
 	assert.NotEqual(t, 0, len(instances))
 
 	//Same region but any available zone
@@ -69,7 +70,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 		},
 	}
 
-	instances = loadbalancer.FilterAvailableZoneAffinity(testData, nil)
+	instances = loadbalancing.FilterAvailableZoneAffinity(testData, nil)
 	assert.NotEqual(t, 0, len(instances))
 
 }

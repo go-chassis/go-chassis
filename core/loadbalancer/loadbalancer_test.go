@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -30,17 +31,17 @@ func TestEnable(t *testing.T) {
 
 	LBstr["name"] = "RoundRobin"
 	config.GetLoadBalancing().Strategy = LBstr
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	assert.Equal(t, "RoundRobin", config.GetLoadBalancing().Strategy["name"])
 
 	LBstr["name"] = ""
 	config.GetLoadBalancing().Strategy = LBstr
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	assert.Equal(t, "", config.GetLoadBalancing().Strategy["name"])
 
 	LBstr["name"] = "ABC"
 	config.GetLoadBalancing().Strategy = LBstr
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	assert.Equal(t, "ABC", config.GetLoadBalancing().Strategy["name"])
 
 }
@@ -83,7 +84,7 @@ func TestBuildStrategy(t *testing.T) {
 
 	_, _, err = registry.DefaultRegistrator.RegisterServiceAndInstance(testData1[0], testData2[1])
 	assert.NoError(t, err)
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	registry.Enable()
 	registry.DoRegister()
 	runtime.ServiceID = sid
@@ -127,7 +128,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	config.Init()
 	registry.Enable()
 	registry.DoRegister()
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",

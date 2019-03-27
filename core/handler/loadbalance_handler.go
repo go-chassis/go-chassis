@@ -11,7 +11,6 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/pkg/util"
@@ -28,13 +27,13 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		i.Strategy = lbConfig.Strategy
 		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			lager.Logger.Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
+			openlogging.GetLogger().Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
 				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
 		}
 	} else {
 		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			lager.Logger.Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
+			openlogging.GetLogger().Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
 				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
 		}
 	}
@@ -68,7 +67,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		errStr := fmt.Sprintf("No available instance support ["+i.Protocol+"] protocol,"+
 			" msName: "+i.MicroServiceName+" %v", ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
-		lager.Logger.Errorf(lbErr.Error())
+		openlogging.GetLogger().Errorf(lbErr.Error())
 		return "", lbErr
 	}
 	return ep, nil

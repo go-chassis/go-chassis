@@ -20,7 +20,11 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 	err := config.Init()
 	assert.NoError(t, err)
 	config.GlobalDefinition.Panel.Infra = "archaius"
-	err = control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	err = control.Init(opts)
 	assert.NoError(t, err)
 
 	t.Log("lb")
@@ -62,7 +66,11 @@ func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
-	control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	control.Init(opts)
 	inv := invocation.Invocation{
 		SourceMicroService: "",
 		MicroServiceName:   "Server",
@@ -78,7 +86,11 @@ func BenchmarkPanel_GetLoadBalancing2(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
-	control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	control.Init(opts)
 	inv := invocation.Invocation{
 		SourceMicroService: "",
 		MicroServiceName:   "",
@@ -94,7 +106,11 @@ func BenchmarkPanel_GetCircuitBreaker(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
-	control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	control.Init(opts)
 	inv := invocation.Invocation{
 		SourceMicroService: "",
 		MicroServiceName:   "",
@@ -110,7 +126,11 @@ func BenchmarkPanel_GetRateLimiting(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
-	control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	control.Init(opts)
 	inv := invocation.Invocation{
 		SourceMicroService: "",
 		MicroServiceName:   "",
