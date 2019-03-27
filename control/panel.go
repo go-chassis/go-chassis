@@ -2,7 +2,6 @@ package control
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
@@ -30,19 +29,14 @@ type Panel interface {
 	GetEgressRule() []EgressConfig
 }
 
-//Options is options
-type Options struct {
-	Address string
-}
-
 //InstallPlugin install implementation
 func InstallPlugin(name string, f func(options Options) Panel) {
 	panelPlugin[name] = f
 }
 
 //Init initialize DefaultPanel
-func Init() error {
-	infra := config.GlobalDefinition.Panel.Infra
+func Init(opts Options) error {
+	infra := opts.Infra
 	if infra == "" {
 		infra = "archaius"
 	}
@@ -51,22 +45,23 @@ func Init() error {
 		return fmt.Errorf("do not support [%s] panel", infra)
 	}
 
-	DefaultPanel = f(Options{
-		Address: config.GlobalDefinition.Panel.Settings["address"],
-	})
+	DefaultPanel = f(opts)
 	return nil
 }
 
-// NewCircuitName create circuit command
-func NewCircuitName(serviceType string, inv invocation.Invocation) string {
+//NewCircuitName create circuit command string
+//scope means has two choices, service and api
+//if you set it to api, a api level command string will be created. like "Consumer.mall.rest./test"
+//set to service, a service level command will be created, like "Consumer.mall"
+func NewCircuitName(serviceType, scope string, inv invocation.Invocation) string {
 	var cmd = serviceType
 	if inv.MicroServiceName != "" {
 		cmd = strings.Join([]string{cmd, inv.MicroServiceName}, ".")
 	}
-	if config.GetHystrixConfig().CircuitBreakerProperties.Scope == "" {
-		config.GetHystrixConfig().CircuitBreakerProperties.Scope = ScopeAPI
+	if scope == "" {
+		scope = ScopeAPI
 	}
-	if config.GetHystrixConfig().CircuitBreakerProperties.Scope == ScopeAPI {
+	if scope == ScopeAPI {
 		if inv.SchemaID != "" {
 			cmd = strings.Join([]string{cmd, inv.SchemaID}, ".")
 		}

@@ -27,10 +27,15 @@ func TestInit(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	err := config.Init()
 	assert.NoError(t, err)
-	err = control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	err = control.Init(opts)
 	assert.NoError(t, err)
-	config.GlobalDefinition.Panel.Infra = "xxx"
-	err = control.Init()
+	opts.Infra = "xxx"
+	err = control.Init(opts)
+	t.Log(err)
 	assert.Error(t, err)
 }
 
@@ -47,14 +52,14 @@ func TestNewCircuitCmd(t *testing.T) {
 		SchemaID:         "rest",
 		OperationID:      "/test",
 	}
-	cmd := control.NewCircuitName("Consumer", i)
+	cmd := control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
 	assert.Equal(t, "Consumer.mall.rest./test", cmd)
 
 	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "api"
-	cmd = control.NewCircuitName("Consumer", i)
+	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
 	assert.Equal(t, "Consumer.mall.rest./test", cmd)
 
 	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "service"
-	cmd = control.NewCircuitName("Consumer", i)
+	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
 	assert.Equal(t, "Consumer.mall", cmd)
 }

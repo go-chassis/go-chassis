@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-archaius/core/cast"
 	"github.com/go-chassis/go-chassis/client/rest"
@@ -168,7 +169,11 @@ service_description:
 	runtime.ServiceID = "selfServiceID"
 	err = config.Init()
 	assert.NoError(t, err)
-	err = control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	err = control.Init(opts)
 	assert.NoError(t, err)
 	testConfigFactoryObj := new(MockConfigurationFactory)
 	key1 := fmt.Sprint("cse.loadbalance.retryEnabled")
@@ -232,7 +237,7 @@ service_description:
 
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	req, _ := rest.NewRequest("GET", "127.0.0.1", nil)
 	req.Header.Set("Set-Cookie", "sessionid=100")
 	i := &invocation.Invocation{
@@ -265,8 +270,11 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	err := config.Init()
 	assert.NoError(t, err)
 	//config.GlobalDefinition = &chassisModel.GlobalCfg{}
-
-	err = control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	err = control.Init(opts)
 	assert.NoError(t, err)
 	c := handler.Chain{}
 	c.AddHandler(&handler.LBHandler{})
@@ -289,7 +297,7 @@ func TestLBHandlerWithNoRetry(t *testing.T) {
 	testRegistryObj.On("FindMicroServiceInstances", "selfServiceID", "appID", "service1", "1.0", "").Return(mss, nil)
 	config.GlobalDefinition = &chassisModel.GlobalCfg{}
 	config.GetLoadBalancing().Strategy = make(map[string]string)
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",
@@ -316,10 +324,14 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
-	control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	control.Init(opts)
 	registry.Enable()
 	registry.DoRegister()
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",

@@ -1,16 +1,18 @@
-package loadbalancer_test
+package loadbalancing_test
 
 import (
 	"sort"
 	"testing"
 	"time"
 
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	_ "github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/loadbalancing"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 )
@@ -45,7 +47,7 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:9090", "Server", defaultTags, common.ProtocolHighway)
 	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:9090", "Server", defaultTags, common.ProtocolHighway)
 	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:9090", "Server", defaultTags, common.ProtocolHighway)
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	f, _ := loadbalancer.GetStrategyPlugin(loadbalancer.StrategyLatency)
 	s := f()
 	inv := &invocation.Invocation{
@@ -93,7 +95,7 @@ func TestCalculateAvgLatency(t *testing.T) {
 	loadbalancer.SetLatency(5*time.Second, "127.0.0.1:5000", "Server1", defaultTags, common.ProtocolHighway)
 	loadbalancer.SetLatency(1*time.Second, "10.0.0.1:5000", "Server1", defaultTags, common.ProtocolHighway)
 	loadbalancer.SetLatency(9*time.Second, "10.0.0.1:5000", "Server1", defaultTags, common.ProtocolHighway)
-	loadbalancer.CalculateAvgLatency()
+	loadbalancing.CalculateAvgLatency()
 	for k, v := range loadbalancer.ProtocolStatsMap {
 		if k == loadbalancer.BuildKey("Server1", "", common.ProtocolRest) {
 			for _, s := range v {
@@ -118,7 +120,7 @@ func TestCalculateAvgLatency(t *testing.T) {
 
 		}
 	}
-	loadbalancer.SortLatency()
+	loadbalancing.SortLatency()
 	t.Log(loadbalancer.ProtocolStatsMap)
 	assert.Equal(t, "127.0.0.1:5000", loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey("Server1", "", common.ProtocolHighway)][0].Addr)
 	assert.Equal(t, "10.0.0.1:3000", loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey("Server1", "", common.ProtocolRest)][0].Addr)
@@ -137,7 +139,7 @@ func TestSortLatency(t *testing.T) {
 		AvgLatency: 6 * time.Second,
 	}
 	s := []*loadbalancer.ProtocolStats{p1, p2, p3, p4}
-	sort.Sort(loadbalancer.ByDuration(s))
+	sort.Sort(loadbalancing.ByDuration(s))
 	t.Log(s[0].AvgLatency)
 	t.Log(s[1].AvgLatency)
 	t.Log(s[2].AvgLatency)

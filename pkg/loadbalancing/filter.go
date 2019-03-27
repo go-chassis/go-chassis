@@ -1,39 +1,27 @@
-package loadbalancer
+package loadbalancing
 
 import (
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
 )
 
-// constant string for zoneaware
-const (
-	ZoneAware = "zoneaware"
-)
-
-// Filters is a map of string and array of *registry.MicroServiceInstance
-var Filters = make(map[string]Filter)
-
-// InstallFilter install filter
-func InstallFilter(name string, f Filter) {
-	Filters[name] = f
-}
-
 func init() {
-	InstallFilter(ZoneAware, FilterAvailableZoneAffinity)
+	loadbalancer.InstallFilter(loadbalancer.ZoneAware, FilterAvailableZoneAffinity)
 }
 
 //FilterAvailableZoneAffinity is a region and zone based Select Filter which will Do the selection of instance in the same region and zone, if not Do the selection of instance in any zone in same region , if not Do the selection of instance in any zone of any region
-func FilterAvailableZoneAffinity(old []*registry.MicroServiceInstance, c []*Criteria) []*registry.MicroServiceInstance {
+func FilterAvailableZoneAffinity(old []*registry.MicroServiceInstance, c []*loadbalancer.Criteria) []*registry.MicroServiceInstance {
 	var instances []*registry.MicroServiceInstance
-	if config.GlobalDefinition.DataCenter == nil {
+	if config.GetDataCenter() == nil {
 		return old
 	}
-	if config.GlobalDefinition.DataCenter.Name == "" || config.GlobalDefinition.DataCenter.AvailableZone == "" {
+	if config.GetDataCenter().Name == "" || config.GetDataCenter().AvailableZone == "" {
 		return old // Either no information or partial data center information specified, return all instances
 	}
 
-	availableZone := config.GlobalDefinition.DataCenter.AvailableZone
-	regionName := config.GlobalDefinition.DataCenter.Name
+	availableZone := config.GetDataCenter().AvailableZone
+	regionName := config.GetDataCenter().Name
 	instances = getInstancesZoneWise(old, regionName, availableZone)
 	if len(instances) == 0 {
 		instances = getAvailableInstancesInSameRegion(old, regionName)
@@ -78,7 +66,7 @@ func getAvailableInstancesInSameRegion(providerInstances []*registry.MicroServic
 }
 
 // FilterByMetadata filter instances based meta data
-func FilterByMetadata(old []*registry.MicroServiceInstance, c []*Criteria) []*registry.MicroServiceInstance {
+func FilterByMetadata(old []*registry.MicroServiceInstance, c []*loadbalancer.Criteria) []*registry.MicroServiceInstance {
 	var instances []*registry.MicroServiceInstance
 
 	for _, ins := range old {

@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-mesh/openlogging"
 )
 
 var strategies = make(map[string]func() Strategy)
@@ -20,7 +20,7 @@ func init() {
 // InstallStrategy install strategy
 func InstallStrategy(name string, s func() Strategy) {
 	strategies[name] = s
-	lager.Logger.Debugf("Installed strategy plugin: %s.", name)
+	openlogging.GetLogger().Debugf("Installed strategy plugin: %s.", name)
 }
 
 // GetStrategyPlugin get strategy plugin

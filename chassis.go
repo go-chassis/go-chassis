@@ -14,6 +14,9 @@ import (
 
 	"github.com/go-chassis/go-chassis/bootstrap"
 
+	//load balancing
+	_ "github.com/go-chassis/go-chassis/pkg/loadbalancing"
+
 	//protocols
 	_ "github.com/go-chassis/go-chassis/client/highway"
 	_ "github.com/go-chassis/go-chassis/client/rest"
@@ -147,7 +150,8 @@ func (c *chassis) initialize() error {
 		if err != nil {
 			return err
 		}
-		if err := loadbalancer.Enable(); err != nil {
+		strategyName := archaius.GetString("cse.loadbalance.strategy.name", "")
+		if err := loadbalancer.Enable(strategyName); err != nil {
 			return err
 		}
 	}
@@ -158,7 +162,11 @@ func (c *chassis) initialize() error {
 	if err = router.Init(); err != nil {
 		return err
 	}
-	if err := control.Init(); err != nil {
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	if err := control.Init(opts); err != nil {
 		return err
 	}
 

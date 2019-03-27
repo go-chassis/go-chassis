@@ -24,7 +24,7 @@ func newPanel(options control.Options) control.Panel {
 //GetCircuitBreaker return command , and circuit breaker settings
 func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string) (string, hystrix.CommandConfig) {
 	key := GetCBCacheKey(inv.MicroServiceName, serviceType)
-	command := control.NewCircuitName(serviceType, inv)
+	command := control.NewCircuitName(serviceType, config.GetHystrixConfig().CircuitBreakerProperties.Scope, inv)
 	c, ok := CBConfigCache.Get(key)
 	if !ok {
 		c, _ := CBConfigCache.Get(serviceType)

@@ -58,6 +58,11 @@ func GetTransportConf() model.Transport {
 	return GlobalDefinition.Cse.Transport
 }
 
+//GetDataCenter return data center info
+func GetDataCenter() *model.DataCenterInfo {
+	return GlobalDefinition.DataCenter
+}
+
 // parse unmarshal configurations on respective structure
 func parse() error {
 	err := readGlobalConfigFile()

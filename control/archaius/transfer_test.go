@@ -64,7 +64,11 @@ func TestSaveToCBCache(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 	err := config.Init()
 	assert.NoError(t, err)
-	err = control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	err = control.Init(opts)
 	archaius.SaveToCBCache(config.GetHystrixConfig())
 	c, _ := archaius.CBConfigCache.Get("Consumer")
 	assert.Equal(t, 100, c.(hystrix.CommandConfig).MaxConcurrentRequests)

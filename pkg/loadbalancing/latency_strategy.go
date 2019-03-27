@@ -1,4 +1,4 @@
-package loadbalancer
+package loadbalancing
 
 import (
 	"math/rand"
@@ -9,83 +9,45 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-mesh/openlogging"
 )
 
+var i int
+var weightedRespMutex sync.Mutex
+
+func init() {
+	loadbalancer.InstallStrategy(loadbalancer.StrategyLatency, newWeightedResponseStrategy)
+}
+
 // ByDuration is for calculating the duration
-type ByDuration []*ProtocolStats
+type ByDuration []*loadbalancer.ProtocolStats
 
 func (a ByDuration) Len() int           { return len(a) }
 func (a ByDuration) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByDuration) Less(i, j int) bool { return a[i].AvgLatency < a[j].AvgLatency }
 
-// variables for latency map, rest and highway requests count
-var (
-	//ProtocolStatsMap saves all stats for all service's protocol, one protocol has a lot of instances
-	ProtocolStatsMap = make(map[string][]*ProtocolStats)
-	//maintain different locks since multiple goroutine access the map
-	LatencyMapRWMutex sync.RWMutex
-	weightedRespMutex sync.Mutex
-)
-
-//BuildKey return key of stats map
-func BuildKey(microServiceName, tags, protocol string) string {
-	//TODO add more data
-	return strings.Join([]string{microServiceName, tags, protocol}, "/")
-}
-
-// SetLatency for a instance ,it only save latest 10 stats for instance's protocol
-func SetLatency(latency time.Duration, addr, microServiceName string, tags utiltags.Tags, protocol string) {
-	key := BuildKey(microServiceName, tags.String(), protocol)
-
-	LatencyMapRWMutex.RLock()
-	stats, ok := ProtocolStatsMap[key]
-	LatencyMapRWMutex.RUnlock()
-	if !ok {
-		stats = make([]*ProtocolStats, 0)
-	}
-	exist := false
-	for _, v := range stats {
-		if v.Addr == addr {
-			v.SaveLatency(latency)
-			exist = true
-		}
-	}
-	if !exist {
-		ps := &ProtocolStats{
-			Addr: addr,
-		}
-
-		ps.SaveLatency(latency)
-		stats = append(stats, ps)
-	}
-	LatencyMapRWMutex.Lock()
-	ProtocolStatsMap[key] = stats
-	LatencyMapRWMutex.Unlock()
-}
-
 // SortLatency sort instance based on  the average latencies
 func SortLatency() {
-	LatencyMapRWMutex.RLock()
-	for _, v := range ProtocolStatsMap {
+	loadbalancer.LatencyMapRWMutex.RLock()
+	for _, v := range loadbalancer.ProtocolStatsMap {
 		sort.Sort(ByDuration(v))
 	}
-	LatencyMapRWMutex.RUnlock()
+	loadbalancer.LatencyMapRWMutex.RUnlock()
 
 }
 
 // CalculateAvgLatency Calculating the average latency for each instance using the statistics collected,
 // key is addr/service/protocol
 func CalculateAvgLatency() {
-	LatencyMapRWMutex.RLock()
-	for _, v := range ProtocolStatsMap {
+	loadbalancer.LatencyMapRWMutex.RLock()
+	for _, v := range loadbalancer.ProtocolStatsMap {
 		for _, stats := range v {
 			stats.CalculateAverageLatency()
 		}
 	}
-	LatencyMapRWMutex.RUnlock()
+	loadbalancer.LatencyMapRWMutex.RUnlock()
 }
 
 // WeightedResponseStrategy is a strategy plugin
@@ -99,32 +61,32 @@ type WeightedResponseStrategy struct {
 }
 
 func init() {
-	ticker := time.NewTicker((30 * time.Second))
+	ticker := time.NewTicker(30 * time.Second)
 	//run routine to prepare data
 	go func() {
 		for range ticker.C {
 			if config.GetLoadBalancing() != nil {
 				useLatencyAware := false
 				for _, v := range config.GetLoadBalancing().AnyService {
-					if v.Strategy["name"] == StrategyLatency {
+					if v.Strategy["name"] == loadbalancer.StrategyLatency {
 						useLatencyAware = true
 						break
 					}
 				}
-				if config.GetLoadBalancing().Strategy["name"] == StrategyLatency {
+				if config.GetLoadBalancing().Strategy["name"] == loadbalancer.StrategyLatency {
 					useLatencyAware = true
 				}
 				if useLatencyAware {
 					CalculateAvgLatency()
 					SortLatency()
-					lager.Logger.Info("Preparing data for Weighted Response Strategy")
+					openlogging.Info("Preparing data for Weighted Response Strategy")
 				}
 			}
 
 		}
 	}()
 }
-func newWeightedResponseStrategy() Strategy {
+func newWeightedResponseStrategy() loadbalancer.Strategy {
 
 	return &WeightedResponseStrategy{}
 }
@@ -140,11 +102,11 @@ func (r *WeightedResponseStrategy) ReceiveData(inv *invocation.Invocation, insta
 func (r *WeightedResponseStrategy) Pick() (*registry.MicroServiceInstance, error) {
 	if rand.Intn(100) < 70 {
 		var instanceAddr string
-		LatencyMapRWMutex.RLock()
-		if len(ProtocolStatsMap[BuildKey(r.serviceName, "", r.protocol)]) != 0 {
-			instanceAddr = ProtocolStatsMap[BuildKey(r.serviceName, "", r.protocol)][0].Addr
+		loadbalancer.LatencyMapRWMutex.RLock()
+		if len(loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey(r.serviceName, "", r.protocol)]) != 0 {
+			instanceAddr = loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey(r.serviceName, "", r.protocol)][0].Addr
 		}
-		LatencyMapRWMutex.RUnlock()
+		loadbalancer.LatencyMapRWMutex.RUnlock()
 		for _, instance := range r.instances {
 			if instanceAddr == instance.EndpointsMap[r.protocol] {
 				return instance, nil

@@ -1,6 +1,7 @@
 package session
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -9,10 +10,6 @@ import (
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/lager"
-
-	"context"
-
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
@@ -157,7 +154,7 @@ func setCookie(resp *http.Response, value string) {
 // SaveSessionIDFromHTTP check session id
 func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req *http.Request) {
 	if resp == nil {
-		lager.Logger.Warnf("", ErrResponseNil)
+		openlogging.GetLogger().Warnf("", ErrResponseNil)
 		return
 	}
 
@@ -242,7 +239,7 @@ func GetSessionCookie(ctx context.Context, resp *http.Response) string {
 	}
 
 	if resp == nil {
-		lager.Logger.Warnf("", ErrResponseNil)
+		openlogging.GetLogger().Warnf("", ErrResponseNil)
 		return ""
 	}
 

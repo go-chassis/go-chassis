@@ -37,7 +37,7 @@ func TestLbEvent(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
 	config.Init()
-	loadbalancer.Enable()
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	eventlistener.Init()
 	archaius.AddKeyValue("cse.loadbalance.strategy.name", "SessionStickiness")

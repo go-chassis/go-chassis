@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-mesh/openlogging"
 )
 
 var errEmptyChain = errors.New("chain can not be empty")
@@ -76,7 +76,7 @@ func parseHandlers(handlerStr string) []string {
 	return s
 }
 
-// CreateChains is for to create the chains
+//CreateChains create the chains based on type and handler map
 func CreateChains(chainType string, handlerNameMap map[string]string) error {
 	for chainName := range handlerNameMap {
 		handlerNames := parseHandlers(handlerNameMap[chainName])
@@ -90,13 +90,13 @@ func CreateChains(chainType string, handlerNameMap map[string]string) error {
 	return nil
 }
 
-//CreateChain create consumer or provider's chain,the final handler is different
+//CreateChain create consumer or provider's chain,the handlers is different
 func CreateChain(serviceType string, chainName string, handlerNames ...string) (*Chain, error) {
 	c := &Chain{
 		ServiceType: serviceType,
 		Name:        chainName,
 	}
-	lager.Logger.Debugf("add [%d] handlers for chain [%s]", len(handlerNames), chainName)
+	openlogging.Debug(fmt.Sprintf("add [%d] handlers for chain [%s]", len(handlerNames), chainName))
 
 	for _, name := range handlerNames {
 		err := addHandler(c, name)
@@ -106,7 +106,7 @@ func CreateChain(serviceType string, chainName string, handlerNames ...string) (
 	}
 
 	if len(c.Handlers) == 0 {
-		lager.Logger.Warnf("Chain "+chainName+" is Empty", errEmptyChain)
+		openlogging.Warn("Chain " + chainName + " is Empty")
 		return c, nil
 	}
 	return c, nil

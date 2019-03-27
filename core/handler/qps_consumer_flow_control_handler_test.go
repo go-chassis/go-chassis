@@ -21,7 +21,11 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
-	err := control.Init()
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+	err := control.Init(opts)
 	assert.NoError(t, err)
 	c := handler.Chain{}
 	c.AddHandler(&handler.ConsumerRateLimiterHandler{})

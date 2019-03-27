@@ -3,6 +3,7 @@ package loadbalancer
 import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
+
 	"math/rand"
 	"sync"
 )
