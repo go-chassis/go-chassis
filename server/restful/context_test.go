@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/emicklei/go-restful"
@@ -72,4 +73,15 @@ func TestContextFuncs(t *testing.T) {
 	query := contxt.ReadQueryParameter("hhh")
 	assert.Empty(t, query)
 
+	type queryRequest struct {
+		Name     string `form:"name"`
+		Password string `form:"password"`
+	}
+	var queryReq queryRequest
+	expectReq := queryRequest{Name: "admin", Password: "admin"}
+	url, _ := url.Parse("http://127.0.0.1/test?name=admin&password=admin")
+	contxt.req.Request.URL = url
+	err = contxt.ReadQueryEntity(&queryReq)
+	assert.NoError(t, err)
+	assert.Equal(t, expectReq, queryReq)
 }
