@@ -118,21 +118,8 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		return
 	}
 	operation := func() error {
-		if retryOnNext <= 0 {
-			return backoff.Permanent(errors.New("retry times expires"))
-		}
-		if callTimes >= retryOnSame {
-			ep, err = lb.getEndpoint(i, lbConfig)
-			if err != nil {
-				// if get endpoint failed, no need to retry
-				return backoff.Permanent(err)
-			}
-			callTimes = 0
-			retryOnNext--
-		}
-
-		callTimes++
 		i.Endpoint = ep
+		callTimes++
 		var respErr error
 		chain.HandlerIndex = handlerIndex
 
@@ -148,6 +135,19 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 			}
 			return nil
 		})
+
+		if callTimes >= retryOnSame+1 {
+			if retryOnNext <= 0 {
+				return backoff.Permanent(errors.New("retry times expires"))
+			}
+			ep, err = lb.getEndpoint(i, lbConfig)
+			if err != nil {
+				// if get endpoint failed, no need to retry
+				return backoff.Permanent(err)
+			}
+			callTimes = 0
+			retryOnNext--
+		}
 		return respErr
 	}
 	if err := backoff.Retry(operation, lbBackoff); err != nil {
