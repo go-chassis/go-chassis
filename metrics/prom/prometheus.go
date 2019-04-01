@@ -15,13 +15,13 @@ package prom
 // Some parts of this file have been modified to make it functional in this package
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/config"
-
 	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/metrics"
 	m "github.com/go-chassis/go-chassis/pkg/metrics"
@@ -29,7 +29,6 @@ import (
 	"github.com/go-mesh/openlogging"
 	"github.com/prometheus/client_golang/prometheus"
 	gometrics "github.com/rcrowley/go-metrics"
-	"regexp"
 )
 
 // DefaultPrometheusSinker variable for default prometheus configurations
@@ -243,20 +242,27 @@ func ExtractMetricKey(key string) (source string, target string, schema string, 
 	regNormal := regexp.MustCompile(regex)
 	regSource := regexp.MustCompile(regexSource)
 	var raw, role string
+
 	if regNormal.MatchString(key) {
 		s := regNormal.FindStringSubmatch(key)
-		role = s[1]
-		raw = s[2]
+		if len(s) > 2 {
+			role = s[1]
+			raw = s[2]
+		}
 	}
+
 	if regSource.MatchString(key) {
 		s := regNormal.FindStringSubmatch(key)
-		source = s[1]
-		role = s[2]
-		raw = s[3]
+		if len(s) > 3 {
+			source = s[1]
+			role = s[2]
+			raw = s[3]
+		}
 	}
-	sn, scID, opID, m := ExtractServiceSchemaOperationMetrics(raw)
 
-	return role + "." + m, sn, scID, opID
+	sn, scID, opID, metrics := ExtractServiceSchemaOperationMetrics(raw)
+
+	return role + "." + metrics, sn, scID, opID
 }
 
 var onceEnable sync.Once
