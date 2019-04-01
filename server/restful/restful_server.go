@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"net"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
+
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
@@ -20,13 +21,14 @@ import (
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/metrics"
 
+	"os"
+	"path/filepath"
+
 	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-mesh/openlogging"
-	"os"
-	"path/filepath"
 )
 
 // constants for metric path and name
@@ -191,9 +193,17 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 			rb = rb.Param(restful.QueryParameter(param.Name, param.Desc).DataType(param.DataType))
 		case restful.PathParameterKind:
 			rb = rb.Param(restful.PathParameter(param.Name, param.Desc).DataType(param.DataType))
+		case restful.HeaderParameterKind:
+			rb = rb.Param(restful.HeaderParameter(param.Name, param.Desc).DataType(param.DataType))
+		case restful.BodyParameterKind:
+			rb = rb.Param(restful.BodyParameter(param.Name, param.Desc).DataType(param.DataType))
+		case restful.FormParameterKind:
+			rb = rb.Param(restful.FormParameter(param.Name, param.Desc).DataType(param.DataType))
+
 		}
 
 	}
+
 	for _, r := range routeSpec.Returns {
 		rb = rb.Returns(r.Code, r.Message, r.Model)
 	}
