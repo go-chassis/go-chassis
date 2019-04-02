@@ -137,6 +137,9 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 
 			c.Next(inv, func(ir *invocation.Response) error {
 				if ir.Err != nil {
+					if rep != nil {
+						rep.WriteHeader(ir.Status)
+					}
 					return ir.Err
 				}
 				transfer(inv, req)
