@@ -4,8 +4,8 @@ require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.8.0+incompatible
 	github.com/go-chassis/foundation v0.0.0-20190203091418-304855ea28bf
-	github.com/go-chassis/go-archaius v0.13.0
-	github.com/go-chassis/go-cc-client v0.5.0
+	github.com/go-chassis/go-archaius v0.14.0
+	github.com/go-chassis/go-chassis-config v0.6.0
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
 	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
@@ -22,7 +22,7 @@ require (
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/prometheus/client_golang v0.9.1
 	github.com/prometheus/client_model v0.0.0-20190115171406-56726106282f // indirect
-	github.com/prometheus/common v0.2.0 // indirect
+	github.com/prometheus/common v0.2.0
 	github.com/prometheus/procfs v0.0.0-20190117184657-bf6a532e95b1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
