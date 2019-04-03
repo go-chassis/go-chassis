@@ -24,6 +24,7 @@ func InitArchaius() error {
 			fileutil.GetMonitoring(),
 			fileutil.GetAuth(),
 			fileutil.GetTracing(),
+			fileutil.PaasLagerDefinition(),
 		}
 
 		err = archaius.Init(
