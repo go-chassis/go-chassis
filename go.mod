@@ -7,7 +7,7 @@ require (
 	github.com/go-chassis/go-archaius v0.14.0
 	github.com/go-chassis/go-chassis-config v0.6.0
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
-	github.com/go-chassis/paas-lager v0.0.0-20181123014243-005283cca84c
+	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-mesh/openlogging v0.0.0-20181205082104-3d418c478b2d
 	github.com/gogo/protobuf v1.2.0 // indirect
@@ -41,5 +41,5 @@ replace (
 	golang.org/x/text v0.3.0 => github.com/golang/text v0.3.0
 	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2 => github.com/golang/time v0.0.0-20180412165947-fbb02b2291d2
 	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 => github.com/google/go-genproto v0.0.0-20180817151627-c66870c02cf8
-	google.golang.org/grpc v1.14.0 => github.com/grpc/grpc-go v1.14.0
+	google.golang.org/grpc v1.16.0 => github.com/grpc/grpc-go v1.16.0
 )
