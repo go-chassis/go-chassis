@@ -1,81 +1,20 @@
 package handler_test
 
 import (
-	"context"
 	"log"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/examples/schemas"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func TestTransportHandler_Handle(t *testing.T) {
-	chassis.RegisterSchema("highway", &schemas.HelloServer{}, server.WithSchemaID("HelloServer"))
-	chassis.RegisterSchema("highway", &schemas.EmployServer{}, server.WithSchemaID("EmployServer"))
-	t.Log("testing transport handler with highway protocol")
-	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client")
-	os.Setenv("CHASSIS_HOME", p)
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	var addrHighway = "127.0.0.1:4567"
-	msName := "Server"
-	schema := "schema2"
-	config.Init()
-	f, err := server.GetServerFunc("highway")
-	assert.NoError(t, err)
-	s := f(server.Options{
-		Address:   addrHighway,
-		ChainName: "default",
-	})
-	_, err = s.Register(&schemas.HelloServer{},
-		server.WithSchemaID(schema))
-
-	assert.NoError(t, err)
-	err = s.Start()
-	assert.NoError(t, err)
-	//dial
-	c := &handler.Chain{}
-	i := &invocation.Invocation{}
-	i.Reply = &helloworld.HelloReply{}
-	i.Ctx = context.WithValue(context.Background(), common.ContextHeaderKey{}, map[string]string{
-		"X-User": "tianxiaoliang",
-	})
-	i.Protocol = "highway"
-	i.Args = &helloworld.HelloRequest{Name: "peter"}
-
-	i.Endpoint = addrHighway
-	i.Protocol = "highway"
-	i.SchemaID = schema
-	i.MicroServiceName = msName
-	h := &handler.TransportHandler{}
-	c.Handlers = append(c.Handlers, h)
-
-	c.Next(i, func(r *invocation.Response) error {
-		log.Println("chain start")
-		log.Println(r.Result)
-		log.Println(r.Err)
-		//assert.Empty(t, r.Err)
-		//assert.NoError(t, r.Err)
-		assert.Equal(t, nil, r.Result)
-		return r.Err
-	})
-
-	var th *handler.TransportHandler = new(handler.TransportHandler)
-	str := th.Name()
-	assert.Equal(t, "transport", str)
-
-}
 
 func TestTransportHandler_HandleRest(t *testing.T) {
 	t.Log("testing transport handler with rest protocol")

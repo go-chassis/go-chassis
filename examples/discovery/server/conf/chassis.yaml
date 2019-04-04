@@ -46,9 +46,6 @@ cse:
       namespace: XXXX				#Required only for Apollo
       token: XXXXXXXXXXXXX			#Required only for Apollo
   protocols:
-    highway:
-      listenAddress: 127.0.0.1:8082
-      advertiseAddress: 127.0.0.1:8082
     rest:
       listenAddress: 127.0.0.1:8083
       advertiseAddress: 127.0.0.1:8083

@@ -13,8 +13,6 @@ import (
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/examples/schemas/employ"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
 
@@ -28,9 +26,6 @@ func main() {
 		return
 	}
 
-	// use the configured chain
-	invoker := core.NewRPCInvoker()
-	call(invoker)
 	n := 10
 	wg.Add(n)
 	restInvoker := core.NewRestInvoker()
@@ -38,77 +33,6 @@ func main() {
 		go callRest(restInvoker)
 	}
 	wg.Wait()
-}
-
-func call(invoker *core.RPCInvoker) {
-	replyOne := &helloworld.HelloReply{}
-	replyTwo := &employ.EmployResponse{}
-	// create context with attachments
-	ctx := context.WithValue(context.Background(), common.ContextHeaderKey{}, map[string]string{
-		"X-User": "tianxiaoliang",
-	})
-	err := invoker.Invoke(ctx, "Server", "HelloServer", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, replyOne)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println("SayHello ------------------------------ ", replyOne)
-	err = invoker.Invoke(ctx, "Server", "EmployServer", "AddEmploy", &employ.EmployRequest{
-		Employ: &employ.EmployStruct{
-			Name:  "One",
-			Phone: "15989351111",
-		},
-		EmployList: nil,
-	}, replyTwo)
-	if err != nil {
-		lager.Logger.Errorf("Invoke failed")
-	}
-	log.Println("AddEmploy ------------------------------", replyTwo)
-
-	err = invoker.Invoke(ctx, "Server", "EmployServer", "AddEmploy", &employ.EmployRequest{
-		Employ: &employ.EmployStruct{
-			Name:  "Two",
-			Phone: "15989352222",
-		},
-		EmployList: replyTwo.EmployList,
-	}, replyTwo)
-	if err != nil {
-		lager.Logger.Errorf("Invoke failed")
-	}
-	log.Println("AddEmploy ------------------------------", replyTwo)
-
-	err = invoker.Invoke(ctx, "Server", "EmployServer", "EditEmploy", &employ.EmployRequest{
-		Name: "Two",
-		Employ: &employ.EmployStruct{
-			Name:  "Two",
-			Phone: "15989353333",
-		},
-		EmployList: replyTwo.EmployList,
-	}, replyTwo)
-	if err != nil {
-		lager.Logger.Errorf("Invoke failed")
-	}
-	log.Println("EditEmploy ------------------------------", replyTwo)
-
-	err = invoker.Invoke(ctx, "Server", "EmployServer", "GetEmploys", &employ.EmployRequest{
-		Name:       "One",
-		Employ:     nil,
-		EmployList: replyTwo.EmployList,
-	}, replyTwo)
-	if err != nil {
-		lager.Logger.Errorf("Invoke failed")
-	}
-	log.Println("GetEmploys ------------------------------", replyTwo)
-
-	err = invoker.Invoke(ctx, "Server", "EmployServer", "DeleteEmploys", &employ.EmployRequest{
-		Name:       "Two",
-		Employ:     nil,
-		EmployList: replyTwo.EmployList,
-	}, replyTwo)
-	if err != nil {
-		lager.Logger.Errorf("Invoke failed")
-	}
-	log.Println("DeleteEmploys ------------------------------", replyTwo)
-
 }
 
 func callRest(invoker *core.RestInvoker) {
