@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 
 	"github.com/go-chassis/go-chassis/core/provider"
-	"google.golang.org/grpc"
 )
 
 //Options is the options for service initiating
@@ -17,8 +16,8 @@ type Options struct {
 
 //RegisterOptions is options when you register a schema to chassis
 type RegisterOptions struct {
-	SchemaID    string
-	GRPCSvcDesc *grpc.ServiceDesc
+	SchemaID   string
+	RPCSvcDesc interface{}
 }
 
 //RegisterOption is option when you register a schema to chassis
@@ -31,9 +30,9 @@ func WithSchemaID(schemaID string) RegisterOption {
 	}
 }
 
-//WithGRPCServiceDesc you can set grpc service desc
-func WithGRPCServiceDesc(GRPCSvcDesc *grpc.ServiceDesc) RegisterOption {
+//WithRPCServiceDesc you can set rpc service desc, if cloud be *grpc.ServiceDesc
+func WithRPCServiceDesc(RPCSvcDesc interface{}) RegisterOption {
 	return func(o *RegisterOptions) {
-		o.GRPCSvcDesc = GRPCSvcDesc
+		o.RPCSvcDesc = RPCSvcDesc
 	}
 }
