@@ -37,7 +37,6 @@ type Filter func([]*registry.MicroServiceInstance) []*registry.MicroServiceInsta
 invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
     &helloworld.HelloRequest{Name: "Peter"},
     reply,
-    core.WithProtocol("highway"),
     core.WithStrategy(loadbalance.StrategyRoundRobin),
     core.WithFilters(
      "zoneaware"

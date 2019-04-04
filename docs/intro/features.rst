@@ -2,7 +2,7 @@ Features
 ================================
  - Pluggable registrator and discovery service: Support Service center,istio pilot and file based registry,fit both client side discovery and server side discovery pattern
 
- - Pluggable Protocol: You can custom your own protocol, by default support http and highway(RPC)
+ - Pluggable Protocol: You can custom your own protocol
 
  - Circuit breaker: Protect your service in runtime or on-demand
 

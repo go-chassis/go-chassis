@@ -63,9 +63,6 @@ func TestTransportHandler_HandleRest(t *testing.T) {
 	i := &invocation.Invocation{}
 	i.Reply = &helloworld.HelloReply{}
 
-	i.Protocol = "highway"
-	i.Args = &helloworld.HelloRequest{Name: "peter"}
-
 	i.Endpoint = "127.0.0.1:9992"
 	i.Protocol = "rest"
 	h := &handler.TransportHandler{}

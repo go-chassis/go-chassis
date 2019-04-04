@@ -24,7 +24,7 @@ func TestInit(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "/tmp")
 
 	yamlContent := "a:\n  b:\n    c: valueC\n    d: valueD\n  \ryamlkeytest1: test1"
-	chassisyamlContent := "APPLICATION_ID: CSE\n  \ncse:\n  service:\n    registry:\n      type: servicecenter\n  protocols:\n       highway:\n         listenAddress: 127.0.0.1:8080\n  \nssl:\n  test.Consumer.certFile: test.cer\n  test.Consumer.keyFile: test.key\n"
+	chassisyamlContent := "APPLICATION_ID: CSE\n  \ncse:\n  service:\n    registry:\n      type: servicecenter\n  protocols:\n       grpc:\n         listenAddress: 127.0.0.1:8080\n  \nssl:\n  test.Consumer.certFile: test.cer\n  test.Consumer.keyFile: test.key\n"
 	os.Args = append(os.Args, "--argument=cmdtest")
 
 	confdir := "/tmp/conf"
