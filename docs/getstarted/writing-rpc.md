@@ -88,7 +88,7 @@ func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 第一个参数表示你要向哪个协议注册，第三个为grpc serivce desc
 
 ```go
-chassis.RegisterSchema("grpc", &Server{}, server.WithGRPCServiceDesc(&pb.Greeter_serviceDesc))
+chassis.RegisterSchema("grpc", &Server{}, server.WithRPCServiceDesc(&pb.Greeter_serviceDesc))
 ```
 
 

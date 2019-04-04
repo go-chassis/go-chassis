@@ -45,7 +45,9 @@ Go chassis also has a service mesh solution https://github.com/go-mesh/mesher, i
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
 # Quick Start
-You can see more documentations in [here](http://docs.go-chassis.com/)
+You can see more documentations in [here](http://docs.go-chassis.com/), 
+this doc is for latest version of go chassis, if you want to see your version's doc,
+follow [here](docs/README.md) to generate it
 
 1. Install [go 1.10+](https://golang.org/doc/install) 
 

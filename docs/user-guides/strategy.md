@@ -37,7 +37,7 @@ invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
     &helloworld.HelloRequest{Name: "Peter"},
     reply,
     core.WithContentType("application/json"),
-    core.WithProtocol("highway"),
+    core.WithProtocol("grpc"),
     core.WithStrategy(loadbalance.StrategyRoundRobin),
 )
 ```

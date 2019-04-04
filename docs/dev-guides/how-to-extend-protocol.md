@@ -3,7 +3,8 @@
 
 ---
 
-框架默认支持http协议以及highway RPC 协议，用户可扩展自己的RPC协议，并使用RPCInvoker调用
+框架支持[grpc协议](https://github.com/go-chassis/go-chassis-protocol)，
+用户可扩展自己的RPC协议，并使用RPCInvoker调用
 
 ## 如何实现
 

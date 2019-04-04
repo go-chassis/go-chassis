@@ -35,20 +35,6 @@ import _ "github.com/go-chassis/go-chassis/healthz/provider"
   }
   ```
 
-* Highway: 
-
-  1. Schema: _chassis_highway_healthz
-  1. Operation: HighwayCheck
-  1. Response: 
-  ```proto
-  // The response message containing the microservice key
-  message Reply {
-    string appId = 1;
-    string serviceName = 2;
-    string version = 3;
-  }
-  ```
-
 ### 客户端配置
 
 客户端健康检查配置在chassis.yaml。
