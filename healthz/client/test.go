@@ -17,10 +17,8 @@ func Test(ctx context.Context, protocol, endpoint string, expected Reply) (err e
 	switch protocol {
 	case common.ProtocolRest:
 		err = restTest(ctx, endpoint, expected)
-	case common.ProtocolHighway:
-		err = highwayTest(ctx, endpoint, expected)
 	default:
-		err = fmt.Errorf("Unsupport protocol %s", protocol)
+		err = fmt.Errorf("unsupport protocol %s", protocol)
 	}
 	return
 }
@@ -51,30 +49,7 @@ func restTest(ctx context.Context, endpoint string, expected Reply) (err error) 
 	}
 	if actual != expected {
 		return fmt.Errorf("endpoint is belong to %s:%s:%s",
-			actual.ServiceName, actual.Version, actual.AppId)
-	}
-	return
-}
-
-func highwayTest(ctx context.Context, endpoint string, expected Reply) (err error) {
-	c, err := client.GetClient(common.ProtocolHighway, expected.ServiceName, "")
-	if err != nil {
-		return
-	}
-	req := &invocation.Invocation{
-		MicroServiceName: expected.ServiceName,
-		SchemaID:         "_chassis_highway_healthz",
-		OperationID:      "HighwayCheck",
-		Args:             &Request{},
-	}
-	var actual Reply
-	err = c.Call(ctx, endpoint, req, &actual)
-	if err != nil {
-		return
-	}
-	if actual != expected {
-		return fmt.Errorf("Endpoint is belong to %s:%s:%s",
-			actual.ServiceName, actual.Version, actual.AppId)
+			actual.ServiceName, actual.Version, actual.AppID)
 	}
 	return
 }

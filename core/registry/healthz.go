@@ -123,7 +123,7 @@ func (hc *HealthChecker) doCheck(i *WrapInstance) <-chan checkResult {
 			cr <- r
 		}()
 		req := client.Reply{
-			AppId:       i.AppID,
+			AppID:       i.AppID,
 			ServiceName: i.ServiceName,
 			Version:     i.Version,
 		}

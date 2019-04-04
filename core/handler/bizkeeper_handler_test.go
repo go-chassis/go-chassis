@@ -1,11 +1,8 @@
 package handler_test
 
 import (
-	"log"
-	"os"
-	"testing"
-
 	"github.com/go-chassis/go-chassis/control"
+	_ "github.com/go-chassis/go-chassis/control/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -13,6 +10,9 @@ import (
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
+	"log"
+	"os"
+	"testing"
 )
 
 func TestCBInit(t *testing.T) {
@@ -31,7 +31,6 @@ func TestCBInit(t *testing.T) {
 
 func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 	t.Log("testing bizkeeper consumer handler")
-
 	c := handler.Chain{}
 	c.AddHandler(&handler.BizKeeperConsumerHandler{})
 

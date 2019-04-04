@@ -223,12 +223,6 @@ For third_party/forked/afex/hystrix-go,vendor/github.com/go-chassis/cse-collecto
 See licenses/LICENSE-hystrix-go
 
 ========================================================================
-For client/highway/highway_client.go,client/highway/highway_client_test.go:
-========================================================================
-
-See licenses/LICENSE-go-micro
-
-========================================================================
 For core/loadbalance/default.go,core/loadbalance/default_test.go:
 ========================================================================
 

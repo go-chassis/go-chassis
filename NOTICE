@@ -109,7 +109,7 @@ SOFTWARE.
 
 ==========================================
 For core/loadbalance/default.go,third_party/forked/go-micro,
-client/highway/highway_client_test.go,core/loadbalance/default_test.go(Forked from github.com/micro/go-micro)
+core/loadbalance/default_test.go(Forked from github.com/micro/go-micro)
 
    Copyright 2015 Asim Aslam.
 

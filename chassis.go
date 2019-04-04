@@ -18,9 +18,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/pkg/loadbalancing"
 
 	//protocols
-	_ "github.com/go-chassis/go-chassis/client/highway"
 	_ "github.com/go-chassis/go-chassis/client/rest"
-	_ "github.com/go-chassis/go-chassis/server/highway"
 	_ "github.com/go-chassis/go-chassis/server/restful"
 
 	//routers
