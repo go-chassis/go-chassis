@@ -2,7 +2,7 @@ Protocol plugins
 =========================
 
 .. toctree::
-:maxdepth: 4
-        :glob:
+    :maxdepth: 4
+    :glob:
 
-        protocol-plugins/rest-plugin
+    protocol-plugins/rest-plugin
