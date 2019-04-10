@@ -17,6 +17,7 @@ Welcome to go-chassis's documentation!
    huawei-guides
    discovery-guides
    plugin-tracing-guides
+   protocol-plugins
 
 .. toctree::
    :maxdepth: 2
