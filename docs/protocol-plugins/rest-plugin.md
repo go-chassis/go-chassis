@@ -1,6 +1,6 @@
-# Rest Plugin
+# Rest
 
-## Configurable router
+## URL pattern definition
 * (default) Fast routing algorithm that allows static elements, regular expressions and dynamic parameters in the 
 URL path (e.g. /meetings/{id} or /static/{subpath:*} 
 
