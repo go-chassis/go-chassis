@@ -49,7 +49,7 @@ schemas
 After generated, need to change one variable name
 ```go
 var _Greeter_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "helloworld.Greeter",
+	ServiceName: "helloworld.Greeter", // use this as the schemaID when consumer call provider
 	HandlerType: (*GreeterServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
