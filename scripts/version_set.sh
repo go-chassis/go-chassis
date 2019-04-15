@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-set -x
+
 
 CURRENT_DIR=$(cd $(dirname $0);pwd)
 CHASSIS_DIR=$(dirname $CURRENT_DIR)
