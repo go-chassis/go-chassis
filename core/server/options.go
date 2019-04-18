@@ -30,7 +30,7 @@ func WithSchemaID(schemaID string) RegisterOption {
 	}
 }
 
-//WithRPCServiceDesc you can set rpc service desc, if cloud be *grpc.ServiceDesc
+//WithRPCServiceDesc you can set rpc service desc, it cloud be *grpc.ServiceDesc
 func WithRPCServiceDesc(RPCSvcDesc interface{}) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.RPCSvcDesc = RPCSvcDesc
