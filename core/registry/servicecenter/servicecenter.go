@@ -33,10 +33,10 @@ func (r *Registrator) RegisterService(ms *registry.MicroService) (string, error)
 		return "", err
 	}
 	if sid == "" {
-		openlogging.GetLogger().Warnf("service [%s] not exists in registry, register it", serviceKey, err)
+		openlogging.Warn(fmt.Sprintf("service [%s] not exists in registry, register it", serviceKey))
 		sid, err = r.registryClient.RegisterService(microservice)
 		if err != nil {
-			openlogging.GetLogger().Errorf("Register service [%s] failed, err %s", serviceKey, err)
+			openlogging.GetLogger().Errorf("register service [%s] failed, err: %s", serviceKey, err)
 			return "", err
 		}
 	} else {
