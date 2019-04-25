@@ -22,8 +22,11 @@ func TestRandomStrategy_Pick(t *testing.T) {
 		},
 	}
 	s := &loadbalancer.RandomStrategy{}
+	s.ReceiveData(nil, nil, "")
+	_, err := s.Pick()
+	assert.Error(t, err)
 	s.ReceiveData(nil, instances, "")
-	var last string = "none"
+	var last = "none"
 	var count int
 	for i := 0; i < 100; i++ {
 		instance, err := s.Pick()
@@ -57,4 +60,14 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 		last = instance.EndpointsMap["rest"]
 	}
 
+}
+func new() loadbalancer.Strategy {
+	return nil
+}
+func TestGetStrategyPlugin(t *testing.T) {
+	_, err := loadbalancer.GetStrategyPlugin("test")
+	assert.Error(t, err)
+	loadbalancer.InstallStrategy(loadbalancer.StrategyRoundRobin, new)
+	_, err = loadbalancer.GetStrategyPlugin(loadbalancer.StrategyRoundRobin)
+	assert.NoError(t, err)
 }

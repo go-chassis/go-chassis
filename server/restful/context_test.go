@@ -9,6 +9,7 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/stretchr/testify/assert"
+	"net/http/httptest"
 )
 
 //type Header map[string][]string
@@ -32,45 +33,45 @@ func (c contextTest) WriteHeader(int) {
 
 func TestContextFuncs(t *testing.T) {
 	t.Log("Testing all the restful server functions")
-	contxt := NewBaseServer(context.TODO())
-	contxt.req = &restful.Request{Request: &http.Request{Method: "Get"}}
-	rw := contextTest{}
+	ctx := NewBaseServer(context.TODO())
+	ctx.req = &restful.Request{Request: &http.Request{Method: "Get"}}
+	rw := httptest.NewRecorder()
 	resp := restful.NewResponse(rw)
-	contxt.resp = resp
-	contxt.AddHeader("Content-Type", "application/json")
+	ctx.resp = resp
+	ctx.AddHeader("Content-Type", "application/json")
 
-	_, er := contxt.ReadBodyParameter("hello")
+	_, er := ctx.ReadBodyParameter("hello")
 	assert.NoError(t, er)
 
-	paramVal := contxt.ReadPathParameter("abc")
+	paramVal := ctx.ReadPathParameter("abc")
 	assert.Empty(t, paramVal)
 
-	param := contxt.ReadPathParameters()
+	param := ctx.ReadPathParameters()
 	assert.Empty(t, param)
 
-	contxt.WriteHeader(200)
+	ctx.WriteHeader(200)
 
-	val := contxt.ReadHeader("Content-Type")
+	val := ctx.ReadHeader("Content-Type")
 	assert.Empty(t, val)
 
-	req := contxt.ReadRequest()
+	req := ctx.ReadRequest()
 	assert.NotEmpty(t, req)
 
-	contxt.Write([]byte("success"))
+	ctx.Write([]byte("success"))
 
-	err := contxt.ReadEntity("hhhh")
+	err := ctx.ReadEntity("hhhh")
 	assert.Error(t, err)
 
-	err = contxt.WriteError(200, errors.New("error"))
+	err = ctx.WriteError(200, errors.New("error"))
 	assert.NoError(t, err)
 
-	err = contxt.WriteHeaderAndJSON(204, "deleted", "success")
+	err = ctx.WriteHeaderAndJSON(204, "deleted", "success")
 	assert.NoError(t, err)
 
-	err = contxt.WriteJSON("json", "application")
+	err = ctx.WriteJSON("json", "application")
 	assert.NoError(t, err)
 
-	query := contxt.ReadQueryParameter("hhh")
+	query := ctx.ReadQueryParameter("hhh")
 	assert.Empty(t, query)
 
 	type queryRequest struct {
@@ -80,8 +81,17 @@ func TestContextFuncs(t *testing.T) {
 	var queryReq queryRequest
 	expectReq := queryRequest{Name: "admin", Password: "admin"}
 	url, _ := url.Parse("http://127.0.0.1/test?name=admin&password=admin")
-	contxt.req.Request.URL = url
-	err = contxt.ReadQueryEntity(&queryReq)
+	ctx.req.Request.URL = url
+	err = ctx.ReadQueryEntity(&queryReq)
 	assert.NoError(t, err)
 	assert.Equal(t, expectReq, queryReq)
+
+	rreq := ctx.ReadRestfulRequest()
+	assert.Equal(t, "127.0.0.1", rreq.Request.URL.Host)
+
+	rresp := ctx.ReadRestfulResponse()
+	assert.NotNil(t, rresp)
+
+	wr := ctx.ReadResponseWriter()
+	assert.NotNil(t, wr)
 }

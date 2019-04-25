@@ -10,8 +10,9 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/examples/schemas"
+	"github.com/go-chassis/go-chassis/server/restful"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 )
 
 var addrHighway = "127.0.0.1:2399"
@@ -51,11 +52,8 @@ func TestRestStart(t *testing.T) {
 		ChainName: "default",
 	})
 
-	_, err = s.Register(&schemas.RestFulHello{},
+	_, err = s.Register(&TestSchema{},
 		server.WithSchemaID(schema))
-	assert.NoError(t, err)
-
-	err = s.Start()
 	assert.NoError(t, err)
 
 	name := s.String()
@@ -85,7 +83,7 @@ func TestRestStartFailure(t *testing.T) {
 		ChainName: "default",
 	})
 
-	_, err = s.Register(&schemas.HelloServer{},
+	_, err = s.Register(TestSchema{},
 		server.WithSchemaID(schema))
 	assert.Error(t, err)
 
@@ -97,4 +95,42 @@ func TestRestStartFailure(t *testing.T) {
 
 	err = s.Stop()
 	assert.NoError(t, err)
+}
+
+type TestSchema struct {
+}
+
+func (r *TestSchema) Put(b *restful.Context) {
+}
+
+func (r *TestSchema) Get(b *restful.Context) {
+}
+
+func (r *TestSchema) Delete(b *restful.Context) {
+}
+
+func (r *TestSchema) Head(b *restful.Context) {
+}
+func (r *TestSchema) Patch(b *restful.Context) {
+}
+func (r *TestSchema) Post(b *restful.Context) {
+}
+
+//URLPatterns helps to respond for corresponding API calls
+func (r *TestSchema) URLPatterns() []restful.Route {
+	return []restful.Route{
+		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Get",
+			Returns: []*restful.Returns{{Code: 200}}},
+
+		{Method: http.MethodPost, Path: "/sayhello/{userid}", ResourceFuncName: "Post",
+			Returns: []*restful.Returns{{Code: 200}}},
+
+		{Method: http.MethodDelete, Path: "/sayhi", ResourceFuncName: "Delete",
+			Returns: []*restful.Returns{{Code: 200}}},
+
+		{Method: http.MethodHead, Path: "/sayjson", ResourceFuncName: "Head",
+			Returns: []*restful.Returns{{Code: 200}}},
+		{Method: http.MethodPatch, Path: "/sayjson", ResourceFuncName: "Patch",
+			Returns: []*restful.Returns{{Code: 200}}},
+	}
 }

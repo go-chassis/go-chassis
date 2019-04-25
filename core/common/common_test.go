@@ -18,4 +18,13 @@ func TestNewContext(t *testing.T) {
 	m = common.FromContext(ctx)
 	assert.Equal(t, "2", m["1"])
 	assert.Equal(t, "4", m["3"])
+
+	ctx = common.NewContext(nil)
+	m = common.FromContext(ctx)
+	assert.NotNil(t, m)
+
+	ctx = common.WithContext(nil, "test", "1")
+	m = common.FromContext(ctx)
+	assert.Equal(t, "1", m["test"])
+
 }

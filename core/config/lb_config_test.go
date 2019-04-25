@@ -11,18 +11,40 @@ import (
 )
 
 func TestGetStrategyName(t *testing.T) {
+	config.ReadLBFromArchaius()
 	check := config.GetStrategyName("source", "service")
 	assert.Equal(t, "WeightedResponse", check)
-}
 
-func TestGetRetryOnNext(t *testing.T) {
-	check := config.GetRetryOnNext("source", "service")
-	assert.Equal(t, 2, check)
+	t.Run("TestGetRetryOnNext", func(t *testing.T) {
+		check := config.GetRetryOnNext("source", "service")
+		assert.Equal(t, 2, check)
+	})
+
+	t.Run("TestRetryEnabled", func(t *testing.T) {
+		b := config.RetryEnabled("source", "service")
+		assert.Equal(t, false, b)
+	})
+
+	t.Run("TestBackOffKind", func(t *testing.T) {
+		s := config.BackOffKind("source", "service")
+		assert.Equal(t, backoff.BackoffConstant, s)
+	})
+
+	t.Run("TestBackOffMaxMs", func(t *testing.T) {
+		max := config.BackOffMaxMs("source", "service")
+		assert.Equal(t, 400, max)
+	})
+
+	t.Run("TestBackOffMinMs",
+		func(t *testing.T) {
+			min := config.BackOffMinMs("source", "service")
+			assert.Equal(t, 200, min)
+		})
 }
 
 // GetServerListFilters get server list filters
 func BenchmarkGetServerListFilters(b *testing.B) {
-	lager.Initialize("", "INFO", "", "size",
+	lager.Initialize("", "DEBUG", "", "size",
 		true, 1, 10, 7)
 
 	err := config.InitArchaius()
@@ -37,7 +59,7 @@ func BenchmarkGetServerListFilters(b *testing.B) {
 
 // GetServerListFilters get server list filters
 func BenchmarkGetServerListFilters2(b *testing.B) {
-	lager.Initialize("", "INFO", "", "size",
+	lager.Initialize("", "DEBUG", "", "size",
 		true, 1, 10, 7)
 
 	err := config.InitArchaius()
@@ -50,7 +72,7 @@ func BenchmarkGetServerListFilters2(b *testing.B) {
 	}
 }
 func BenchmarkGetStrategyName(b *testing.B) {
-	lager.Initialize("", "INFO", "", "size",
+	lager.Initialize("", "DEBUG", "", "size",
 		true, 1, 10, 7)
 
 	err := config.InitArchaius()
@@ -61,21 +83,4 @@ func BenchmarkGetStrategyName(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = config.GetStrategyName("", "")
 	}
-}
-func TestRetryEnabled(t *testing.T) {
-	b := config.RetryEnabled("source", "service")
-	assert.Equal(t, false, b)
-}
-func TestBackOffKind(t *testing.T) {
-	s := config.BackOffKind("source", "service")
-	assert.Equal(t, backoff.BackoffConstant, s)
-}
-
-func TestBackOffMaxMs(t *testing.T) {
-	max := config.BackOffMaxMs("source", "service")
-	assert.Equal(t, 400, max)
-}
-func TestBackOffMinMs(t *testing.T) {
-	min := config.BackOffMinMs("source", "service")
-	assert.Equal(t, 200, min)
 }

@@ -29,7 +29,7 @@ func TestWithOptions(t *testing.T) {
 	md["abc"] = "abc"
 
 	t.Log("setting various parameter to server register Option")
-	var rego *server.RegisterOptions = new(server.RegisterOptions)
+	var rego = new(server.RegisterOptions)
 
 	c2 := server.WithSchemaID("schemaid")
 	c2(rego)
