@@ -15,7 +15,7 @@ Minimize Installation
     GO111MODULE=on go mod vendor
     ```
 
-1. Install [service-center](http://servicecomb.incubator.apache.org/release/)
+1. Install [service-center](http://servicecomb.apache.org/release/)
 
 1. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 
