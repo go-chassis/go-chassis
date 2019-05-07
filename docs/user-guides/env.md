@@ -21,6 +21,9 @@ the path format is {SCHEMA_ROOT}/{SERVICE_NAME}/{schema_id}.yaml
 **CSE_MONITOR_SERVER_ADDR**
 > address of dashboard service
 
+**CHASSIS_SC_HEALTH_CHECK_INTERVAL**
+> sc instance health check interval in second, default value is 30
+
 **SERVICE_NAME**
 > service name will be registered in service center
 

@@ -6,9 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -40,6 +42,8 @@ const (
 	DefaultRetryTimeout = 500 * time.Millisecond
 	HeaderRevision      = "X-Resource-Revision"
 	EnvProjectID        = "CSE_PROJECT_ID"
+	//EnvCheckSCIInterval sc instance health check interval in second
+	EnvCheckSCIInterval = "CHASSIS_SC_HEALTH_CHECK_INTERVAL"
 )
 
 // Define variables for the client
@@ -59,6 +63,12 @@ var (
 	ErrEmptyCriteria = errors.New("batch find criteria is empty")
 )
 
+const (
+	available               string = "available"
+	unavailable             string = "unavailable"
+	defaultCheckSCIInterval        = 30 // default sc instance health check interval in second
+)
+
 // RegistryClient is a structure for the client to communicate to Service-Center
 type RegistryClient struct {
 	Config     *RegistryConfig
@@ -75,6 +85,7 @@ type RegistryClient struct {
 // RegistryConfig is a structure to store registry configurations like address of cc, ssl configurations and tenant name
 type RegistryConfig struct {
 	Addresses []string
+	Status    map[string]string
 	SSL       bool
 	Tenant    string
 }
@@ -94,6 +105,7 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 		Addresses: opt.Addrs,
 		SSL:       opt.EnableSSL,
 		Tenant:    opt.ConfigTenant,
+		Status:    make(map[string]string),
 	}
 
 	options := &httpclient.URLClientOption{
@@ -128,6 +140,9 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 	}
 	//Update the API Base Path based on the Version
 	c.updateAPIPath()
+
+	c.checkSCIHealth()
+	c.sciMonitor()
 
 	return nil
 }
@@ -954,7 +969,15 @@ func (c *RegistryClient) WatchMicroService(microServiceID string, callback func(
 }
 
 func (c *RegistryClient) getAddress() string {
-	next := RoundRobin(c.Config.Addresses)
+	addrs := make([]string, 0)
+	for _, v := range c.Config.Addresses {
+		if c.Config.Status[v] == unavailable {
+			continue
+		}
+		addrs = append(addrs, v)
+	}
+
+	next := RoundRobin(addrs)
 	addr, err := next()
 	if err != nil {
 		return DefaultAddr
@@ -980,4 +1003,44 @@ func (c *RegistryClient) startBackOff(microServiceID string, callback func(*Micr
 	if err == nil {
 		return
 	}
+}
+
+func (c *RegistryClient) checkSCIHealth() {
+	timeOut := time.Duration(1) * time.Second
+	for _, v := range c.Config.Addresses {
+		conn, err := net.DialTimeout("tcp", v, timeOut)
+		if err != nil {
+			c.Config.Status[v] = unavailable
+		} else {
+			c.Config.Status[v] = available
+			conn.Close()
+		}
+	}
+}
+
+func (c *RegistryClient) sciMonitor() {
+	var interval time.Duration
+	v, isExist := os.LookupEnv(EnvCheckSCIInterval)
+	if !isExist {
+		interval = defaultCheckSCIInterval
+	} else {
+		i, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			interval = defaultCheckSCIInterval
+		}
+		interval = time.Duration(i)
+	}
+	ticker := time.NewTicker(interval * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				c.checkSCIHealth()
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
 }
