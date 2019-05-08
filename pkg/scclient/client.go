@@ -19,6 +19,8 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
 	"github.com/gorilla/websocket"
+
+	bo "github.com/go-chassis/go-chassis/pkg/backoff"
 )
 
 // Define constants for the client
@@ -963,7 +965,7 @@ func (c *RegistryClient) getAddress() string {
 }
 
 func (c *RegistryClient) startBackOff(microServiceID string, callback func(*MicroServiceInstanceChangedEvent)) {
-	boff := getBackOff("Exponential")
+	boff := bo.GetBackOff(bo.BackoffJittered, 1000, 30000)
 	operation := func() error {
 		c.mutex.Lock()
 		c.watchers[microServiceID] = false
