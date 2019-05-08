@@ -52,4 +52,17 @@ func Test_IsIPv6Address(t *testing.T) {
 	assert.True(t, true == iputil.IsIPv6Address(net.ParseIP("fe80::10.25.21.2")))
 	assert.True(t, false == iputil.IsIPv6Address(net.ParseIP("10.25.21.2")))
 	assert.True(t, false == iputil.IsIPv6Address(net.ParseIP("0.0.0.0")))
+
+	t.Run("convert uri to hosts with in consistent schema, it should return err",
+		func(t *testing.T) {
+			_, _, err := iputil.URIs2Hosts([]string{"http://127.0.0.1:8080/", "https://127.0.0.1:8080/"})
+			assert.Error(t, err)
+		})
+	t.Run("convert uri to hosts with consistent schema, it should not return err",
+		func(t *testing.T) {
+			hosts, s, err := iputil.URIs2Hosts([]string{"http://127.0.0.1:8080/", "http://127.0.0.1:8080/"})
+			assert.NoError(t, err)
+			assert.Equal(t, "http", s)
+			assert.Equal(t, "127.0.0.1:8080", hosts[0])
+		})
 }
