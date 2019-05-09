@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+	"github.com/go-mesh/openlogging"
 )
 
 // constant for provider and consumer
@@ -170,6 +171,7 @@ func WithContext(ctx context.Context, key, val string) context.Context {
 
 	at, ok := ctx.Value(ContextHeaderKey{}).(map[string]string)
 	if !ok {
+		openlogging.Warn("context header key does not has map, re-create new context")
 		return context.WithValue(ctx, ContextHeaderKey{}, map[string]string{
 			key: val,
 		})
