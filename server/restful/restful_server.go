@@ -249,7 +249,7 @@ func (r *restfulServer) Start() error {
 		FileStyle:       "yaml",
 		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
 	swagger.RegisterSwaggerService(swaggerConfig, r.container)
-
+	openlogging.Info("The schema has been created successfully. path:" + path)
 	l, lIP, lPort, err := iputil.StartListener(config.Address, config.TLSConfig)
 
 	if err != nil {
