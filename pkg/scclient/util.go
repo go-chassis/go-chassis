@@ -2,7 +2,7 @@ package client
 
 import (
 	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
-	"log"
+	"github.com/go-mesh/openlogging"
 	"net/url"
 )
 
@@ -11,7 +11,7 @@ func getProtocolMap(eps []string) map[string]string {
 	for _, ep := range eps {
 		u, err := url.Parse(ep)
 		if err != nil {
-			log.Println("URL error" + err.Error())
+			openlogging.Error("url err: " + err.Error())
 			continue
 		}
 		m[u.Scheme] = u.Host
