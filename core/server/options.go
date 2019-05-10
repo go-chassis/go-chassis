@@ -8,10 +8,11 @@ import (
 
 //Options is the options for service initiating
 type Options struct {
-	Address   string
-	ChainName string
-	Provider  provider.Provider
-	TLSConfig *tls.Config
+	Address            string
+	ProtocolServerName string
+	ChainName          string
+	Provider           provider.Provider
+	TLSConfig          *tls.Config
 }
 
 //RegisterOptions is options when you register a schema to chassis

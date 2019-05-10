@@ -132,9 +132,10 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 
 	var s ProtocolServer
 	o := Options{
-		Address:   p.Listen,
-		ChainName: chainName,
-		TLSConfig: tlsConfig,
+		Address:            p.Listen,
+		ProtocolServerName: name,
+		ChainName:          chainName,
+		TLSConfig:          tlsConfig,
 	}
 	s = f(o)
 	servers[name] = s
