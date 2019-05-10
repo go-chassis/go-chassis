@@ -19,13 +19,13 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/metrics"
 
 	"os"
 	"path/filepath"
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-mesh/openlogging"
