@@ -268,13 +268,30 @@ func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
 
 	err = registryClient.AddSchemas(ms.ServiceId, "schema", "schema")
 	assert.NoError(t, err)
-
+	t.Run("query schema, should return info", func(t *testing.T) {
+		b, err := registryClient.GetSchema(ms.ServiceId, "schema")
+		assert.NoError(t, err)
+		assert.Equal(t, "{\"schema\":\"schema\"}\n", string(b))
+	})
+	t.Run("query schema with empty string, should be err", func(t *testing.T) {
+		_, err := registryClient.GetSchema("", "schema")
+		assert.Error(t, err)
+	})
 	microServiceInstance := &proto.MicroServiceInstance{
 		ServiceId: sid,
 		Endpoints: []string{"rest://127.0.0.1:3000"},
 		HostName:  hostname,
 		Status:    client.MSInstanceUP,
 	}
+	t.Run("unregister instance, should success", func(t *testing.T) {
+		iid, err := registryClient.RegisterMicroServiceInstance(microServiceInstance)
+		assert.NoError(t, err)
+		assert.NotNil(t, iid)
+		ok, err := registryClient.UnregisterMicroServiceInstance(microServiceInstance.ServiceId, iid)
+		assert.NoError(t, err)
+		assert.True(t, ok)
+	})
+
 	t.Run("register instance and update props, should success", func(t *testing.T) {
 		iid, err := registryClient.RegisterMicroServiceInstance(microServiceInstance)
 		assert.NoError(t, err)
@@ -297,7 +314,8 @@ func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
 	assert.Equal(t, client.ErrNotModified, err)
 
 	t.Log("find again without revision, should get nil error")
-	_, err = registryClient.FindMicroServiceInstances(sid, "default", "scUTServer", "0.0.1", client.WithoutRevision())
+	_, err = registryClient.FindMicroServiceInstances(sid, "default", "scUTServer", "0.0.1",
+		client.WithoutRevision())
 	assert.NoError(t, err)
 
 	t.Log("register new and find")

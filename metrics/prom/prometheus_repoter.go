@@ -22,7 +22,6 @@ import (
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/metrics"
 	m "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
@@ -273,7 +272,7 @@ func ReportMetricsToPrometheus(r gometrics.Registry) error {
 	if archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", true) {
 		onceEnable.Do(func() {
 			EnableRunTimeMetrics()
-			lager.Logger.Info("Go Runtime Metrics is enabled")
+			openlogging.Info("Go Runtime Metrics is enabled")
 		})
 
 	}
