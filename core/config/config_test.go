@@ -189,3 +189,11 @@ cse:
 	assert.NotEqual(t, nil, config.GetLoadBalancing())
 
 }
+
+func TestInitErrorWithBlankEnv(t *testing.T) {
+	os.Setenv("CHASSIS_HOME", "")
+	os.Setenv("CHASSIS_CONF_DIR", "")
+	err := config.Init()
+	t.Log(err)
+	assert.Error(t, err)
+}
