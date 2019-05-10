@@ -192,7 +192,7 @@ cse:
 
 func TestInitErrorWithBlankEnv(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "")
-	os.Setenv("CHASSIS_CONF_DIR","")
+	os.Setenv("CHASSIS_CONF_DIR", "")
 	err := config.Init()
 	t.Log(err)
 	assert.Error(t, err)
