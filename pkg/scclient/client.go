@@ -19,6 +19,8 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
 	"github.com/gorilla/websocket"
+
+	bo "github.com/go-chassis/go-chassis/pkg/backoff"
 )
 
 // Define constants for the client
@@ -213,9 +215,6 @@ func (c *RegistryClient) HTTPDo(method string, rawURL string, headers http.Heade
 func (c *RegistryClient) RegisterService(microService *proto.MicroService) (string, error) {
 	if microService == nil {
 		return "", errors.New("invalid request MicroService parameter")
-	}
-	if microService.Version == "" {
-		microService.Version = "0.1"
 	}
 	request := &MicroServiceRequest{
 		Service: microService,
@@ -824,7 +823,8 @@ func (c *RegistryClient) UpdateMicroServiceInstanceStatus(microServiceID, microS
 }
 
 // UpdateMicroServiceInstanceProperties updates the microserviceinstance  prooperties in the service-center
-func (c *RegistryClient) UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID string, microServiceInstance *proto.MicroServiceInstance) (bool, error) {
+func (c *RegistryClient) UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID string,
+	microServiceInstance *proto.MicroServiceInstance) (bool, error) {
 	if microServiceInstance.Properties == nil {
 		return false, errors.New("invalid request parameter")
 	}
@@ -941,7 +941,7 @@ func (c *RegistryClient) WatchMicroService(microServiceID string, callback func(
 				}
 				err = conn.Close()
 				if err != nil {
-					return fmt.Errorf("Conn close failed,microServiceID: %s, error:%s", microServiceID, err.Error())
+					return fmt.Errorf("conn close failed, microServiceID: %s, error: %s", microServiceID, err.Error())
 				}
 				delete(c.conns, microServiceID)
 				c.startBackOff(microServiceID, callback)
@@ -963,7 +963,7 @@ func (c *RegistryClient) getAddress() string {
 }
 
 func (c *RegistryClient) startBackOff(microServiceID string, callback func(*MicroServiceInstanceChangedEvent)) {
-	boff := getBackOff("Exponential")
+	boff := bo.GetBackOff(bo.BackoffJittered, 1000, 30000)
 	operation := func() error {
 		c.mutex.Lock()
 		c.watchers[microServiceID] = false

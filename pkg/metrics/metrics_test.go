@@ -9,6 +9,9 @@ import (
 )
 
 func TestInit(t *testing.T) {
+	t.Run("install a plugin", func(t *testing.T) {
+		metrics.InstallPlugin("test", metrics.NewPrometheusExporter)
+	})
 	err := metrics.Init()
 	assert.NoError(t, err)
 

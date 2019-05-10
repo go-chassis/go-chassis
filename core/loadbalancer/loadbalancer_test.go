@@ -119,6 +119,9 @@ func TestBuildStrategy(t *testing.T) {
 		t.Log("Should return lb err")
 		t.Fail()
 	}
+	loadbalancer.SetLatency(1*time.Second,
+		"127.0.0.1", "service",
+		utiltags.NewDefaultTag("1.0", "app"), "rest")
 }
 
 func BenchmarkDefaultSelector_Select(b *testing.B) {
