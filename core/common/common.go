@@ -2,6 +2,9 @@ package common
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+
 	"github.com/go-mesh/openlogging"
 )
 
@@ -102,6 +105,8 @@ const CallerKey = "caller"
 const (
 	// HeaderSourceName is constant for header source name
 	HeaderSourceName = "x-cse-src-microservice"
+	// HeaderXCseContent is constant for header , get some json msg about HeaderSourceName like {"k":"v"}
+	HeaderXCseContent = "x-cse-context"
 )
 
 const (
@@ -191,4 +196,53 @@ func FromContext(ctx context.Context) map[string]string {
 		return make(map[string]string, 0)
 	}
 	return at
+}
+
+// GetXCSEHeader  get x-cse-header from req.header
+func GetXCSEHeader(k string, r *http.Request) string {
+	if r == nil || k == "" {
+		openlogging.GetLogger().Error("get x_cse_header failed , request is nil or key is empty, please check its")
+		return ""
+	}
+	cseContextStr := r.Header.Get(HeaderXCseContent)
+	if cseContextStr == "" {
+		openlogging.GetLogger().Warn("did not has x-cse-header in req")
+		return ""
+	}
+
+	var m map[string]string
+	err := json.Unmarshal([]byte(cseContextStr), &m)
+	if err != nil {
+		openlogging.GetLogger().Errorf("get x-cse-header form req failed , error : %v", err)
+		return ""
+	}
+	return m[k]
+}
+
+// SetXCSEHeader  set value into x-cse-header
+func SetXCSEHeader(k, v string, r *http.Request) {
+	if v == "" || k == "" || r == nil {
+		openlogging.GetLogger().Warn("set x_cse_header into req failed ,because one of key,value and request is empty(nil) or all empty(nil)")
+		return
+	}
+
+	var m map[string]string
+	var err error
+
+	cseContextStr := r.Header.Get(HeaderXCseContent)
+	if cseContextStr != "" {
+		err = json.Unmarshal([]byte(cseContextStr), &m)
+	}
+	if m == nil || err != nil {
+		m = make(map[string]string)
+	} else if oldV, ok := m[k]; ok && oldV == v {
+		return
+	}
+	m[k] = v
+	b, err := json.Marshal(m)
+	if err != nil {
+		openlogging.GetLogger().Errorf("set value to x-cse-context failed , error : %v ", err.Error())
+		return
+	}
+	r.Header.Set(HeaderXCseContent, string(b))
 }
