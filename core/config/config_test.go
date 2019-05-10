@@ -28,6 +28,13 @@ func TestInit(t *testing.T) {
 
 }
 
+func TestInitNameAndVersion(t *testing.T) {
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	assert.Equal(t, config.MicroserviceDefinition.ServiceDescription.Name, "Server")
+	assert.Equal(t, config.MicroserviceDefinition.ServiceDescription.Version, "0.0.1")
+}
+
 func TestInit2(t *testing.T) {
 	file := []byte(`
 cse:
@@ -138,4 +145,11 @@ func TestInit4(t *testing.T) {
 	config.Init()
 	assert.Equal(t, "123", config.GlobalDefinition.Cse.Service.Registry.Address)
 	assert.Equal(t, "123", config.GlobalDefinition.Cse.Config.Client.ServerURI)
+}
+
+func TestInitErrorWithBlankEnv(t *testing.T) {
+	os.Setenv("CHASSIS_HOME", "")
+	err := config.Init()
+	t.Log(err)
+	assert.Error(t, err)
 }

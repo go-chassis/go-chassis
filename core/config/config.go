@@ -309,19 +309,20 @@ func Init() error {
 	var schemaError error
 
 	//Upload schemas using environment variable SCHEMA_ROOT
-	schemaEnv := archaius.GetString(common.EnvSchemaRoot, "")
-	if schemaEnv != "" {
-		schemaError = schema.LoadSchema(schemaEnv)
-	} else {
-		schemaError = schema.LoadSchema(fileutil.GetConfDir())
+	schemaPath := archaius.GetString(common.EnvSchemaRoot, "")
+
+	if schemaPath == "" {
+		schemaPath = fileutil.GetConfDir()
 	}
+
+	schemaError = schema.LoadSchema(schemaPath)
 
 	if schemaError != nil {
 		return schemaError
 	}
 
 	//set microservice names
-	msError := schema.SetMicroServiceNames(fileutil.GetConfDir())
+	msError := schema.SetMicroServiceNames(schemaPath)
 	if msError != nil {
 		return msError
 	}
