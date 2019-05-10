@@ -190,16 +190,9 @@ cse:
 
 }
 
-
-func TestInitNameAndVersion(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-	assert.Equal(t, config.MicroserviceDefinition.ServiceDescription.Name, "Server")
-	assert.Equal(t, config.MicroserviceDefinition.ServiceDescription.Version, "0.0.1")
-}
-
 func TestInitErrorWithBlankEnv(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "")
+	os.Setenv("CHASSIS_CONF_DIR","")
 	err := config.Init()
 	t.Log(err)
 	assert.Error(t, err)
