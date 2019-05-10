@@ -256,7 +256,7 @@ func (r *restfulServer) Start() error {
 		return fmt.Errorf("failed to start listener: %s", err.Error())
 	}
 
-	registry.InstanceEndpoints[Name] = net.JoinHostPort(lIP, lPort)
+	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort)
 
 	go func() {
 		err = r.server.Serve(l)
@@ -267,7 +267,7 @@ func (r *restfulServer) Start() error {
 
 	}()
 
-	lager.Logger.Infof("Restful server listening on: %s", registry.InstanceEndpoints[Name])
+	lager.Logger.Infof("Restful server listening on: %s", registry.InstanceEndpoints[config.ProtocolServerName])
 	return nil
 }
 

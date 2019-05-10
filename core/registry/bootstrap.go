@@ -133,7 +133,7 @@ func RegisterMicroserviceInstances() error {
 		return err
 	}
 	lager.Logger.Infof("service support protocols %v", config.GlobalDefinition.Cse.Protocols)
-	if InstanceEndpoints != nil {
+	if len(InstanceEndpoints) != 0 {
 		eps = InstanceEndpoints
 	}
 	if service.ServiceDescription.ServicesStatus == "" {
