@@ -12,7 +12,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/go-mesh/openlogging"
 )
@@ -73,7 +72,7 @@ func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 			return nil, err
 		}
 	} else {
-		lager.Logger.Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
+		openlogging.GetLogger().Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
 			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 	var command string
@@ -124,7 +123,7 @@ func Close(protocol, service, endpoint string) error {
 		return ErrClientNotExist
 	}
 	if err := c.Close(); err != nil {
-		lager.Logger.Errorf("can not close client %s:%s%:s, err [%s]", protocol, service, endpoint, err.Error())
+		openlogging.GetLogger().Errorf("can not close client %s:%s%:s, err [%s]", protocol, service, endpoint, err.Error())
 		return err
 	}
 	sl.Lock()
