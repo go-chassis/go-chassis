@@ -28,6 +28,23 @@ func TestMakeEndpointMap(t *testing.T) {
 	m, err = registry.MakeEndpointMap(protocols2)
 	assert.NoError(t, err)
 	assert.Equal(t, "[2407:c080:17ff:ffff::7274:83a]:8080", m[common.ProtocolRest])
+
+	t.Run("multi port", func(t *testing.T) {
+		protocols := make(map[string]model.Protocol)
+		protocols[common.ProtocolRest] = model.Protocol{
+			Listen:    "127.0.0.1:8080",
+			Advertise: "127.0.0.1:8080",
+		}
+		protocols[common.ProtocolRest+"-legacy"] = model.Protocol{
+			Listen:    "127.0.0.1:8082",
+			Advertise: "127.0.0.1:8082",
+		}
+		eps, _ := registry.MakeEndpointMap(protocols)
+		assert.Equal(t, "127.0.0.1:8082", eps[common.ProtocolRest+"-legacy"])
+		assert.Equal(t, "127.0.0.1:8080", eps[common.ProtocolRest])
+		list := registry.GetProtocolList(eps)
+		assert.Equal(t, 2, len(list))
+	})
 }
 func TestUtil(t *testing.T) {
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
@@ -37,8 +54,8 @@ func TestUtil(t *testing.T) {
 	assert.Equal(t, "127.0.0.1", mp["https"])
 	assert.Equal(t, "http", str)
 
-	var mapproto map[string]model.Protocol = make(map[string]model.Protocol)
-	var mapprotoRest map[string]model.Protocol = make(map[string]model.Protocol)
+	var mapproto = make(map[string]model.Protocol)
+	var mapprotoRest = make(map[string]model.Protocol)
 
 	mapproto[common.ProtocolHighway] = model.Protocol{
 		Listen:    "0.0.0.0:1",
