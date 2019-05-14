@@ -213,7 +213,7 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 	if routeSpec.Read != nil {
 		rb = rb.Reads(routeSpec.Read)
 	}
-	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.FuncDesc))
+	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
 	return nil
 }
 func (r *restfulServer) Start() error {
