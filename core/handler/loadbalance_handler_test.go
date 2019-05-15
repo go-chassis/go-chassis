@@ -64,7 +64,6 @@ func (h *handler2) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 
 func TestLBHandlerWithRetry(t *testing.T) {
 	microContent := `---
-#微服务的私有属性
 service_description:
   name: Client
   version: 0.1`
