@@ -102,7 +102,6 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 		SSLEnabled: opt.EnableSSL,
 		TLSConfig:  opt.TLSConfig,
 		Compressed: opt.Compressed,
-		Verbose:    opt.Verbose,
 	}
 	c.watchers = make(map[string]bool)
 	c.conns = make(map[string]*websocket.Conn)
