@@ -134,3 +134,12 @@ func (r *TestSchema) URLPatterns() []restful.Route {
 			Returns: []*restful.Returns{{Code: 200}}},
 	}
 }
+
+func TestNoRefreshSchemaConfig(t *testing.T) {
+	p := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	log.Println(os.Getenv("CHASSIS_HOME"))
+	config.Init()
+	assert.Equal(t, true, config.GlobalDefinition.Cse.NoRefreshSchema)
+	config.GlobalDefinition = &model.GlobalCfg{}
+}

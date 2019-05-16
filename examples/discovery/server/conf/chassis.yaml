@@ -53,6 +53,7 @@ cse:
 #    chain:
 #      Provider:
 #        default: tracing-provider
+  noRefreshSchema: true
 # ssl:
   # registry.Consumer.cipherPlugin: default
   # registry.Consumer.verifyPeer: false
