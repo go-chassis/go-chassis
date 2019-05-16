@@ -8,11 +8,34 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/provider"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func prepareConfDir(t *testing.T) string {
+	wd, _ := fileutil.GetWorkDir()
+	os.Setenv("CHASSIS_HOME", wd)
+	defer os.Unsetenv("CHASSIS_HOME")
+	chassisConf := filepath.Join(wd, "conf")
+	logConf := filepath.Join(wd, "log")
+	err := os.MkdirAll(chassisConf, 0700)
+	assert.NoError(t, err)
+	err = os.MkdirAll(logConf, 0700)
+	assert.NoError(t, err)
+	return chassisConf
+}
+func prepareTestFile(t *testing.T, confDir, file, content string) {
+	fullPath := filepath.Join(confDir, file)
+	err := os.Remove(fullPath)
+	f, err := os.Create(fullPath)
+	assert.NoError(t, err)
+	_, err = io.WriteString(f, content)
+	assert.NoError(t, err)
+}
 
 type ProviderHandler struct {
 }

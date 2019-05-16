@@ -6,11 +6,9 @@ import (
 	"github.com/go-chassis/go-chassis/configcenter"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-
-	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/core/registry"
+	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -38,6 +36,7 @@ func TestInitConfigCenter(t *testing.T) {
 	config.GlobalDefinition.Cse.Config.Client.ServerURI = ""
 	err = configcenter.InitConfigCenter()
 	t.Log("HEllo", err)
+
 }
 
 func TestInitConfigCenterWithTenantEmpty(t *testing.T) {
@@ -107,33 +106,12 @@ func TestInitConfigCenterWithSSL(t *testing.T) {
 	config.GlobalDefinition.Cse.Config.Client.Type = "config_center"
 	err = configcenter.InitConfigCenter()
 	t.Log("HEllo", err)
-}
 
-func TestInitConfigCenterWithInvalidName(t *testing.T) {
-	t.Log("Testing InitConfigCenter function with serverURI and microservice definition")
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-	err := config.Init()
-	config.GlobalDefinition = &model.GlobalCfg{}
-	name := model.MicServiceStruct{Name: "qwertyuiopasdfghjklgsgdfsgdgafdggsahhhhh"}
-	config.GlobalDefinition.Cse.Config.Client.ServerURI = "https://127.0.0.1:8787"
-	config.MicroserviceDefinition = &model.MicroserviceCfg{ServiceDescription: name}
-	config.GlobalDefinition.Cse.Config.Client.Type = "config_center"
-	err = configcenter.InitConfigCenter()
-	assert.NoError(t, err)
-	t.Log("HEllo", err)
-}
-
-func TestEvent(t *testing.T) {
-	t.Log("Testing EventListener function")
-	factoryObj, _ := archaius.NewConfigFactory()
-
-	factoryObj.Init()
-
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-	config.Init()
-	eventValue := &core.Event{Key: "refreshMode", Value: 6}
-	evt := archaius.EventListener{Name: "EventHandler", Factory: factoryObj}
-	evt.Event(eventValue)
+	t.Run("with empty DI,should error", func(t *testing.T) {
+		config.MicroserviceDefinition.ServiceDescription.Name = ""
+		config.MicroserviceDefinition.ServiceDescription.Version = ""
+		runtime.App = ""
+		err = configcenter.InitConfigCenter()
+		assert.Error(t, err)
+	})
 }

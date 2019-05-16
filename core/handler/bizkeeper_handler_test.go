@@ -9,6 +9,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	_ "github.com/go-chassis/go-chassis/initiator"
+	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -16,16 +18,55 @@ import (
 )
 
 func TestCBInit(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	config.Init()
+	f := prepareConfDir(t)
+	microContent := `---
+service_description:
+  name: Client
+  version: 0.1`
+	circuitContent :=
+		`
+cse:
+  isolation:
+    Consumer:
+      timeoutInMilliseconds: 1000
+      maxConcurrentRequests: 100
+      Server:
+        timeoutInMilliseconds: 1000
+        maxConcurrentRequests: 100
+  circuitBreaker:
+    Consumer:
+      enabled: false
+      forceOpen: false
+      forceClosed: false
+      sleepWindowInMilliseconds: 10000
+      requestVolumeThreshold: 20
+      errorThresholdPercentage: 10
+      Server:
+        enabled: true
+        forceOpen: false
+        forceClosed: false
+        sleepWindowInMilliseconds: 10000
+        requestVolumeThreshold: 20
+        errorThresholdPercentage: 50
+  #容错处理函数，目前暂时按照开源的方式来不进行区分处理，统一调用fallback函数
+  fallback:
+    Consumer:
+      enabled: true
+  fallbackpolicy:
+    Consumer:
+      policy: throwexception
+`
+	prepareTestFile(t, f, "chassis.yaml", "")
+	prepareTestFile(t, f, "microservice.yaml", microContent)
+	prepareTestFile(t, f, "circuit_breaker.yaml", circuitContent)
+	err := config.Init()
+	assert.NoError(t, err)
+	circuit.Init()
 	opts := control.Options{
 		Infra:   config.GlobalDefinition.Panel.Infra,
 		Address: config.GlobalDefinition.Panel.Settings["address"],
 	}
-	err := control.Init(opts)
+	err = control.Init(opts)
 	assert.NoError(t, err)
 }
 
