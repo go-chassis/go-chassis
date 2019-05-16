@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 
 	"github.com/emicklei/go-restful"
+	globalconfig "github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
@@ -213,7 +214,14 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 	if routeSpec.Read != nil {
 		rb = rb.Reads(routeSpec.Read)
 	}
-	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.FuncDesc))
+	if len(routeSpec.Consumes) > 0 {
+		rb.Consumes(routeSpec.Consumes...)
+	}
+	if len(routeSpec.Produces) > 0 {
+		rb.Produces(routeSpec.Produces...)
+	}
+	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
+
 	return nil
 }
 func (r *restfulServer) Start() error {
@@ -228,28 +236,33 @@ func (r *restfulServer) Start() error {
 	} else {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
 	}
-	// register to swagger ui
-	var path string
-	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
-		return errors.New("schema path is empty")
+	// register to swagger ui,Whether to create a schema, you need to refer to the configuration.
+	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema == false {
+		var path string
+		if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
+			return errors.New("schema path is empty")
+		}
+		if err = os.RemoveAll(path); err != nil {
+			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+		}
+		if err = os.MkdirAll(path, 0760); err != nil {
+			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+		}
+		swagger.LogInfo = func(format string, v ...interface{}) {
+			openlogging.GetLogger().Infof(format, v...)
+		}
+		swaggerConfig := swagger.Config{
+			WebServices:     r.container.RegisteredWebServices(),
+			WebServicesUrl:  config.Address,
+			ApiPath:         "/apidocs.json",
+			FileStyle:       "yaml",
+			SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
+		swagger.RegisterSwaggerService(swaggerConfig, r.container)
+		openlogging.Info("The schema has been created successfully. path:" + path)
+	} else {
+		openlogging.Info("The schema do not need to be created. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 	}
-	if err = os.RemoveAll(path); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
-	if err = os.MkdirAll(path, 0760); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
-	swagger.LogInfo = func(format string, v ...interface{}) {
-		openlogging.GetLogger().Infof(format, v...)
-	}
-	swaggerConfig := swagger.Config{
-		WebServices:     r.container.RegisteredWebServices(),
-		WebServicesUrl:  config.Address,
-		ApiPath:         "/apidocs.json",
-		FileStyle:       "yaml",
-		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
-	swagger.RegisterSwaggerService(swaggerConfig, r.container)
-	openlogging.Info("The schema has been created successfully. path:" + path)
+
 	l, lIP, lPort, err := iputil.StartListener(config.Address, config.TLSConfig)
 
 	if err != nil {
