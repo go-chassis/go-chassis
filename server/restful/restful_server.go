@@ -271,7 +271,7 @@ func (r *restfulServer) Start() error {
 //register to swagger ui,Whether to create a schema, you need to refer to the configuration.
 func (r *restfulServer) CreateSchema(config server.Options) error {
 	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema == true {
-		openlogging.Info("The schema do not need to be created. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
+		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 		return nil
 	}
 	var path string
