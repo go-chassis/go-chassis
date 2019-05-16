@@ -3,9 +3,9 @@ module github.com/go-chassis/go-chassis
 require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.8.0+incompatible
-	github.com/go-chassis/foundation v0.0.0-20190203091418-304855ea28bf
+	github.com/go-chassis/foundation v0.0.0-20190516083152-b8b2476b6db7
 	github.com/go-chassis/go-archaius v0.16.0
-	github.com/go-chassis/go-chassis-config v0.6.0
+	github.com/go-chassis/go-chassis-config v0.7.0
 	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
