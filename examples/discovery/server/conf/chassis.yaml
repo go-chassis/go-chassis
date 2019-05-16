@@ -50,6 +50,7 @@ cse:
       listenAddress: 127.0.0.1:8083
       advertiseAddress: 127.0.0.1:8083
   handler:
+  noRefreshSchema: true
 #    chain:
 #      Provider:
 #        default: tracing-provider
