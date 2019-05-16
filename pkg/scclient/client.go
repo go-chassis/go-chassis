@@ -526,7 +526,6 @@ func (c *RegistryClient) BatchFindInstances(consumerID string, keys []*proto.Fin
 	if err != nil {
 		return nil, NewJSONException(err, string(rBody))
 	}
-	openlogging.Debug("request body:" + string(rBody))
 	resp, err := c.HTTPDo("POST", url, http.Header{"X-ConsumerId": []string{consumerID}}, rBody)
 	if err != nil {
 		return nil, err
@@ -535,7 +534,6 @@ func (c *RegistryClient) BatchFindInstances(consumerID string, keys []*proto.Fin
 		return nil, fmt.Errorf("BatchFindInstances failed, response is empty")
 	}
 	body := httputil.ReadBody(resp)
-	openlogging.Debug("response body:" + string(body))
 	if resp.StatusCode == 200 {
 		var response proto.BatchFindInstancesResponse
 		err = json.Unmarshal(body, &response)
