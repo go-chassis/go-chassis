@@ -214,6 +214,7 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 	if routeSpec.Read != nil {
 		rb = rb.Reads(routeSpec.Read)
 	}
+
 	if len(routeSpec.Consumes) > 0 {
 		rb.Consumes(routeSpec.Consumes...)
 	}
