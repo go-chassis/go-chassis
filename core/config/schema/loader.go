@@ -221,7 +221,7 @@ func init() {
 	DefaultSchemaIDsMap = make(map[string]string)
 }
 
-//set schema information
+// SetSchemaInfo is for fill defaultMicroserviceMetaMgr and DefaultSchemaIDsMap
 func SetSchemaInfo(sws *swagger.SwaggerService) error {
 	schemaInfoList, err := sws.GetSchemaInfoList()
 	if err != nil {
