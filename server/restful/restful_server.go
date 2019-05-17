@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 
 	"github.com/emicklei/go-restful"
+	globalconfig "github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
@@ -190,6 +191,28 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 	default:
 		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
+	rb = fillParam(routeSpec, rb)
+
+	for _, r := range routeSpec.Returns {
+		rb = rb.Returns(r.Code, r.Message, r.Model)
+	}
+	if routeSpec.Read != nil {
+		rb = rb.Reads(routeSpec.Read)
+	}
+
+	if len(routeSpec.Consumes) > 0 {
+		rb = rb.Consumes(routeSpec.Consumes...)
+	}
+	if len(routeSpec.Produces) > 0 {
+		rb = rb.Produces(routeSpec.Produces...)
+	}
+	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
+
+	return nil
+}
+
+//handle parameter
+func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder {
 	for _, param := range routeSpec.Parameters {
 		switch param.ParamType {
 		case restful.QueryParameterKind:
@@ -204,17 +227,8 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 			rb = rb.Param(restful.FormParameter(param.Name, param.Desc).DataType(param.DataType))
 
 		}
-
 	}
-
-	for _, r := range routeSpec.Returns {
-		rb = rb.Returns(r.Code, r.Message, r.Model)
-	}
-	if routeSpec.Read != nil {
-		rb = rb.Reads(routeSpec.Read)
-	}
-	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
-	return nil
+	return rb
 }
 func (r *restfulServer) Start() error {
 	var err error
@@ -228,28 +242,11 @@ func (r *restfulServer) Start() error {
 	} else {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
 	}
-	// register to swagger ui
-	var path string
-	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
-		return errors.New("schema path is empty")
+	// create schema
+	err = r.CreateSchema(config)
+	if err != nil {
+		return err
 	}
-	if err = os.RemoveAll(path); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
-	if err = os.MkdirAll(path, 0760); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
-	swagger.LogInfo = func(format string, v ...interface{}) {
-		openlogging.GetLogger().Infof(format, v...)
-	}
-	swaggerConfig := swagger.Config{
-		WebServices:     r.container.RegisteredWebServices(),
-		WebServicesUrl:  config.Address,
-		ApiPath:         "/apidocs.json",
-		FileStyle:       "yaml",
-		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
-	swagger.RegisterSwaggerService(swaggerConfig, r.container)
-	openlogging.Info("The schema has been created successfully. path:" + path)
 	l, lIP, lPort, err := iputil.StartListener(config.Address, config.TLSConfig)
 
 	if err != nil {
@@ -268,6 +265,36 @@ func (r *restfulServer) Start() error {
 	}()
 
 	lager.Logger.Infof("Restful server listening on: %s", registry.InstanceEndpoints[config.ProtocolServerName])
+	return nil
+}
+
+//register to swagger ui,Whether to create a schema, you need to refer to the configuration.
+func (r *restfulServer) CreateSchema(config server.Options) error {
+	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema == true {
+		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
+		return nil
+	}
+	var path string
+	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
+		return errors.New("schema path is empty")
+	}
+	if err := os.RemoveAll(path); err != nil {
+		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+	}
+	if err := os.MkdirAll(path, 0760); err != nil {
+		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+	}
+	swagger.LogInfo = func(format string, v ...interface{}) {
+		openlogging.GetLogger().Infof(format, v...)
+	}
+	swaggerConfig := swagger.Config{
+		WebServices:     r.container.RegisteredWebServices(),
+		WebServicesUrl:  config.Address,
+		ApiPath:         "/apidocs.json",
+		FileStyle:       "yaml",
+		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
+	swagger.RegisterSwaggerService(swaggerConfig, r.container)
+	openlogging.Info("The schema has been created successfully. path:" + path)
 	return nil
 }
 
