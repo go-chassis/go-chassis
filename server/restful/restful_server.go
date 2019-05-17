@@ -243,7 +243,7 @@ func (r *restfulServer) Start() error {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
 	}
 	// create schema
-	err = r.CreateSchema(config)
+	err = r.CreateLocalSchema(config)
 	if err != nil {
 		return err
 	}
@@ -269,7 +269,7 @@ func (r *restfulServer) Start() error {
 }
 
 //register to swagger ui,Whether to create a schema, you need to refer to the configuration.
-func (r *restfulServer) CreateSchema(config server.Options) error {
+func (r *restfulServer) CreateLocalSchema(config server.Options) error {
 	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema == true {
 		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 		return nil
@@ -293,8 +293,13 @@ func (r *restfulServer) CreateSchema(config server.Options) error {
 		ApiPath:         "/apidocs.json",
 		FileStyle:       "yaml",
 		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
-	swagger.RegisterSwaggerService(swaggerConfig, r.container)
+	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)
 	openlogging.Info("The schema has been created successfully. path:" + path)
+	//set schema information when create local schema file
+	err := schema.SetSchemaInfo(sws)
+	if err != nil {
+		return fmt.Errorf("set schema information,%s", err.Error())
+	}
 	return nil
 }
 
