@@ -1,18 +1,17 @@
-package restful_test
+package restful
 
 import (
-	"log"
-	"os"
-	"path/filepath"
-	"testing"
-
+	rf "github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/server/restful"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"testing"
 )
 
 var addrHighway = "127.0.0.1:2399"
@@ -100,38 +99,40 @@ func TestRestStartFailure(t *testing.T) {
 type TestSchema struct {
 }
 
-func (r *TestSchema) Put(b *restful.Context) {
+func (r *TestSchema) Put(b *Context) {
 }
 
-func (r *TestSchema) Get(b *restful.Context) {
+func (r *TestSchema) Get(b *Context) {
 }
 
-func (r *TestSchema) Delete(b *restful.Context) {
+func (r *TestSchema) Delete(b *Context) {
 }
 
-func (r *TestSchema) Head(b *restful.Context) {
+func (r *TestSchema) Head(b *Context) {
 }
-func (r *TestSchema) Patch(b *restful.Context) {
+func (r *TestSchema) Patch(b *Context) {
 }
-func (r *TestSchema) Post(b *restful.Context) {
+func (r *TestSchema) Post(b *Context) {
 }
 
 //URLPatterns helps to respond for corresponding API calls
-func (r *TestSchema) URLPatterns() []restful.Route {
-	return []restful.Route{
+func (r *TestSchema) URLPatterns() []Route {
+	return []Route{
 		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Get",
-			Returns: []*restful.Returns{{Code: 200}}},
+			Returns: []*Returns{{Code: 200}}},
 
 		{Method: http.MethodPost, Path: "/sayhello/{userid}", ResourceFuncName: "Post",
-			Returns: []*restful.Returns{{Code: 200}}},
+			Returns: []*Returns{{Code: 200}}},
 
 		{Method: http.MethodDelete, Path: "/sayhi", ResourceFuncName: "Delete",
-			Returns: []*restful.Returns{{Code: 200}}},
+			Returns: []*Returns{{Code: 200}}},
 
 		{Method: http.MethodHead, Path: "/sayjson", ResourceFuncName: "Head",
-			Returns: []*restful.Returns{{Code: 200}}},
+			Returns: []*Returns{{Code: 200}}},
 		{Method: http.MethodPatch, Path: "/sayjson", ResourceFuncName: "Patch",
-			Returns: []*restful.Returns{{Code: 200}}},
+			Returns: []*Returns{{Code: 200}}},
+		{Method: http.MethodPut, Path: "/hi", ResourceFuncName: "Put",
+			Returns: []*Returns{{Code: 200}}},
 	}
 }
 
@@ -142,4 +143,39 @@ func TestNoRefreshSchemaConfig(t *testing.T) {
 	config.Init()
 	assert.Equal(t, true, config.GlobalDefinition.Cse.NoRefreshSchema)
 	config.GlobalDefinition = &model.GlobalCfg{}
+}
+
+type Data struct {
+	ID         string `json:"priceID"`
+	Category   string `json:"type"`
+	Value      string `json:"value"`
+	CreateTime string `json:"-"`
+}
+
+func TestFillParam(t *testing.T) {
+	var rb *rf.RouteBuilder = &rf.RouteBuilder{}
+	var routeSpec Route
+	p := &Parameters{
+		"p", "", rf.QueryParameterKind, "",
+	}
+	routeSpec.Parameters = append(routeSpec.Parameters, p)
+	p1 := &Parameters{
+		"p1", "", rf.BodyParameterKind, "",
+	}
+	routeSpec.Parameters = append(routeSpec.Parameters, p1)
+	p2 := &Parameters{
+		"p2", "", rf.FormParameterKind, "",
+	}
+	routeSpec.Parameters = append(routeSpec.Parameters, p2)
+	p3 := &Parameters{
+		"p3", "", rf.HeaderParameterKind, "",
+	}
+	routeSpec.Parameters = append(routeSpec.Parameters, p3)
+
+	rb = fillParam(routeSpec, rb)
+	assert.Equal(t, rf.QueryParameterKind, rb.ParameterNamed("p").Kind())
+	assert.Equal(t, rf.BodyParameterKind, rb.ParameterNamed("p1").Kind())
+	assert.Equal(t, rf.FormParameterKind, rb.ParameterNamed("p2").Kind())
+	assert.Equal(t, rf.HeaderParameterKind, rb.ParameterNamed("p3").Kind())
+
 }

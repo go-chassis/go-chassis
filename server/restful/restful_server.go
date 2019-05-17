@@ -211,7 +211,7 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 	return nil
 }
 
-//handle parameter
+//fillParam is for handle parameter by type
 func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder {
 	for _, param := range routeSpec.Parameters {
 		switch param.ParamType {
