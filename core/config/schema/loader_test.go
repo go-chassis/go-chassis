@@ -1,9 +1,12 @@
 package schema_test
 
 import (
+	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -117,4 +120,23 @@ func TestLoadSchema(t *testing.T) {
 
 	err = os.RemoveAll(fileutil.GetConfDir())
 	assert.Nil(t, err)
+}
+
+func TestSetSchemaIDs(t *testing.T) {
+	p := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	log.Println(os.Getenv("CHASSIS_HOME"))
+	config := swagger.Config{
+		WebServices:     restful.DefaultContainer.RegisteredWebServices(),
+		OpenService:     true,
+		SwaggerPath:     "/apidocs/",
+		SwaggerFilePath: filepath.Join(os.Getenv("CHASSIS_HOME"), "api.yaml")}
+	config.Info.Description = "This is a sample server Book server"
+	config.Info.Title = "swagger Book"
+	sws := swagger.RegisterSwaggerService(config, restful.DefaultContainer)
+	err := schema.SetSchemaInfo(sws)
+	assert.NoError(t, err)
+	s, e := schema.GetSchemaIDs("aaa")
+	assert.Error(t, e)
+	assert.Equal(t, 0, len(s))
 }

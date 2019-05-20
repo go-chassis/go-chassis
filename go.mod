@@ -6,7 +6,7 @@ require (
 	github.com/go-chassis/foundation v0.0.0-20190516083152-b8b2476b6db7
 	github.com/go-chassis/go-archaius v0.16.0
 	github.com/go-chassis/go-chassis-config v0.7.0
-	github.com/go-chassis/go-restful-swagger20 v0.0.0-20181221101811-a33c76fe4a6e
+	github.com/go-chassis/go-restful-swagger20 v1.0.1
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-mesh/openlogging v0.0.0-20181205082104-3d418c478b2d
