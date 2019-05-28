@@ -122,12 +122,10 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 			p.Listen = iputil.DefaultEndpoint4Protocol(name)
 		}
 	}
+
 	chainName := common.DefaultChainName
-	for name := range providerMap {
-		if name != common.DefaultApp {
-			chainName = name
-			break
-		}
+	if _, ok := providerMap[name]; ok {
+		chainName = name
 	}
 
 	var s ProtocolServer

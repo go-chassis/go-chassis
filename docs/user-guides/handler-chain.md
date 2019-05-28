@@ -5,16 +5,19 @@
 ## 配置
 ```yaml
 cse:
+  protocols:
+    {name}:
   handler:
     Consumer:
       {name}:{handler_names}
     Provider:
       {name}:{handler_names}
 ```
-Consumer表示，当你要调用别的服务时，会通过的处理链
-Provider表示，当你被别人调用人，会通过的处理链
-支持在Consumer和Provider中定义多个不同的chain name
-如果handler配置为空那么框架会自动为Consumer与Provider加载默认的handlers，chain的名称为default
+Consumer表示，当你要调用别的服务时，会通过的处理链  
+Provider表示，当你被别人调用人，会通过的处理链  
+支持在Consumer和Provider中定义多个不同的chain name  
+当handler配置为空，那么框架会自动为Consumer与Provider加载默认的handlers，chain的名称为default  
+当handler配置不为空，那么在Provider链中，如果protocol有相同名称的chain，对应的protocol服务将加载相同名称的chain，如果protocol没有配置相同名称的chain，那么该协议将默认加载名称为default的chain
 
 ### Consumer的默认chain为
 
@@ -70,10 +73,30 @@ const (
 )
 ```
 ## 实例
+
+### 自定义了custom-handler，放入到默认链中
 ```yaml
 handler:
   chain:
     Consumer:
-      default: bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
-      custom: some-handler
+      default: custom-handler, bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
 ```
+
+### 为不同协议定制不同的链
+```yaml
+protocols:
+  rest:
+    listenAddress: 127.0.0.1:5001
+  rest-admin:
+    listenAddress: 127.0.0.1:5002
+  highway:
+    listenAddress: 127.0.0.1:5003
+  grpc:
+    listenAddress: 127.0.0.1:5004
+handler:
+  chain:
+    Provider:
+      rest: custom-handler, ratelimiter-provider
+      highway: tracing-provider
+```
+如上配置，rest协议将会加载rest chain，highway协议将会加载highway chain。由于rest-admin与grpc协议没有配置相同名称的chain，所以他们将默认加载default chain
