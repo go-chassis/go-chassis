@@ -91,14 +91,20 @@ func (c *chassis) initChains(chainType string) error {
 	var handlerNameMap = map[string]string{defaultChainName: ""}
 	switch chainType {
 	case common.Provider:
-		if len(config.GlobalDefinition.Cse.Handler.Chain.Provider) != 0 {
-			handlerNameMap = config.GlobalDefinition.Cse.Handler.Chain.Provider
+		if providerChainMap := config.GlobalDefinition.Cse.Handler.Chain.Provider; len(providerChainMap) != 0 {
+			if _, ok := providerChainMap[defaultChainName]; !ok {
+				providerChainMap[defaultChainName] = c.DefaultProviderChainNames[defaultChainName]
+			}
+			handlerNameMap = providerChainMap
 		} else {
 			handlerNameMap = c.DefaultProviderChainNames
 		}
 	case common.Consumer:
-		if len(config.GlobalDefinition.Cse.Handler.Chain.Consumer) != 0 {
-			handlerNameMap = config.GlobalDefinition.Cse.Handler.Chain.Consumer
+		if consumerChainMap := config.GlobalDefinition.Cse.Handler.Chain.Consumer; len(consumerChainMap) != 0 {
+			if _, ok := consumerChainMap[defaultChainName]; !ok {
+				consumerChainMap[defaultChainName] = c.DefaultConsumerChainNames[defaultChainName]
+			}
+			handlerNameMap = consumerChainMap
 		} else {
 			handlerNameMap = c.DefaultConsumerChainNames
 		}

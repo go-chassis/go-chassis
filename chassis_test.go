@@ -3,11 +3,13 @@ package chassis_test
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/go-chassis/go-chassis"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -61,10 +63,15 @@ cse:
       refeshInterval : 30s
       watch: true
       register: reg
+  protocols:
+    rest:
+      listenAddress: 127.0.0.1:5001
   handler:
     chain:
-      consumer:
-        default: bizkeeper-consumer, loadbalance, ratelimiter-consumer
+      Consumer:
+        rest: bizkeeper-consumer, loadbalance, ratelimiter-consumer
+      Provider:
+        rest: bizkeeper-provider
 ssl:
   registry.consumer.cipherPlugin: default
   registry.consumer.verifyPeer: false
@@ -98,16 +105,26 @@ service_description:
 
 	config.Init()
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
-		"default": "bizkeeper-provider",
-	}
 	config.GlobalDefinition.Cse.Service.Registry.AutoRegister = "abc"
+
+	chassis.SetDefaultConsumerChains(nil)
+	chassis.SetDefaultProviderChains(nil)
 
 	err = chassis.Init()
 	assert.NoError(t, err)
 
 	chassis.RegisterSchema("rest", "str")
+
+	restServer, err := server.GetServer("rest")
+	assert.NotNil(t, restServer)
+	assert.NoError(t, err)
+
+	v := reflect.ValueOf(restServer)
+	opts := reflect.Indirect(v).FieldByName("opts")
+	chainName := opts.FieldByName("ChainName")
+	assert.Equal(t, "rest", chainName.String())
 }
+
 func TestInitError(t *testing.T) {
 	t.Log("Testing chassis Init function for errors")
 	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "communication/client")
