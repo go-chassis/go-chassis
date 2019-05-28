@@ -136,6 +136,7 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 		ProtocolServerName: name,
 		ChainName:          chainName,
 		TLSConfig:          tlsConfig,
+		BodyLimit:          config.GlobalDefinition.Cse.Transport.MaxBodyBytes["rest"],
 	}
 	s = f(o)
 	servers[name] = s

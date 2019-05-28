@@ -144,11 +144,17 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 					return ir.Err
 				}
 				transfer(inv, req)
+
 				bs := NewBaseServer(inv.Ctx)
 				bs.req = req
 				bs.resp = rep
 				ir.Status = bs.resp.StatusCode()
+				// check body size
+				if r.opts.BodyLimit > 0 {
+					bs.req.Request.Body = http.MaxBytesReader(bs.resp, bs.req.Request.Body, r.opts.BodyLimit)
+				}
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
+
 				if bs.resp.StatusCode() >= http.StatusBadRequest {
 					return fmt.Errorf("get err from http handle, get status: %d", bs.resp.StatusCode())
 				}
