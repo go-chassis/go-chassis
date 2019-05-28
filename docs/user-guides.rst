@@ -29,4 +29,4 @@ User guides
    user-guides/contract
    user-guides/go-java-highway
    user-guides/env
-
+   user-guides/java-call-go
