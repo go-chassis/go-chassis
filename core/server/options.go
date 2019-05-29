@@ -13,6 +13,7 @@ type Options struct {
 	ChainName          string
 	Provider           provider.Provider
 	TLSConfig          *tls.Config
+	BodyLimit          int64
 }
 
 //RegisterOptions is options when you register a schema to chassis
