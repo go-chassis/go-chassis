@@ -42,47 +42,51 @@ func TestNewContext(t *testing.T) {
 	})
 }
 func TestXCseHeader(t *testing.T) {
-	req := &http.Request{
-		Header: map[string][]string{},
-	}
-	t.Run("set value of X into req header , use GetXCSEHeader func get value reply X", func(t *testing.T) {
-		common.SetXCSEHeader(common.HeaderSourceName, "test1", req)
-		s := common.GetXCSEHeader(common.HeaderSourceName, req)
+	req := &http.Request{}
+	t.Run("set value of X into req header , use GetXCSEContext func get value reply X", func(t *testing.T) {
+		common.SetXCSEContext(map[string]string{common.HeaderSourceName: "test1"}, req)
+		s := common.GetXCSEContext(common.HeaderSourceName, req)
 		assert.NotEmpty(t, s)
 		assert.Equal(t, s, "test1")
 	})
 
-	t.Run("test the empty value did not overwrite old value", func(t *testing.T) {
+	t.Run("test the empty value ", func(t *testing.T) {
 		m := map[string]string{
 			common.HeaderSourceName: "test2",
 		}
 		b, _ := json.Marshal(m)
 
 		req.Header.Set(common.HeaderXCseContent, string(b))
-		common.SetXCSEHeader(common.HeaderSourceName, "", req)
-		s := common.GetXCSEHeader(common.HeaderSourceName, req)
-		assert.NotEmpty(t, s)
-		assert.Equal(t, s, "test2")
+		common.SetXCSEContext(map[string]string{common.HeaderSourceName: ""}, req)
+		s := common.GetXCSEContext(common.HeaderSourceName, req)
+		assert.Empty(t, s)
+		assert.Equal(t, s, "")
 
-		common.SetXCSEHeader(common.HeaderSourceName, "test3", nil)
-		s = common.GetXCSEHeader(common.HeaderSourceName, nil)
+		common.SetXCSEContext(map[string]string{common.HeaderSourceName: "test3"}, nil)
+		common.SetXCSEContext(map[string]string{"": "test3"}, req)
+		s = common.GetXCSEContext("", req)
+		assert.Equal(t, s, "test3")
+
+	})
+	t.Run("input param req is nil or req.Header is nil , will return empty", func(t *testing.T) {
+		s := common.GetXCSEContext(common.HeaderSourceName, nil)
 		assert.Empty(t, s)
 
-		common.SetXCSEHeader("", "test3", req)
-		s = common.GetXCSEHeader("", req)
+		s = common.GetXCSEContext(common.HeaderSourceName, &http.Request{})
 		assert.Empty(t, s)
+
 	})
 	t.Run("test new value will overwrite old value", func(t *testing.T) {
-		common.SetXCSEHeader(common.HeaderSourceName, "test4", req)
-		s := common.GetXCSEHeader(common.HeaderSourceName, req)
+		common.SetXCSEContext(map[string]string{common.HeaderSourceName: "test4"}, req)
+		s := common.GetXCSEContext(common.HeaderSourceName, req)
 		assert.NotEmpty(t, s)
 		assert.Equal(t, s, "test4")
 	})
 
 	t.Run("the same value did not overwrite the old value",
 		func(t *testing.T) {
-			common.SetXCSEHeader(common.HeaderSourceName, "test4", req)
-			s := common.GetXCSEHeader(common.HeaderSourceName, req)
+			common.SetXCSEContext(map[string]string{common.HeaderSourceName: "test4"}, req)
+			s := common.GetXCSEContext(common.HeaderSourceName, req)
 			assert.NotEmpty(t, s)
 			assert.Equal(t, s, "test4")
 		})

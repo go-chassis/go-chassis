@@ -74,7 +74,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
 	inv := &invocation.Invocation{
 		MicroServiceName:   runtime.ServiceName,
-		SourceMicroService: common.GetXCSEHeader(common.HeaderSourceName, req.Request),
+		SourceMicroService: common.GetXCSEContext(common.HeaderSourceName, req.Request),
 		Args:               req,
 		Protocol:           common.ProtocolRest,
 		SchemaID:           schema,
