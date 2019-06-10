@@ -205,7 +205,7 @@ func GetXCSEContext(k string, r *http.Request) string {
 	}
 	cseContextStr := r.Header.Get(HeaderXCseContent)
 	if cseContextStr == "" {
-		return ""
+		return r.Header.Get(k)
 	}
 
 	var m map[string]string
