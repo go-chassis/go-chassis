@@ -23,15 +23,26 @@ type LagerEventListener struct {
 
 //Event is a method for Lager event listening
 func (e *LagerEventListener) Event(event *core.Event) {
+	defer func() {
+		if err := recover(); err != nil {
+			lager.Logger.Error(err)
+		}
+	}()
 	logger := openlogging.GetLogger()
 	logger.Debugf("Get lager event, key: %s, type: %s", event.Key, event.EventType)
 	l, ok := logger.(lager.Logger)
 	if !ok {
 		return
 	}
-
 	var lagerLogLevel lager.LogLevel
-	switch strings.ToUpper(event.Value.(string)) {
+	Value,ok:=event.Value.(string)
+	if !ok{
+		fmt.Printf("event.Value Assertion err: %s", event.Value)
+		lager.Logger.Error("event.value assertion err")
+		return
+	}
+
+	switch strings.ToUpper(Value) {
 	case log.DEBUG:
 		lagerLogLevel = lager.DEBUG
 	case log.INFO:
