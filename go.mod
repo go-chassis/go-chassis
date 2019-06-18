@@ -23,7 +23,7 @@ require (
 	github.com/prometheus/client_model v0.0.0-20190115171406-56726106282f // indirect
 	github.com/prometheus/common v0.2.0
 	github.com/prometheus/procfs v0.0.0-20190117184657-bf6a532e95b1 // indirect
-	github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165
+	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/stretchr/testify v1.2.2
