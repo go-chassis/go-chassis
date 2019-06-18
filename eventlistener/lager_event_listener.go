@@ -34,6 +34,7 @@ func (e *LagerEventListener) Event(event *core.Event) {
 		return
 	}
 	var lagerLogLevel lager.LogLevel
+
 	Value, ok := event.Value.(string)
 	if !ok {
 		fmt.Printf("event.Value Assertion err: %s", event.Value)
