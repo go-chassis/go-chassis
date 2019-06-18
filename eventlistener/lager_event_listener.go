@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/paas-lager"
 	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
 	"github.com/go-mesh/openlogging"
 	"strings"
@@ -35,8 +34,8 @@ func (e *LagerEventListener) Event(event *core.Event) {
 		return
 	}
 	var lagerLogLevel lager.LogLevel
-	Value,ok:=event.Value.(string)
-	if !ok{
+	Value, ok := event.Value.(string)
+	if !ok {
 		fmt.Printf("event.Value Assertion err: %s", event.Value)
 		lager.Logger.Error("event.value assertion err")
 		return
