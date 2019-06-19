@@ -9,6 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util"
 )
 
@@ -42,10 +43,13 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 	if string(req.URL.Scheme) != "cse" && string(req.URL.Scheme) != HTTP {
 		return nil, fmt.Errorf("scheme invalid: %s, only support {cse|http}://", req.URL.Scheme)
 	}
-
+	common.SetXCSEContext(map[string]string{common.HeaderSourceName: runtime.ServiceName}, req)
 	// set headers to Ctx
 	if len(req.Header) > 0 {
-		m := make(map[string]string, 0)
+		m, ok := ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+		if !ok {
+			m = make(map[string]string)
+		}
 		ctx = context.WithValue(ctx, common.ContextHeaderKey{}, m)
 		for k := range req.Header {
 			m[k] = req.Header.Get(k)

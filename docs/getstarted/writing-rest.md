@@ -118,5 +118,114 @@ func main() {
     lager.Logger.Info(string(resp.ReadBody()))
 }
 ```
+
+
+### Define the contents of the schema file in URLPatterns()
+
+Here you can configure Method、Path、Parameters，and so on.
+For example:
+
+```go
+func (d *Data) URLPatterns() []rf.Route {
+	return []rf.Route{
+		{
+			Method:http.MethodGet,
+			Path:"/price/{id}",
+			ResourceFuncName:"GetPrice", #schema=operationId
+			Consumes: []string{goRestful.MIME_JSON,goRestful.MIME_XML},
+			Produces: []string{goRestful.MIME_JSON},
+			Returns: []*rf.Returns{{Code: http.StatusOK,Message:"true",Model: Data{}}},
+			Parameters:[]*rf.Parameters{#schema=parameter
+				&rf.Parameters{"x-auth-token","string",goRestful.HeaderParameterKind,"this is a token"},
+				&rf.Parameters{"x-auth-token2","string",goRestful.HeaderParameterKind,"this is a token"},
+			},
+		},
+	}
+}
+````
+```yaml
+swagger: "2.0"
+info:
+  title: ""
+  version: ""
+basePath: /
+paths:
+  /price/{id}:
+    get:
+      operationId: GetPrice
+      parameters:
+      - name: x-auth-token
+        in: header
+        description: this is a token
+        type: string
+      - name: x-auth-token2
+        in: header
+        description: this is a token
+        type: string
+      consumes:
+      - application/json
+      - application/xml
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "true"
+          schema:
+            $ref: '#/definitions/Data'
+definitions:
+  Data:
+    type: object
+    properties:
+      err:
+        $ref: '#/definitions/ErrorCode'
+      priceID:
+        type: string
+      type:
+        type: string
+      value:
+        type: string
+  ErrorCode:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: ""
+```
+
+Paramater type：
+
+```go
+	// PathParameterKind = indicator of Request parameter type "path"
+	PathParameterKind = iota
+
+	// QueryParameterKind = indicator of Request parameter type "query"
+	QueryParameterKind
+
+	// BodyParameterKind = indicator of Request parameter type "body"
+	BodyParameterKind
+
+	// HeaderParameterKind = indicator of Request parameter type "header"
+	HeaderParameterKind
+
+	// FormParameterKind = indicator of Request parameter type "form"
+	FormParameterKind
+```
+
+### Automatically generate schema file in local directory
+The program will generate the schema file locally by default，If you want to define your own instead of automatically generating a schema，
+You can modify the configuration '**noRefreshSchema: true**' in chassis.yaml
+
+```yaml
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100 
+  protocols:
+    rest:
+      listenAddress: "127.0.0.1:5003"
+  noRefreshSchema: true
+```
+
+
 **Notice**
 >> if conf folder is not under work dir, plz export CHASSIS_HOME=/path/to/conf/parent_folder or CHASSIS_CONF_DIR==/path/to/conf_folder

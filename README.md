@@ -68,7 +68,7 @@ go mod vendor
 ```
 NOTICE：if you do not use mod, We can not ensure you the compatibility. however you can still maintain your own vendor, which means you have to solve compiling issue your own.
 
-4. Install [service-center](http://servicecomb.incubator.apache.org/release/)
+4. Install [service-center](http://servicecomb.apache.org/release/)
 
 5. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 

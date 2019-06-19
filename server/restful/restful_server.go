@@ -19,13 +19,14 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/metrics"
 
 	"os"
 	"path/filepath"
 
 	"github.com/emicklei/go-restful"
+	globalconfig "github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-mesh/openlogging"
@@ -73,7 +74,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
 	inv := &invocation.Invocation{
 		MicroServiceName:   runtime.ServiceName,
-		SourceMicroService: req.HeaderParameter(common.HeaderSourceName),
+		SourceMicroService: common.GetXCSEContext(common.HeaderSourceName, req.Request),
 		Args:               req,
 		Protocol:           common.ProtocolRest,
 		SchemaID:           schema,
@@ -143,11 +144,17 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 					return ir.Err
 				}
 				transfer(inv, req)
+
 				bs := NewBaseServer(inv.Ctx)
 				bs.req = req
 				bs.resp = rep
 				ir.Status = bs.resp.StatusCode()
+				// check body size
+				if r.opts.BodyLimit > 0 {
+					bs.req.Request.Body = http.MaxBytesReader(bs.resp, bs.req.Request.Body, r.opts.BodyLimit)
+				}
 				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
+
 				if bs.resp.StatusCode() >= http.StatusBadRequest {
 					return fmt.Errorf("get err from http handle, get status: %d", bs.resp.StatusCode())
 				}
@@ -190,6 +197,28 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 	default:
 		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
+	rb = fillParam(routeSpec, rb)
+
+	for _, r := range routeSpec.Returns {
+		rb = rb.Returns(r.Code, r.Message, r.Model)
+	}
+	if routeSpec.Read != nil {
+		rb = rb.Reads(routeSpec.Read)
+	}
+
+	if len(routeSpec.Consumes) > 0 {
+		rb = rb.Consumes(routeSpec.Consumes...)
+	}
+	if len(routeSpec.Produces) > 0 {
+		rb = rb.Produces(routeSpec.Produces...)
+	}
+	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
+
+	return nil
+}
+
+//fillParam is for handle parameter by type
+func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder {
 	for _, param := range routeSpec.Parameters {
 		switch param.ParamType {
 		case restful.QueryParameterKind:
@@ -204,17 +233,8 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 			rb = rb.Param(restful.FormParameter(param.Name, param.Desc).DataType(param.DataType))
 
 		}
-
 	}
-
-	for _, r := range routeSpec.Returns {
-		rb = rb.Returns(r.Code, r.Message, r.Model)
-	}
-	if routeSpec.Read != nil {
-		rb = rb.Reads(routeSpec.Read)
-	}
-	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.FuncDesc))
-	return nil
+	return rb
 }
 func (r *restfulServer) Start() error {
 	var err error
@@ -228,15 +248,46 @@ func (r *restfulServer) Start() error {
 	} else {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
 	}
-	// register to swagger ui
+	// create schema
+	err = r.CreateLocalSchema(config)
+	if err != nil {
+		return err
+	}
+	l, lIP, lPort, err := iputil.StartListener(config.Address, config.TLSConfig)
+
+	if err != nil {
+		return fmt.Errorf("failed to start listener: %s", err.Error())
+	}
+
+	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort)
+
+	go func() {
+		err = r.server.Serve(l)
+		if err != nil {
+			openlogging.Error("http server err: " + err.Error())
+			server.ErrRuntime <- err
+		}
+
+	}()
+
+	lager.Logger.Infof("Restful server listening on: %s", registry.InstanceEndpoints[config.ProtocolServerName])
+	return nil
+}
+
+//register to swagger ui,Whether to create a schema, you need to refer to the configuration.
+func (r *restfulServer) CreateLocalSchema(config server.Options) error {
+	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema == true {
+		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
+		return nil
+	}
 	var path string
 	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
 		return errors.New("schema path is empty")
 	}
-	if err = os.RemoveAll(path); err != nil {
+	if err := os.RemoveAll(path); err != nil {
 		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
 	}
-	if err = os.MkdirAll(path, 0760); err != nil {
+	if err := os.MkdirAll(path, 0760); err != nil {
 		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
 	}
 	swagger.LogInfo = func(format string, v ...interface{}) {
@@ -248,26 +299,13 @@ func (r *restfulServer) Start() error {
 		ApiPath:         "/apidocs.json",
 		FileStyle:       "yaml",
 		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
-	swagger.RegisterSwaggerService(swaggerConfig, r.container)
-
-	l, lIP, lPort, err := iputil.StartListener(config.Address, config.TLSConfig)
-
+	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)
+	openlogging.Info("The schema has been created successfully. path:" + path)
+	//set schema information when create local schema file
+	err := schema.SetSchemaInfo(sws)
 	if err != nil {
-		return fmt.Errorf("failed to start listener: %s", err.Error())
+		return fmt.Errorf("set schema information,%s", err.Error())
 	}
-
-	registry.InstanceEndpoints[Name] = net.JoinHostPort(lIP, lPort)
-
-	go func() {
-		err = r.server.Serve(l)
-		if err != nil {
-			openlogging.Error("http server err: " + err.Error())
-			server.ErrRuntime <- err
-		}
-
-	}()
-
-	lager.Logger.Infof("Restful server listening on: %s", registry.InstanceEndpoints[Name])
 	return nil
 }
 

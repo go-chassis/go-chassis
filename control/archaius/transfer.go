@@ -15,11 +15,12 @@ import (
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-mesh/openlogging"
 )
 
 //SaveToLBCache save configs
 func SaveToLBCache(raw *model.LoadBalancing) {
-	lager.Logger.Debug("Loading lb config from archaius into cache")
+	openlogging.Debug("Loading lb config from archaius into cache")
 	oldKeys := LBConfigCache.Items()
 	newKeys := make(map[string]bool)
 	// if there is no config, none key will be updated
@@ -79,7 +80,7 @@ func setDefaultLBValue(c *control.LoadBalancingConfig) {
 
 //SaveToCBCache save configs
 func SaveToCBCache(raw *model.HystrixConfig) {
-	lager.Logger.Debug("Loading cb config from archaius into cache")
+	openlogging.Debug("Loading cb config from archaius into cache")
 	oldKeys := CBConfigCache.Items()
 	newKeys := make(map[string]bool)
 	// if there is no config, none key will be updated

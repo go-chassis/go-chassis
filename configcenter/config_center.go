@@ -11,7 +11,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
-	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 
 	"github.com/go-chassis/go-archaius"
@@ -42,7 +41,7 @@ func InitConfigCenter() error {
 	var enableSSL bool
 	tlsConfig, tlsError := getTLSForClient(configCenterURL)
 	if tlsError != nil {
-		lager.Logger.Errorf("Get %s.%s TLS config failed, err:[%s]", Name, common.Consumer, tlsError.Error())
+		openlogging.GetLogger().Errorf("Get %s.%s TLS config failed, err:[%s]", Name, common.Consumer, tlsError.Error())
 		return tlsError
 	}
 
@@ -72,11 +71,11 @@ func InitConfigCenter() error {
 		dimensionInfo, TenantName,
 		enableSSL, tlsConfig, interval)
 	if err != nil {
-		lager.Logger.Error("failed to init config center" + err.Error())
+		openlogging.Error("failed to init config center" + err.Error())
 		return err
 	}
 
-	lager.Logger.Warnf("config center init success")
+	openlogging.GetLogger().Warnf("config center init success")
 	return nil
 }
 
@@ -88,7 +87,7 @@ func GetConfigCenterEndpoint() (string, error) {
 		if registry.DefaultServiceDiscoveryService != nil {
 			ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
 			if err != nil {
-				lager.Logger.Warnf("failed to find config center endpoints: %s", err.Error())
+				openlogging.GetLogger().Warnf("failed to find config center endpoints: %s", err.Error())
 				return "", err
 			}
 
@@ -106,7 +105,7 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 	}
 	ccURL, err := url.Parse(configCenterURL)
 	if err != nil {
-		lager.Logger.Error("Error occurred while parsing config center Server Uri" + err.Error())
+		openlogging.Error("Error occurred while parsing config center Server Uri" + err.Error())
 		return nil, err
 	}
 	if ccURL.Scheme == common.HTTP {
@@ -121,7 +120,7 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 		}
 		return nil, err
 	}
-	lager.Logger.Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
+	openlogging.GetLogger().Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
 		sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 
 	return tlsConfig, nil
@@ -141,7 +140,7 @@ func getUniqueIDForDimInfo() string {
 	}
 
 	if len(serviceName) > maxValue {
-		lager.Logger.Errorf("exceeded max value %d for dimensionInfo %s with length %d", maxValue, serviceName,
+		openlogging.GetLogger().Errorf("exceeded max value %d for dimensionInfo %s with length %d", maxValue, serviceName,
 			len(serviceName))
 		return ""
 	}
@@ -149,12 +148,12 @@ func getUniqueIDForDimInfo() string {
 	dimeExp := `\A([^\$\%\&\+\(/)\[\]\" "\"])*\z`
 	dimRegexVar, err := regexp.Compile(dimeExp)
 	if err != nil {
-		lager.Logger.Error("not a valid regular expression" + err.Error())
+		openlogging.Error("not a valid regular expression" + err.Error())
 		return ""
 	}
 
 	if !dimRegexVar.Match([]byte(serviceName)) {
-		lager.Logger.Errorf("invalid value for dimension info, doesnot setisfy the regular expression for dimInfo:%s",
+		openlogging.GetLogger().Errorf("invalid value for dimension info, doesnot setisfy the regular expression for dimInfo:%s",
 			serviceName)
 		return ""
 	}
@@ -198,7 +197,7 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 	}
 
 	if err := refreshGlobalConfig(); err != nil {
-		lager.Logger.Error("failed to refresh global config for lb and cb:" + err.Error())
+		openlogging.Error("failed to refresh global config for lb and cb:" + err.Error())
 		return err
 	}
 	return nil

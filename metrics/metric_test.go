@@ -1,4 +1,4 @@
-package metrics
+package metrics_test
 
 import (
 	_ "github.com/go-chassis/go-chassis/initiator"
@@ -11,6 +11,9 @@ import (
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	//"net/http"
+	"github.com/go-chassis/go-chassis/metrics"
+	"github.com/pkg/errors"
+	gometrics "github.com/rcrowley/go-metrics"
 	"os"
 	"path/filepath"
 	"testing"
@@ -23,7 +26,6 @@ func initialize() {
 	config.Init()
 	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 }
-
 func TestInitEmptyServerURI(t *testing.T) {
 	//t.Log("Testing metric init function with empty serverURI")
 	initialize()
@@ -31,29 +33,20 @@ func TestInitEmptyServerURI(t *testing.T) {
 	registry.Enable()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	baseURL := config.GlobalDefinition.Cse.Monitor.Client.ServerURI
-	err := Init()
+	err := metrics.Init()
 	if baseURL == "" && err != nil {
 		t.Error("Expected failure if Server URI is not present")
 	}
-}
 
-func TestInitServerUriEmptyString(t *testing.T) {
-	//t.Log("Testing Init function with ServerURI")
-	initialize()
-	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Monitor.Client.ServerURI = ""
-
-	err := Init()
-	assert.NoError(t, err)
-}
-
-func TestInitUsernameEmpty(t *testing.T) {
-	//t.Log("Testing Init function with empty Username")
-	initialize()
-	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Monitor.Client.UserName = ""
-	err := Init()
-	assert.NoError(t, err)
+	t.Run("create new registry", func(t *testing.T) {
+		m := metrics.GetOrCreateRegistry("new")
+		assert.NotNil(t, m)
+	})
+	t.Run("install err reporter, it should return error", func(t *testing.T) {
+		_ = metrics.InstallReporter("wrong reporter", func(r gometrics.Registry) error {
+			return errors.New("wrong")
+		})
+	})
 }
 
 func TestInitDomainNameEmpty(t *testing.T) {
@@ -61,6 +54,7 @@ func TestInitDomainNameEmpty(t *testing.T) {
 	initialize()
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Monitor.Client.DomainName = ""
-	err := Init()
-	assert.NoError(t, err)
+	err := metrics.Init()
+	t.Log(err.Error())
+	assert.Error(t, err)
 }

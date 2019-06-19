@@ -59,6 +59,12 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 	assert.Equal(t, 100, rl.Rate)
 	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.Server", rl.Key)
 	assert.Equal(t, true, rl.Enabled)
+	t.Run("get server side rate limiting",
+		func(t *testing.T) {
+			rl := control.DefaultPanel.GetRateLimiting(inv, common.Provider)
+			t.Log(rl)
+			assert.Equal(t, "cse.flowcontrol.Provider.qps.global.limit", rl.Key)
+		})
 }
 
 func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
