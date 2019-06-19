@@ -24,7 +24,7 @@ type LagerEventListener struct {
 func (e *LagerEventListener) Event(event *core.Event) {
 	defer func() {
 		if err := recover(); err != nil {
-			lager.Logger.Error(err)
+			openlogging.GetLogger().Errorf("%s", err)
 		}
 	}()
 	logger := openlogging.GetLogger()
@@ -38,7 +38,7 @@ func (e *LagerEventListener) Event(event *core.Event) {
 	Value, ok := event.Value.(string)
 	if !ok {
 		fmt.Printf("event.Value Assertion err: %s", event.Value)
-		lager.Logger.Error("event.value assertion err")
+		openlogging.GetLogger().Error("event.Value Assertion err")
 		return
 	}
 
