@@ -34,10 +34,10 @@ func (c contextTest) WriteHeader(int) {
 func TestContextFuncs(t *testing.T) {
 	t.Log("Testing all the restful server functions")
 	ctx := NewBaseServer(context.TODO())
-	ctx.req = &restful.Request{Request: &http.Request{Method: "Get"}}
+	ctx.Req = &restful.Request{Request: &http.Request{Method: "Get"}}
 	rw := httptest.NewRecorder()
 	resp := restful.NewResponse(rw)
-	ctx.resp = resp
+	ctx.Resp = resp
 	ctx.AddHeader("Content-Type", "application/json")
 
 	_, er := ctx.ReadBodyParameter("hello")
@@ -81,7 +81,7 @@ func TestContextFuncs(t *testing.T) {
 	var queryReq queryRequest
 	expectReq := queryRequest{Name: "admin", Password: "admin"}
 	url, _ := url.Parse("http://127.0.0.1/test?name=admin&password=admin")
-	ctx.req.Request.URL = url
+	ctx.Req.Request.URL = url
 	err = ctx.ReadQueryEntity(&queryReq)
 	assert.NoError(t, err)
 	assert.Equal(t, expectReq, queryReq)
