@@ -15,7 +15,7 @@ var DefaultPanel Panel
 
 const (
 	//ScopeAPI is config const
-	ScopeAPI      = "api"
+	ScopeAPI = "api"
 
 	//ScopeInstance is config const
 	ScopeInstance = "instance"
