@@ -15,7 +15,7 @@ var DefaultPanel Panel
 
 const (
 	//ScopeAPI is config const
-	ScopeAPI = "api"
+	ScopeAPI      = "api"
 	ScopeInstance = "instance"
 )
 
@@ -63,17 +63,17 @@ func NewCircuitName(serviceType, scope string, inv invocation.Invocation) string
 		scope = ScopeAPI
 	}
 
-	scopes:=strings.Split(scope,",")
-	for _,sp:=range scopes{
-		if sp==ScopeAPI{
+	scopes := strings.Split(scope, ",")
+	for _, sp := range scopes {
+		if sp == ScopeAPI {
 			if inv.SchemaID != "" {
 				cmd = strings.Join([]string{cmd, inv.SchemaID}, ".")
 			}
 			if inv.OperationID != "" {
 				cmd = strings.Join([]string{cmd, inv.OperationID}, ".")
 			}
-		}else if sp==ScopeInstance{
-			if inv.Endpoint!=""{
+		} else if sp == ScopeInstance {
+			if inv.Endpoint != "" {
 				cmd = strings.Join([]string{cmd, inv.Endpoint}, ".")
 			}
 		}
