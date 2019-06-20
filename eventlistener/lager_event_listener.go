@@ -37,7 +37,7 @@ func (e *LagerEventListener) Event(event *core.Event) {
 
 	Value, ok := event.Value.(string)
 	if !ok {
-		openlogging.GetLogger().Errorf("event.Value Assertion err:%s", event.event.Value)
+		openlogging.GetLogger().Errorf("event.Value Assertion err:%s", event.Value)
 		return
 	}
 
