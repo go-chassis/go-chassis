@@ -11,9 +11,11 @@ it also monitor each service call to make service [observable](https://docs.go-c
 Circuit breaker scope is controlled by 
 
 **cse.circuitBreaker.scope**
-> *(optional, string)* service or api, 
+> *(optional, string)* service、instance or api, 
 default is api, go chassis create a dedicated circuit for every api, invocation will be isolated based on api. 
 if set to service, all of APIs of each service share one circuit, it will isolate the service.
+if set to instance, all of APIs of each instance share one circuit, it will isolate the instance.
+if set to api,instance, each api of each instance isolate one circuit.
 
 Configuration Format looks like below：
 
@@ -96,11 +98,21 @@ cse:
     Consumer:
       policy: throwexception
 ```
-you must set bizkeeper-consumer handler in chain before load balancing and transport
+usually you must set bizkeeper-consumer handler in chain before load balancing and transport
 , here is a example 
 ```yaml
 handler:
   chain:
     Consumer:
       default: bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
+```
+
+if you want to isolate instance or instance,api,you must set 
+bizkeeper-consumer handler in chain after load balancing and before transport
+,hear is a example
+```yaml
+handler:
+  chain:
+    Consumer:
+      default: loadbalance, bizkeeper-consumer, router, ratelimiter-consumer,transport
 ```
