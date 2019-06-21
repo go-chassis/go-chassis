@@ -34,7 +34,7 @@ func GetCipherNewFunc(name string) (func() security.Cipher, error) {
 	if !os.IsNotExist(err) {
 		return nil, err
 	}
-	return nil, fmt.Errorf("unkown cipher plugin [%s]", name)
+	return nil, fmt.Errorf("unknown cipher plugin [%s]", name)
 }
 
 func loadCipherFromPlugin(name string) (func() security.Cipher, error) {

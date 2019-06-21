@@ -37,7 +37,7 @@ func TestInit(t *testing.T) {
 controlPanel:
   infra: istio
   settings:
-    Adress: xxx
+    Address: xxx
 cse:
   flowcontrol:
     Consumer:
