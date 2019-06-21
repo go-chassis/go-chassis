@@ -15,7 +15,7 @@ Circuit breaker scope is controlled by
 default is api, go chassis create a dedicated circuit for every api, invocation will be isolated based on api. 
 if set to service, all of APIs of each service share one circuit, it will isolate the service.
 if set to instance, all of APIs of each instance share one circuit, it will isolate the instance.
-if set to api,instance, each api of each instance isolate one circuit.
+if set to instance,api, each api of each instance isolate one circuit.
 
 Configuration Format looks like below：
 
@@ -110,6 +110,23 @@ handler:
 if you want to isolate instance or instance,api,you must set 
 bizkeeper-consumer handler in chain after load balancing and before transport
 ,hear is a example
+```yaml
+cse:
+  isolation:
+    Consumer:
+      timeoutInMilliseconds: 1
+      maxConcurrentRequests: 100
+      ServerA: # service level config
+        timeoutInMilliseconds: 1000
+        maxConcurrentRequests: 1000
+  circuitBreaker:
+    scope: instance,api
+    Consumer:
+          enabled: false
+          forceOpen: false
+#......
+```
+
 ```yaml
 handler:
   chain:
