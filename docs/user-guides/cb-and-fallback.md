@@ -131,5 +131,5 @@ cse:
 handler:
   chain:
     Consumer:
-      default: loadbalance, bizkeeper-consumer, router, ratelimiter-consumer,transport
+      default: router, loadbalance, bizkeeper-consumer, ratelimiter-consumer,transport
 ```
