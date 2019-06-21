@@ -20,7 +20,7 @@ const (
 	//ScopeInstance is config const
 	ScopeInstance = "instance"
 
-	//ScopeInstanceApi is config const
+	//ScopeInstanceAPI is config const
 	ScopeInstanceAPI = "instance-api"
 )
 
