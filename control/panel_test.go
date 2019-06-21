@@ -60,9 +60,9 @@ func TestNewCircuitCmd(t *testing.T) {
 	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
 	assert.Equal(t, "Consumer.mall.127.0.0.1:8081", cmd)
 
-	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "api,instance"
+	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "instance-api"
 	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
-	assert.Equal(t, "Consumer.mall.rest./test.127.0.0.1:8081", cmd)
+	assert.Equal(t, "Consumer.mall.127.0.0.1:8081.rest./test", cmd)
 
 	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "api"
 	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)

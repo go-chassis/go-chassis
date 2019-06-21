@@ -19,6 +19,9 @@ const (
 
 	//ScopeInstance is config const
 	ScopeInstance = "instance"
+
+	//ScopeInstanceApi is config const
+	ScopeInstanceAPI = "instance-api"
 )
 
 //Panel is a abstraction of pulling configurations from various of systems, and transfer different configuration into standardized model
@@ -65,21 +68,34 @@ func NewCircuitName(serviceType, scope string, inv invocation.Invocation) string
 		scope = ScopeAPI
 	}
 
-	scopes := strings.Split(scope, ",")
-	for _, sp := range scopes {
-		if sp == ScopeAPI {
-			if inv.SchemaID != "" {
-				cmd = strings.Join([]string{cmd, inv.SchemaID}, ".")
-			}
-			if inv.OperationID != "" {
-				cmd = strings.Join([]string{cmd, inv.OperationID}, ".")
-			}
-		} else if sp == ScopeInstance {
-			if inv.Endpoint != "" {
-				cmd = strings.Join([]string{cmd, inv.Endpoint}, ".")
-			}
+	if scope == ScopeAPI {
+		if inv.SchemaID != "" {
+			cmd = strings.Join([]string{cmd, inv.SchemaID}, ".")
 		}
+		if inv.OperationID != "" {
+			cmd = strings.Join([]string{cmd, inv.OperationID}, ".")
+		}
+		return cmd
 	}
+	if scope == ScopeInstance {
+		if inv.Endpoint != "" {
+			cmd = strings.Join([]string{cmd, inv.Endpoint}, ".")
+		}
+		return cmd
+	}
+	if scope == ScopeInstanceAPI {
+		if inv.Endpoint != "" {
+			cmd = strings.Join([]string{cmd, inv.Endpoint}, ".")
+		}
+		if inv.SchemaID != "" {
+			cmd = strings.Join([]string{cmd, inv.SchemaID}, ".")
+		}
+		if inv.OperationID != "" {
+			cmd = strings.Join([]string{cmd, inv.OperationID}, ".")
+		}
+		return cmd
+	}
+
 	return cmd
 
 }

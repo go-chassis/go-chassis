@@ -16,6 +16,7 @@ default is api, go chassis create a dedicated circuit for every api, invocation 
 if set to service, all of APIs of each service share one circuit, it will isolate the service.
 if set to instance, each instance will get a dedicated circuit, it will isolate only one instance.
 if set to api, each api will get a dedicated circuit, it will isolate only service api.
+if set to instance-api, each instance api will get a dedicated circuit, it will isolate only one instance api.
 
 Configuration Format looks like below：
 
@@ -107,7 +108,7 @@ handler:
       default: bizkeeper-consumer, router, loadbalance, ratelimiter-consumer,transport
 ```
 
-if you want to isolate instance or instance,api,you must set 
+if you want to isolate instance or instance-api,you must set 
 bizkeeper-consumer handler in chain after load balancing and before transport
 ,hear is a example
 ```yaml
@@ -120,7 +121,7 @@ cse:
         timeoutInMilliseconds: 1000
         maxConcurrentRequests: 1000
   circuitBreaker:
-    scope: instance,api
+    scope: instance-api
     Consumer:
           enabled: false
           forceOpen: false
