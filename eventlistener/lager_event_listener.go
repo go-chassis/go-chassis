@@ -6,6 +6,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
 	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/paas-lager"
 	"strings"
 )
 
@@ -37,7 +38,8 @@ func (e *LagerEventListener) Event(event *core.Event) {
 
 	Value, ok := event.Value.(string)
 	if !ok {
-		openlogging.GetLogger().Errorf("event.Value Assertion err:%s", event.Value)
+		openlogging.GetLogger().Errorf("event.Value Assertion err:%s", event.
+			Value)
 		return
 	}
 
