@@ -14,8 +14,8 @@ Circuit breaker scope is controlled by
 > *(optional, string)* service、instance or api, 
 default is api, go chassis create a dedicated circuit for every api, invocation will be isolated based on api. 
 if set to service, all of APIs of each service share one circuit, it will isolate the service.
-if set to instance, all of APIs of each instance share one circuit, it will isolate the instance.
-if set to instance,api, each api of each instance isolate one circuit.
+if set to instance, each instance will get a dedicated circuit, it will isolate only one instance.
+if set to api, each api will get a dedicated circuit, it will isolate only service api.
 
 Configuration Format looks like below：
 
