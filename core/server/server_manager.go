@@ -32,7 +32,7 @@ func InstallPlugin(protocol string, newFunc NewFunc) {
 func GetServerFunc(protocol string) (NewFunc, error) {
 	f, ok := serverPlugins[protocol]
 	if !ok {
-		return nil, fmt.Errorf("unkown protocol server [%s]", protocol)
+		return nil, fmt.Errorf("unknown protocol server [%s]", protocol)
 	}
 	return f, nil
 }

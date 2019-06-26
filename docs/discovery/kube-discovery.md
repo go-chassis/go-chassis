@@ -13,7 +13,7 @@ import _ "github.com/go-chassis/go-chassis-plugins/registry/kube"
 
 ## Configurations
 
-If you set cse.service.Registry.serviceDiscovery.type as "kube", then "configPath" is necessary to comminucate with kubernetes cluster. The go-chassis consumer applications would find Endpoints and Services in cluster that provider applications deployed.
+If you set cse.service.Registry.serviceDiscovery.type as "kube", then "configPath" is necessary to communicate with kubernetes cluster. The go-chassis consumer applications would find Endpoints and Services in cluster that provider applications deployed.
 
 > NOTE:  Provider applications with go-chassis must deploy itself as a Pod asscociate with Services. The Service ports must be named and the port name must be the form **\<protocol>[-\<suffix>]**. protocol can set to be `rest` or `grpc` now.
 

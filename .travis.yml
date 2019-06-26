@@ -20,7 +20,7 @@ jobs:
         - bash scripts/travis/deadCodeChecker.sh
     - stage: Misspell Checker
       script: 
-        - go get -u github.com/client9/misspell
+        - go get -u github.com/client9/misspell/cmd/misspell
         - bash scripts/travis/misspellChecker.sh
     - stage: GoConst Checker
       script:
