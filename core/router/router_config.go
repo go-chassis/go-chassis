@@ -40,7 +40,11 @@ func Init() error {
 	if err != nil {
 		return fmt.Errorf("router options error: %v", err)
 	}
-	DefaultRouter.Init(op)
+	err = DefaultRouter.Init(op)
+	if err != nil {
+		openlogging.Error(err.Error())
+		return err
+	}
 	openlogging.Info("Router init success")
 	return nil
 }
