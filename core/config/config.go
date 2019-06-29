@@ -77,7 +77,7 @@ func parse() error {
 		return err
 	}
 
-	err = readMicroserviceConfigFiles()
+	err = readMicroServiceConfigFiles()
 	if err != nil {
 		return err
 	}
@@ -221,8 +221,8 @@ func ReadHystrixFromArchaius() error {
 	return nil
 }
 
-// readMicroserviceConfigFiles read micro service configuration file
-func readMicroserviceConfigFiles() error {
+// readMicroServiceConfigFiles read micro service configuration file
+func readMicroServiceConfigFiles() error {
 	MicroserviceDefinition = &model.MicroserviceCfg{}
 	//find only one microservice yaml
 	microserviceNames := schema.GetMicroserviceNames()
@@ -240,7 +240,10 @@ func readMicroserviceConfigFiles() error {
 		if err != nil {
 			return fmt.Errorf("missing microservice description file: %s", err.Error())
 		}
-		ReadMicroserviceConfigFromBytes(data)
+		err = ReadMicroserviceConfigFromBytes(data)
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 	return ReadMicroserviceConfigFromBytes(data)
