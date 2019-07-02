@@ -7,10 +7,7 @@ import (
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-archaius/core/config-manager"
 	"github.com/go-chassis/go-archaius/core/event-system"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/router"
-	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -18,34 +15,6 @@ const routeFileSourceName = "RouteFileSource"
 const routeFileSourcePriority = 16
 
 var routeRuleMgr core.ConfigMgr
-
-type routeRuleEventListener struct{}
-
-// update route rule of a service
-func (r *routeRuleEventListener) Event(e *core.Event) {
-	if e == nil {
-		openlogging.GetLogger().Warn("Event pointer is nil")
-		return
-	}
-
-	v := routeRuleMgr.GetConfigurationsByKey(e.Key)
-	if v == nil {
-		DeleteRouteRuleByKey(e.Key)
-		lager.Logger.Infof("[%s] route rule is removed", e.Key)
-		return
-	}
-	routeRules, ok := v.([]*model.RouteRule)
-	if !ok {
-		openlogging.Error("value is not type []*RouteRule")
-		return
-	}
-
-	if router.ValidateRule(map[string][]*model.RouteRule{e.Key: routeRules}) {
-		SetRouteRuleByKey(e.Key, routeRules)
-		wp.GetPool().Reset(e.Key)
-		lager.Logger.Infof("Update [%s] route rule success", e.Key)
-	}
-}
 
 // routeFileSource keeps the route rule in router file,
 // after init, it's data does not change
@@ -61,7 +30,7 @@ func newRouteFileSource() *routeFileSource {
 		d := make(map[string]interface{}, 0)
 		if routeRules == nil {
 			r.d = d
-			openlogging.Error("Can not get any router config")
+			openlogging.Warn("can not get router config in local")
 			return
 		}
 		for k, v := range routeRules {
@@ -133,6 +102,6 @@ func AddRouteRuleSource(s core.ConfigSource) error {
 		return err
 	}
 
-	lager.Logger.Infof("Add [%s] source success", s.GetSourceName())
+	lager.Logger.Infof("add [%s] source success", s.GetSourceName())
 	return nil
 }

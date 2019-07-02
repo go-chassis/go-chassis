@@ -20,7 +20,6 @@ var Templates = make(map[string]*model.Match)
 //Router return route rule, you can also set custom route rule
 type Router interface {
 	Init(Options) error
-	InitRouteRuleByKey(string)
 	SetRouteRule(map[string][]*model.RouteRule)
 	FetchRouteRuleByServiceName(service string) []*model.RouteRule
 }
@@ -52,7 +51,7 @@ func BuildRouter(name string) error {
 }
 
 //Route decide the target service metadata
-//it decide based on configration of route rule
+//it decide based on configuration of route rule
 //it will set RouteTag to invocation
 func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.Invocation) error {
 	rules := SortRules(inv.MicroServiceName)
@@ -199,7 +198,6 @@ func valueToUpper(b, value string) string {
 
 // SortRules sort route rules
 func SortRules(name string) []*model.RouteRule {
-	DefaultRouter.InitRouteRuleByKey(name)
 	slice := DefaultRouter.FetchRouteRuleByServiceName(name)
 	return QuickSort(0, len(slice)-1, slice)
 }

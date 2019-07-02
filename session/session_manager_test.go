@@ -11,6 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestGenSessionID(t *testing.T) {
+	id, _ := GenerateSessionID()
+	t.Log(id)
+}
 func TestAdd_GetSessionStickinessCache(t *testing.T) {
 	SessionStickinessCache = initCache()
 	testSlice := []string{"services-cookies1", "services-cookies2"}

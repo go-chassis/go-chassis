@@ -11,7 +11,6 @@ import (
 
 // DarkLaunchRule2RouteRule translates dark launch rule to route rule
 func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
-
 	if rule.Type == DarkLaunchTypeRate {
 		routes := make([]*model.RouteTag, 0)
 		for _, v := range rule.Items {

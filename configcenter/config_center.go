@@ -153,7 +153,7 @@ func getUniqueIDForDimInfo() string {
 	}
 
 	if !dimRegexVar.Match([]byte(serviceName)) {
-		openlogging.GetLogger().Errorf("invalid value for dimension info, doesnot setisfy the regular expression for dimInfo:%s",
+		openlogging.GetLogger().Errorf("invalid value for dimension info, does not satisfy the regular expression for dimInfo:%s",
 			serviceName)
 		return ""
 	}
@@ -161,7 +161,8 @@ func getUniqueIDForDimInfo() string {
 	return serviceName
 }
 
-func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bool, tlsConfig *tls.Config, interval int) error {
+func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string,
+	enableSSL bool, tlsConfig *tls.Config, interval int) error {
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != 0 && refreshMode != 1 {

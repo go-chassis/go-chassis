@@ -293,7 +293,7 @@ func Init() error {
 	if err != nil {
 		return err
 	}
-	openlogging.GetLogger().Infof("archaius init success")
+	openlogging.Info("archaius init success")
 
 	//Upload schemas using environment variable SCHEMA_ROOT
 	schemaPath := archaius.GetString(common.EnvSchemaRoot, "")
