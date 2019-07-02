@@ -28,7 +28,7 @@ const (
 var source *RouteDarkLaunchGovernSource
 
 // RouteDarkLaunchGovernSource gets dark launch configs from global archaius,
-// it cannot work until global archaius inits success,
+// it cannot work until global archaius init success,
 // it keeps no data
 type RouteDarkLaunchGovernSource struct {
 	d             core.DynamicConfigCallback
@@ -45,7 +45,7 @@ func (r *RouteDarkLaunchGovernSource) GetSourceName() string {
 func (r *RouteDarkLaunchGovernSource) GetConfigurations() (map[string]interface{}, error) {
 	routerConfigs, err := getRouterConfigFromDarkLaunch()
 	if err != nil {
-		lager.Logger.Error("Get router config from dark launch failed: " + err.Error())
+		openlogging.Error("get router config from dark launch failed: " + err.Error())
 		return nil, err
 	}
 	d := make(map[string]interface{}, 0)

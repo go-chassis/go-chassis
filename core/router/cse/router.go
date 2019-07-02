@@ -7,6 +7,10 @@ import (
 	"sync"
 )
 
+//must not return this map, will cause concurrency err
+var dests = make(map[string][]*model.RouteRule)
+var lock sync.RWMutex
+
 //Router is cse router service
 type Router struct {
 }
@@ -34,9 +38,6 @@ func (r *Router) Init(o router.Options) error {
 	return refresh()
 }
 
-// InitRouteRuleByKey init route rule by service key
-func (r *Router) InitRouteRuleByKey(k string) {}
-
 func newRouter() (router.Router, error) {
 	return &Router{}, nil
 }
@@ -59,9 +60,6 @@ func refresh() error {
 	}
 	return nil
 }
-
-var dests = make(map[string][]*model.RouteRule)
-var lock sync.RWMutex
 
 // SetRouteRuleByKey set route rule by key
 func SetRouteRuleByKey(k string, r []*model.RouteRule) {
