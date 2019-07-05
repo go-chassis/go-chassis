@@ -19,8 +19,8 @@ type Cipher interface {
 	Decrypt(src string) (string, error)
 }
 
-// AESCipher is a cipher used in huawei
-type AESCipher struct {
+// HWAESCipher is a cipher used in huawei
+type HWAESCipher struct {
 	gcryptoEngine Cipher
 }
 
@@ -50,17 +50,17 @@ func new() security2.Cipher {
 		return nil
 	}
 	cipherInstance.Init()
-	return &AESCipher{
+	return &HWAESCipher{
 		gcryptoEngine: cipherInstance,
 	}
 }
 
 //Encrypt is method used for encryption
-func (ac *AESCipher) Encrypt(src string) (string, error) {
+func (ac *HWAESCipher) Encrypt(src string) (string, error) {
 	return ac.gcryptoEngine.Encrypt(src)
 }
 
 //Decrypt is method used for decryption
-func (ac *AESCipher) Decrypt(src string) (string, error) {
+func (ac *HWAESCipher) Decrypt(src string) (string, error) {
 	return ac.gcryptoEngine.Decrypt(src)
 }

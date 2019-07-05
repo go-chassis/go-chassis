@@ -1,18 +1,18 @@
 package bootstrap_test
 
 import (
-	_ "github.com/go-chassis/go-chassis/initiator"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
 
 	"github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	_ "github.com/go-chassis/go-chassis/initiator"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"testing"
-	"time"
 )
 
 var success map[string]bool
@@ -48,7 +48,7 @@ func TestBootstrap(t *testing.T) {
 
 	plugin1 := &bootstrapPlugin{Name: "plugin1"}
 	plugin2 := &bootstrapPlugin{Name: "plugin2"}
-	plugin3 := bootstrap.BootstrapFunc(func() error {
+	plugin3 := bootstrap.Func(func() error {
 		success["plugin3"] = true
 		return nil
 	})
