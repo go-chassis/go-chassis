@@ -50,7 +50,6 @@ import (
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 
 	//config centers
-	_ "github.com/go-chassis/go-chassis-config/apollo"
 	_ "github.com/go-chassis/go-chassis-config/configcenter"
 
 	"github.com/go-chassis/go-archaius"
