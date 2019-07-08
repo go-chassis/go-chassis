@@ -9,25 +9,25 @@ var bootstrapPlugins = make([]*PluginItem, 0)
 //PluginItem include name and plugin implementation
 type PluginItem struct {
 	Name   string
-	Plugin BootstrapPlugin
+	Plugin Plugin
 }
 
-//BootstrapPlugin is a interface which declares Init method
-type BootstrapPlugin interface {
+//Plugin is a interface which declares Init method
+type Plugin interface {
 	Init() error
 }
 
-// The BootstrapFunc type is an adapter to allow the use of ordinary functions as bootstrapPlugin.
-type BootstrapFunc func() error
+// Func The Func type is an adapter to allow the use of ordinary functions as bootstrapPlugin.
+type Func func() error
 
 //Init is a method
-func (b BootstrapFunc) Init() error {
+func (b Func) Init() error {
 	return b()
 }
 
 //InstallPlugin is a function which installs plugin,
 // during initiating of go chassis, plugins will be executed
-func InstallPlugin(name string, plugin BootstrapPlugin) {
+func InstallPlugin(name string, plugin Plugin) {
 	bootstrapPlugins = append(bootstrapPlugins, &PluginItem{
 		Name:   name,
 		Plugin: plugin,
