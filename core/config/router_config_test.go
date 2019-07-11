@@ -3,7 +3,7 @@ package config_test
 import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"gopkg.in/go-playground/assert.v1"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 

@@ -14,6 +14,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-mesh/openlogging"
 )
 
 var wg sync.WaitGroup
@@ -22,7 +23,7 @@ var wg sync.WaitGroup
 func main() {
 	//chassis operation
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed.")
+		openlogging.Error("Init failed.")
 		return
 	}
 
@@ -33,6 +34,7 @@ func main() {
 		go callRest(restInvoker)
 	}
 	wg.Wait()
+	chassis.Run()
 }
 
 func callRest(invoker *core.RestInvoker) {
