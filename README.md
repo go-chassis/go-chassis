@@ -67,6 +67,7 @@ export GO111MODULE=on
 go mod vendor
 ```
 NOTICE：if you do not use mod, We can not ensure you the compatibility. however you can still maintain your own vendor, which means you have to solve compiling issue your own.
+And if you use mod can not download all 3rd pkg , set env `GOPROXY=https://goproxy.io` before you use mod download pkg.
 
 4. Install [service-center](http://servicecomb.apache.org/release/)
 
