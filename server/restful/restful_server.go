@@ -208,9 +208,13 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 
 	if len(routeSpec.Consumes) > 0 {
 		rb = rb.Consumes(routeSpec.Consumes...)
+	} else {
+		rb = rb.Consumes("*/*")
 	}
 	if len(routeSpec.Produces) > 0 {
 		rb = rb.Produces(routeSpec.Produces...)
+	} else {
+		rb = rb.Produces("*/*")
 	}
 	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
 
