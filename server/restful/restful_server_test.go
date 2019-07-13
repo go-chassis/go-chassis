@@ -1,17 +1,19 @@
 package restful
 
 import (
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/emicklei/go-restful"
 	rf "github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 var addrHighway = "127.0.0.1:2399"
@@ -178,4 +180,79 @@ func TestFillParam(t *testing.T) {
 	assert.Equal(t, rf.FormParameterKind, rb.ParameterNamed("p2").Kind())
 	assert.Equal(t, rf.HeaderParameterKind, rb.ParameterNamed("p3").Kind())
 
+}
+
+var schemaTestProduces = []string{"application/json"}
+var schemaTestConsumes = []string{"application/xml"}
+var schemaTestRoutes = []Route{
+	{
+		Method:           http.MethodGet,
+		Path:             "none",
+		ResourceFuncName: "Handler",
+	},
+	{
+		Method:           http.MethodGet,
+		Path:             "with-produces",
+		ResourceFuncName: "Handler",
+		Produces:         schemaTestProduces,
+	},
+	{
+		Method:           http.MethodGet,
+		Path:             "with-consumes",
+		ResourceFuncName: "Handler",
+		Consumes:         schemaTestConsumes,
+	},
+	{
+		Method:           http.MethodGet,
+		Path:             "with-all",
+		ResourceFuncName: "Handler",
+		Produces:         schemaTestProduces,
+		Consumes:         schemaTestConsumes,
+	},
+}
+
+type SchemaTest struct {
+}
+
+func (st SchemaTest) URLPatterns() []Route {
+	return schemaTestRoutes
+}
+
+func (st SchemaTest) Handler(ctx *Context) {
+}
+
+func Test_restfulServer_register2GoRestful(t *testing.T) {
+	initEnv()
+
+	rest := &restfulServer{
+		microServiceName: "rest",
+		container:        restful.NewContainer(),
+		ws:               new(restful.WebService),
+		server:           &http.Server{},
+	}
+
+	_, err := rest.Register(&SchemaTest{})
+	assert.NoError(t, err)
+
+	routes := rest.ws.Routes()
+	assert.Equal(t, 4, len(routes), "there should be %d routes", len(schemaTestRoutes))
+
+	for _, route := range routes {
+		switch route.Path {
+		case "/none":
+			assert.Equal(t, []string{"*/*"}, route.Consumes)
+			assert.Equal(t, []string{"*/*"}, route.Produces)
+		case "/with-produces":
+			assert.Equal(t, schemaTestProduces, route.Produces)
+			assert.Equal(t, []string{"*/*"}, route.Consumes)
+		case "/with-consumes":
+			assert.Equal(t, []string{"*/*"}, route.Produces)
+			assert.Equal(t, schemaTestConsumes, route.Consumes)
+		case "/with-all":
+			assert.Equal(t, schemaTestProduces, route.Produces)
+			assert.Equal(t, schemaTestConsumes, route.Consumes)
+		default:
+			log.Println(route.Path)
+		}
+	}
 }
