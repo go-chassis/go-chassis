@@ -15,7 +15,6 @@ import (
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
@@ -114,62 +113,17 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 	}
 	lager.Logger.Infof("schema registered is [%s]", schemaName)
 	for _, route := range routes {
-		lager.Logger.Infof("Add route path: [%s] Method: [%s] Func: [%s]. ", route.Path, route.Method, route.ResourceFuncName)
-		method, exist := schemaType.MethodByName(route.ResourceFuncName)
-		if !exist {
-			lager.Logger.Errorf("router func can not find: %s", route.ResourceFuncName)
-			return "", fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
+		handler, err := WrapHandlerChain(route, schemaType, schemaValue, schemaName, r.opts)
+		if err != nil {
+			return "", err
 		}
-
-		handler := func(req *restful.Request, rep *restful.Response) {
-			c, err := handler.GetChain(common.Provider, r.opts.ChainName)
-			if err != nil {
-				lager.Logger.Errorf("Handler chain init err [%s]", err.Error())
-				rep.AddHeader("Content-Type", "text/plain")
-				rep.WriteErrorString(http.StatusInternalServerError, err.Error())
-				return
-			}
-			inv, err := httpRequest2Invocation(req, schemaName, method.Name)
-			if err != nil {
-				lager.Logger.Errorf("transfer http request to invocation failed, err [%s]", err.Error())
-				return
-			}
-			//give inv.Ctx to user handlers, modules may inject headers in handler chain
-
-			c.Next(inv, func(ir *invocation.Response) error {
-				if ir.Err != nil {
-					if rep != nil {
-						rep.WriteHeader(ir.Status)
-					}
-					return ir.Err
-				}
-				transfer(inv, req)
-
-				bs := NewBaseServer(inv.Ctx)
-				bs.Req = req
-				bs.Resp = rep
-				ir.Status = bs.Resp.StatusCode()
-				// check body size
-				if r.opts.BodyLimit > 0 {
-					bs.Req.Request.Body = http.MaxBytesReader(bs.Resp, bs.Req.Request.Body, r.opts.BodyLimit)
-				}
-				method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
-
-				if bs.Resp.StatusCode() >= http.StatusBadRequest {
-					return fmt.Errorf("get err from http handle, get status: %d", bs.Resp.StatusCode())
-				}
-				return nil
-			})
-
-		}
-
-		if err := r.register2GoRestful(route, handler); err != nil {
+		if err := Register2GoRestful(route, r.ws, handler); err != nil {
 			return "", err
 		}
 	}
 	return reflect.TypeOf(schema).String(), nil
 }
-func transfer(inv *invocation.Invocation, req *restful.Request) {
+func invocation2HTTPRequest(inv *invocation.Invocation, req *restful.Request) {
 	for k, v := range inv.Metadata {
 		req.SetAttribute(k, v.(string))
 	}
@@ -179,21 +133,23 @@ func transfer(inv *invocation.Invocation, req *restful.Request) {
 	}
 
 }
-func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.RouteFunction) error {
+
+//Register2GoRestful register http handler to go-restful framework
+func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful.RouteFunction) error {
 	var rb *restful.RouteBuilder
 	switch routeSpec.Method {
 	case http.MethodGet:
-		rb = r.ws.GET(routeSpec.Path)
+		rb = ws.GET(routeSpec.Path)
 	case http.MethodPost:
-		rb = r.ws.POST(routeSpec.Path)
+		rb = ws.POST(routeSpec.Path)
 	case http.MethodHead:
-		rb = r.ws.HEAD(routeSpec.Path)
+		rb = ws.HEAD(routeSpec.Path)
 	case http.MethodPut:
-		rb = r.ws.PUT(routeSpec.Path)
+		rb = ws.PUT(routeSpec.Path)
 	case http.MethodPatch:
-		rb = r.ws.PATCH(routeSpec.Path)
+		rb = ws.PATCH(routeSpec.Path)
 	case http.MethodDelete:
-		rb = r.ws.DELETE(routeSpec.Path)
+		rb = ws.DELETE(routeSpec.Path)
 	default:
 		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
@@ -216,7 +172,7 @@ func (r *restfulServer) register2GoRestful(routeSpec Route, handler restful.Rout
 	} else {
 		rb = rb.Produces("*/*")
 	}
-	r.ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
+	ws.Route(rb.To(handler).Doc(routeSpec.FuncDesc).Operation(routeSpec.ResourceFuncName))
 
 	return nil
 }
