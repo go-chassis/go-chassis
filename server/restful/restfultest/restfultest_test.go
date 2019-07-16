@@ -18,13 +18,38 @@
 package restfultest_test
 
 import (
-	"context"
+	"github.com/go-chassis/go-chassis/server/restful"
 	"github.com/go-chassis/go-chassis/server/restful/restfultest"
+	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-func TestNewTestServer(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/fake", nil)
-	_ = restfultest.NewRestfulContext(context.Background(), r)
+type DummyResource struct {
+}
+
+func (r *DummyResource) Sayhello(b *restful.Context) {
+	id := b.ReadPathParameter("userid")
+	b.Write([]byte(id))
+}
+
+//URLPatterns helps to respond for corresponding API calls
+func (r *DummyResource) URLPatterns() []restful.Route {
+	return []restful.Route{
+		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
+			Returns: []*restful.Returns{{Code: 200}}},
+	}
+}
+
+func TestNew(t *testing.T) {
+	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
+	c, err := restfultest.New(&DummyResource{})
+	assert.NoError(t, err)
+	resp := httptest.NewRecorder()
+	c.ServeHTTP(resp, r)
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "some_user", string(body))
 }

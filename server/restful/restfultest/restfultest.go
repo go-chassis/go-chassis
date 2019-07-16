@@ -19,18 +19,54 @@ package restfultest
 
 import (
 	"context"
+	"fmt"
 	"github.com/emicklei/go-restful"
 	chassisRestful "github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-mesh/openlogging"
 	"net/http"
-	"net/http/httptest"
+	"reflect"
 )
 
-//NewRestfulContext is a function which return context for http unit test
-//it will leverage httptest package to new a response recorder
-func NewRestfulContext(ctx context.Context, req *http.Request) *chassisRestful.Context {
-	return &chassisRestful.Context{
-		Req:  restful.NewRequest(req),
-		Resp: restful.NewResponse(httptest.NewRecorder()),
-		Ctx:  ctx,
+//Container is unit test solution for rest api method
+type Container struct {
+	container *restful.Container
+	ws        *restful.WebService
+}
+
+//New create a isolated test container,
+// you can register a struct, and it will be registered to a isolated container
+func New(schema interface{}) (*Container, error) {
+	c := new(Container)
+	c.container = restful.NewContainer()
+	c.ws = new(restful.WebService)
+	routes, err := chassisRestful.GetRouteSpecs(schema)
+	if err != nil {
+		panic(err)
 	}
+	schemaType := reflect.TypeOf(schema)
+	schemaValue := reflect.ValueOf(schema)
+	for _, route := range routes {
+		method, exist := schemaType.MethodByName(route.ResourceFuncName)
+		if !exist {
+			openlogging.GetLogger().Errorf("router func can not find: %s", route.ResourceFuncName)
+			return nil, fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
+		}
+		handler := func(req *restful.Request, rep *restful.Response) {
+
+			bs := chassisRestful.NewBaseServer(context.Background())
+			bs.Req = req
+			bs.Resp = rep
+			method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
+		}
+		if err := chassisRestful.Register2GoRestful(route, c.ws, handler); err != nil {
+			return nil, err
+		}
+	}
+	c.container.Add(c.ws)
+	return c, nil
+}
+
+//ServeHTTP accept native httptest, after process, response writer will write response
+func (c *Container) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	c.container.ServeHTTP(resp, req)
 }
