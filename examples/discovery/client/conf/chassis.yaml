@@ -9,10 +9,6 @@ cse:
       #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
       refeshInterval : 30s
       watch: true
-  protocols:
-    rest:
-      listenAddress: 127.0.0.1:8081
-      advertiseAddress: 127.0.0.1:8081
   handler:
     chain:
       Consumer:

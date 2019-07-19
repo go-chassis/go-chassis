@@ -153,6 +153,20 @@ service_description:
 		assert.Equal(t, config.DefaultTimeout, check)
 
 	})
+	t.Run("TestTimeout in archaius", func(t *testing.T) {
+		check := config.GetTimeoutDurationFromArchaius("Consumer.test", common.Consumer)
+		assert.Equal(t, 10*time.Millisecond, check)
+
+		check = config.GetTimeoutDurationFromArchaius("Consumer.Server", common.Consumer)
+		assert.Equal(t, 1*time.Millisecond, check)
+
+		check = config.GetTimeoutDurationFromArchaius("Consumer.some", common.Consumer)
+		assert.Equal(t, 10*time.Millisecond, check)
+
+		check = config.GetTimeoutDurationFromArchaius("Provider.some", common.Provider)
+		assert.Equal(t, config.DefaultTimeout*time.Millisecond, check)
+
+	})
 	t.Run("TestGetMaxConcurrentRequests", func(t *testing.T) {
 		check := config.GetMaxConcurrentRequests("Consumer.test", common.Consumer)
 		assert.Equal(t, 100, check)

@@ -34,7 +34,6 @@ func main() {
 		go callRest(restInvoker)
 	}
 	wg.Wait()
-	chassis.Run()
 }
 
 func callRest(invoker *core.RestInvoker) {
