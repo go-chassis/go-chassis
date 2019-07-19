@@ -132,7 +132,6 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 	c.updateAPIPath()
 	c.pool = GetInstance()
 	c.pool.SetAddress(opt.Addrs)
-	c.pool.Monitor()
 	return nil
 }
 
@@ -158,7 +157,10 @@ func (c *RegistryClient) updateAPIPath() {
 }
 
 // SyncEndpoints gets the endpoints of service-center in the cluster
+//you only need to call this function,
+//if your service center is not behind a load balancing service like ELB,nginx etc
 func (c *RegistryClient) SyncEndpoints() error {
+	c.pool.Monitor()
 	instances, err := c.Health()
 	if err != nil {
 		return fmt.Errorf("sync SC ep failed. err:%s", err.Error())

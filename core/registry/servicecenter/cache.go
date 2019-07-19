@@ -68,7 +68,7 @@ func (c *CacheManager) refreshCache() {
 	if archaius.GetBool("cse.service.registry.autodiscovery", false) {
 		err := c.registryClient.SyncEndpoints()
 		if err != nil {
-			lager.Logger.Errorf("SyncSCEndpoints failed: %s", err)
+			lager.Logger.Errorf("get sc endpoints failed: %s", err)
 		}
 	}
 	err := c.pullMicroServiceInstance()

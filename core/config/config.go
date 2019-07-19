@@ -97,6 +97,10 @@ func parse() error {
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
 	registryAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+	openlogging.Debug("detect env", openlogging.WithTags(
+		openlogging.Tags{
+			"ep": registryAddrFromEnv,
+		}))
 	if registryAddrFromEnv == "" {
 		registryAddrFromEnv = archaius.GetString(common.CseRegistryAddress, "")
 	}
@@ -106,7 +110,6 @@ func populateServiceRegistryAddress() {
 		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
 	}
-
 }
 
 // populateConfigCenterAddress populate config center address

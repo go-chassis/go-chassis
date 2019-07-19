@@ -1,9 +1,11 @@
 package client
 
 import (
+	"github.com/go-mesh/openlogging"
 	"net"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -40,8 +42,10 @@ func GetInstance() *AddressPool {
 func (p *AddressPool) SetAddress(addresses []string) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
+	openlogging.Info("set service center endpoints " + strings.Join(addresses, ","))
 	p.addressMap = make(map[string]string)
 	for _, v := range addresses {
+		p.status[v] = available
 		p.addressMap[v] = v
 	}
 }
@@ -60,6 +64,7 @@ func (p *AddressPool) GetAvailableAddress() string {
 	next := RoundRobin(addrs)
 	addr, err := next()
 	if err != nil {
+		openlogging.Warn("use default service center address")
 		return DefaultAddr
 	}
 	return addr
@@ -72,6 +77,9 @@ func (p *AddressPool) checkConnectivity() {
 	for _, v := range p.addressMap {
 		conn, err := net.DialTimeout("tcp", v, timeOut)
 		if err != nil {
+			openlogging.Error("can not connect to sc endpoint", openlogging.WithTags(openlogging.Tags{
+				"err": err.Error(),
+			}))
 			p.status[v] = unavailable
 		} else {
 			p.status[v] = available
