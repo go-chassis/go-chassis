@@ -84,7 +84,7 @@ func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 		TLSConfig: tlsConfig,
 		PoolSize:  GetMaxIdleCon(protocol),
 		Failure:   GetFailureMap(protocol),
-		Timeout:   config.GetTimeoutDuration(command, common.Consumer),
+		Timeout:   config.GetTimeoutDurationFromArchaius(command, common.Consumer),
 		Endpoint:  endpoint,
 	})
 }
