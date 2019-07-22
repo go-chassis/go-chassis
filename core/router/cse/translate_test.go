@@ -9,8 +9,6 @@ import (
 )
 
 func TestDarkLaunchRule2RouteRule(t *testing.T) {
-	openlogging.GetLogger().Info("check translate,type DarkLaunchTypeRule")
-
 	routeRules := DarkLaunchRule2RouteRule(getRule(DarkLaunchTypeRule, "version=1.0",
 		"foo=bar", []string{"1.0"}))
 	// check  routeRules

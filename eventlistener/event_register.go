@@ -20,7 +20,6 @@ func Init() {
 	RegisterKeys(qpsEventListener, QPSLimitKey)
 	RegisterKeys(circuitBreakerEventListener, ConsumerFallbackKey, ConsumerFallbackPolicyKey, ConsumerIsolationKey, ConsumerCircuitbreakerKey)
 	RegisterKeys(lbEventListener, LoadBalanceKey)
-	RegisterKeys(&DarkLaunchEventListener{}, DarkLaunchKey)
 	RegisterKeys(&LagerEventListener{}, LagerLevelKey)
 
 }

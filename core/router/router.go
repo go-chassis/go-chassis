@@ -12,6 +12,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
+	"github.com/go-mesh/openlogging"
 )
 
 //Templates is for source match template settings
@@ -33,6 +34,7 @@ var DefaultRouter Router
 
 // InstallRouterService install router service for developer
 func InstallRouterService(name string, f func() (Router, error)) {
+	openlogging.Info("install route rule plugin: " + name)
 	routerServices[name] = f
 }
 

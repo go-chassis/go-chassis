@@ -1,78 +1,76 @@
 package cse
 
 import (
-	"fmt"
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-mesh/openlogging"
 	"sync"
 )
 
-//must not return this map, will cause concurrency err
-var dests = make(map[string][]*model.RouteRule)
-var lock sync.RWMutex
+var cseRouter *Router
 
 //Router is cse router service
 type Router struct {
+	dests map[string][]*model.RouteRule
+	lock  sync.RWMutex
 }
 
 //SetRouteRule set rules
 func (r *Router) SetRouteRule(rr map[string][]*model.RouteRule) {
-	lock.Lock()
-	defer lock.Unlock()
-	dests = rr
+	r.lock.Lock()
+	defer r.lock.Unlock()
+	r.dests = rr
 }
 
 //FetchRouteRuleByServiceName get rules for service
 func (r *Router) FetchRouteRuleByServiceName(service string) []*model.RouteRule {
-	lock.RLock()
-	defer lock.RUnlock()
-	return dests[service]
+	r.lock.RLock()
+	defer r.lock.RUnlock()
+	return r.dests[service]
 }
 
 //Init init router config
 func (r *Router) Init(o router.Options) error {
-	// the manager use dests to init, so must init after dests
-	if err := initRouterManager(); err != nil {
-		return err
-	}
-	return refresh()
+	archaius.RegisterListener(&routeRuleEventListener{}, DarkLaunchKey)
+	return r.LoadRules()
 }
 
 func newRouter() (router.Router, error) {
-	return &Router{}, nil
+	cseRouter = &Router{
+		dests: make(map[string][]*model.RouteRule, 0),
+		lock:  sync.RWMutex{},
+	}
+	return cseRouter, nil
 }
 
-// refresh all the router config
-func refresh() error {
-	configs := routeRuleMgr.GetConfigurations()
-	d := make(map[string][]*model.RouteRule)
-	for k, v := range configs {
-		rules, ok := v.([]*model.RouteRule)
-		if !ok {
-			err := fmt.Errorf("route rule type assertion fail, key: %s", k)
-			return err
-		}
-		d[k] = rules
+// LoadRules load all the router config
+func (r *Router) LoadRules() error {
+	configs, err := GetRouterRuleFromArchaius()
+	if err != nil {
+		openlogging.Error("init route rule failed", openlogging.WithTags(openlogging.Tags{
+			"err": err.Error(),
+		}))
 	}
 
-	if router.ValidateRule(d) {
-		dests = d
+	if router.ValidateRule(configs) {
+		r.dests = configs
 	}
 	return nil
 }
 
 // SetRouteRuleByKey set route rule by key
-func SetRouteRuleByKey(k string, r []*model.RouteRule) {
-	lock.Lock()
-	dests[k] = r
-	lock.Unlock()
+func (r *Router) SetRouteRuleByKey(k string, rr []*model.RouteRule) {
+	r.lock.Lock()
+	r.dests[k] = rr
+	r.lock.Unlock()
 }
 
 // DeleteRouteRuleByKey set route rule by key
-func DeleteRouteRuleByKey(k string) {
-	lock.Lock()
-	delete(dests, k)
-	lock.Unlock()
+func (r *Router) DeleteRouteRuleByKey(k string) {
+	r.lock.Lock()
+	delete(r.dests, k)
+	r.lock.Unlock()
 }
 
 func init() {
