@@ -20,9 +20,7 @@ import (
 
 const (
 	//Name is a variable of type string
-	Name          = "configcenter"
-	maxValue      = 256
-	emptyDimeInfo = "Issue with regular expression or exceeded the max length"
+	Name = "configcenter"
 	//DefaultConfigCenter is config center
 	DefaultConfigCenter = "config_center"
 )

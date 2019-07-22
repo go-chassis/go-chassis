@@ -23,7 +23,9 @@ import (
 	"github.com/go-chassis/go-chassis/core/router"
 	"github.com/go-mesh/openlogging"
 
+	"github.com/go-chassis/go-chassis/core/common"
 	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
+	"strings"
 )
 
 type routeRuleEventListener struct{}
@@ -34,28 +36,49 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 		openlogging.Warn("Event pointer is nil")
 		return
 	}
-
-	v := routeRuleMgr.GetConfigurationsByKey(e.Key)
-	if v == nil {
-		DeleteRouteRuleByKey(e.Key)
+	openlogging.Info("dark launch event", openlogging.WithTags(openlogging.Tags{
+		"key":   e.Key,
+		"event": e.EventType,
+		"rule":  e.Value,
+	}))
+	s := strings.Replace(e.Key, DarkLaunchPrefix, "", 1)
+	switch e.EventType {
+	case common.Update:
+		SaveRouteRule(s, e)
+	case common.Create:
+		SaveRouteRule(s, e)
+	case common.Delete:
+		cseRouter.DeleteRouteRuleByKey(s)
 		openlogging.Info("route rule is removed", openlogging.WithTags(
 			openlogging.Tags{
 				"key": e.Key,
 			}))
-		return
-	}
-	routeRules, ok := v.([]*model.RouteRule)
-	if !ok {
-		openlogging.Error("value is not type []*RouteRule")
-		return
 	}
 
-	if router.ValidateRule(map[string][]*model.RouteRule{e.Key: routeRules}) {
-		SetRouteRuleByKey(e.Key, routeRules)
-		wp.GetPool().Reset(e.Key)
+}
+
+//SaveRouteRule save event rule to local cache
+func SaveRouteRule(service string, e *core.Event) {
+	raw, ok := e.Value.(string)
+	if !ok {
+		openlogging.Error("invalid route rule", openlogging.WithTags(openlogging.Tags{
+			"value": raw,
+		}))
+	}
+	routeRules, err := ConvertJSON2RouteRule(raw)
+	if err != nil {
+		openlogging.Error("LoadRules route rule failed", openlogging.WithTags(openlogging.Tags{
+			"err": err.Error(),
+		}))
+	}
+	if router.ValidateRule(map[string][]*model.RouteRule{service: routeRules}) {
+		cseRouter.SetRouteRuleByKey(service, routeRules)
+		wp.GetPool().Reset(service)
 		openlogging.Info("update route rule success", openlogging.WithTags(
 			openlogging.Tags{
-				"key": e.Key,
+				"key":     e.Key,
+				"service": service,
+				"rule":    routeRules,
 			}))
 	}
 }

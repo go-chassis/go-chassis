@@ -5,7 +5,7 @@ routeRule:
     - precedence: 1
       route: #路由规则列表
       - tags:
-          version: latest #对接service center的话，如果不填就自动为0.1
+          version: latest #对接service center的话，如果不填就自动为latest
         weight: 100 #全重 80%到这里
 #      - tags:
 #          version: 1.2

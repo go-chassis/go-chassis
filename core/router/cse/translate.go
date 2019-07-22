@@ -1,6 +1,7 @@
 package cse
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 
@@ -8,6 +9,16 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-mesh/openlogging"
 )
+
+//ConvertJSON2RouteRule parse raw json from cse server to route rule model
+func ConvertJSON2RouteRule(raw string) ([]*model.RouteRule, error) {
+	rule := &model.DarkLaunchRule{}
+	if err := json.Unmarshal([]byte(raw), rule); err != nil {
+		return nil, err
+	}
+	routeRules := DarkLaunchRule2RouteRule(rule)
+	return routeRules, nil
+}
 
 // DarkLaunchRule2RouteRule translates dark launch rule to route rule
 func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
