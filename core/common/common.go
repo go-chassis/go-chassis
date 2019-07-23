@@ -36,6 +36,8 @@ const (
 	CseRegistryAddress     = "CSE_REGISTRY_ADDR"
 	CseConfigCenterAddress = "CSE_CONFIG_CENTER_ADDR"
 	CseMonitorServer       = "CSE_MONITOR_SERVER_ADDR"
+	EnvCSESCEndpoint       = "PAAS_CSE_SC_ENDPOINT"
+	EnvCSECCEndpoint       = "PAAS_CSE_CC_ENDPOINT"
 )
 
 // env connect with "." like service_description.name and service_description.version which can not be used in k8s.

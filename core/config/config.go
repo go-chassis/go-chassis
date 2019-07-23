@@ -96,14 +96,11 @@ func parse() error {
 // populateServiceRegistryAddress populate service registry address
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
-	registryAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+	registryAddrFromEnv := readCseAddress(common.EnvCSESCEndpoint, common.CseRegistryAddress)
 	openlogging.Debug("detect env", openlogging.WithTags(
 		openlogging.Tags{
 			"ep": registryAddrFromEnv,
 		}))
-	if registryAddrFromEnv == "" {
-		registryAddrFromEnv = archaius.GetString(common.CseRegistryAddress, "")
-	}
 	if registryAddrFromEnv != "" {
 		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
@@ -115,13 +112,22 @@ func populateServiceRegistryAddress() {
 // populateConfigCenterAddress populate config center address
 func populateConfigCenterAddress() {
 	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
-	if configCenterAddrFromEnv == "" {
-		configCenterAddrFromEnv = archaius.GetString(common.CseConfigCenterAddress, "")
-	}
+	configCenterAddrFromEnv := readCseAddress(common.EnvCSECCEndpoint, common.CseConfigCenterAddress)
 	if configCenterAddrFromEnv != "" {
 		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
 	}
+}
+
+// readCseAddress
+func readCseAddress(firstEnv, singleEnv string) string {
+	addrFromEnv := os.Getenv(firstEnv)
+	if addrFromEnv == "" {
+		addrFromEnv = os.Getenv(common.EnvCSEEndpoint)
+		if addrFromEnv == "" {
+			addrFromEnv = archaius.GetString(singleEnv, "")
+		}
+	}
+	return addrFromEnv
 }
 
 // populateMonitorServerAddress populate monitor server address
