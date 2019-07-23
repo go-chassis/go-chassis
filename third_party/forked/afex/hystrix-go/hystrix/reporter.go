@@ -21,6 +21,7 @@ func InstallReporter(name string, reporter Reporter) error {
 		return ErrDuplicated
 	}
 	reporterPlugins[name] = reporter
+	openlogging.Info("install reporter plugin:" + name)
 	return nil
 }
 

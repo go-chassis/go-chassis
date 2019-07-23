@@ -159,7 +159,10 @@ func (c *chassis) initialize() error {
 		}
 	}
 
-	configcenter.InitConfigCenter()
+	err = configcenter.InitConfigCenter()
+	if err != nil {
+		openlogging.Warn("lost config server: " + err.Error())
+	}
 	// router needs get configs from config-center when init
 	// so it must init after bootstrap
 	if err = router.Init(); err != nil {

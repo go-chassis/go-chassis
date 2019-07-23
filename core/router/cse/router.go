@@ -56,6 +56,9 @@ func (r *Router) LoadRules() error {
 	if router.ValidateRule(configs) {
 		r.dests = configs
 	}
+	openlogging.Debug("load route rule", openlogging.WithTags(openlogging.Tags{
+		"rule": r.dests,
+	}))
 	return nil
 }
 
