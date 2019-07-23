@@ -64,7 +64,7 @@ func InitConfigCenter() error {
 		return err
 	}
 
-	openlogging.GetLogger().Warnf("config center init success")
+	openlogging.Warn("config center init success")
 	return nil
 }
 
@@ -73,6 +73,7 @@ func InitConfigCenter() error {
 func GetConfigCenterEndpoint() (string, error) {
 	configCenterURL := config.GetConfigCenterConf().ServerURI
 	if configCenterURL == "" {
+		openlogging.Debug("find config server in registry")
 		if registry.DefaultServiceDiscoveryService != nil {
 			ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
 			if err != nil {
