@@ -24,7 +24,7 @@ func InitLogger() {
 	//initialize log in any case
 	if err != nil {
 		lager.Initialize("", "", "",
-			"", true, 1, 10, 7)
+			"", false, 1, 10, 7)
 		if os.IsNotExist(err) {
 			lager.Logger.Infof("[%s] not exist", fileutil.PaasLagerDefinition())
 		} else {
