@@ -18,13 +18,14 @@
 package restfultest_test
 
 import (
-	"github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-chassis/go-chassis/server/restful/restfultest"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/server/restful/restfultest"
+	"github.com/stretchr/testify/assert"
 )
 
 type DummyResource struct {
@@ -45,7 +46,7 @@ func (r *DummyResource) URLPatterns() []restful.Route {
 
 func TestNew(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
-	c, err := restfultest.New(&DummyResource{})
+	c, err := restfultest.New(&DummyResource{}, nil)
 	assert.NoError(t, err)
 	resp := httptest.NewRecorder()
 	c.ServeHTTP(resp, r)

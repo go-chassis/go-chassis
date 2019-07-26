@@ -2,14 +2,15 @@ package restful
 
 import (
 	"fmt"
+	"net/http"
+	"reflect"
+
 	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-mesh/openlogging"
-	"net/http"
-	"reflect"
 )
 
 //const for doc
@@ -87,7 +88,7 @@ func WrapHandlerChain(route Route, schemaType reflect.Type, schemaValue reflect.
 			rep.WriteErrorString(http.StatusInternalServerError, err.Error())
 			return
 		}
-		inv, err := httpRequest2Invocation(req, schemaName, method.Name)
+		inv, err := HTTPRequest2Invocation(req, schemaName, method.Name)
 		if err != nil {
 			openlogging.GetLogger().Errorf("transfer http request to invocation failed, err [%s]", err.Error())
 			return
@@ -100,7 +101,7 @@ func WrapHandlerChain(route Route, schemaType reflect.Type, schemaValue reflect.
 				}
 				return ir.Err
 			}
-			invocation2HTTPRequest(inv, req)
+			Invocation2HTTPRequest(inv, req)
 
 			bs := NewBaseServer(inv.Ctx)
 			bs.Req = req

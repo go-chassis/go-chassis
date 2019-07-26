@@ -27,7 +27,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-restful-swagger20"
+	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -70,7 +70,9 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 		ws:        ws,
 	}
 }
-func httpRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
+
+// HTTPRequest2Invocation convert http request to uniform invocation data format
+func HTTPRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
 	inv := &invocation.Invocation{
 		MicroServiceName:   runtime.ServiceName,
 		SourceMicroService: common.GetXCSEContext(common.HeaderSourceName, req.Request),
@@ -91,6 +93,7 @@ func httpRequest2Invocation(req *restful.Request, schema, operation string) (*in
 	}
 	return inv, nil
 }
+
 func (r *restfulServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
 	openlogging.Info("register rest server")
 	opts := server.RegisterOptions{}
@@ -123,7 +126,9 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 	}
 	return reflect.TypeOf(schema).String(), nil
 }
-func invocation2HTTPRequest(inv *invocation.Invocation, req *restful.Request) {
+
+// Invocation2HTTPRequest convert invocation back to http request, set down all meta data
+func Invocation2HTTPRequest(inv *invocation.Invocation, req *restful.Request) {
 	for k, v := range inv.Metadata {
 		req.SetAttribute(k, v.(string))
 	}
