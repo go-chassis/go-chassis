@@ -23,6 +23,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/server/restful"
 	"github.com/go-chassis/go-chassis/server/restful/restfultest"
 	"github.com/stretchr/testify/assert"
@@ -44,6 +47,22 @@ func (r *DummyResource) URLPatterns() []restful.Route {
 	}
 }
 
+type FakeHandler struct {
+}
+
+func (fh *FakeHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	i.SetHeader("test", "chain")
+	r := &invocation.Response{}
+	cb(r)
+}
+
+func (fh *FakeHandler) Name() string {
+	return "test"
+}
+func newFakeHandler() handler.Handler {
+	return &FakeHandler{}
+}
+
 func TestNew(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
 	c, err := restfultest.New(&DummyResource{}, nil)
@@ -53,4 +72,19 @@ func TestNew(t *testing.T) {
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, "some_user", string(body))
+}
+
+func TestNewWithChain(t *testing.T) {
+	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
+	handler.RegisterHandler("test", newFakeHandler)
+	chain, _ := handler.CreateChain(common.Provider, "testChain", "test")
+	assert.Equal(t, "", r.Header.Get("test"))
+	c, err := restfultest.New(&DummyResource{}, chain)
+	assert.NoError(t, err)
+	resp := httptest.NewRecorder()
+	c.ServeHTTP(resp, r)
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "some_user", string(body))
+	assert.Equal(t, "chain", r.Header.Get("test"))
 }
