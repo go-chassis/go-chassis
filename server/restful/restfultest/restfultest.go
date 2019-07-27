@@ -20,11 +20,15 @@ package restfultest
 import (
 	"context"
 	"fmt"
-	"github.com/emicklei/go-restful"
-	chassisRestful "github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-mesh/openlogging"
 	"net/http"
 	"reflect"
+	"strings"
+
+	"github.com/emicklei/go-restful"
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	chassisRestful "github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-mesh/openlogging"
 )
 
 //Container is unit test solution for rest api method
@@ -35,7 +39,7 @@ type Container struct {
 
 //New create a isolated test container,
 // you can register a struct, and it will be registered to a isolated container
-func New(schema interface{}) (*Container, error) {
+func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 	c := new(Container)
 	c.container = restful.NewContainer()
 	c.ws = new(restful.WebService)
@@ -45,20 +49,48 @@ func New(schema interface{}) (*Container, error) {
 	}
 	schemaType := reflect.TypeOf(schema)
 	schemaValue := reflect.ValueOf(schema)
+	var schemaName string
+	tokens := strings.Split(schemaType.String(), ".")
+	if len(tokens) >= 1 {
+		schemaName = tokens[len(tokens)-1]
+	}
 	for _, route := range routes {
 		method, exist := schemaType.MethodByName(route.ResourceFuncName)
 		if !exist {
 			openlogging.GetLogger().Errorf("router func can not find: %s", route.ResourceFuncName)
 			return nil, fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
 		}
+
 		handler := func(req *restful.Request, rep *restful.Response) {
+			inv, err := chassisRestful.HTTPRequest2Invocation(req, schemaName, method.Name)
+			if err != nil {
+				openlogging.Error("transfer http request to invocation failed", openlogging.WithTags(openlogging.Tags{
+					"err": err.Error(),
+				}))
+				return
+			}
+
+			if chain != nil {
+				chain.Next(inv, func(ir *invocation.Response) error {
+					if ir.Err != nil {
+						if rep != nil {
+							rep.WriteHeader(ir.Status)
+						}
+						return ir.Err
+					}
+					chassisRestful.Invocation2HTTPRequest(inv, req)
+					return nil
+				})
+			}
 
 			bs := chassisRestful.NewBaseServer(context.Background())
 			bs.Req = req
 			bs.Resp = rep
+
 			method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
 		}
-		if err := chassisRestful.Register2GoRestful(route, c.ws, handler); err != nil {
+
+		if err = chassisRestful.Register2GoRestful(route, c.ws, handler); err != nil {
 			return nil, err
 		}
 	}
