@@ -11,7 +11,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
@@ -115,20 +114,20 @@ func saveEachCB(serviceName, serviceType string) string { //return updated key
 	cbcCacheValue, b := CBConfigCache.Get(cbcCacheKey)
 	formatString := "save circuit breaker config [%#v] for [%s] "
 	if !b || cbcCacheValue == nil {
-		lager.Logger.Infof(formatString, c, serviceName)
+		openlogging.GetLogger().Infof(formatString, c, serviceName)
 		CBConfigCache.Set(cbcCacheKey, c, 0)
 		return cbcCacheKey
 	}
 	commandConfig, ok := cbcCacheValue.(hystrix.CommandConfig)
 	if !ok {
-		lager.Logger.Infof(formatString, c, serviceName)
+		openlogging.GetLogger().Infof(formatString, c, serviceName)
 		CBConfigCache.Set(cbcCacheKey, c, 0)
 		return cbcCacheKey
 	}
 	if c == commandConfig {
 		return cbcCacheKey
 	}
-	lager.Logger.Infof(formatString, c, serviceName)
+	openlogging.GetLogger().Infof(formatString, c, serviceName)
 	CBConfigCache.Set(cbcCacheKey, c, 0)
 	return cbcCacheKey
 }
@@ -178,12 +177,12 @@ func reloadCBCache(src *model.HystrixConfig) map[string]bool { //return updated 
 		src.FallbackProperties,
 		config.GetHystrixConfig().FallbackPolicyProperties} {
 		if services, err := getServiceNamesByServiceTypeAndAnyService(p, common.Consumer); err != nil {
-			lager.Logger.Errorf("Parse services from config failed: %v", err.Error())
+			openlogging.GetLogger().Errorf("Parse services from config failed: %v", err.Error())
 		} else {
 			consumers = append(consumers, services...)
 		}
 		if services, err := getServiceNamesByServiceTypeAndAnyService(p, common.Provider); err != nil {
-			lager.Logger.Errorf("Parse services from config failed: %v", err.Error())
+			openlogging.GetLogger().Errorf("Parse services from config failed: %v", err.Error())
 		} else {
 			providers = append(providers, services...)
 		}

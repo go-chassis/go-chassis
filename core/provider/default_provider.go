@@ -12,7 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-mesh/openlogging"
 )
 
 // Copyright 2009 The Go Authors. All rights reserved.
@@ -167,13 +167,13 @@ func suitableMethods(typ reflect.Type, reportErr bool) map[string]*operation {
 		// Method must be exported.
 		if method.PkgPath != "" {
 			if reportErr {
-				lager.Logger.Warnf("Method must be exported")
+				openlogging.GetLogger().Warnf("Method must be exported")
 			}
 			continue
 		}
 		// Method needs three ins: receiver, *anyArg, *request.
 		if mtype.NumIn() != 3 {
-			lager.Logger.Warnf("method has wrong number of ins, method:%s, nujm:%d", mname, mtype.NumIn())
+			openlogging.GetLogger().Warnf("method has wrong number of ins, method:%s, nujm:%d", mname, mtype.NumIn())
 			continue
 		}
 
@@ -181,7 +181,7 @@ func suitableMethods(typ reflect.Type, reportErr bool) map[string]*operation {
 		any := mtype.In(1)
 		if !isExportedOrBuiltinType(any) {
 			if reportErr {
-				lager.Logger.Warnf("argument type not exported, method:%s, nujm:%s", mname, any)
+				openlogging.GetLogger().Warnf("argument type not exported, method:%s, nujm:%s", mname, any)
 			}
 			continue
 		}
@@ -190,14 +190,14 @@ func suitableMethods(typ reflect.Type, reportErr bool) map[string]*operation {
 		requestType := mtype.In(2)
 		if requestType.Kind() != reflect.Ptr {
 			if reportErr {
-				lager.Logger.Warnf("method reply type not a pointer, method:%s, requestType:%s", mname, requestType)
+				openlogging.GetLogger().Warnf("method reply type not a pointer, method:%s, requestType:%s", mname, requestType)
 			}
 			continue
 		}
 		// request type must be exported.
 		if !isExportedOrBuiltinType(requestType) {
 			if reportErr {
-				lager.Logger.Warnf("method reply type not exported, method:%s, requestType:%s", mname, requestType)
+				openlogging.GetLogger().Warnf("method reply type not exported, method:%s, requestType:%s", mname, requestType)
 			}
 			continue
 		}
@@ -205,12 +205,12 @@ func suitableMethods(typ reflect.Type, reportErr bool) map[string]*operation {
 		// Method needs 2 out.
 		// response must be a pointer.
 		if mtype.NumOut() != 2 {
-			lager.Logger.Warnf("method has wrong number of outs, method:%s, requestType:%d", mname, mtype.NumOut())
+			openlogging.GetLogger().Warnf("method has wrong number of outs, method:%s, requestType:%d", mname, mtype.NumOut())
 			continue
 		}
 		reponseType := mtype.Out(0)
 		if reponseType.Kind() != reflect.Ptr {
-			lager.Logger.Warnf("method reply type not a pointe, method:%s, reponseType:%s", mname, reponseType)
+			openlogging.GetLogger().Warnf("method reply type not a pointe, method:%s, reponseType:%s", mname, reponseType)
 			continue
 		}
 
@@ -218,7 +218,7 @@ func suitableMethods(typ reflect.Type, reportErr bool) map[string]*operation {
 		returnType := mtype.Out(1)
 		if returnType != typeOfError {
 			if reportErr {
-				lager.Logger.Warnf("method returns method:%s, returnType.String():%s", mname, returnType.String())
+				openlogging.GetLogger().Warnf("method returns method:%s, returnType.String():%s", mname, returnType.String())
 			}
 			continue
 		}
@@ -254,7 +254,7 @@ func (p *DefaultProvider) Invoke(inv *invocation.Invocation) (interface{}, error
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
-			lager.Logger.Errorf("Invoke returns error:%s", err.Error())
+			openlogging.GetLogger().Errorf("Invoke returns error:%s", err.Error())
 		}
 	}()
 

@@ -7,7 +7,6 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
@@ -40,9 +39,9 @@ func (c *CacheManager) AutoSync() {
 	if config.GetServiceDiscoveryWatch() {
 		err := c.registryClient.WatchMicroService(runtime.ServiceID, watch)
 		if err != nil {
-			lager.Logger.Errorf("Watch failed. Self Micro service Id:%s. %s", runtime.ServiceID, err)
+			openlogging.GetLogger().Errorf("Watch failed. Self Micro service Id:%s. %s", runtime.ServiceID, err)
 		}
-		lager.Logger.Debugf("Watching Instances change events.")
+		openlogging.GetLogger().Debugf("Watching Instances change events.")
 	}
 	var ticker *time.Ticker
 	refreshInterval := config.GetServiceDiscoveryRefreshInterval()
@@ -51,7 +50,7 @@ func (c *CacheManager) AutoSync() {
 	} else {
 		timeValue, err := time.ParseDuration(refreshInterval)
 		if err != nil {
-			lager.Logger.Errorf("refeshInterval is invalid. So use Default value, err %s", err)
+			openlogging.GetLogger().Errorf("refeshInterval is invalid. So use Default value, err %s", err)
 			timeValue = DefaultRefreshInterval
 		}
 		ticker = time.NewTicker(timeValue)
@@ -68,12 +67,12 @@ func (c *CacheManager) refreshCache() {
 	if archaius.GetBool("cse.service.registry.autodiscovery", false) {
 		err := c.registryClient.SyncEndpoints()
 		if err != nil {
-			lager.Logger.Errorf("get sc endpoints failed: %s", err)
+			openlogging.GetLogger().Errorf("get sc endpoints failed: %s", err)
 		}
 	}
 	err := c.pullMicroServiceInstance()
 	if err != nil {
-		lager.Logger.Errorf("AutoUpdateMicroserviceInstance failed: %s", err)
+		openlogging.GetLogger().Errorf("AutoUpdateMicroserviceInstance failed: %s", err)
 		//connection with sc may lost, reset the revision
 		c.registryClient.ResetRevision()
 	}
@@ -81,14 +80,14 @@ func (c *CacheManager) refreshCache() {
 	if archaius.GetBool("cse.service.registry.autoSchemaIndex", false) {
 		err = c.MakeSchemaIndex()
 		if err != nil {
-			lager.Logger.Errorf("MakeSchemaIndex failed: %s", err)
+			openlogging.GetLogger().Errorf("MakeSchemaIndex failed: %s", err)
 		}
 	}
 
 	if archaius.GetBool("cse.service.registry.autoIPIndex", false) {
 		err = c.MakeIPIndex()
 		if err != nil {
-			lager.Logger.Errorf("Auto Update IP index failed: %s", err)
+			openlogging.GetLogger().Errorf("Auto Update IP index failed: %s", err)
 		}
 	}
 
@@ -98,10 +97,10 @@ func (c *CacheManager) refreshCache() {
 // if store instance metadata into tags
 // it will be used in route management
 func (c *CacheManager) MakeIPIndex() error {
-	lager.Logger.Debug("Make IP index")
+	openlogging.GetLogger().Debug("Make IP index")
 	services, err := c.registryClient.GetAllResources("instances")
 	if err != nil {
-		lager.Logger.Errorf("Get instances failed: %s", err)
+		openlogging.GetLogger().Errorf("Get instances failed: %s", err)
 		return err
 	}
 	for _, service := range services {
@@ -109,7 +108,7 @@ func (c *CacheManager) MakeIPIndex() error {
 			for _, uri := range inst.Endpoints {
 				u, err := url.Parse(uri)
 				if err != nil {
-					lager.Logger.Errorf("Wrong URI %s: %s", uri, err)
+					openlogging.GetLogger().Errorf("Wrong URI %s: %s", uri, err)
 					continue
 				}
 				si := &registry.SourceInfo{}
@@ -132,10 +131,10 @@ func (c *CacheManager) MakeIPIndex() error {
 // MakeSchemaIndex make schema index
 func (c *CacheManager) MakeSchemaIndex() error {
 
-	lager.Logger.Debug("Make Schema index")
+	openlogging.GetLogger().Debug("Make Schema index")
 	microServiceList, err := c.registryClient.GetAllMicroServices()
 	if err != nil {
-		lager.Logger.Errorf("Get instances failed: %s", err)
+		openlogging.GetLogger().Errorf("Get instances failed: %s", err)
 		return err
 	}
 
@@ -164,13 +163,13 @@ func (c *CacheManager) MakeSchemaIndex() error {
 					var allMicroServices []*proto.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaInterfaceIndexedCache.Set(interfaceName, allMicroServices, 0)
-					lager.Logger.Debugf("New Interface added in the Index Cache : %s", interfaceName)
+					openlogging.GetLogger().Debugf("New Interface added in the Index Cache : %s", interfaceName)
 				} else {
 					val, _ := value.([]*proto.MicroService)
 					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaInterfaceIndexedCache.Set(interfaceName, val, 0)
-						lager.Logger.Debugf("New Interface added in the Index Cache : %s", interfaceName)
+						openlogging.GetLogger().Debugf("New Interface added in the Index Cache : %s", interfaceName)
 					}
 				}
 
@@ -179,13 +178,13 @@ func (c *CacheManager) MakeSchemaIndex() error {
 					var allMicroServices []*proto.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaServiceIndexedCache.Set(serviceID, allMicroServices, 0)
-					lager.Logger.Debugf("New Service added in the Index Cache : %s", serviceID)
+					openlogging.GetLogger().Debugf("New Service added in the Index Cache : %s", serviceID)
 				} else {
 					val, _ := svcValue.([]*proto.MicroService)
 					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaServiceIndexedCache.Set(serviceID, val, 0)
-						lager.Logger.Debugf("New Service added in the Index Cache : %s", serviceID)
+						openlogging.GetLogger().Debugf("New Service added in the Index Cache : %s", serviceID)
 					}
 				}
 			}
@@ -279,7 +278,7 @@ func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
 				continue
 			case ins.Status != common.DefaultStatus && ins.Status != common.TESTINGStatus:
 				downs[ins.InstanceId] = struct{}{}
-				lager.Logger.Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
+				openlogging.GetLogger().Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
 					ins.Status, ins.ServiceId, ins.InstanceId)
 				continue
 			default:
@@ -307,10 +306,10 @@ func watch(response *client.MicroServiceInstanceChangedEvent) {
 		updateAction(response)
 		break
 	case client.EventError:
-		lager.Logger.Warnf("MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %s", response)
+		openlogging.GetLogger().Warnf("MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %s", response)
 		break
 	default:
-		lager.Logger.Warnf("Do not support this Action = %s", response.Action)
+		openlogging.GetLogger().Warnf("Do not support this Action = %s", response.Action)
 		return
 	}
 }
@@ -320,29 +319,29 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
-		lager.Logger.Errorf("ServiceID does not exist in MicroServiceInstanceCache,action is EVT_CREATE.key = %s", key)
+		openlogging.GetLogger().Errorf("ServiceID does not exist in MicroServiceInstanceCache,action is EVT_CREATE.key = %s", key)
 		return
 	}
 	if response.Instance.Status != client.MSInstanceUP {
-		lager.Logger.Warnf("createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
+		openlogging.GetLogger().Warnf("createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
 		return
 	}
 	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
 	microServiceInstances = append(microServiceInstances, msi)
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	lager.Logger.Debugf("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
+	openlogging.GetLogger().Debugf("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
 }
 
 // deleteAction delete micro-service instance
 func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
-	lager.Logger.Debugf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints)
+	openlogging.GetLogger().Debugf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints)
 	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppID, ToMicroServiceInstance(response.Instance)); err == nil {
 		return
 	}
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
-		lager.Logger.Errorf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_DELETE, key = %s", key)
+		openlogging.GetLogger().Errorf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_DELETE, key = %s", key)
 		return
 	}
 	var newInstances = make([]*registry.MicroServiceInstance, 0)
@@ -353,7 +352,7 @@ func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 	}
 
 	registry.MicroserviceInstanceIndex.Set(key, newInstances)
-	lager.Logger.Debugf("Cached [%d] Instances of service [%s]", len(newInstances), key)
+	openlogging.GetLogger().Debugf("Cached [%d] Instances of service [%s]", len(newInstances), key)
 }
 
 // updateAction update micro-service instance event
@@ -361,11 +360,11 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
-		lager.Logger.Errorf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_UPDATE, sid = %s", key)
+		openlogging.GetLogger().Errorf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_UPDATE, sid = %s", key)
 		return
 	}
 	if response.Instance.Status != client.MSInstanceUP {
-		lager.Logger.Warnf("updateAction failed, MicroServiceInstance status is not MSI_UP, MicroServiceInstanceChangedEvent = %s", response)
+		openlogging.GetLogger().Warnf("updateAction failed, MicroServiceInstance status is not MSI_UP, MicroServiceInstanceChangedEvent = %s", response)
 		return
 	}
 	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
@@ -385,8 +384,8 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 		microServiceInstances = append(microServiceInstances, msi)
 		break
 	default:
-		lager.Logger.Warnf("updateAction error, iid:%s", response.Instance.InstanceId)
+		openlogging.GetLogger().Warnf("updateAction error, iid:%s", response.Instance.InstanceId)
 	}
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	lager.Logger.Debugf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
+	openlogging.GetLogger().Debugf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
 }
