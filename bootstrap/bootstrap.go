@@ -1,8 +1,6 @@
 package bootstrap
 
-import (
-	"github.com/go-chassis/go-chassis/core/lager"
-)
+import "github.com/go-mesh/openlogging"
 
 var bootstrapPlugins = make([]*PluginItem, 0)
 
@@ -37,9 +35,9 @@ func InstallPlugin(name string, plugin Plugin) {
 //Bootstrap will boot plugins in orders
 func Bootstrap() {
 	for _, bp := range bootstrapPlugins {
-		lager.Logger.Info("Bootstrap " + bp.Name)
+		openlogging.GetLogger().Info("Bootstrap " + bp.Name)
 		if err := bp.Plugin.Init(); err != nil {
-			lager.Logger.Errorf("Failed to init %s. error [%s]", bp.Name, err.Error())
+			openlogging.GetLogger().Errorf("Failed to init %s. error [%s]", bp.Name, err.Error())
 		}
 	}
 }

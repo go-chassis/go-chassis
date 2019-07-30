@@ -7,7 +7,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
@@ -57,15 +56,15 @@ var ErrRuntime = make(chan error)
 //StartServer starting the server
 func StartServer() error {
 	for name, server := range servers {
-		lager.Logger.Info("starting server " + name + "...")
+		openlogging.GetLogger().Info("starting server " + name + "...")
 		err := server.Start()
 		if err != nil {
-			lager.Logger.Errorf("servers failed to start, err %s", err)
+			openlogging.GetLogger().Errorf("servers failed to start, err %s", err)
 			return fmt.Errorf("can not start [%s] server,%s", name, err.Error())
 		}
-		lager.Logger.Info(name + " server start success")
+		openlogging.GetLogger().Info(name + " server start success")
 	}
-	lager.Logger.Info("All server Start Completed")
+	openlogging.GetLogger().Info("All server Start Completed")
 
 	return nil
 }
@@ -73,7 +72,7 @@ func StartServer() error {
 //UnRegistrySelfInstances this function removes the self instance
 func UnRegistrySelfInstances() error {
 	if err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(runtime.ServiceID, runtime.InstanceID); err != nil {
-		lager.Logger.Errorf("StartServer() UnregisterMicroServiceInstance failed, sid/iid: %s/%s: %s",
+		openlogging.GetLogger().Errorf("StartServer() UnregisterMicroServiceInstance failed, sid/iid: %s/%s: %s",
 			runtime.ServiceID, runtime.InstanceID, err)
 		return err
 	}
@@ -98,7 +97,7 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 	if err != nil {
 		return err
 	}
-	lager.Logger.Debugf("Init server [%s], protocol is [%s]", name, protocolName)
+	openlogging.GetLogger().Debugf("Init server [%s], protocol is [%s]", name, protocolName)
 	f, err := GetServerFunc(protocolName)
 	if err != nil {
 		return fmt.Errorf("do not support [%s] server", name)
@@ -111,7 +110,7 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 			return err
 		}
 	} else {
-		lager.Logger.Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
+		openlogging.GetLogger().Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
 			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
 

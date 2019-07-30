@@ -16,7 +16,6 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
 
 	"os"
@@ -114,7 +113,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 	if len(tokens) >= 1 {
 		schemaName = tokens[len(tokens)-1]
 	}
-	lager.Logger.Infof("schema registered is [%s]", schemaName)
+	openlogging.GetLogger().Infof("schema registered is [%s]", schemaName)
 	for _, route := range routes {
 		handler, err := WrapHandlerChain(route, schemaType, schemaValue, schemaName, r.opts)
 		if err != nil {
@@ -235,7 +234,7 @@ func (r *restfulServer) Start() error {
 
 	}()
 
-	lager.Logger.Infof("Restful server listening on: %s", registry.InstanceEndpoints[config.ProtocolServerName])
+	openlogging.GetLogger().Infof("Restful server listening on: %s", registry.InstanceEndpoints[config.ProtocolServerName])
 	return nil
 }
 

@@ -6,10 +6,10 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/session"
+	"github.com/go-mesh/openlogging"
 )
 
 // newOptions is for updating options
@@ -40,7 +40,7 @@ func (ri *abstractInvoker) invoke(i *invocation.Invocation) error {
 
 	c, err := handler.GetChain(common.Consumer, ri.opts.ChainName)
 	if err != nil {
-		lager.Logger.Errorf("Handler chain init err [%s]", err.Error())
+		openlogging.GetLogger().Errorf("Handler chain init err [%s]", err.Error())
 		return err
 	}
 
