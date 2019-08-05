@@ -106,20 +106,20 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 	if err != nil {
 		return "", err
 	}
-	schemaType := reflect.TypeOf(schema)
-	schemaValue := reflect.ValueOf(schema)
+
 	var schemaName string
-	tokens := strings.Split(schemaType.String(), ".")
+	tokens := strings.Split(reflect.TypeOf(schema).String(), ".")
 	if len(tokens) >= 1 {
 		schemaName = tokens[len(tokens)-1]
 	}
 	openlogging.GetLogger().Infof("schema registered is [%s]", schemaName)
-	for _, route := range routes {
-		handler, err := WrapHandlerChain(route, schemaType, schemaValue, schemaName, r.opts)
+	for k, _ := range routes {
+		GroupRoutePath(&routes[k], schema)
+		handler, err := WrapHandlerChain(&routes[k], schema, schemaName, r.opts)
 		if err != nil {
 			return "", err
 		}
-		if err := Register2GoRestful(route, r.ws, handler); err != nil {
+		if err := Register2GoRestful(routes[k], r.ws, handler); err != nil {
 			return "", err
 		}
 	}
