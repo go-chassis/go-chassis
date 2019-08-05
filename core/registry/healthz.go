@@ -193,7 +193,7 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 		// case: keep still alive instances
 		if _, ok := mapUps[exp.InstanceID]; ok {
 			lefts = append(lefts, exp)
-			openlogging.Debug(fmt.Sprintf("cache instance: %s", exp))
+			openlogging.Debug(fmt.Sprintf("cache instance: %v", exp))
 			continue
 		} else {
 			for p, ep := range exp.EndpointsMap {
