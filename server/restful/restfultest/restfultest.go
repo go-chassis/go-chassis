@@ -47,22 +47,26 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 	if err != nil {
 		panic(err)
 	}
-	schemaType := reflect.TypeOf(schema)
-	schemaValue := reflect.ValueOf(schema)
+
 	var schemaName string
-	tokens := strings.Split(schemaType.String(), ".")
+	tokens := strings.Split(reflect.TypeOf(schema).String(), ".")
 	if len(tokens) >= 1 {
 		schemaName = tokens[len(tokens)-1]
 	}
-	for _, route := range routes {
-		method, exist := schemaType.MethodByName(route.ResourceFuncName)
-		if !exist {
-			openlogging.GetLogger().Errorf("router func can not find: %s", route.ResourceFuncName)
-			return nil, fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
-		}
+	for k, _ := range routes {
+		chassisRestful.GroupRoutePath(&routes[k], schema)
+		handleFunc, err := chassisRestful.BuildRouteHandler(&routes[k], schema)
 
 		handler := func(req *restful.Request, rep *restful.Response) {
-			inv, err := chassisRestful.HTTPRequest2Invocation(req, schemaName, method.Name)
+			defer func() {
+				if r := recover(); r != nil {
+					openlogging.Error(fmt.Sprintf("handle request panic. path:%s, panic:%s", routes[k].Path, r))
+					if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil{
+						openlogging.Error("write response failed when handler panic, err:" + err.Error())
+					}
+				}
+			}()
+			inv, err := chassisRestful.HTTPRequest2Invocation(req, schemaName, routes[k].ResourceFuncName)
 			if err != nil {
 				openlogging.Error("transfer http request to invocation failed", openlogging.WithTags(openlogging.Tags{
 					"err": err.Error(),
@@ -87,10 +91,10 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 			bs.Req = req
 			bs.Resp = rep
 
-			method.Func.Call([]reflect.Value{schemaValue, reflect.ValueOf(bs)})
+			handleFunc(bs)
 		}
 
-		if err = chassisRestful.Register2GoRestful(route, c.ws, handler); err != nil {
+		if err = chassisRestful.Register2GoRestful(routes[k], c.ws, handler); err != nil {
 			return nil, err
 		}
 	}
