@@ -19,7 +19,6 @@ package restfultest
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
@@ -60,9 +59,14 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 		handler := func(req *restful.Request, rep *restful.Response) {
 			defer func() {
 				if r := recover(); r != nil {
-					openlogging.Error(fmt.Sprintf("handle request panic. path:%s, panic:%s", routes[k].Path, r))
+					openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
+						"path":  routes[k].Path,
+						"panic": r,
+					}))
 					if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
-						openlogging.Error("write response failed when handler panic, err:" + err.Error())
+						openlogging.Error("write response failed when handler panic,", openlogging.WithTags(openlogging.Tags{
+							"err": err.Error(),
+						}))
 					}
 				}
 			}()

@@ -91,23 +91,32 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 	restHandler := func(req *restful.Request, rep *restful.Response) {
 		defer func() {
 			if r := recover(); r != nil {
-				openlogging.Error(fmt.Sprintf("handle request panic. path:%s, panic:%s", route.Path, r))
+				openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
+					"path":  route.Path,
+					"panic": r,
+				}))
 				if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
-					openlogging.Error("write response failed when handler panic, err:" + err.Error())
+					openlogging.Error("write response failed when handler panic.", openlogging.WithTags(openlogging.Tags{
+						"err": err.Error(),
+					}))
 				}
 			}
 		}()
 
 		c, err := handler.GetChain(common.Provider, opts.ChainName)
 		if err != nil {
-			openlogging.GetLogger().Errorf("handler chain init err [%s]", err.Error())
+			openlogging.Error("handler chain init err.", openlogging.WithTags(openlogging.Tags{
+				"err": err.Error(),
+			}))
 			rep.AddHeader("Content-Type", "text/plain")
 			rep.WriteErrorString(http.StatusInternalServerError, err.Error())
 			return
 		}
 		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName)
 		if err != nil {
-			openlogging.GetLogger().Errorf("transfer http request to invocation failed, err [%s]", err.Error())
+			openlogging.Error("transfer http request to invocation failed.", openlogging.WithTags(openlogging.Tags{
+				"err": err.Error(),
+			}))
 			return
 		}
 		//give inv.Ctx to user handlers, modules may inject headers in handler chain
@@ -140,7 +149,11 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 
 	}
 
-	openlogging.GetLogger().Infof("add route path: [%s] method: [%s] func: [%s]. ", route.Path, route.Method, route.ResourceFuncName)
+	openlogging.Info("add route path.", openlogging.WithTags(openlogging.Tags{
+		"path":      route.Path,
+		"method":    route.Method,
+		"func_name": route.ResourceFuncName,
+	}))
 	return restHandler, nil
 }
 
