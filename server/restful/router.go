@@ -24,16 +24,16 @@ const (
 
 //Route describe http route path and swagger specifications for API
 type Route struct {
-	Method           string        //Method is one of the following: GET,PUT,POST,DELETE. required
-	Path             string        //Path contains a path pattern. required
-	ResourceFunc     func(ctx *Context)  //the func this API calls. you must set this field or ResourceFunc, if you set both, ResourceFunc will be used
-	ResourceFuncName string        //the func this API calls. you must set this field or ResourceFunc
-	FuncDesc         string        //tells what this route is all about. Optional.
-	Parameters       []*Parameters //Parameters is a slice of request parameters for a single endpoint Optional.
-	Returns          []*Returns    //what kind of response this API returns. Optional.
-	Read             interface{}   //Read tells what resource type will be read from the request payload. Optional.
-	Consumes         []string      //Consumes specifies that this WebService can consume one or more MIME types.
-	Produces         []string      //Produces specifies that this WebService can produce one or more MIME types.
+	Method           string             //Method is one of the following: GET,PUT,POST,DELETE. required
+	Path             string             //Path contains a path pattern. required
+	ResourceFunc     func(ctx *Context) //the func this API calls. you must set this field or ResourceFunc, if you set both, ResourceFunc will be used
+	ResourceFuncName string             //the func this API calls. you must set this field or ResourceFunc
+	FuncDesc         string             //tells what this route is all about. Optional.
+	Parameters       []*Parameters      //Parameters is a slice of request parameters for a single endpoint Optional.
+	Returns          []*Returns         //what kind of response this API returns. Optional.
+	Read             interface{}        //Read tells what resource type will be read from the request payload. Optional.
+	Consumes         []string           //Consumes specifies that this WebService can consume one or more MIME types.
+	Produces         []string           //Produces specifies that this WebService can produce one or more MIME types.
 }
 
 //Returns describe response doc
@@ -83,16 +83,16 @@ func GetRouteSpecs(schema interface{}) ([]Route, error) {
 }
 
 //WrapHandlerChain wrap business handler with handler chain
-func WrapHandlerChain(route *Route, schema interface{}, schemaName string,opts server.Options) (restful.RouteFunction, error) {
-	handleFunc, err := BuildRouteHandler(route,schema)
-	if err != nil{
+func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts server.Options) (restful.RouteFunction, error) {
+	handleFunc, err := BuildRouteHandler(route, schema)
+	if err != nil {
 		return nil, err
 	}
 	restHandler := func(req *restful.Request, rep *restful.Response) {
 		defer func() {
 			if r := recover(); r != nil {
 				openlogging.Error(fmt.Sprintf("handle request panic. path:%s, panic:%s", route.Path, r))
-				if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil{
+				if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
 					openlogging.Error("write response failed when handler panic, err:" + err.Error())
 				}
 			}
@@ -145,22 +145,21 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string,opts s
 }
 
 // GroupRoutePath add group route path to route
-func GroupRoutePath(route *Route, schema interface{}){
+func GroupRoutePath(route *Route, schema interface{}) {
 	groupPath := GetRouteGroup(schema)
-	if groupPath != ""{
+	if groupPath != "" {
 		route.Path = groupPath + route.Path
 	}
 }
 
 //BuildRouteHandler build handler func from ResourceFunc or ResourceFuncName
 func BuildRouteHandler(route *Route, schema interface{}) (func(ctx *Context), error) {
-	if route.ResourceFunc != nil{
+	if route.ResourceFunc != nil {
 		route.ResourceFuncName = getFunctionName(route.ResourceFunc)
-		return func(ctx *Context){
+		return func(ctx *Context) {
 			route.ResourceFunc(ctx)
 		}, nil
 	}
-
 
 	method, exist := reflect.TypeOf(schema).MethodByName(route.ResourceFuncName)
 	if !exist {
@@ -168,8 +167,8 @@ func BuildRouteHandler(route *Route, schema interface{}) (func(ctx *Context), er
 		return nil, fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
 	}
 
-	return  func(ctx *Context){
-		method.Func.Call([]reflect.Value{ reflect.ValueOf(schema), reflect.ValueOf(ctx)})
+	return func(ctx *Context) {
+		method.Func.Call([]reflect.Value{reflect.ValueOf(schema), reflect.ValueOf(ctx)})
 	}, nil
 }
 
@@ -177,7 +176,7 @@ func BuildRouteHandler(route *Route, schema interface{}) (func(ctx *Context), er
 func getFunctionName(i interface{}) string {
 	metaName := runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 	metaNameArr := strings.Split(metaName, ".")
-	funcName := metaNameArr[len(metaNameArr) - 1]
+	funcName := metaNameArr[len(metaNameArr)-1]
 
 	// replace suffix "-fm" if function is bounded to struct
 	reg := regexp.MustCompile("-fm$")

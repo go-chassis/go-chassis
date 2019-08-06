@@ -34,7 +34,7 @@ import (
 type DummyResource struct {
 }
 
-func (r *DummyResource) GroupPath() string{
+func (r *DummyResource) GroupPath() string {
 	return "/demo"
 }
 
@@ -52,9 +52,9 @@ func (r *DummyResource) URLPatterns() []restful.Route {
 	return []restful.Route{
 		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
 			Returns: []*restful.Returns{{Code: 200}}},
-		{Method: http.MethodGet, Path: "/sayhello2/{userid}", ResourceFunc:r.Sayhello,
+		{Method: http.MethodGet, Path: "/sayhello2/{userid}", ResourceFunc: r.Sayhello,
 			Returns: []*restful.Returns{{Code: 200}}},
-		{Method: http.MethodGet, Path: "/panic", ResourceFunc:r.Panic,
+		{Method: http.MethodGet, Path: "/panic", ResourceFunc: r.Panic,
 			Returns: []*restful.Returns{{Code: 200}}},
 	}
 }

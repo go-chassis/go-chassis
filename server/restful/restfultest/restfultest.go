@@ -61,7 +61,7 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 			defer func() {
 				if r := recover(); r != nil {
 					openlogging.Error(fmt.Sprintf("handle request panic. path:%s, panic:%s", routes[k].Path, r))
-					if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil{
+					if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
 						openlogging.Error("write response failed when handler panic, err:" + err.Error())
 					}
 				}

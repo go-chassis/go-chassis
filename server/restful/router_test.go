@@ -22,7 +22,7 @@ func TestGetRouteGroup(t *testing.T) {
 }
 
 func TestGroupRoutePath(t *testing.T) {
-	r := &Route{Path:"/SubRoute"}
+	r := &Route{Path: "/SubRoute"}
 	GroupRoutePath(r, &GroupSchema{})
 	assert.Equal(t, "HelloGroup/SubRoute", r.Path)
 }
@@ -37,10 +37,10 @@ func TestGetFunctionName(t *testing.T) {
 
 func TestBuildRouteHandler(t *testing.T) {
 	schma := &FuncNameSchema{}
-	ctx := &Context{ Ctx: context.TODO() }
+	ctx := &Context{Ctx: context.TODO()}
 
 	// FuncName
-	route := Route{Path:"/FuncName", ResourceFuncName:"Hello"}
+	route := Route{Path: "/FuncName", ResourceFuncName: "Hello"}
 	f, err := BuildRouteHandler(&route, schma)
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello", route.ResourceFuncName)
@@ -48,8 +48,8 @@ func TestBuildRouteHandler(t *testing.T) {
 	assert.Equal(t, "World", ctx.Ctx.Value("Hello"))
 
 	// Func
-	ctx = &Context{ Ctx: context.TODO() }
-	route = Route{Path:"/Func", ResourceFunc:schma.Hello}
+	ctx = &Context{Ctx: context.TODO()}
+	route = Route{Path: "/Func", ResourceFunc: schma.Hello}
 	f, err = BuildRouteHandler(&route, schma)
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello", route.ResourceFuncName)
@@ -57,8 +57,8 @@ func TestBuildRouteHandler(t *testing.T) {
 	assert.Equal(t, "World", ctx.Ctx.Value("Hello"))
 
 	// Both
-	ctx = &Context{ Ctx: context.TODO() }
-	route = Route{Path:"/BothFuncAndName", ResourceFunc: schma.Hello,ResourceFuncName:"World"}
+	ctx = &Context{Ctx: context.TODO()}
+	route = Route{Path: "/BothFuncAndName", ResourceFunc: schma.Hello, ResourceFuncName: "World"}
 	f, err = BuildRouteHandler(&route, schma)
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello", route.ResourceFuncName)
@@ -97,14 +97,12 @@ func (g *GroupSchema) GroupPath() string {
 type FuncNameSchema struct {
 }
 
-func(s *FuncNameSchema) URLPatterns() []Route {
+func (s *FuncNameSchema) URLPatterns() []Route {
 	return []Route{
-		{ Method: http.MethodGet, Path: "/HelloPath", ResourceFunc:s.Hello, ResourceFuncName: "Hello" },
+		{Method: http.MethodGet, Path: "/HelloPath", ResourceFunc: s.Hello, ResourceFuncName: "Hello"},
 	}
 }
 
-func(s *FuncNameSchema) Hello(ctx *Context) {
-	ctx.Ctx = context.WithValue(ctx.Ctx,"Hello", "World")
+func (s *FuncNameSchema) Hello(ctx *Context) {
+	ctx.Ctx = context.WithValue(ctx.Ctx, "Hello", "World")
 }
-
-
