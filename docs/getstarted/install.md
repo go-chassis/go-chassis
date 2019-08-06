@@ -1,23 +1,29 @@
 Minimize Installation
 =====
-1. Install [go 1.10+](https://golang.org/doc/install) 
+1.Install [go 1.12+](https://golang.org/doc/install) 
 
-1. Clone the project
-    ```bash
-    git clone git@github.com:go-chassis/go-chassis.git
-    ```
+2.Generate go mod
+```bash
+go mod init
+```
+3.Add go chassis 
+```bash
+GO111MODULE=on go get github.com/go-chassis/go-chassis
+```
 
-1. Use go mod(go 1.11+, experimental but a recommended way)
+4.Use go mod
     ```bash
-    cd go-chassis
     GO111MODULE=on go mod download
     #optional
     GO111MODULE=on go mod vendor
     ```
+if you are facing network issue 
+```bash
+export GOPROXY=https://goproxy.io
+```
+5.Install [service-center](http://servicecomb.apache.org/release/)
 
-1. Install [service-center](http://servicecomb.apache.org/release/)
-
-1. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
+6.[Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 
 
 Use gRPC communication
