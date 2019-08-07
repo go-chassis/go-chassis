@@ -61,7 +61,7 @@ func TestBuildRouteHandler(t *testing.T) {
 	route = Route{Path: "/BothFuncAndName", ResourceFunc: schma.Hello, ResourceFuncName: "World"}
 	f, err = BuildRouteHandler(&route, schma)
 	assert.NoError(t, err)
-	assert.Equal(t, "Hello", route.ResourceFuncName)
+	assert.Equal(t, "World", route.ResourceFuncName)
 	f(ctx)
 	assert.Equal(t, "World", ctx.Ctx.Value("Hello"))
 }

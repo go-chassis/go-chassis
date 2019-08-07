@@ -168,7 +168,10 @@ func GroupRoutePath(route *Route, schema interface{}) {
 //BuildRouteHandler build handler func from ResourceFunc or ResourceFuncName
 func BuildRouteHandler(route *Route, schema interface{}) (func(ctx *Context), error) {
 	if route.ResourceFunc != nil {
-		route.ResourceFuncName = getFunctionName(route.ResourceFunc)
+		if route.ResourceFuncName == "" {
+			route.ResourceFuncName = getFunctionName(route.ResourceFunc)
+		}
+
 		return func(ctx *Context) {
 			route.ResourceFunc(ctx)
 		}, nil
