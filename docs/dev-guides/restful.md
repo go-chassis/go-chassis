@@ -26,31 +26,6 @@ func (r *DummyResource) URLPatterns() []restful.Route {
 }
 ```
 
-### 通过函数名称（不推荐）
-
-这是兼容旧版本的一种方式，由于实现使用了reflect，性能会有所损耗
-
-```go
-type DummyResource struct {
-}
-
-func (r *DummyResource) GroupPath() string {
-	return "/demo"
-}
-
-func (r *DummyResource) Sayhello(b *restful.Context) {
-	id := b.ReadPathParameter("userid")
-	b.Write([]byte(id))
-}
-
-//URLPatterns helps to respond for corresponding API calls
-func (r *DummyResource) URLPatterns() []restful.Route {
-	return []restful.Route{
-		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
-			Returns: []*restful.Returns{{Code: 200}}},
-	}
-}
-```
 ## 路由分组
 
 相同资源的多个路由可能会具备同样的路由前缀，这时候你可以使用路由分组来避免重复的路由前缀
