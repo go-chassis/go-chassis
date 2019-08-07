@@ -13,6 +13,7 @@ sudo pip install sphinx_rtd_theme
 
 In windows
 ```shell
+pip install recommonmark
 cd docs
 make.bat html
 ```
