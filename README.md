@@ -10,10 +10,10 @@ go chassis is designed as a protocol-independent framework, any protocol
 is able to integrate with go chassis and leverage same function like load balancing,
 circuit breaker,rate limiting, routing management, those function resilient your service
 
-go chassis makes service observable by bring open tracing and prometheus to it.
+go chassis makes service observable by bringing open tracing and prometheus to it.
 
 go chassis is flexible, many different modules can be replaced by other implementation, 
-like registry, metrics, handler chain, config center etc 
+like registry, metrics, handler chain, config server etc 
 
 With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
 your don't need to investigate, implement and integrate many solutions yourself.
@@ -23,7 +23,6 @@ it surely decrease the throughput and increase the latency of your service
 go chassis can bring better performance to go program, 
 you can use Istio configurations to control go chassis.
 
-Go chassis also has a service mesh solution https://github.com/go-mesh/mesher, it is build on top of go chassis. you can use same registry, configuration to goven all of service written in different language.
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
  fit both client side discovery and server side discovery pattern 
@@ -44,36 +43,24 @@ Go chassis also has a service mesh solution https://github.com/go-mesh/mesher, i
  
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
-# Quick Start
+# Get started 
+1.Generate go mod
+```bash
+go mod init
+```
+2.Add go chassis 
+```shell script
+GO111MODULE=on go get github.com/go-chassis/go-chassis
+```
+if you are facing network issue 
+```bash
+export GOPROXY=https://goproxy.io
+```
+
+# Documentations
 You can see more documentations in [here](http://docs.go-chassis.com/), 
-this doc is for latest version of go chassis, if you want to see your version's doc,
-follow [here](docs/README.md) to generate it
-
-1. Install [go 1.10+](https://golang.org/doc/install) 
-
-2. Clone the project
-
-```sh
-git clone git@github.com:go-chassis/go-chassis.git
-```
-
-3. Use go mod(go 1.11+, experimental but a recommended way)
-```shell
-cd go-chassis
-export GO111MODULE=on 
-go mod download
-#optional
-export GO111MODULE=on 
-go mod vendor
-```
-NOTICE：if you do not use mod, We can not ensure you the compatibility. however you can still maintain your own vendor, which means you have to solve compiling issue your own.
-And if you use mod can not download all 3rd pkg , set env `GOPROXY=https://goproxy.io` before you use mod download pkg.
-
-4. Install [service-center](http://servicecomb.apache.org/release/)
-
-5. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
-
-
+this online doc is for latest version of go chassis, if you want to see your version's doc,
+follow [here](docs/README.md) to generate it in local
 
 # Examples
 You can check examples [here](examples)
@@ -112,5 +99,39 @@ and give you a unified service registry entry point.
 go chassis has k8s registry and Istio registry plugins, and support Istio traffic management
 you can use spring cloud or Envoy with go chassis under same service discovery service.
 
+# Other project using go-chassis
+- [apache/servicecomb-kie](https://github.com/apache/servicecomb-kie): 
+A distributed configuration management service
+- [apache/servicecomb-mesher](https://github.com/apache/servicecomb-mesher): 
+A service mesh able to co-work with go chassis
+
+
+# To start developing go chassis
+
+1. Install [go 1.12+](https://golang.org/doc/install) 
+
+2. Clone the project
+
+```sh
+git clone git@github.com:go-chassis/go-chassis.git
+```
+
+3. Download vendors
+```shell
+cd go-chassis
+export GO111MODULE=on 
+go mod download
+#optional
+export GO111MODULE=on 
+go mod vendor
+```
+NOTICE：if you do not use mod, We can not ensure you the compatibility. 
+however you can still maintain your own vendor, 
+which means you have to solve compiling issue your own.
+
+
+4. Install [service-center](http://servicecomb.apache.org/release/)
+
+5. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 
 
