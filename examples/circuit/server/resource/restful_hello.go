@@ -4,9 +4,10 @@ import (
 	"errors"
 	"net/http"
 
-	rf "github.com/go-chassis/go-chassis/server/restful"
 	"math/rand"
 	"sync"
+
+	rf "github.com/go-chassis/go-chassis/server/restful"
 )
 
 var num = rand.Intn(100)
@@ -37,8 +38,8 @@ func (r *RestFulMessage) Sayerror(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulMessage) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/lock", ResourceFuncName: "DeadLock"},
-		{Method: http.MethodGet, Path: "/sayhimessage", ResourceFuncName: "Sayhi"},
-		{Method: http.MethodGet, Path: "/sayerror", ResourceFuncName: "Sayerror"},
+		{Method: http.MethodGet, Path: "/lock", ResourceFunc: r.DeadLock},
+		{Method: http.MethodGet, Path: "/sayhimessage", ResourceFunc: r.Sayhi},
+		{Method: http.MethodGet, Path: "/sayerror", ResourceFunc: r.Sayerror},
 	}
 }

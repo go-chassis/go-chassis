@@ -4,8 +4,9 @@ import (
 	"net/http"
 
 	"fmt"
-	rf "github.com/go-chassis/go-chassis/server/restful"
 	"math/rand"
+
+	rf "github.com/go-chassis/go-chassis/server/restful"
 )
 
 var num = rand.Intn(100)
@@ -22,6 +23,6 @@ func (r *RestFulHello) Health(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulHello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/health", ResourceFuncName: "Health"},
+		{Method: http.MethodGet, Path: "/health", ResourceFunc: r.Health},
 	}
 }

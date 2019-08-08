@@ -6,8 +6,9 @@ import (
 	"net/http"
 
 	"fmt"
-	rf "github.com/go-chassis/go-chassis/server/restful"
 	"math/rand"
+
+	rf "github.com/go-chassis/go-chassis/server/restful"
 )
 
 var num = rand.Intn(100)
@@ -61,16 +62,16 @@ func (r *RestFulHello) SayJSON(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulHello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Root",
+		{Method: http.MethodGet, Path: "/", ResourceFunc: r.Root,
 			Returns: []*rf.Returns{{Code: 200}}},
 
-		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
+		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFunc: r.Sayhello,
 			Returns: []*rf.Returns{{Code: 200}}},
 
-		{Method: http.MethodPost, Path: "/sayhi", ResourceFuncName: "Sayhi",
+		{Method: http.MethodPost, Path: "/sayhi", ResourceFunc: r.Sayhi,
 			Returns: []*rf.Returns{{Code: 200}}},
 
-		{Method: http.MethodPost, Path: "/sayjson", ResourceFuncName: "SayJSON",
+		{Method: http.MethodPost, Path: "/sayjson", ResourceFunc: r.SayJSON,
 			Returns: []*rf.Returns{{Code: 200}}},
 	}
 }
@@ -109,9 +110,9 @@ func (r *RestFulMessage) Sayerror(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulMessage) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/saymessage/{name}", ResourceFuncName: "Saymessage"},
-		{Method: http.MethodPost, Path: "/sayhimessage", ResourceFuncName: "Sayhi"},
-		{Method: http.MethodGet, Path: "/sayerror", ResourceFuncName: "Sayerror"},
+		{Method: http.MethodGet, Path: "/saymessage/{name}", ResourceFunc: r.Saymessage},
+		{Method: http.MethodPost, Path: "/sayhimessage", ResourceFunc: r.Sayhi},
+		{Method: http.MethodGet, Path: "/sayerror", ResourceFunc: r.Sayhi},
 	}
 }
 
@@ -124,7 +125,7 @@ func (r *Hello) Hello(b *rf.Context) { b.Write([]byte("hi from hello")) }
 //URLPatterns helps to respond for corresponding API calls
 func (r *Hello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/hello", ResourceFuncName: "Hello"},
+		{Method: http.MethodGet, Path: "/hello", ResourceFunc: r.Hello},
 	}
 }
 
@@ -137,7 +138,7 @@ func (r *Legacy) Do(b *rf.Context) { b.Write([]byte("hello from legacy")) }
 //URLPatterns helps to respond for corresponding API calls
 func (r *Legacy) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/legacy", ResourceFuncName: "Do"},
+		{Method: http.MethodGet, Path: "/legacy", ResourceFunc: r.Do},
 	}
 }
 
@@ -150,6 +151,6 @@ func (r *Admin) Do(b *rf.Context) { b.Write([]byte("hello from admin")) }
 //URLPatterns helps to respond for corresponding API calls
 func (r *Admin) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/admin", ResourceFuncName: "Do"},
+		{Method: http.MethodGet, Path: "/admin", ResourceFunc: r.Do},
 	}
 }
