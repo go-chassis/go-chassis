@@ -34,15 +34,27 @@ import (
 type DummyResource struct {
 }
 
+func (r *DummyResource) GroupPath() string {
+	return "/demo"
+}
+
 func (r *DummyResource) Sayhello(b *restful.Context) {
 	id := b.ReadPathParameter("userid")
 	b.Write([]byte(id))
+}
+
+func (r *DummyResource) Panic(b *restful.Context) {
+	panic("panic msg")
 }
 
 //URLPatterns helps to respond for corresponding API calls
 func (r *DummyResource) URLPatterns() []restful.Route {
 	return []restful.Route{
 		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
+			Returns: []*restful.Returns{{Code: 200}}},
+		{Method: http.MethodGet, Path: "/sayhello2/{userid}", ResourceFunc: r.Sayhello,
+			Returns: []*restful.Returns{{Code: 200}}},
+		{Method: http.MethodGet, Path: "/panic", ResourceFunc: r.Panic,
 			Returns: []*restful.Returns{{Code: 200}}},
 	}
 }
@@ -64,7 +76,7 @@ func newFakeHandler() handler.Handler {
 }
 
 func TestNew(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
+	r, _ := http.NewRequest("GET", "/demo/sayhello/some_user", nil)
 	c, err := restfultest.New(&DummyResource{}, nil)
 	assert.NoError(t, err)
 	resp := httptest.NewRecorder()
@@ -72,10 +84,22 @@ func TestNew(t *testing.T) {
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, "some_user", string(body))
+
+	r, _ = http.NewRequest("GET", "/demo/sayhello2/another_user", nil)
+	c.ServeHTTP(resp, r)
+	body, err = ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "another_user", string(body))
+
+	r, _ = http.NewRequest("GET", "/demo/panic", nil)
+	c.ServeHTTP(resp, r)
+	body, err = ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "server got a panic, plz check log.", string(body))
 }
 
 func TestNewWithChain(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
+	r, _ := http.NewRequest("GET", "/demo/sayhello/some_user", nil)
 	handler.RegisterHandler("test", newFakeHandler)
 	chain, _ := handler.CreateChain(common.Provider, "testChain", "test")
 	assert.Equal(t, "", r.Header.Get("test"))

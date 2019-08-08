@@ -12,3 +12,4 @@ Development guides
     dev-guides/how-to-write-cipher
     dev-guides/how-to-extend-protocol
     dev-guides/bootstrap
+    dev-guides/restful
