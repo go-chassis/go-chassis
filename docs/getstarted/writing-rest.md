@@ -28,7 +28,7 @@ func (r *RestFulHello) Sayhello(b *restful.Context) {
 ```go
 func (s *RestFulHello) URLPatterns() []restful.Route {
     return []restful.RouteSpec{
-        {Method: http.MethodGet, Path: ""/sayhello/{userid}"", ResourceFuncName: "Sayhello",
+        {Method: http.MethodGet, Path: ""/sayhello/{userid}"", ResourceFunc: s.Sayhello,
          			Returns: []*rf.Returns{{Code: 200}}},
     }
 }
@@ -131,7 +131,7 @@ func (d *Data) URLPatterns() []rf.Route {
 		{
 			Method:http.MethodGet,
 			Path:"/price/{id}",
-			ResourceFuncName:"GetPrice", #schema=operationId
+			ResourceFunc:d.GetPrice, #schema=operationId
 			Consumes: []string{goRestful.MIME_JSON,goRestful.MIME_XML},
 			Produces: []string{goRestful.MIME_JSON},
 			Returns: []*rf.Returns{{Code: http.StatusOK,Message:"true",Model: Data{}}},

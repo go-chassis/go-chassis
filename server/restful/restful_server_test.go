@@ -120,20 +120,20 @@ func (r *TestSchema) Post(b *Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *TestSchema) URLPatterns() []Route {
 	return []Route{
-		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Get",
+		{Method: http.MethodGet, Path: "/", ResourceFunc: r.Get,
 			Returns: []*Returns{{Code: 200}}},
 
-		{Method: http.MethodPost, Path: "/sayhello/{userid}", ResourceFuncName: "Post",
+		{Method: http.MethodPost, Path: "/sayhello/{userid}", ResourceFunc: r.Post,
 			Returns: []*Returns{{Code: 200}}},
 
-		{Method: http.MethodDelete, Path: "/sayhi", ResourceFuncName: "Delete",
+		{Method: http.MethodDelete, Path: "/sayhi", ResourceFunc: r.Delete,
 			Returns: []*Returns{{Code: 200}}},
 
-		{Method: http.MethodHead, Path: "/sayjson", ResourceFuncName: "Head",
+		{Method: http.MethodHead, Path: "/sayjson", ResourceFunc: r.Head,
 			Returns: []*Returns{{Code: 200}}},
-		{Method: http.MethodPatch, Path: "/sayjson", ResourceFuncName: "Patch",
+		{Method: http.MethodPatch, Path: "/sayjson", ResourceFunc: r.Patch,
 			Returns: []*Returns{{Code: 200}}},
-		{Method: http.MethodPut, Path: "/hi", ResourceFuncName: "Put",
+		{Method: http.MethodPut, Path: "/hi", ResourceFunc: r.Put,
 			Returns: []*Returns{{Code: 200}}},
 	}
 }
