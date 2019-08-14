@@ -57,6 +57,9 @@ if you are facing network issue
 export GOPROXY=https://goproxy.io
 ```
 
+3.[Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
+
+
 # Documentations
 You can see more documentations in [here](http://docs.go-chassis.com/), 
 this online doc is for latest version of go chassis, if you want to see your version's doc,
@@ -131,7 +134,5 @@ which means you have to solve compiling issue your own.
 
 
 4. Install [service-center](http://servicecomb.apache.org/release/)
-
-5. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 
 
