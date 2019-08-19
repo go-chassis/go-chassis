@@ -98,7 +98,7 @@ highly recommended. that will not prevent you from using kubernetes or Istio,
 Because service center can aggregate heterogeneous registry 
 and give you a unified service registry entry point.
 
-## Kubenetes and Istio
+## Kubernetes and Istio
 go chassis has k8s registry and Istio registry plugins, and support Istio traffic management
 you can use spring cloud or Envoy with go chassis under same service discovery service.
 
