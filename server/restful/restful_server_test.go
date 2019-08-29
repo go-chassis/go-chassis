@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/emicklei/go-restful"
 	rf "github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -226,8 +225,8 @@ func Test_restfulServer_register2GoRestful(t *testing.T) {
 
 	rest := &restfulServer{
 		microServiceName: "rest",
-		container:        restful.NewContainer(),
-		ws:               new(restful.WebService),
+		container:        rf.NewContainer(),
+		ws:               new(rf.WebService),
 		server:           &http.Server{},
 	}
 
