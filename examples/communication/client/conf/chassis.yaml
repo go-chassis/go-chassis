@@ -1,9 +1,0 @@
----
-cse:
-  service:
-    registry:
-      disabled: true
-  handler:
-    chain:
-      Consumer:
-        default: transport

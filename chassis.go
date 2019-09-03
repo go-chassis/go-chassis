@@ -148,7 +148,7 @@ func (c *chassis) initialize() error {
 		return err
 	}
 	bootstrap.Bootstrap()
-	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+	if !archaius.GetBool("cse.service.registry.disabled", false) {
 		err := registry.Enable()
 		if err != nil {
 			return err

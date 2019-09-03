@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
+	"github.com/go-chassis/go-chassis/core/endpoint"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 
 	"github.com/go-chassis/go-archaius"
@@ -26,12 +26,16 @@ const (
 )
 
 //ErrRefreshMode means config is mis used
-var ErrRefreshMode = errors.New("refreshMode must be 0 or 1")
+var (
+	ErrRefreshMode      = errors.New("refreshMode must be 0 or 1")
+	ErrRegistryDisabled = errors.New("discovery is disabled")
+)
 
 // InitConfigCenter initialize config center
 func InitConfigCenter() error {
 	configCenterURL, err := GetConfigCenterEndpoint()
 	if err != nil {
+		openlogging.Warn("can not get config server endpoint: " + err.Error())
 		return nil
 	}
 
@@ -73,15 +77,16 @@ func InitConfigCenter() error {
 func GetConfigCenterEndpoint() (string, error) {
 	configCenterURL := config.GetConfigCenterConf().ServerURI
 	if configCenterURL == "" {
-		openlogging.Debug("find config server in registry")
 		if registry.DefaultServiceDiscoveryService != nil {
+			openlogging.Debug("find config server in registry")
 			ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
 			if err != nil {
-				openlogging.GetLogger().Warnf("failed to find config center endpoints: %s", err.Error())
+				openlogging.Warn("failed to find config center endpoints, err: " + err.Error())
 				return "", err
 			}
-
 			configCenterURL = ccURL
+		} else {
+			return "", ErrRegistryDisabled
 		}
 
 	}

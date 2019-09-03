@@ -166,7 +166,7 @@ func Enable() (err error) {
 	}
 	enableContractDiscovery(oCD)
 
-	openlogging.GetLogger().Info("Enabled Registry")
+	openlogging.Info("Enabled Registry")
 	IsEnabled = true
 	return nil
 }
