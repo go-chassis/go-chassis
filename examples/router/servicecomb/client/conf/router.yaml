@@ -1,13 +1,14 @@
-routeRule:
-  ROUTERServer: #这里就是请求里的host,也是sc里的service name
-    - precedence: 1 # 优先级，数字越大优先级越高
-      route: #路由规则列表
-      - tags:
-          version: 1.0
-          project: x
-        weight: 50 #全重 50%到这里
-      - tags:
-          version: 2.0
-          project: z
-        weight: 50 #全重 50%到这里
+servicecomb:
+  routeRule:
+    paymentService: |
+      - precedence: 1 # 优先级，数字越大优先级越高
+        route: #路由规则列表
+        - tags:
+            version: 1.0
+            project: x
+          weight: 50 #全重 50%到这里
+        - tags:
+            version: 2.0
+            project: z
+          weight: 50 #全重 50%到这里
 

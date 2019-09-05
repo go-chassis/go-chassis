@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-// PaasLagerDefinition is having the information about loging
+// PaasLagerDefinition is having the information about logging
 var PaasLagerDefinition *PassLagerCfg
 
 func init() {
@@ -20,13 +20,13 @@ func init() {
 
 // InitLogger initiate config file and openlogging before other modules
 func InitLogger() {
-	err := ParseLoggerConfig(fileutil.PaasLagerDefinition())
+	err := ParseLoggerConfig(fileutil.LogConfigPath())
 	//initialize log in any case
 	if err != nil {
 		lager.Initialize("", "", "",
 			"", false, 1, 10, 7)
 		if os.IsNotExist(err) {
-			lager.Logger.Infof("[%s] not exist", fileutil.PaasLagerDefinition())
+			lager.Logger.Infof("[%s] not exist", fileutil.LogConfigPath())
 		} else {
 			log.Panicln(err)
 		}

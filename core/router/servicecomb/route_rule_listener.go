@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package cse
+package servicecomb
 
 import (
 	"github.com/go-chassis/go-archaius/core"
-	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/router"
 	"github.com/go-mesh/openlogging"
 
@@ -41,14 +41,28 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 		"event": e.EventType,
 		"rule":  e.Value,
 	}))
-	s := strings.Replace(e.Key, DarkLaunchPrefix, "", 1)
+	var service string
+	var isV2 bool
+	if strings.HasPrefix(e.Key, DarkLaunchPrefix) {
+		service = strings.Replace(e.Key, DarkLaunchPrefix, "", 1)
+	}
+	if strings.HasPrefix(e.Key, DarkLaunchPrefixV2) {
+		service = strings.Replace(e.Key, DarkLaunchPrefixV2, "", 1)
+		isV2 = true
+	}
+	raw, ok := e.Value.(string)
+	if !ok {
+		openlogging.Error("invalid route rule", openlogging.WithTags(openlogging.Tags{
+			"value": raw,
+		}))
+	}
 	switch e.EventType {
 	case common.Update:
-		SaveRouteRule(s, e)
+		SaveRouteRule(service, raw, isV2)
 	case common.Create:
-		SaveRouteRule(s, e)
+		SaveRouteRule(service, raw, isV2)
 	case common.Delete:
-		cseRouter.DeleteRouteRuleByKey(s)
+		cseRouter.DeleteRouteRuleByKey(service)
 		openlogging.Info("route rule is removed", openlogging.WithTags(
 			openlogging.Tags{
 				"key": e.Key,
@@ -58,25 +72,36 @@ func (r *routeRuleEventListener) Event(e *core.Event) {
 }
 
 //SaveRouteRule save event rule to local cache
-func SaveRouteRule(service string, e *core.Event) {
-	raw, ok := e.Value.(string)
-	if !ok {
-		openlogging.Error("invalid route rule", openlogging.WithTags(openlogging.Tags{
-			"value": raw,
-		}))
+func SaveRouteRule(service string, raw string, isV2 bool) {
+	var routeRules []*config.RouteRule
+	var err error
+	if !isV2 {
+		routeRules, err = ConvertJSON2RouteRule(raw)
+		if err != nil {
+			openlogging.Error("LoadRules route rule failed", openlogging.WithTags(openlogging.Tags{
+				"err": err.Error(),
+			}))
+		}
+	} else {
+		originRule, err := config.NewServiceRule(raw)
+		if err != nil {
+			openlogging.Error("LoadRules route rule failed", openlogging.WithTags(openlogging.Tags{
+				"err": err.Error(),
+			}))
+			return
+		}
+		routeRules = originRule.Value()
 	}
-	routeRules, err := ConvertJSON2RouteRule(raw)
-	if err != nil {
-		openlogging.Error("LoadRules route rule failed", openlogging.WithTags(openlogging.Tags{
-			"err": err.Error(),
-		}))
-	}
-	if router.ValidateRule(map[string][]*model.RouteRule{service: routeRules}) {
+
+	validateAndUpdate(routeRules, service)
+}
+
+func validateAndUpdate(routeRules []*config.RouteRule, service string) {
+	if router.ValidateRule(map[string][]*config.RouteRule{service: routeRules}) {
 		cseRouter.SetRouteRuleByKey(service, routeRules)
 		wp.GetPool().Reset(service)
 		openlogging.Info("update route rule success", openlogging.WithTags(
 			openlogging.Tags{
-				"key":     e.Key,
 				"service": service,
 				"rule":    routeRules,
 			}))

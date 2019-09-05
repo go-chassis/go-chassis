@@ -34,7 +34,7 @@ func TestGlobalDefinition(t *testing.T) {
 	assert.Equal(t, filepath.Join("test", "conf", fileutil.Global), def)
 }
 func TestPassLagerDefinition(t *testing.T) {
-	def := fileutil.PaasLagerDefinition()
+	def := fileutil.LogConfigPath()
 	assert.Equal(t, filepath.Join("test", "conf", fileutil.PaasLager), def)
 }
 func TestSchemaDir(t *testing.T) {
@@ -76,7 +76,7 @@ func TestGetMonitoring(t *testing.T) {
 }
 
 func TestGetRouter(t *testing.T) {
-	assert.NotEmpty(t, fileutil.RouterDefinition())
+	assert.NotEmpty(t, fileutil.RouterConfigPath())
 }
 
 func TestGetMicroserviceDesc(t *testing.T) {
