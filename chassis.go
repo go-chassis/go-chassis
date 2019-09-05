@@ -22,7 +22,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/server/restful"
 
 	//routers
-	_ "github.com/go-chassis/go-chassis/core/router/cse"
+	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"

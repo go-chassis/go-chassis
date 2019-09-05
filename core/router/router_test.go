@@ -7,12 +7,11 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/router"
-	_ "github.com/go-chassis/go-chassis/core/router/cse"
+	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -135,7 +134,7 @@ func TestRPCRoute(t *testing.T) {
 	}
 	si.Tags[common.BuildinTagVersion] = "v2"
 
-	c := &model.RouterConfig{}
+	c := &config.RouterConfig{}
 	if err := yaml.Unmarshal([]byte(rpcfile), c); err != nil {
 		t.Error(err)
 	}
@@ -164,7 +163,7 @@ func TestRoute(t *testing.T) {
 	si.Tags[common.BuildinTagApp] = "HelloWorld"
 	si.Tags[common.BuildinTagVersion] = "v2"
 
-	c := &model.RouterConfig{}
+	c := &config.RouterConfig{}
 	if err := yaml.Unmarshal([]byte(file), c); err != nil {
 		t.Error(err)
 	}
@@ -202,7 +201,7 @@ func TestRoute(t *testing.T) {
 }
 
 func TestRoute2(t *testing.T) {
-	c := &model.RouterConfig{}
+	c := &config.RouterConfig{}
 	if err := yaml.Unmarshal([]byte(file2), c); err != nil {
 		t.Error(err)
 	}
@@ -280,12 +279,12 @@ func TestSortRules(t *testing.T) {
 	assert.Equal(t, 20, router.SortRules("test")[3].Precedence)
 }
 
-func InitDests() map[string][]*model.RouteRule {
-	r1 := &model.RouteRule{}
-	r2 := &model.RouteRule{}
-	r3 := &model.RouteRule{}
-	r4 := &model.RouteRule{}
-	r5 := &model.RouteRule{}
+func InitDests() map[string][]*config.RouteRule {
+	r1 := &config.RouteRule{}
+	r2 := &config.RouteRule{}
+	r3 := &config.RouteRule{}
+	r4 := &config.RouteRule{}
+	r5 := &config.RouteRule{}
 	r1.Precedence = 20
 	r2.Precedence = 30
 	r3.Precedence = 50
@@ -300,24 +299,24 @@ func InitDests() map[string][]*model.RouteRule {
 	r2.Match = match2
 	r1.Match = match1
 	r3.Match = match3
-	rules := []*model.RouteRule{r1, r2, r3, r4, r5}
-	dests := map[string][]*model.RouteRule{"test": rules}
+	rules := []*config.RouteRule{r1, r2, r3, r4, r5}
+	dests := map[string][]*config.RouteRule{"test": rules}
 	return dests
 }
 
-func InitTags(v1 string, v2 string) []*model.RouteTag {
-	tag1 := new(model.RouteTag)
-	tag2 := new(model.RouteTag)
+func InitTags(v1 string, v2 string) []*config.RouteTag {
+	tag1 := new(config.RouteTag)
+	tag2 := new(config.RouteTag)
 	tag1.Weight = 50
 	tag2.Weight = 50
 	tag1.Tags = map[string]string{"version": v1}
 	tag2.Tags = map[string]string{"version": v2}
-	tags := []*model.RouteTag{tag1, tag2}
+	tags := []*config.RouteTag{tag1, tag2}
 	return tags
 }
 
-func InitMatch(source string, pat string, tags map[string]string) model.Match {
-	match := model.Match{}
+func InitMatch(source string, pat string, tags map[string]string) config.Match {
+	match := config.Match{}
 	match.Source = source
 	match.SourceTags = tags
 	regex := map[string]string{"regex": pat}

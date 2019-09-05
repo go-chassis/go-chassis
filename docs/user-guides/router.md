@@ -14,30 +14,31 @@
 灰度发布的路由规则只在服务的消费端配置使用，用于**将特定的请求，按一定权重，分发至同一服务名的不同分组。**用户可在conf/router.yaml 文件中设置：
 
 ```yaml
-routeRule:  
-  {targetServiceName}: # 服务名
-    - precedence: {number} #优先级
-      match:        #匹配策略
-        source: {sourceServiceName} #匹配某个服务名
-        headers:          #header匹配
-          {key0}:            
-            regex: {regex}
-            caseInsensitive: false # 是否区分大小写，默认为false，区分大小写
-          {key1}         
-            exact: {=？}   
-      route: #路由规则
-        - weight: {percent} #权重值
-          tags:
-            version: {version1}
-            app: {appId}
-    - precedence: {number1}
-      match:        
-        refer: {sourceTemplateName} #参考某个source模板ID
-      route:
-        - weight: {percent}
-          tags:
-            version: {version2}
-            app: {appId}        
+servicecomb:
+    routeRule:  
+      {targetServiceName}: |# 服务名
+        - precedence: {number} #优先级
+          match:        #匹配策略
+            source: {sourceServiceName} #匹配某个服务名
+            headers:          #header匹配
+              {key0}:            
+                regex: {regex}
+                caseInsensitive: false # 是否区分大小写，默认为false，区分大小写
+              {key1}         
+                exact: {=？}   
+          route: #路由规则
+            - weight: {percent} #权重值
+              tags:
+                version: {version1}
+                app: {appId}
+        - precedence: {number1}
+          match:        
+            refer: {sourceTemplateName} #参考某个source模板ID
+          route:
+            - weight: {percent}
+              tags:
+                version: {version2}
+                app: {appId}        
 sourceTemplate:  #定义source模板
   {templateName}: # source 模板ID
     source: {sourceServiceName} 
@@ -92,13 +93,14 @@ router.GetRouteRule() 返回值 map[string][]*config.RouteRule
 每个路由规则的目标服务名称都由routeRule中的Key值指定。例如下表所示，所有以“Carts”服务为目标服务的路由规则均被包含在以“Carts”为Key值的列表中。
 
 ```yaml
-routeRule:
-  Carts:
-    - precedence: 1
-      route:
-        - weight: 100 #percent          
-          tags:            
-            version: 0.0.1
+servicecomb:
+    routeRule:
+      Carts: |
+        - precedence: 1
+          route:
+            - weight: 100 #percent          
+              tags:            
+                version: 0.0.1
 ```
 
 Key值（目标服务名称）应该满足是一个合法的域名称。例如，一个在服务中心中注册的服务名称。
@@ -112,22 +114,23 @@ Key值（目标服务名称）应该满足是一个合法的域名称。例如�
 以下面的路由规则为例，对所有访问“Carts“服务的请求，如果满足header中包含”Foo：bar“，则将请求分发到服务的”2.0“版本的实例中，剩余的其他请求全部分发到”1.0“版本的实例中。
 
 ```yaml
-routeRule:
-  Carts:
-    - precedence: 2
-      match:
-        headers:
-          Foo:
-            exact: bar
-      route:
-        - weight: 100           
-          tags:            
-            version: 2.0
-    - precedence: 1
-      route:
-        - weight: 100   
-          tags:            
-            version: 1.0
+servicecomb:
+    routeRule: 
+      Carts: |
+        - precedence: 2
+          match:
+            headers:
+              Foo:
+                exact: bar
+          route:
+            - weight: 100           
+              tags:            
+                version: 2.0
+        - precedence: 1
+          route:
+            - weight: 100   
+              tags:            
+                version: 1.0
 ```
 
 #### 请求匹配规则
@@ -226,19 +229,20 @@ route:
 我们可以通过预定义源模板（模板中的结构为一个Match结构），并在match部分引用该模板来进行路由规则的匹配。在下面的例子中，“vmall-with-special-header”是一个预定义的源模板的Key值，并在Carts的请求匹配规则中被引用。
 
 ```yaml
-routeRule:
-  Carts:
-    - precedence: 2
-      match:
-        refer: vmall-with-special-header
-      route:
-        - weight: 100           
-          tags:            
-            version: 2.0
-sourceTemplate:
-  vmall-with-special-header:
-    source: vmall
-    headers:
-      cookie:
-        regex: "^(.*?;)?(user=jason)(;.*)?$"
+servicecomb:
+    routeRule: 
+      Carts: |
+        - precedence: 2
+          match:
+            refer: vmall-with-special-header
+          route:
+            - weight: 100           
+              tags:            
+                version: 2.0
+    sourceTemplate:
+      vmall-with-special-header:
+        source: vmall
+        headers:
+          cookie:
+            regex: "^(.*?;)?(user=jason)(;.*)?$"
 ```

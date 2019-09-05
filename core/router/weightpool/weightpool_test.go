@@ -3,18 +3,18 @@ package weightpool_test
 import (
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/config"
 	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	tagsOff100 = []*model.RouteTag{
+	tagsOff100 = []*config.RouteTag{
 		{Weight: 25, Tags: map[string]string{"version": "A"}},
 		{Weight: 30, Tags: map[string]string{"version": "B"}},
 		{Weight: 40, Tags: map[string]string{"version": "C"}},
 	}
-	tags50 = []*model.RouteTag{
+	tags50 = []*config.RouteTag{
 		{Weight: 50, Tags: map[string]string{"version": "A"}},
 		{Weight: 50, Tags: map[string]string{"version": "B"}},
 	}

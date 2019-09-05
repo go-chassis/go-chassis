@@ -1,7 +1,7 @@
 ---
 #微服务的私有属性
 service_description:
-  name: ROUTERServer
+  name: paymentService
   version: 2.0
   instance_properties:
     project: z

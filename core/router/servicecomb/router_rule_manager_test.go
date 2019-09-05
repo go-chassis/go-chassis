@@ -1,11 +1,10 @@
-package cse_test
+package servicecomb_test
 
 import (
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 )
 
@@ -17,11 +16,11 @@ const (
 	svcRouteAndDarkLaunch = "svcRouteAndDarkLaunch"
 )
 
-func genSvcRouteRule() []*model.RouteRule {
-	r := []*model.RouteRule{
+func genSvcRouteRule() []*config.RouteRule {
+	r := []*config.RouteRule{
 		{
 			Precedence: 0,
-			Routes: []*model.RouteTag{
+			Routes: []*config.RouteTag{
 				{
 					Tags: map[string]string{
 						common.BuildinTagVersion: "0.0.1",
@@ -39,11 +38,11 @@ func genSvcDarkLaunchRule() string {
 	return `{"policyType":"RATE","ruleItems":[{"groupName":"s0"},{"groupName":"s1"}]}`
 }
 
-func genSvcRouteAndDarkLaunchRule() ([]*model.RouteRule, string) {
-	r := []*model.RouteRule{
+func genSvcRouteAndDarkLaunchRule() ([]*config.RouteRule, string) {
+	r := []*config.RouteRule{
 		{
 			Precedence: 1,
-			Routes: []*model.RouteTag{
+			Routes: []*config.RouteTag{
 				{
 					Tags: map[string]string{
 						common.BuildinTagVersion: "0.0.1",
@@ -70,7 +69,7 @@ func init() {
 }
 
 func initRouterDefinition() {
-	config.RouterDefinition = &model.RouterConfig{Router: model.Router{}}
+	config.OldRouterDefinition = &config.RouterConfig{Router: config.Router{}}
 }
 
 func TestRouter_Init(t *testing.T) {
