@@ -237,7 +237,7 @@ cse:
 			assert.Error(t, r.Err)
 			return r.Err
 		})
-		c.Reset()
+		i.HandlerIndex = 0
 	})
 	t.Run("select service3 without instances eps", func(t *testing.T) {
 		testRegistryObj.On("FindMicroServiceInstances",
@@ -255,7 +255,7 @@ cse:
 			assert.Error(t, r.Err)
 			return r.Err
 		})
-		c.Reset()
+		i.HandlerIndex = 0
 	})
 	mss = append(mss, ms1)
 	mss = append(mss, ms2)
@@ -276,7 +276,7 @@ cse:
 			assert.NoError(t, r.Err)
 			return r.Err
 		})
-		c.Reset()
+		i.HandlerIndex = 0
 	})
 
 	i.Strategy = loadbalancer.StrategyRoundRobin
@@ -346,7 +346,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 		c.Next(iv, func(r *invocation.Response) error {
 			return r.Err
 		})
-		c.Reset()
+		iv.HandlerIndex = 0
 	}
 
 }

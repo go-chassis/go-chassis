@@ -150,6 +150,6 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 		c.Next(inv, func(r *invocation.Response) error {
 			return r.Err
 		})
-		c.Reset()
+		inv.HandlerIndex = 0
 	}
 }
