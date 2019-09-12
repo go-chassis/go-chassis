@@ -71,6 +71,6 @@ func BenchmarkChain_Next(b *testing.B) {
 		c.Next(iv, func(r *invocation.Response) error {
 			return r.Err
 		})
-		c.Reset()
+		iv.HandlerIndex = 0
 	}
 }
