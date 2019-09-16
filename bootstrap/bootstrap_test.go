@@ -43,7 +43,11 @@ func TestBootstrap(t *testing.T) {
 	config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version = "v2"
 
 	t.Log("Test bootstrap.go")
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 	success = make(map[string]bool)
 
 	plugin1 := &bootstrapPlugin{Name: "plugin1"}

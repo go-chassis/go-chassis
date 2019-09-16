@@ -17,7 +17,11 @@ func TestInstallPlugin(t *testing.T) {
 
 }
 func TestInit(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 	config.GlobalDefinition = &model.GlobalCfg{
 		Panel: model.ControlPanel{
 			Infra: "",

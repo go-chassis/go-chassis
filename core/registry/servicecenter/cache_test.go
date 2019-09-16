@@ -19,11 +19,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestCacheManager_AutoSync(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test cache.go")
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 	registry.Enable()
@@ -143,7 +148,6 @@ func TestCacheManager_MakeSchemaIndex(t *testing.T) {
 	//Add autoIndex Key in Archaius
 	archaius.AddKeyValue("cse.service.registry.autoSchemaIndex", true)
 	config.GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.RefreshInterval = "1"
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
 	time.Sleep(time.Second * 1)

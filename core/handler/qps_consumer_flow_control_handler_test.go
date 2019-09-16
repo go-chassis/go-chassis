@@ -14,11 +14,16 @@ import (
 	"testing"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestConsumerRateLimiterDisable(t *testing.T) {
 	t.Log("testing consumerratelimiter handler with qps enabled as false")
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 	opts := control.Options{
@@ -45,11 +50,14 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 	})
 
 }
-
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestConsumerRateLimiterHandler_Handle(t *testing.T) {
 	t.Log("testing consumerratelimiter handler with qps enabled as true")
-
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 

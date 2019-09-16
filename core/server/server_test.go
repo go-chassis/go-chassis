@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	_ "github.com/go-chassis/go-chassis/initiator"
 
 	"errors"
@@ -10,12 +11,11 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/registry/mock"
 	"github.com/go-chassis/go-chassis/core/server"
 	_ "github.com/go-chassis/go-chassis/server/restful"
-	cache "github.com/patrickmn/go-cache"
+	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,8 +48,6 @@ func TestSrcMgr(t *testing.T) {
 
 	err := config.Init()
 	assert.NoError(t, err)
-
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	var arr = []string{"127.0.0.1", "hgfghfff"}
 
@@ -128,8 +126,6 @@ func TestSrcMgrErr(t *testing.T) {
 	err := config.Init()
 	assert.NoError(t, err)
 
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-
 	var arr = []string{"127.0.0.1", "hgfghfff"}
 	registry.SelfInstancesCache = cache.New(0, 0)
 	registry.SelfInstancesCache.Set("abc", arr, time.Second*30)
@@ -189,4 +185,10 @@ func TestSrcMgrErr(t *testing.T) {
 	assert.Nil(t, srv2)
 	assert.Error(t, err)
 
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

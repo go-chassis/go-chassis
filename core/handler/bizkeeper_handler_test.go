@@ -124,7 +124,12 @@ func TestBizKeeperHandler_Names(t *testing.T) {
 	assert.Equal(t, "bizkeeper-consumer", conName)
 
 }
-
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 	b.Log("benchmark for bizkeeper consumer handler")
 	c := handler.Chain{}
@@ -132,7 +137,6 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
 
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	opts := control.Options{
 		Infra:   config.GlobalDefinition.Panel.Infra,

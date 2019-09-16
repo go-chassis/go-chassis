@@ -65,7 +65,10 @@ func genDarkLaunchRuleAfterUpdate() string {
 }
 
 func init() {
-	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }
 
 func initRouterDefinition() {

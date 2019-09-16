@@ -18,7 +18,6 @@ func fake(o map[string]string) (opentracing.Tracer, error) {
 	return nil, errors.New("123")
 }
 func TestTracerManager(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.GlobalDefinition = &model.GlobalCfg{}
 	tracing.InstallTracer("test", test)
 	tracing.InstallTracer("fake", fake)
@@ -35,4 +34,10 @@ func TestTracerManager(t *testing.T) {
 	}
 	err = tracing.Init()
 	assert.Error(t, err)
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

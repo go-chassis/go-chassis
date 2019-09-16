@@ -18,7 +18,6 @@ package lager
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/go-mesh/openlogging"
 	"io"
 	"io/ioutil"
 	"os"
@@ -27,6 +26,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/go-mesh/openlogging"
 )
 
 var pathReplacer *strings.Replacer
@@ -291,8 +292,8 @@ func CopyFile(srcFile, dstFile string) error {
 }
 
 // initLogRotate initialize log rotate
-func initLogRotate(logFilePath string, lag *Lager) {
-	if lag == nil {
+func initLogRotate(logFilePath string, option *Options) {
+	if option == nil {
 		go func() {
 			for {
 				LogRotate(filepath.Dir(logFilePath), LogRotateSize, LogBackupCount)
@@ -300,18 +301,18 @@ func initLogRotate(logFilePath string, lag *Lager) {
 			}
 		}()
 	} else {
-		if lag.RollingPolicy == RollingPolicySize {
+		if option.RollingPolicy == RollingPolicySize {
 			go func() {
 				for {
-					LogRotate(filepath.Dir(logFilePath), lag.LogRotateSize, lag.LogBackupCount)
+					LogRotate(filepath.Dir(logFilePath), option.LogRotateSize, option.LogBackupCount)
 					time.Sleep(30 * time.Second)
 				}
 			}()
 		} else {
 			go func() {
 				for {
-					LogRotate(filepath.Dir(logFilePath), 0, lag.LogBackupCount)
-					time.Sleep(24 * time.Hour * time.Duration(lag.LogRotateDate))
+					LogRotate(filepath.Dir(logFilePath), 0, option.LogBackupCount)
+					time.Sleep(24 * time.Hour * time.Duration(option.LogRotateDate))
 				}
 			}()
 		}

@@ -29,7 +29,6 @@ func TestRegister(t *testing.T) {
 	t.Log("testing registeration of a schema")
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 	p := &provider.DefaultProvider{}
@@ -40,7 +39,6 @@ func TestRegister(t *testing.T) {
 func TestRegister2(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 	provider := &provider.DefaultProvider{}
@@ -68,7 +66,6 @@ func TestRegister2(t *testing.T) {
 func TestProvider_Invoke(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}
 	schema := "schema1"
@@ -89,7 +86,6 @@ func TestProvider_Invoke(t *testing.T) {
 func TestDefaultProvider_GetOperation(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}
 	schema := "schema1"
@@ -104,7 +100,6 @@ func TestDefaultProvider_GetOperation(t *testing.T) {
 func TestDefaultProvider_Exist(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}
 	schema := "schema1"
@@ -121,7 +116,6 @@ func TestDefaultProvider_Exist(t *testing.T) {
 func BenchmarkDefaultProvider_GetOperation(b *testing.B) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	p := &provider.DefaultProvider{}
 	schema := "schema1"
@@ -130,4 +124,10 @@ func BenchmarkDefaultProvider_GetOperation(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p.GetOperation(schema, "SayHello")
 	}
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

@@ -15,7 +15,6 @@ func TestQpsEvent(t *testing.T) {
 
 	t.Log("Test qps_event_listener.go")
 	config.Init()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	eventlistener.Init()
 	eventListen := &eventlistener.QPSEventListener{}
 	t.Log("sending the events for the key cse.flowcontrol.Consumer.qps.limit.Server")
@@ -28,4 +27,10 @@ func TestQpsEvent(t *testing.T) {
 	e2 := &core.Event{EventType: "DELETE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
 	eventListen.Event(e2)
 
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

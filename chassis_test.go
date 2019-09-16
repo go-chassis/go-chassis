@@ -99,7 +99,10 @@ service_description:
     p: s
 `)
 
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 
@@ -129,5 +132,9 @@ func TestInitError(t *testing.T) {
 	t.Log("Testing chassis Init function for errors")
 	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "communication/client")
 	os.Setenv("CHASSIS_HOME", p)
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

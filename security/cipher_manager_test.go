@@ -32,7 +32,6 @@ func (c *DefaultCipher) Decrypt(src string) (string, error) {
 }
 
 func TestInstallCipherPlugin(t *testing.T) {
-	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
 
 	security.InstallCipherPlugin("test", new)
 	f, err := security.GetCipherNewFunc("test")
@@ -45,4 +44,10 @@ func TestInstallCipherPlugin(t *testing.T) {
 
 	_, err = security.GetCipherNewFunc("aes")
 	assert.NoError(t, err)
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

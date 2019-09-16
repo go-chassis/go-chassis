@@ -8,9 +8,14 @@ import (
 	"testing"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestFramework(t *testing.T) {
 	metadata.Once = &sync.Once{}
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	assert := assert.New(t)
 	t.Log("Service started by SDK")
 	f := metadata.NewFramework()

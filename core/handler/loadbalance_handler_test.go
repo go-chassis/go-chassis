@@ -291,11 +291,15 @@ cse:
 	t.Log(i.Protocol)
 	t.Log(i.Endpoint)
 }
-
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func BenchmarkLBHandler_Handle(b *testing.B) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	opts := control.Options{
 		Infra:   config.GlobalDefinition.Panel.Infra,
