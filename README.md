@@ -18,9 +18,7 @@ like registry, metrics, handler chain, config server etc
 With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
 your don't need to investigate, implement and integrate many solutions yourself.
 
-go chassis supports Istio platform, Although Istio is a great platform with a service mesh in data plane, 
-it surely decrease the throughput and increase the latency of your service 
-go chassis can bring better performance to go program, 
+go chassis supports Istio control panel, go chassis can bring better performance to go program, 
 you can use Istio configurations to control go chassis.
 
 # Features
@@ -40,7 +38,8 @@ you can use Istio configurations to control go chassis.
  - **Hot-reconfiguraion**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting
  - **Dynamic Configuration framework**: Powered by go-archaius, developer is able to develop a service which has hot-reconfiguration feature easily
  - **Fault Injection**: In consumer side, you can inject faults to bring chaos testing into your system
- 
+ - **API gateway and service mesh solution**: powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
+
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
 # Get started 
@@ -104,9 +103,11 @@ you can use spring cloud or Envoy with go chassis under same service discovery s
 
 # Other project using go-chassis
 - [apache/servicecomb-kie](https://github.com/apache/servicecomb-kie): 
-A distributed configuration management service
+A distributed configuration management service, go chassis and mesher integrate with it,
+so that user can manage service configurations by this service.
 - [apache/servicecomb-mesher](https://github.com/apache/servicecomb-mesher): 
-A service mesh able to co-work with go chassis
+A service mesh able to co-work with go chassis, 
+it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/configurations/edge.html) also.
 
 
 # To start developing go chassis
