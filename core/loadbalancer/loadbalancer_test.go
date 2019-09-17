@@ -20,11 +20,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestEnable(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	t.Log(os.Getenv("CHASSIS_HOME"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 
 	LBstr := make(map[string]string)
@@ -74,7 +79,6 @@ func TestBuildStrategy(t *testing.T) {
 
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	registry.Enable()
 	registry.DoRegister()
@@ -123,11 +127,15 @@ func TestBuildStrategy(t *testing.T) {
 		"127.0.0.1", "service",
 		utiltags.NewDefaultTag("1.0", "app"), "rest")
 }
-
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func BenchmarkDefaultSelector_Select(b *testing.B) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	registry.Enable()
 	registry.DoRegister()

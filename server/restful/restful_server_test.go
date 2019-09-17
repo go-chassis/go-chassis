@@ -1,6 +1,7 @@
 package restful
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	"log"
 	"net/http"
 	"os"
@@ -10,7 +11,6 @@ import (
 	rf "github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,13 +18,18 @@ import (
 var addrHighway = "127.0.0.1:2399"
 var addrHighway1 = "127.0.0.1:2330"
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func initEnv() {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("CHASSIS_HOME"))
 	os.Setenv("GO_CHASSIS_SWAGGERFILEPATH", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("GO_CHASSIS_SWAGGERFILEPATH"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""

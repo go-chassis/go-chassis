@@ -10,6 +10,12 @@ import (
 	"testing"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestWrapInstance(t *testing.T) {
 	wi := WrapInstance{
 		AppID:       "1",
@@ -24,7 +30,6 @@ func TestWrapInstance(t *testing.T) {
 func TestRefreshCache(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 
 	enableRegistryCache()

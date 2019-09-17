@@ -15,7 +15,6 @@ import (
 
 func TestAddProvider(t *testing.T) {
 	config.Init()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	p := provider.RegisterProvider("123", "service1")
 	assert.Nil(t, p)
 	p = provider.RegisterProvider("default", "service1")
@@ -40,7 +39,6 @@ func TestAddProvider(t *testing.T) {
 
 func TestAddCustomProvider(t *testing.T) {
 	config.Init()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	provider.RegisterCustomProvider("test", provider.NewProvider("test"))
 	provider.RegisterCustomProvider("test", provider.NewProvider("test"))
 }
@@ -93,4 +91,10 @@ func BenchmarkGetProvider(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, _ = provider.GetProvider("service1")
 	}
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

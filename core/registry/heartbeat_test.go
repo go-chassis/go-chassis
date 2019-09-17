@@ -14,6 +14,12 @@ import (
 	"testing"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestServicecenter_Heartbeat(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
@@ -21,7 +27,6 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 	config.Init()
 	runtime.Init()
 	t.Log(os.Getenv("CHASSIS_HOME"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
 
@@ -58,7 +63,6 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 	var ins = map[string]string{"type": "test"}
 	config.MicroserviceDefinition.ServiceDescription.InstanceProperties = ins
 	t.Log(os.Getenv("CHASSIS_HOME"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
 

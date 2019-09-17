@@ -13,11 +13,16 @@ import (
 	"testing"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestRegistryClient_Health(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	config.Init()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registryClient := &client.RegistryClient{}
 	err := registryClient.Initialize(
 		client.Options{

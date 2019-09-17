@@ -1,11 +1,11 @@
 package client_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/paas-lager"
 	"github.com/go-mesh/openlogging"
@@ -236,8 +236,6 @@ func TestClientInitializeHttpErr(t *testing.T) {
 
 }
 func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
-	lager.Initialize("", "DEBUG", "",
-		"size", true, 1, 10, 7)
 
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -398,4 +396,10 @@ func TestRegistryClient_GetDefaultHeaders(t *testing.T) {
 	header := registryClient.GetDefaultHeaders()
 	tenant := header.Get(client.TenantHeader)
 	assert.Equal(t, tenant, "go-sc-tenant")
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

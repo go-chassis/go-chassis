@@ -16,7 +16,11 @@ import (
 )
 
 func init() {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 	config.HystrixConfig = &model.HystrixConfigWrapper{
 		HystrixConfig: &model.HystrixConfig{
 			IsolationProperties: &model.IsolationWrapper{

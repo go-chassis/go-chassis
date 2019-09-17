@@ -2,17 +2,22 @@ package session_test
 
 import (
 	"context"
+	"github.com/go-chassis/go-chassis/core/lager"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/session"
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestSessionStorage(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	t.Run("session option", func(t *testing.T) {
 		session.Save("abc", "127.0.0.1:8080", time.Second)
 		addr, ok := session.Get("abc")

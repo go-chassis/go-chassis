@@ -22,8 +22,11 @@ import (
 
 func initenv() {
 	config.Init()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
-	//handler.Init()
+
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }
 
 func TestRPCInvoker_InvokeFailinChainInit(t *testing.T) {

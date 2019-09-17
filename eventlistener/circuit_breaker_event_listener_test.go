@@ -1,12 +1,12 @@
 package eventlistener_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/eventlistener"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
@@ -24,14 +24,6 @@ func preTest() {
 			"examples",
 			"discovery",
 			"server"))
-	lager.Initialize("",
-		"INFO",
-		filepath.Join("log", "chassis.log"),
-		"size",
-		true,
-		1,
-		10,
-		7)
 }
 
 func TestCircuitBreakerEventListener_Event(t *testing.T) {
@@ -78,4 +70,10 @@ func TestGetNames(t *testing.T) {
 	assert.Equal(t, "carts.interface.get", serviceName)
 	n = eventlistener.GetCircuitName(sourceName, serviceName)
 	assert.Equal(t, "Consumer.carts.interface.get", n)
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

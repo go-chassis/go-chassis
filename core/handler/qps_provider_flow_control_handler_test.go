@@ -12,8 +12,13 @@ import (
 	"testing"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func initEnv() {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 }

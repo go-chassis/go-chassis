@@ -41,11 +41,15 @@ func TestGetStrategyName(t *testing.T) {
 			assert.Equal(t, 200, min)
 		})
 }
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 
 // GetServerListFilters get server list filters
 func BenchmarkGetServerListFilters(b *testing.B) {
-	lager.Initialize("", "DEBUG", "", "size",
-		true, 1, 10, 7)
 
 	err := config.InitArchaius()
 	assert.NoError(b, err)
@@ -59,8 +63,6 @@ func BenchmarkGetServerListFilters(b *testing.B) {
 
 // GetServerListFilters get server list filters
 func BenchmarkGetServerListFilters2(b *testing.B) {
-	lager.Initialize("", "DEBUG", "", "size",
-		true, 1, 10, 7)
 
 	err := config.InitArchaius()
 	assert.NoError(b, err)
@@ -72,8 +74,6 @@ func BenchmarkGetServerListFilters2(b *testing.B) {
 	}
 }
 func BenchmarkGetStrategyName(b *testing.B) {
-	lager.Initialize("", "DEBUG", "", "size",
-		true, 1, 10, 7)
 
 	err := config.InitArchaius()
 	assert.NoError(b, err)

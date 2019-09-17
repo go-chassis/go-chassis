@@ -26,8 +26,8 @@ var Logger lager.Logger
 // logFilePath log file path
 var logFilePath string
 
-// Lager struct for logger parameters
-type Lager struct {
+//Options is the struct for lager information(lager.yaml)
+type Options struct {
 	Writers        string `yaml:"writers"`
 	LoggerLevel    string `yaml:"logger_level"`
 	LoggerFile     string `yaml:"logger_file"`
@@ -38,95 +38,84 @@ type Lager struct {
 	LogBackupCount int    `yaml:"log_backup_count"`
 }
 
-// Initialize Build constructs a *Lager.Logger with the configured parameters.
-func Initialize(writers, loggerLevel, loggerFile, rollingPolicy string, logFormatText bool,
-	LogRotateDate, LogRotateSize, LogBackupCount int) {
-	lag := &Lager{
-		Writers:        writers,
-		LoggerLevel:    loggerLevel,
-		LoggerFile:     loggerFile,
-		LogFormatText:  logFormatText,
-		RollingPolicy:  rollingPolicy,
-		LogRotateDate:  LogRotateDate,
-		LogRotateSize:  LogRotateSize,
-		LogBackupCount: LogBackupCount,
-	}
-	Logger = newLog(lag)
-	initLogRotate(logFilePath, lag)
+// Init Build constructs a *Lager.Logger with the configured parameters.
+func Init(option *Options) {
+	Logger = newLog(option)
+	initLogRotate(logFilePath, option)
 	openlogging.SetLogger(Logger)
 	openlogging.Debug("logger init success")
 	return
 }
 
 // newLog new log
-func newLog(lag *Lager) lager.Logger {
-	checkPassLagerDefinition(lag)
+func newLog(option *Options) lager.Logger {
+	checkPassLagerDefinition(option)
 
-	if filepath.IsAbs(lag.LoggerFile) {
-		createLogFile("", lag.LoggerFile)
-		logFilePath = filepath.Join("", lag.LoggerFile)
+	if filepath.IsAbs(option.LoggerFile) {
+		createLogFile("", option.LoggerFile)
+		logFilePath = filepath.Join("", option.LoggerFile)
 	} else {
-		createLogFile(os.Getenv("CHASSIS_HOME"), lag.LoggerFile)
-		logFilePath = filepath.Join(os.Getenv("CHASSIS_HOME"), lag.LoggerFile)
+		createLogFile(os.Getenv("CHASSIS_HOME"), option.LoggerFile)
+		logFilePath = filepath.Join(os.Getenv("CHASSIS_HOME"), option.LoggerFile)
 	}
-	writers := strings.Split(strings.TrimSpace(lag.Writers), ",")
-	if len(strings.TrimSpace(lag.Writers)) == 0 {
+	writers := strings.Split(strings.TrimSpace(option.Writers), ",")
+	if len(strings.TrimSpace(option.Writers)) == 0 {
 		writers = []string{"stdout"}
 	}
 	paaslager.Init(paaslager.Config{
 		Writers:       writers,
-		LoggerLevel:   lag.LoggerLevel,
+		LoggerLevel:   option.LoggerLevel,
 		LoggerFile:    logFilePath,
-		LogFormatText: lag.LogFormatText,
+		LogFormatText: option.LogFormatText,
 	})
 
-	logger := paaslager.NewLogger(lag.LoggerFile)
+	logger := paaslager.NewLogger(option.LoggerFile)
 	return logger
 }
 
 // checkPassLagerDefinition check pass lager definition
-func checkPassLagerDefinition(lag *Lager) {
-	if lag.LoggerLevel == "" {
-		lag.LoggerLevel = "DEBUG"
+func checkPassLagerDefinition(option *Options) {
+	if option.LoggerLevel == "" {
+		option.LoggerLevel = "DEBUG"
 	}
 
-	if lag.LoggerFile == "" {
-		lag.LoggerFile = "log/chassis.log"
+	if option.LoggerFile == "" {
+		option.LoggerFile = "log/chassis.log"
 	}
 
-	if lag.RollingPolicy == "" {
+	if option.RollingPolicy == "" {
 		log.Println("RollingPolicy is empty, use default policy[size]")
-		lag.RollingPolicy = RollingPolicySize
-	} else if lag.RollingPolicy != "daily" && lag.RollingPolicy != RollingPolicySize {
-		log.Printf("RollingPolicy is error, RollingPolicy=%s, use default policy[size].", lag.RollingPolicy)
-		lag.RollingPolicy = RollingPolicySize
+		option.RollingPolicy = RollingPolicySize
+	} else if option.RollingPolicy != "daily" && option.RollingPolicy != RollingPolicySize {
+		log.Printf("RollingPolicy is error, RollingPolicy=%s, use default policy[size].", option.RollingPolicy)
+		option.RollingPolicy = RollingPolicySize
 	}
 
-	if lag.LogRotateDate <= 0 || lag.LogRotateDate > 10 {
-		lag.LogRotateDate = LogRotateDate
+	if option.LogRotateDate <= 0 || option.LogRotateDate > 10 {
+		option.LogRotateDate = LogRotateDate
 	}
 
-	if lag.LogRotateSize <= 0 || lag.LogRotateSize > 50 {
-		lag.LogRotateSize = LogRotateSize
+	if option.LogRotateSize <= 0 || option.LogRotateSize > 50 {
+		option.LogRotateSize = LogRotateSize
 	}
 
-	if lag.LogBackupCount < 0 || lag.LogBackupCount > 100 {
-		lag.LogBackupCount = LogBackupCount
+	if option.LogBackupCount < 0 || option.LogBackupCount > 100 {
+		option.LogBackupCount = LogBackupCount
 	}
 }
 
 // createLogFile create log file
-func createLogFile(localPath, outputpath string) {
-	_, err := os.Stat(strings.Replace(filepath.Dir(filepath.Join(localPath, outputpath)), "\\", "/", -1))
+func createLogFile(localPath, out string) {
+	_, err := os.Stat(strings.Replace(filepath.Dir(filepath.Join(localPath, out)), "\\", "/", -1))
 	if err != nil && os.IsNotExist(err) {
-		err := os.MkdirAll(strings.Replace(filepath.Dir(filepath.Join(localPath, outputpath)), "\\", "/", -1), os.ModePerm)
+		err := os.MkdirAll(strings.Replace(filepath.Dir(filepath.Join(localPath, out)), "\\", "/", -1), os.ModePerm)
 		if err != nil {
 			panic(err)
 		}
 	} else if err != nil {
 		panic(err)
 	}
-	f, err := os.OpenFile(strings.Replace(filepath.Join(localPath, outputpath), "\\", "/", -1), os.O_CREATE, 0640)
+	f, err := os.OpenFile(strings.Replace(filepath.Join(localPath, out), "\\", "/", -1), os.O_CREATE, 0640)
 	if err != nil {
 		panic(err)
 	}

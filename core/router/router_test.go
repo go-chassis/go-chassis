@@ -1,6 +1,7 @@
 package router_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	"os"
 	"path/filepath"
 	"testing"
@@ -8,13 +9,19 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/router"
 	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
+
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 
 var file = []byte(`
 sourceTemplate:
@@ -118,7 +125,6 @@ func TestBuildRouter(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 
-	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
 	config.Init()
 	router.BuildRouter("cse")
 

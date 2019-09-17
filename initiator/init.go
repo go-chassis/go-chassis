@@ -3,16 +3,17 @@
 package initiator
 
 import (
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 )
 
-// PaasLagerDefinition is having the information about logging
-var PaasLagerDefinition *PassLagerCfg
+// LoggerOptions has the configuration about logging
+var LoggerOptions *lager.Options
 
 func init() {
 	InitLogger()
@@ -23,25 +24,34 @@ func InitLogger() {
 	err := ParseLoggerConfig(fileutil.LogConfigPath())
 	//initialize log in any case
 	if err != nil {
-		lager.Initialize("", "", "",
-			"", false, 1, 10, 7)
+		lager.Init(&lager.Options{
+			LoggerLevel:   "INFO",
+			RollingPolicy: "size",
+		})
 		if os.IsNotExist(err) {
 			lager.Logger.Infof("[%s] not exist", fileutil.LogConfigPath())
 		} else {
 			log.Panicln(err)
 		}
 	} else {
-		lager.Initialize(PaasLagerDefinition.Writers, PaasLagerDefinition.LoggerLevel,
-			PaasLagerDefinition.LoggerFile, PaasLagerDefinition.RollingPolicy,
-			PaasLagerDefinition.LogFormatText, PaasLagerDefinition.LogRotateDate,
-			PaasLagerDefinition.LogRotateSize, PaasLagerDefinition.LogBackupCount)
+		lager.Init(&lager.Options{
+			Writers:        LoggerOptions.Writers,
+			LoggerLevel:    LoggerOptions.LoggerLevel,
+			RollingPolicy:  LoggerOptions.RollingPolicy,
+			LoggerFile:     LoggerOptions.LoggerFile,
+			LogFormatText:  LoggerOptions.LogFormatText,
+			LogRotateDate:  LoggerOptions.LogRotateDate,
+			LogRotateSize:  LoggerOptions.LogRotateSize,
+			LogBackupCount: LoggerOptions.LogBackupCount,
+		})
+
 	}
 }
 
 // ParseLoggerConfig unmarshals the logger configuration file(lager.yaml)
 func ParseLoggerConfig(file string) error {
-	PaasLagerDefinition = &PassLagerCfg{}
-	err := unmarshalYamlFile(file, PaasLagerDefinition)
+	LoggerOptions = &lager.Options{}
+	err := unmarshalYamlFile(file, LoggerOptions)
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
@@ -54,16 +64,4 @@ func unmarshalYamlFile(file string, target interface{}) error {
 		return err
 	}
 	return yaml.Unmarshal(content, target)
-}
-
-//PassLagerCfg is the struct for lager information(passlager.yaml)
-type PassLagerCfg struct {
-	Writers        string `yaml:"writers"`
-	LoggerLevel    string `yaml:"logger_level"`
-	LoggerFile     string `yaml:"logger_file"`
-	LogFormatText  bool   `yaml:"log_format_text"`
-	RollingPolicy  string `yaml:"rollingPolicy"`
-	LogRotateDate  int    `yaml:"log_rotate_date"`
-	LogRotateSize  int    `yaml:"log_rotate_size"`
-	LogBackupCount int    `yaml:"log_backup_count"`
 }

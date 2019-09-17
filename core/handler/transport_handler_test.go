@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,17 +11,21 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestTransportHandler_HandleRest(t *testing.T) {
 	t.Log("testing transport handler with rest protocol")
 	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "communication/client")
 	os.Setenv("CHASSIS_HOME", p)
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.Init()
 	config.GlobalDefinition.Cse.Protocols = map[string]model.Protocol{
