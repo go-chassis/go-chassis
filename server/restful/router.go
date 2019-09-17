@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/emicklei/go-restful"
@@ -94,6 +95,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 				openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
 					"path":  route.Path,
 					"panic": r,
+					"stack": string(debug.Stack()),
 				}))
 				if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
 					openlogging.Error("write response failed when handler panic.", openlogging.WithTags(openlogging.Tags{
