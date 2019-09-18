@@ -91,9 +91,20 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 	restHandler := func(req *restful.Request, rep *restful.Response) {
 		defer func() {
 			if r := recover(); r != nil {
+				var stacktrace string
+				for i := 1; ; i++ {
+					_, f, l, got := runtime.Caller(i)
+					if !got {
+						break
+					}
+
+					stacktrace += fmt.Sprintf("%s:%d\n", f, l)
+				}
+
 				openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
 					"path":  route.Path,
 					"panic": r,
+					"stack": stacktrace,
 				}))
 				if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
 					openlogging.Error("write response failed when handler panic.", openlogging.WithTags(openlogging.Tags{
