@@ -22,7 +22,7 @@ import (
 var GlobalDefinition *model.GlobalCfg
 var lbConfig *model.LBWrapper
 
-// MicroserviceDefinition is having the info about application id, provider info, description of the service,
+// MicroserviceDefinition has info about application id, provider info, description of the service,
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
 
@@ -35,14 +35,6 @@ var HystrixConfig *model.HystrixConfigWrapper
 
 // NodeIP gives the information of node ip
 var NodeIP string
-
-// SelfServiceName is self micro service name
-//Deprecated, plz use runtime.ServiceName
-var SelfServiceName string
-
-// SelfVersion gives version of the self micro service
-//Deprecated, use runtime pkg
-var SelfVersion string
 
 // ErrNoName is used to represent the service name missing error
 var ErrNoName = errors.New("micro service name is missing in description file")
@@ -328,9 +320,7 @@ func Init() error {
 		return err
 	}
 
-	SelfServiceName = MicroserviceDefinition.ServiceDescription.Name
 	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
-	SelfVersion = MicroserviceDefinition.ServiceDescription.Version
 	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
 	runtime.Environment = MicroserviceDefinition.ServiceDescription.Environment
 	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties

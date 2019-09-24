@@ -18,7 +18,7 @@
 package servicecomb
 
 import (
-	"github.com/go-chassis/go-archaius/core"
+	"github.com/go-chassis/go-archaius/event"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/router"
 	"github.com/go-mesh/openlogging"
@@ -31,7 +31,7 @@ import (
 type routeRuleEventListener struct{}
 
 // update route rule of a service
-func (r *routeRuleEventListener) Event(e *core.Event) {
+func (r *routeRuleEventListener) Event(e *event.Event) {
 	if e == nil {
 		openlogging.Warn("Event pointer is nil")
 		return

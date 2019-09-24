@@ -1,9 +1,9 @@
 package eventlistener_test
 
 import (
+	"github.com/go-chassis/go-archaius/event"
 	"testing"
 
-	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/eventlistener"
 )
@@ -16,22 +16,22 @@ func TestLagerEventListener_Event(t *testing.T) {
 	eventListen := &eventlistener.LagerEventListener{}
 	t.Log("sending the events for the key logger_level")
 
-	e1 := &core.Event{EventType: "UPDATE", Key: "logger_level", Value: "INFO"}
+	e1 := &event.Event{EventType: "UPDATE", Key: "logger_level", Value: "INFO"}
 	eventListen.Event(e1)
 
-	e2 := &core.Event{EventType: "UPDATE", Key: "logger_level", Value: "WARN"}
+	e2 := &event.Event{EventType: "UPDATE", Key: "logger_level", Value: "WARN"}
 	eventListen.Event(e2)
 
-	e3 := &core.Event{EventType: "UPDATE", Key: "logger_level", Value: "ERROR"}
+	e3 := &event.Event{EventType: "UPDATE", Key: "logger_level", Value: "ERROR"}
 	eventListen.Event(e3)
 
-	e4 := &core.Event{EventType: "UPDATE", Key: "logger_level", Value: "FATAL"}
+	e4 := &event.Event{EventType: "UPDATE", Key: "logger_level", Value: "FATAL"}
 	eventListen.Event(e4)
 
-	e5 := &core.Event{EventType: "UPDATE", Key: "logger_level", Value: "BAD"}
+	e5 := &event.Event{EventType: "UPDATE", Key: "logger_level", Value: "BAD"}
 	eventListen.Event(e5)
 
-	e := &core.Event{EventType: "UPDATE", Key: "logger_level", Value: "DEBUG"}
+	e := &event.Event{EventType: "UPDATE", Key: "logger_level", Value: "DEBUG"}
 	eventListen.Event(e)
 
 }

@@ -1,6 +1,7 @@
 package eventlistener_test
 
 import (
+	"github.com/go-chassis/go-archaius/event"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"os"
 	"path/filepath"
@@ -10,7 +11,6 @@ import (
 	"github.com/go-chassis/go-chassis/eventlistener"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 
-	"github.com/go-chassis/go-archaius/core"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,13 +33,13 @@ func TestCircuitBreakerEventListener_Event(t *testing.T) {
 	eventlistener.Init()
 	eventListen := &eventlistener.CircuitBreakerEventListener{}
 	t.Log("sending the events for the key cse.flowcontrol.Consumer.qps.limit.Server")
-	e := &core.Event{EventType: "UPDATE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
+	e := &event.Event{EventType: "UPDATE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
 	eventListen.Event(e)
 
-	e1 := &core.Event{EventType: "CREATE", Key: "cse.flowcontrol.Provider.qps.limit.Server", Value: 100}
+	e1 := &event.Event{EventType: "CREATE", Key: "cse.flowcontrol.Provider.qps.limit.Server", Value: 100}
 	eventListen.Event(e1)
 
-	e2 := &core.Event{EventType: "DELETE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
+	e2 := &event.Event{EventType: "DELETE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
 	eventListen.Event(e2)
 
 }

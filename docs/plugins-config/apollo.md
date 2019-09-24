@@ -1,6 +1,4 @@
-# Using Ctrip Apollo as a Configuration Center
-
-## Ctrip Apollo
+# Ctrip Apollo
 [Ctrip Apollo](https://github.com/ctripcorp/apollo) is a Configuration Server which can be used to store your configurations. Go-Chassis supports retrieving the configurations from Apollo and can be used for dynamic configurations of microservices. In this guide we will explain you how to configure Go-Chassis to use Apollo as a configuration server.
 
 ## Configurations

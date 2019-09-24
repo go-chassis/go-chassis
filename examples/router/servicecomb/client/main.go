@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	_ "github.com/go-chassis/go-chassis-config/servicecombkie"
+	_ "github.com/go-chassis/go-chassis-config/servicecomb"
 
 	"github.com/go-chassis/go-chassis"
 	_ "github.com/go-chassis/go-chassis/bootstrap"

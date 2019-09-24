@@ -159,7 +159,7 @@ func (c *chassis) initialize() error {
 		}
 	}
 
-	err = configcenter.InitConfigCenter()
+	err = configcenter.Init()
 	if err != nil {
 		openlogging.Warn("lost config server: " + err.Error())
 	}

@@ -145,8 +145,7 @@ func TestCacheManager_MakeSchemaIndex(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	config.Init()
-	//Add autoIndex Key in Archaius
-	archaius.AddKeyValue("cse.service.registry.autoSchemaIndex", true)
+	archaius.Set("cse.service.registry.autoSchemaIndex", true)
 	config.GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.RefreshInterval = "1"
 	registry.Enable()
 	registry.DoRegister()

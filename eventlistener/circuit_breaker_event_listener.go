@@ -1,10 +1,10 @@
 package eventlistener
 
 import (
+	"github.com/go-chassis/go-archaius/event"
 	"regexp"
 	"strings"
 
-	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/control/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -29,21 +29,21 @@ type CircuitBreakerEventListener struct {
 }
 
 //Event is a method which triggers flush circuit
-func (e *CircuitBreakerEventListener) Event(event *core.Event) {
-	openlogging.Info("circuit change event: %v", openlogging.WithTags(openlogging.Tags{
-		"key": event.Key,
+func (el *CircuitBreakerEventListener) Event(e *event.Event) {
+	openlogging.Info("circuit change e: %v", openlogging.WithTags(openlogging.Tags{
+		"key": e.Key,
 	}))
 	if err := config.ReadHystrixFromArchaius(); err != nil {
 		openlogging.Error("can not unmarshal new cb config: " + err.Error())
 	}
 	archaius.SaveToCBCache(config.GetHystrixConfig())
-	switch event.EventType {
+	switch e.EventType {
 	case common.Update:
-		FlushCircuitByKey(event.Key)
+		FlushCircuitByKey(e.Key)
 	case common.Create:
-		FlushCircuitByKey(event.Key)
+		FlushCircuitByKey(e.Key)
 	case common.Delete:
-		FlushCircuitByKey(event.Key)
+		FlushCircuitByKey(e.Key)
 	}
 }
 
