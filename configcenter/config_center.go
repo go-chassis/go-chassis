@@ -4,13 +4,13 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"net/url"
-	"strings"
-
+	configclient "github.com/go-chassis/go-chassis-config"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/endpoint"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
+	"net/url"
+	"strings"
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/registry"
@@ -31,8 +31,8 @@ var (
 	ErrRegistryDisabled = errors.New("discovery is disabled")
 )
 
-// InitConfigCenter initialize config center
-func InitConfigCenter() error {
+// Init initialize config center
+func Init() error {
 	configCenterURL, err := GetConfigCenterEndpoint()
 	if err != nil {
 		openlogging.Warn("can not get config server endpoint: " + err.Error())
@@ -136,11 +136,14 @@ func initConfigCenter(ccEndpoint, tenantName string,
 
 	}
 
-	var ccObj = archaius.ConfigCenterInfo{
+	var ccObj = &archaius.RemoteInfo{
+		DefaultDimension: map[string]string{
+			configclient.LabelApp:         runtime.App,
+			configclient.LabelService:     runtime.ServiceName,
+			configclient.LabelVersion:     runtime.Version,
+			configclient.LabelEnvironment: runtime.Environment,
+		},
 		URL:             ccEndpoint,
-		Service:         config.MicroserviceDefinition.ServiceDescription.Name,
-		Version:         config.MicroserviceDefinition.ServiceDescription.Version,
-		App:             runtime.App,
 		TenantName:      tenantName,
 		EnableSSL:       enableSSL,
 		TLSConfig:       tlsConfig,
@@ -150,10 +153,9 @@ func initConfigCenter(ccEndpoint, tenantName string,
 		ClientType:      clientType,
 		APIVersion:      config.GetConfigCenterConf().APIVersion.Version,
 		RefreshPort:     config.GetConfigCenterConf().RefreshPort,
-		Environment:     config.MicroserviceDefinition.ServiceDescription.Environment,
 	}
 
-	err := archaius.EnableConfigCenterSource(ccObj, nil)
+	err := archaius.EnableRemoteSource(ccObj, nil)
 
 	if err != nil {
 		return err
