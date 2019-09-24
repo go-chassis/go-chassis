@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"time"
 )
 
 // InitArchaius initialize the archaius
@@ -21,7 +22,8 @@ func InitArchaius() error {
 		fileutil.GetMonitoring(),
 		fileutil.GetAuth(),
 		fileutil.GetTracing(),
-		fileutil.PaasLagerDefinition(),
+		fileutil.LogConfigPath(),
+		fileutil.RouterConfigPath(),
 	}
 
 	err = archaius.Init(
@@ -32,4 +34,10 @@ func InitArchaius() error {
 		archaius.WithOptionalFiles(optionalFiles))
 
 	return err
+}
+
+// GetTimeoutDurationFromArchaius get timeout durations from archaius
+func GetTimeoutDurationFromArchaius(service, t string) time.Duration {
+	timeout := archaius.GetInt(GetTimeoutKey(service), archaius.GetInt(GetDefaultTimeoutKey(t), DefaultTimeout))
+	return time.Duration(timeout) * time.Millisecond
 }

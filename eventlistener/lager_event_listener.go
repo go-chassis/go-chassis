@@ -1,13 +1,13 @@
 package eventlistener
 
 import (
-	"fmt"
+	"strings"
+
 	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/paas-lager"
 	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
 	"github.com/go-mesh/openlogging"
-	"strings"
 )
 
 const (
@@ -24,14 +24,24 @@ type LagerEventListener struct {
 //Event is a method for Lager event listening
 func (e *LagerEventListener) Event(event *core.Event) {
 	logger := openlogging.GetLogger()
-	logger.Debugf("Get lager event, key: %s, type: %s", event.Key, event.EventType)
 	l, ok := logger.(lager.Logger)
 	if !ok {
 		return
 	}
 
+	openlogging.Info("Get lager event", openlogging.WithTags(openlogging.Tags{
+		"key":   event.Key,
+		"value": event.Value,
+		"type":  event.EventType,
+	}))
+
+	v, ok := event.Value.(string)
+	if !ok {
+		return
+	}
+
 	var lagerLogLevel lager.LogLevel
-	switch strings.ToUpper(event.Value.(string)) {
+	switch strings.ToUpper(v) {
 	case log.DEBUG:
 		lagerLogLevel = lager.DEBUG
 	case log.INFO:
@@ -43,7 +53,7 @@ func (e *LagerEventListener) Event(event *core.Event) {
 	case log.FATAL:
 		lagerLogLevel = lager.FATAL
 	default:
-		fmt.Printf("unknown logger level: %s", event.Value)
+		openlogging.Info("ops..., got unknown logger level")
 		return
 	}
 

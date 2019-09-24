@@ -14,8 +14,13 @@ import (
 	"testing"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestCreateChain(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	t.Log("testing creation of chain with various service type,chain name and handlers")
 	config.Init()
 	config.GlobalDefinition = &model.GlobalCfg{}
@@ -42,13 +47,17 @@ func TestCreateChain(t *testing.T) {
 	chopt(ch)
 	assert.Equal(t, "chainName", ch.Name)
 }
-
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func BenchmarkChain_Next(b *testing.B) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.Init()
-	lager.Initialize("", "DEBUG", "", "size", true, 1, 10, 7)
 	iv := &invocation.Invocation{}
 	handler.RegisterHandler("f1", createBizkeeperFakeHandler)
 	handler.RegisterHandler("f2", createBizkeeperFakeHandler)
@@ -71,6 +80,6 @@ func BenchmarkChain_Next(b *testing.B) {
 		c.Next(iv, func(r *invocation.Response) error {
 			return r.Err
 		})
-		c.Reset()
+		iv.HandlerIndex = 0
 	}
 }

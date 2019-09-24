@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
@@ -17,22 +15,18 @@ import (
 // RouterTLS defines tls prefix
 const RouterTLS = "router"
 
-// Init initialize router config
+//Init initialize router config in local file
+//then is create the router component
 func Init() error {
-	// init dests and templates
-	routerConfigFromFile := config.RouterDefinition
+	OldRouteRule := config.OldRouterDefinition // compatible with old local configs, it is read from old config format
 	err := BuildRouter(config.GetRouterType())
 	if err != nil {
 		openlogging.Error("can not init router [" + config.GetRouterType() + "]: " + err.Error())
 		return err
 	}
-
-	if routerConfigFromFile != nil {
-		if routerConfigFromFile.Destinations != nil {
-			DefaultRouter.SetRouteRule(routerConfigFromFile.Destinations)
-		}
-		if routerConfigFromFile.SourceTemplates != nil {
-			Templates = routerConfigFromFile.SourceTemplates
+	if OldRouteRule != nil {
+		if OldRouteRule.SourceTemplates != nil {
+			Templates = OldRouteRule.SourceTemplates
 		}
 	}
 
@@ -40,13 +34,17 @@ func Init() error {
 	if err != nil {
 		return fmt.Errorf("router options error: %v", err)
 	}
-	DefaultRouter.Init(op)
-	openlogging.Info("Router init success")
+	err = DefaultRouter.Init(op)
+	if err != nil {
+		openlogging.Error(err.Error())
+		return err
+	}
+	openlogging.Info("router init success")
 	return nil
 }
 
 // ValidateRule validate the route rules of each service
-func ValidateRule(rules map[string][]*model.RouteRule) bool {
+func ValidateRule(rules map[string][]*config.RouteRule) bool {
 	for name, rule := range rules {
 		for _, route := range rule {
 			allWeight := 0
@@ -56,7 +54,10 @@ func ValidateRule(rules map[string][]*model.RouteRule) bool {
 			}
 
 			if allWeight > 100 {
-				lager.Logger.Warnf("route rule for [%s] is not valid: ruleTag weight is over 100%", name)
+				openlogging.Warn("route rule is invalid: total weight is over 100%", openlogging.WithTags(
+					openlogging.Tags{
+						"service": name,
+					}))
 				return false
 			}
 		}
@@ -95,7 +96,7 @@ func getSpecifiedOptions() (opts Options, err error) {
 }
 
 // routeTagToTags returns tags from a route tag
-func routeTagToTags(t *model.RouteTag) utiltags.Tags {
+func routeTagToTags(t *config.RouteTag) utiltags.Tags {
 	tag := utiltags.Tags{}
 	if t != nil {
 		tag.KV = make(map[string]string, len(t.Tags))

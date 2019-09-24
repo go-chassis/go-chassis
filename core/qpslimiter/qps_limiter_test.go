@@ -15,6 +15,12 @@ import (
 	"go.uber.org/ratelimit"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func initialize() {
 	os.Setenv("CHASSIS_HOME", "/tmp/")
 	chassisConf := filepath.Join("/tmp/", "conf")
@@ -24,7 +30,6 @@ func initialize() {
 }
 
 func TestProcessQpsTokenReq(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	bucketsize := 100
 	r := ratelimit.New(bucketsize)
 	qps := qpslimiter.GetQPSTrafficLimiter()
@@ -40,7 +45,6 @@ func TestProcessQpsTokenReq(t *testing.T) {
 
 func TestGetQpsRateWithPriority(t *testing.T) {
 	initialize()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",

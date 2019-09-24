@@ -17,7 +17,6 @@ func TestLbEventError(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
 	config.Init()
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	eventlistener.Init()
 	archaius.AddKeyValue("cse.loadbalance.strategy.name", "SessionStickiness")
 	lbEventListener := &eventlistener.LoadbalanceEventListener{}
@@ -38,7 +37,6 @@ func TestLbEvent(t *testing.T) {
 
 	config.Init()
 	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	eventlistener.Init()
 	archaius.AddKeyValue("cse.loadbalance.strategy.name", "SessionStickiness")
 	lbEventListener := &eventlistener.LoadbalanceEventListener{}
@@ -51,4 +49,10 @@ func TestLbEvent(t *testing.T) {
 	archaius.DeleteKeyValue("cse.loadbalance.strategy.name", "SessionStickiness")
 	assert.NotEqual(t, loadbalancer.StrategySessionStickiness, archaius.GetString("cse.loadbalance.strategy.name", ""))
 
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

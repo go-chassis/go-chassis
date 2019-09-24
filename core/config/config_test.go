@@ -15,11 +15,6 @@ import (
 	"time"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
 func TestInit1(t *testing.T) {
 	b := []byte(`
 cse:

@@ -18,14 +18,15 @@ import (
 	_ "github.com/go-chassis/go-chassis/server/restful"
 
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/server/restful"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"time"
 )
 
 var addrRest = "127.0.0.1:8039"
@@ -34,7 +35,11 @@ func initEnv() {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("CHASSIS_HOME"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 	config.Init()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -242,10 +247,10 @@ func (r *TestSchema) Error(b *restful.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *TestSchema) URLPatterns() []restful.Route {
 	return []restful.Route{
-		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Root",
+		{Method: http.MethodGet, Path: "/", ResourceFunc: r.Root,
 			Returns: []*restful.Returns{{Code: 200}}},
 
-		{Method: http.MethodGet, Path: "/error", ResourceFuncName: "Error",
+		{Method: http.MethodGet, Path: "/error", ResourceFunc: r.Error,
 			Returns: []*restful.Returns{{Code: 500}}},
 	}
 }

@@ -2,9 +2,9 @@ package session
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
-	"fmt"
-	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -89,7 +89,7 @@ func SaveSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) c
 
 	sessionIDStr := GetContextMetadata(ctx, common.LBSessionID)
 	if sessionIDStr != "" {
-		cookieKey := strings.Split(string(sessionIDStr), "=")
+		cookieKey := strings.Split(sessionIDStr, "=")
 		if len(cookieKey) > 1 {
 			sessionIDStr = cookieKey[1]
 		}
@@ -108,7 +108,13 @@ func SaveSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) c
 		return ctx
 	}
 
-	sessionIDValue := generateCookieSessionID()
+	sessionIDValue, err := GenerateSessionID()
+	if err != nil {
+		openlogging.Warn("session id generate fail, it is impossible", openlogging.WithTags(
+			openlogging.Tags{
+				"err": err.Error(),
+			}))
+	}
 	cookie := common.LBSessionID + "=" + sessionIDValue
 	setLBCookie(common.LBSessionID, cookie)
 	Save(sessionIDValue, ep, timeValue)
@@ -161,7 +167,7 @@ func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req 
 
 	var sessionIDStr string
 
-	if c, err := req.Cookie(common.LBSessionID); err != http.ErrNoCookie {
+	if c, err := req.Cookie(common.LBSessionID); err != http.ErrNoCookie && c != nil {
 		sessionIDStr = c.Value
 	}
 
@@ -173,36 +179,33 @@ func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req 
 
 	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
 	//if session is in resp, then just save it
-	if string(valueChassisLb) != "" {
+	if valueChassisLb != "" {
 		Save(valueChassisLb, ep, timeValue)
 	} else if sessionIDStr != "" && sessBool {
 		setCookie(resp, sessionIDStr)
 		Save(sessionIDStr, ep, timeValue)
 	} else {
-		sessionIDValue := generateCookieSessionID()
+		sessionIDValue, err := GenerateSessionID()
+		if err != nil {
+			openlogging.Warn("session id generate fail, it is impossible", openlogging.WithTags(
+				openlogging.Tags{
+					"err": err.Error(),
+				}))
+		}
 		setCookie(resp, sessionIDValue)
 		Save(sessionIDValue, ep, timeValue)
 	}
 
 }
 
-// generateCookieSessionID generate cookies for session id
-func generateCookieSessionID() string {
-
-	result := make([]byte, 16)
-
-	rand.Seed(time.Now().UTC().UnixNano())
-	tmp := rand.Int63()
-	rand.Seed(tmp)
-	for i := 0; i < 16; i++ {
-		result[i] = byte(rand.Intn(16))
+//GenerateSessionID generate a session id
+func GenerateSessionID() (string, error) {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
 	}
-
-	result[6] = (result[6] & 0xF) | (4 << 4)
-	result[8] = (result[8] | 0x40) & 0x7F
-
-	return fmt.Sprintf("%x-%x-%x-%x-%x", result[0:4], result[4:6], result[6:8], result[8:10], result[10:])
-
+	return base64.URLEncoding.EncodeToString(b), nil
 }
 
 // DeletingKeySuccessiveFailure deleting key successes and failures
@@ -210,8 +213,8 @@ func DeletingKeySuccessiveFailure(resp *http.Response) {
 	Cache.DeleteExpired()
 	if resp == nil {
 		valueChassisLb := getLBCookie(common.LBSessionID)
-		if string(valueChassisLb) != "" {
-			cookieKey := strings.Split(string(valueChassisLb), "=")
+		if valueChassisLb != "" {
+			cookieKey := strings.Split(valueChassisLb, "=")
 			if len(cookieKey) > 1 {
 				Delete(cookieKey[1])
 				setLBCookie(common.LBSessionID, "")
@@ -221,8 +224,8 @@ func DeletingKeySuccessiveFailure(resp *http.Response) {
 	}
 
 	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
-	if string(valueChassisLb) != "" {
-		cookieKey := strings.Split(string(valueChassisLb), "=")
+	if valueChassisLb != "" {
+		cookieKey := strings.Split(valueChassisLb, "=")
 		if len(cookieKey) > 1 {
 			Delete(cookieKey[1])
 		}
@@ -241,8 +244,8 @@ func GetSessionCookie(ctx context.Context, resp *http.Response) string {
 	}
 
 	valueChassisLb := GetSessionFromResp(common.LBSessionID, resp)
-	if string(valueChassisLb) != "" {
-		return string(valueChassisLb)
+	if valueChassisLb != "" {
+		return valueChassisLb
 	}
 
 	return ""

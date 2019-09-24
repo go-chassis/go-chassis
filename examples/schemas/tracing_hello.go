@@ -3,11 +3,12 @@ package schemas
 import (
 	"net/http"
 
+	"log"
+
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	rf "github.com/go-chassis/go-chassis/server/restful"
-	"log"
 )
 
 //TracingHello is a struct
@@ -35,6 +36,6 @@ func (r *TracingHello) Trace(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *TracingHello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/trace", ResourceFuncName: "Trace"},
+		{Method: http.MethodGet, Path: "/trace", ResourceFunc: r.Trace},
 	}
 }

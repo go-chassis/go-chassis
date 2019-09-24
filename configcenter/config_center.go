@@ -5,12 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"regexp"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/endpoint-discovery"
+	"github.com/go-chassis/go-chassis/core/endpoint"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 
 	"github.com/go-chassis/go-archaius"
@@ -21,20 +20,22 @@ import (
 
 const (
 	//Name is a variable of type string
-	Name          = "configcenter"
-	maxValue      = 256
-	emptyDimeInfo = "Issue with regular expression or exceeded the max length"
+	Name = "configcenter"
 	//DefaultConfigCenter is config center
 	DefaultConfigCenter = "config_center"
 )
 
 //ErrRefreshMode means config is mis used
-var ErrRefreshMode = errors.New("refreshMode must be 0 or 1")
+var (
+	ErrRefreshMode      = errors.New("refreshMode must be 0 or 1")
+	ErrRegistryDisabled = errors.New("discovery is disabled")
+)
 
 // InitConfigCenter initialize config center
 func InitConfigCenter() error {
 	configCenterURL, err := GetConfigCenterEndpoint()
 	if err != nil {
+		openlogging.Warn("can not get config server endpoint: " + err.Error())
 		return nil
 	}
 
@@ -51,13 +52,6 @@ func InitConfigCenter() error {
 		enableSSL = true
 	}
 
-	dimensionInfo := getUniqueIDForDimInfo()
-
-	if dimensionInfo == "" {
-		err := errors.New("empty dimension info: " + emptyDimeInfo)
-		openlogging.Error("empty dimension info" + err.Error())
-		return err
-	}
 	TenantName := config.GetConfigCenterConf().TenantName
 	if TenantName == "" {
 		TenantName = common.DefaultTenant
@@ -67,15 +61,14 @@ func InitConfigCenter() error {
 		interval = 30
 	}
 
-	err = initConfigCenter(configCenterURL,
-		dimensionInfo, TenantName,
+	err = initConfigCenter(configCenterURL, TenantName,
 		enableSSL, tlsConfig, interval)
 	if err != nil {
 		openlogging.Error("failed to init config center" + err.Error())
 		return err
 	}
 
-	openlogging.GetLogger().Warnf("config center init success")
+	openlogging.Warn("config center init success")
 	return nil
 }
 
@@ -85,13 +78,15 @@ func GetConfigCenterEndpoint() (string, error) {
 	configCenterURL := config.GetConfigCenterConf().ServerURI
 	if configCenterURL == "" {
 		if registry.DefaultServiceDiscoveryService != nil {
+			openlogging.Debug("find config server in registry")
 			ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
 			if err != nil {
-				openlogging.GetLogger().Warnf("failed to find config center endpoints: %s", err.Error())
+				openlogging.Warn("failed to find config center endpoints, err: " + err.Error())
 				return "", err
 			}
-
 			configCenterURL = ccURL
+		} else {
+			return "", ErrRegistryDisabled
 		}
 
 	}
@@ -126,42 +121,8 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 	return tlsConfig, nil
 }
 
-func getUniqueIDForDimInfo() string {
-	serviceName := config.MicroserviceDefinition.ServiceDescription.Name
-	version := config.MicroserviceDefinition.ServiceDescription.Version
-	appName := runtime.App
-
-	if appName != "" {
-		serviceName = serviceName + "@" + appName
-	}
-
-	if version != "" {
-		serviceName = serviceName + "#" + version
-	}
-
-	if len(serviceName) > maxValue {
-		openlogging.GetLogger().Errorf("exceeded max value %d for dimensionInfo %s with length %d", maxValue, serviceName,
-			len(serviceName))
-		return ""
-	}
-
-	dimeExp := `\A([^\$\%\&\+\(/)\[\]\" "\"])*\z`
-	dimRegexVar, err := regexp.Compile(dimeExp)
-	if err != nil {
-		openlogging.Error("not a valid regular expression" + err.Error())
-		return ""
-	}
-
-	if !dimRegexVar.Match([]byte(serviceName)) {
-		openlogging.GetLogger().Errorf("invalid value for dimension info, doesnot setisfy the regular expression for dimInfo:%s",
-			serviceName)
-		return ""
-	}
-
-	return serviceName
-}
-
-func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bool, tlsConfig *tls.Config, interval int) error {
+func initConfigCenter(ccEndpoint, tenantName string,
+	enableSSL bool, tlsConfig *tls.Config, interval int) error {
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != 0 && refreshMode != 1 {
@@ -176,18 +137,20 @@ func initConfigCenter(ccEndpoint, dimensionInfo, tenantName string, enableSSL bo
 	}
 
 	var ccObj = archaius.ConfigCenterInfo{
-		URL:                  ccEndpoint,
-		DefaultDimensionInfo: dimensionInfo,
-		TenantName:           tenantName,
-		EnableSSL:            enableSSL,
-		TLSConfig:            tlsConfig,
-		RefreshMode:          refreshMode,
-		RefreshInterval:      interval,
-		AutoDiscovery:        config.GetConfigCenterConf().Autodiscovery,
-		ClientType:           clientType,
-		Version:              config.GetConfigCenterConf().APIVersion.Version,
-		RefreshPort:          config.GetConfigCenterConf().RefreshPort,
-		Environment:          config.MicroserviceDefinition.ServiceDescription.Environment,
+		URL:             ccEndpoint,
+		Service:         config.MicroserviceDefinition.ServiceDescription.Name,
+		Version:         config.MicroserviceDefinition.ServiceDescription.Version,
+		App:             runtime.App,
+		TenantName:      tenantName,
+		EnableSSL:       enableSSL,
+		TLSConfig:       tlsConfig,
+		RefreshMode:     refreshMode,
+		RefreshInterval: interval,
+		AutoDiscovery:   config.GetConfigCenterConf().Autodiscovery,
+		ClientType:      clientType,
+		APIVersion:      config.GetConfigCenterConf().APIVersion.Version,
+		RefreshPort:     config.GetConfigCenterConf().RefreshPort,
+		Environment:     config.MicroserviceDefinition.ServiceDescription.Environment,
 	}
 
 	err := archaius.EnableConfigCenterSource(ccObj, nil)

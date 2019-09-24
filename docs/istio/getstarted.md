@@ -24,7 +24,7 @@ cse:
         address: grpc://istio-pilot.istio-system:15010
 ```
 
-Disable the registrator(since we don't have to register the service to Pilot explicitly) and change serviceDiscovery type to `pilotv2`(indicates the Pilot that provides xDS v2 API, the xDS v1 API is already deprecated), configure the address, typically `istio-pilot.istio-sytem:15010` in a Istio environment.
+Disable the registrator(since we don't have to register the service to Pilot explicitly) and change serviceDiscovery type to `pilotv2`(indicates the Pilot that provides xDS v2 API, the xDS v1 API is already deprecated), configure the address, typically `istio-pilot.istio-system:15010` in a Istio environment.
 
 Then when deploying the micro services in Istio, make sure the Kubernetes Services' name and go-chassis service name is exactly the same, then go-chassis will discovery the service instances as expected from Pilot.
 

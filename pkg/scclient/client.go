@@ -42,6 +42,8 @@ const (
 	DefaultRetryTimeout = 500 * time.Millisecond
 	HeaderRevision      = "X-Resource-Revision"
 	EnvProjectID        = "CSE_PROJECT_ID"
+	// EnvCheckSCIInterval sc instance health check interval in second
+	EnvCheckSCIInterval = "CHASSIS_SC_HEALTH_CHECK_INTERVAL"
 )
 
 // Define variables for the client
@@ -72,13 +74,13 @@ type RegistryClient struct {
 	conns      map[string]*websocket.Conn
 	apiVersion string
 	revision   string
+	pool       *AddressPool
 }
 
 // RegistryConfig is a structure to store registry configurations like address of cc, ssl configurations and tenant name
 type RegistryConfig struct {
-	Addresses []string
-	SSL       bool
-	Tenant    string
+	SSL    bool
+	Tenant string
 }
 
 // URLParameter maintains the list of parameters to be added in URL
@@ -93,9 +95,8 @@ func (c *RegistryClient) ResetRevision() {
 func (c *RegistryClient) Initialize(opt Options) (err error) {
 	c.revision = "0"
 	c.Config = &RegistryConfig{
-		Addresses: opt.Addrs,
-		SSL:       opt.EnableSSL,
-		Tenant:    opt.ConfigTenant,
+		SSL:    opt.EnableSSL,
+		Tenant: opt.ConfigTenant,
 	}
 
 	options := &httpclient.URLClientOption{
@@ -129,7 +130,8 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 	}
 	//Update the API Base Path based on the Version
 	c.updateAPIPath()
-
+	c.pool = GetInstance()
+	c.pool.SetAddress(opt.Addrs)
 	return nil
 }
 
@@ -155,7 +157,10 @@ func (c *RegistryClient) updateAPIPath() {
 }
 
 // SyncEndpoints gets the endpoints of service-center in the cluster
+//you only need to call this function,
+//if your service center is not behind a load balancing service like ELB,nginx etc
 func (c *RegistryClient) SyncEndpoints() error {
+	c.pool.Monitor()
 	instances, err := c.Health()
 	if err != nil {
 		return fmt.Errorf("sync SC ep failed. err:%s", err.Error())
@@ -166,7 +171,7 @@ func (c *RegistryClient) SyncEndpoints() error {
 		eps = append(eps, m["rest"])
 	}
 	if len(eps) != 0 {
-		c.Config.Addresses = eps
+		c.pool.SetAddress(eps)
 		openlogging.GetLogger().Info("Sync service center endpoints " + strings.Join(eps, ","))
 		return nil
 	}
@@ -951,12 +956,7 @@ func (c *RegistryClient) WatchMicroService(microServiceID string, callback func(
 }
 
 func (c *RegistryClient) getAddress() string {
-	next := RoundRobin(c.Config.Addresses)
-	addr, err := next()
-	if err != nil {
-		return DefaultAddr
-	}
-	return addr
+	return c.pool.GetAvailableAddress()
 }
 
 func (c *RegistryClient) startBackOff(microServiceID string, callback func(*MicroServiceInstanceChangedEvent)) {

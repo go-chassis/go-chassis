@@ -1,6 +1,7 @@
 # Java 和 Go 互相调用
 
-当你在同一个项目中需要同时使用java和go语言时，java可以基于servicecomb-java-chassis作为client，go使用go-chassis作为client，使用servicecomb-service-center作为注册中心。
+当你在一个项目中需要同时使用java和go语言时，java语言对应的框架为servicecomb-java-chassis，
+go对应的框架为go-chassis，他们之间可以通过servicecomb-service-center进行关联。
 
 ## Go as provider
 

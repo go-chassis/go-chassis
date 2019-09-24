@@ -15,7 +15,6 @@ import (
 )
 
 func TestSaveToLBCache(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	archaius.SaveToLBCache(&model.LoadBalancing{
 		Strategy: map[string]string{
 			"name": loadbalancer.StrategyRoundRobin,
@@ -31,9 +30,14 @@ func TestSaveToLBCache(t *testing.T) {
 	c, _ := archaius.LBConfigCache.Get("test")
 	assert.Equal(t, loadbalancer.StrategyRoundRobin, c.(control.LoadBalancingConfig).Strategy)
 }
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestSaveDefaultToLBCache(t *testing.T) {
 	t.Log("==delete outdated key")
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	archaius.SaveToLBCache(&model.LoadBalancing{
 		Strategy: map[string]string{
 			"name": loadbalancer.StrategyRoundRobin,
@@ -54,7 +58,6 @@ func TestSaveDefaultToLBCache(t *testing.T) {
 }
 
 func TestSaveToCBCache(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.GlobalDefinition = &model.GlobalCfg{
 		Panel: model.ControlPanel{
 			Infra: "",

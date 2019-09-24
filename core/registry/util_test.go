@@ -1,16 +1,22 @@
 package registry_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestMakeEndpointMap(t *testing.T) {
 	protocols := make(map[string]model.Protocol)
 	protocols[common.ProtocolRest] = model.Protocol{
@@ -47,7 +53,6 @@ func TestMakeEndpointMap(t *testing.T) {
 	})
 }
 func TestUtil(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	var eps = []string{"https://127.0.0.1", "http://0.0.0.0"}
 	mp, str := registry.GetProtocolMap(eps)
 	assert.Equal(t, "0.0.0.0", mp["http"])

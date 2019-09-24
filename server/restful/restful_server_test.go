@@ -1,29 +1,35 @@
 package restful
 
 import (
-	rf "github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
+
+	rf "github.com/emicklei/go-restful"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/stretchr/testify/assert"
 )
 
 var addrHighway = "127.0.0.1:2399"
 var addrHighway1 = "127.0.0.1:2330"
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func initEnv() {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("CHASSIS_HOME"))
 	os.Setenv("GO_CHASSIS_SWAGGERFILEPATH", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("GO_CHASSIS_SWAGGERFILEPATH"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	config.Init()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -118,20 +124,20 @@ func (r *TestSchema) Post(b *Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *TestSchema) URLPatterns() []Route {
 	return []Route{
-		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Get",
+		{Method: http.MethodGet, Path: "/", ResourceFunc: r.Get,
 			Returns: []*Returns{{Code: 200}}},
 
-		{Method: http.MethodPost, Path: "/sayhello/{userid}", ResourceFuncName: "Post",
+		{Method: http.MethodPost, Path: "/sayhello/{userid}", ResourceFunc: r.Post,
 			Returns: []*Returns{{Code: 200}}},
 
-		{Method: http.MethodDelete, Path: "/sayhi", ResourceFuncName: "Delete",
+		{Method: http.MethodDelete, Path: "/sayhi", ResourceFunc: r.Delete,
 			Returns: []*Returns{{Code: 200}}},
 
-		{Method: http.MethodHead, Path: "/sayjson", ResourceFuncName: "Head",
+		{Method: http.MethodHead, Path: "/sayjson", ResourceFunc: r.Head,
 			Returns: []*Returns{{Code: 200}}},
-		{Method: http.MethodPatch, Path: "/sayjson", ResourceFuncName: "Patch",
+		{Method: http.MethodPatch, Path: "/sayjson", ResourceFunc: r.Patch,
 			Returns: []*Returns{{Code: 200}}},
-		{Method: http.MethodPut, Path: "/hi", ResourceFuncName: "Put",
+		{Method: http.MethodPut, Path: "/hi", ResourceFunc: r.Put,
 			Returns: []*Returns{{Code: 200}}},
 	}
 }
@@ -178,4 +184,79 @@ func TestFillParam(t *testing.T) {
 	assert.Equal(t, rf.FormParameterKind, rb.ParameterNamed("p2").Kind())
 	assert.Equal(t, rf.HeaderParameterKind, rb.ParameterNamed("p3").Kind())
 
+}
+
+var schemaTestProduces = []string{"application/json"}
+var schemaTestConsumes = []string{"application/xml"}
+var schemaTestRoutes = []Route{
+	{
+		Method:           http.MethodGet,
+		Path:             "none",
+		ResourceFuncName: "Handler",
+	},
+	{
+		Method:           http.MethodGet,
+		Path:             "with-produces",
+		ResourceFuncName: "Handler",
+		Produces:         schemaTestProduces,
+	},
+	{
+		Method:           http.MethodGet,
+		Path:             "with-consumes",
+		ResourceFuncName: "Handler",
+		Consumes:         schemaTestConsumes,
+	},
+	{
+		Method:           http.MethodGet,
+		Path:             "with-all",
+		ResourceFuncName: "Handler",
+		Produces:         schemaTestProduces,
+		Consumes:         schemaTestConsumes,
+	},
+}
+
+type SchemaTest struct {
+}
+
+func (st SchemaTest) URLPatterns() []Route {
+	return schemaTestRoutes
+}
+
+func (st SchemaTest) Handler(ctx *Context) {
+}
+
+func Test_restfulServer_register2GoRestful(t *testing.T) {
+	initEnv()
+
+	rest := &restfulServer{
+		microServiceName: "rest",
+		container:        rf.NewContainer(),
+		ws:               new(rf.WebService),
+		server:           &http.Server{},
+	}
+
+	_, err := rest.Register(&SchemaTest{})
+	assert.NoError(t, err)
+
+	routes := rest.ws.Routes()
+	assert.Equal(t, 4, len(routes), "there should be %d routes", len(schemaTestRoutes))
+
+	for _, route := range routes {
+		switch route.Path {
+		case "/none":
+			assert.Equal(t, []string{"*/*"}, route.Consumes)
+			assert.Equal(t, []string{"*/*"}, route.Produces)
+		case "/with-produces":
+			assert.Equal(t, schemaTestProduces, route.Produces)
+			assert.Equal(t, []string{"*/*"}, route.Consumes)
+		case "/with-consumes":
+			assert.Equal(t, []string{"*/*"}, route.Produces)
+			assert.Equal(t, schemaTestConsumes, route.Consumes)
+		case "/with-all":
+			assert.Equal(t, schemaTestProduces, route.Produces)
+			assert.Equal(t, schemaTestConsumes, route.Consumes)
+		default:
+			log.Println(route.Path)
+		}
+	}
 }

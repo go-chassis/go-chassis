@@ -93,9 +93,9 @@ func (r *RestFulRouterB) Info(context *restful.Context) {
 // URLPatterns helps to respond for corresponding API calls
 func (r *RestFulRouterB) URLPatterns() []restful.Route {
 	return []restful.Route{
-		{Method: http.MethodGet, Path: "/info", ResourceFuncName: "Info"},
-		{Method: http.MethodGet, Path: "/operation/{num1}/{num2}", ResourceFuncName: "Operation"},
-		{Method: http.MethodPost, Path: "/say", ResourceFuncName: "Say"},
-		{Method: http.MethodPost, Path: "/equal", ResourceFuncName: "Equal"},
+		{Method: http.MethodGet, Path: "/info", ResourceFunc: r.Info},
+		{Method: http.MethodGet, Path: "/operation/{num1}/{num2}", ResourceFunc: r.Operation},
+		{Method: http.MethodPost, Path: "/say", ResourceFunc: r.Say},
+		{Method: http.MethodPost, Path: "/equal", ResourceFunc: r.Equal},
 	}
 }

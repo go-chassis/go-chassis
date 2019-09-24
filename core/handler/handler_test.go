@@ -96,10 +96,14 @@ func (bizkeeperfhandler *BizkeeperFakeHandler) Handle(*handler.Chain, *invocatio
 func createBizkeeperFakeHandler() handler.Handler {
 	return &BizkeeperFakeHandler{}
 }
-
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestGetChain(t *testing.T) {
 	t.Log("getting chain of various service type and chain name")
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
@@ -159,10 +163,15 @@ func BenchmarkPool_GetChain(b *testing.B) {
 	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 
 	for i := 0; i < b.N; i++ {
 		_, _ = handler.GetChain(common.Consumer, "default")
 	}
 
+}
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 }

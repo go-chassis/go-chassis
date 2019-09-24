@@ -25,7 +25,7 @@ cd server
 go build main.go
 ./main
 ```
-client use different adress to access API server
+client use different address to access API server
 ```go
 	req, err := rest.NewRequest("GET", "http://RESTServer/hello")
 

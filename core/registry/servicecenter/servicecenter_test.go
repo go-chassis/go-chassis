@@ -1,12 +1,12 @@
 package servicecenter_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
@@ -16,6 +16,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+}
 func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
@@ -23,7 +29,6 @@ func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	config.Init()
 	runtime.Init()
 	t.Log(os.Getenv("CHASSIS_HOME"))
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
 	registry.Enable()
 	registry.DoRegister()
 

@@ -8,8 +8,8 @@ import (
 	"github.com/go-chassis/go-chassis/control/archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-mesh/openlogging"
 )
 
 // constants for consumer isolation, circuit breaker, fallback keys
@@ -30,9 +30,11 @@ type CircuitBreakerEventListener struct {
 
 //Event is a method which triggers flush circuit
 func (e *CircuitBreakerEventListener) Event(event *core.Event) {
-	lager.Logger.Infof("Circuit key event: %v", event.Key)
+	openlogging.Info("circuit change event: %v", openlogging.WithTags(openlogging.Tags{
+		"key": event.Key,
+	}))
 	if err := config.ReadHystrixFromArchaius(); err != nil {
-		lager.Logger.Error("can not unmarshal new cb config: " + err.Error())
+		openlogging.Error("can not unmarshal new cb config: " + err.Error())
 	}
 	archaius.SaveToCBCache(config.GetHystrixConfig())
 	switch event.EventType {
@@ -50,10 +52,10 @@ func FlushCircuitByKey(key string) {
 	sourceName, serviceName := GetNames(key)
 	cmdName := GetCircuitName(sourceName, serviceName)
 	if cmdName == common.Consumer {
-		lager.Logger.Info("Global Key changed For circuit: [" + cmdName + "], will flush all circuit")
+		openlogging.Info("Global Key changed For circuit: [" + cmdName + "], will flush all circuit")
 		hystrix.Flush()
 	} else {
-		lager.Logger.Info("Specific Key changed For circuit: [" + cmdName + "], will only flush this circuit")
+		openlogging.Info("Specific Key changed For circuit: [" + cmdName + "], will only flush this circuit")
 		hystrix.FlushByName(cmdName)
 	}
 
@@ -67,13 +69,13 @@ func GetNames(key string) (string, string) {
 	var serviceName string
 	if regNormal.MatchString(key) {
 		s := regNormal.FindStringSubmatch(key)
-		lager.Logger.Debug("Normal Key")
+		openlogging.Debug("Normal Key")
 		return "", s[2]
 
 	}
 	if regMesher.MatchString(key) {
 		s := regMesher.FindStringSubmatch(key)
-		lager.Logger.Debug("Mesher Key")
+		openlogging.Debug("Mesher Key")
 		return s[2], s[3]
 	}
 	return sourceName, serviceName

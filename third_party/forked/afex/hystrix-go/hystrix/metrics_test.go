@@ -36,7 +36,7 @@ func TestErrorPercent(t *testing.T) {
 		Convey("and a error threshold set to 39", func() {
 			ConfigureCommand("", CommandConfig{ErrorPercentThreshold: 39})
 
-			Convey("the metrics should be unhealthy", func() {
+			Convey("the Metrics should be unhealthy", func() {
 				So(m.IsHealthy(now), ShouldBeFalse)
 			})
 

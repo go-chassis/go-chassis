@@ -5,8 +5,7 @@ import (
 	"sync"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/lager"
-
+	"github.com/go-mesh/openlogging"
 	"go.uber.org/ratelimit"
 )
 
@@ -15,22 +14,22 @@ const (
 	DefaultRate = 2147483647
 )
 
-// QPSLimiterMap qps limiter map struct
-type QPSLimiterMap struct {
+// LimiterMap qps limiter map struct
+type LimiterMap struct {
 	KeyMap map[string]ratelimit.Limiter
 	sync.RWMutex
 }
 
 // variables of qps limiter ansd mutex variable
 var (
-	qpsLimiter *QPSLimiterMap
+	qpsLimiter *LimiterMap
 	once       = new(sync.Once)
 )
 
 // GetQPSTrafficLimiter get qps traffic limiter
-func GetQPSTrafficLimiter() *QPSLimiterMap {
+func GetQPSTrafficLimiter() *LimiterMap {
 	initializeMap := func() {
-		qpsLimiter = &QPSLimiterMap{}
+		qpsLimiter = &LimiterMap{}
 		qpsLimiter.KeyMap = make(map[string]ratelimit.Limiter)
 	}
 
@@ -39,7 +38,7 @@ func GetQPSTrafficLimiter() *QPSLimiterMap {
 }
 
 // ProcessQPSTokenReq process qps token request
-func (qpsL *QPSLimiterMap) ProcessQPSTokenReq(key string, qpsRate int) {
+func (qpsL *LimiterMap) ProcessQPSTokenReq(key string, qpsRate int) {
 	qpsL.RLock()
 
 	limiter, ok := qpsL.KeyMap[key]
@@ -57,7 +56,7 @@ func (qpsL *QPSLimiterMap) ProcessQPSTokenReq(key string, qpsRate int) {
 }
 
 // ProcessDefaultRateRpsTokenReq process default rate pps token request
-func (qpsL *QPSLimiterMap) ProcessDefaultRateRpsTokenReq(key string, qpsRate int) {
+func (qpsL *LimiterMap) ProcessDefaultRateRpsTokenReq(key string, qpsRate int) {
 	var bucketSize int
 
 	// add a limiter object for the newly found operation in the Default Hash map
@@ -90,7 +89,7 @@ func GetQPSRate(rateConfig string) (int, bool) {
 }
 
 // GetQPSRateWithPriority get qps rate with priority
-func (qpsL *QPSLimiterMap) GetQPSRateWithPriority(cmd ...string) (int, string) {
+func (qpsL *LimiterMap) GetQPSRateWithPriority(cmd ...string) (int, string) {
 	var (
 		qpsVal      int
 		configExist bool
@@ -107,24 +106,24 @@ func (qpsL *QPSLimiterMap) GetQPSRateWithPriority(cmd ...string) (int, string) {
 }
 
 // UpdateRateLimit update rate limit
-func (qpsL *QPSLimiterMap) UpdateRateLimit(key string, value interface{}) {
+func (qpsL *LimiterMap) UpdateRateLimit(key string, value interface{}) {
 	switch v := value.(type) {
 	case int:
 		qpsL.ProcessDefaultRateRpsTokenReq(key, value.(int))
 	case string:
 		convertedIntValue, err := strconv.Atoi(value.(string))
 		if err != nil {
-			lager.Logger.Warnf("Invalid Value type received for QPSLateLimiter: %v", v, err)
+			openlogging.GetLogger().Warnf("Invalid Value type received for QPSLateLimiter: %v", v, err)
 		} else {
 			qpsL.ProcessDefaultRateRpsTokenReq(key, convertedIntValue)
 		}
 	default:
-		lager.Logger.Warnf("Invalid Value type received for QPSLateLimiter: %v", v)
+		openlogging.GetLogger().Warnf("Invalid Value type received for QPSLateLimiter: %v", v)
 	}
 }
 
 // DeleteRateLimiter delete rate limiter
-func (qpsL *QPSLimiterMap) DeleteRateLimiter(key string) {
+func (qpsL *LimiterMap) DeleteRateLimiter(key string) {
 	qpsL.Lock()
 	delete(qpsL.KeyMap, key)
 	qpsL.Unlock()

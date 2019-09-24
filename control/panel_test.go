@@ -17,7 +17,11 @@ func TestInstallPlugin(t *testing.T) {
 
 }
 func TestInit(t *testing.T) {
-	lager.Initialize("", "INFO", "", "size", true, 1, 10, 7)
+
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
 	config.GlobalDefinition = &model.GlobalCfg{
 		Panel: model.ControlPanel{
 			Infra: "",
@@ -51,9 +55,18 @@ func TestNewCircuitCmd(t *testing.T) {
 		MicroServiceName: "mall",
 		SchemaID:         "rest",
 		OperationID:      "/test",
+		Endpoint:         "127.0.0.1:8081",
 	}
 	cmd := control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
 	assert.Equal(t, "Consumer.mall.rest./test", cmd)
+
+	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "instance"
+	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
+	assert.Equal(t, "Consumer.mall.127.0.0.1:8081", cmd)
+
+	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "instance-api"
+	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)
+	assert.Equal(t, "Consumer.mall.127.0.0.1:8081.rest./test", cmd)
 
 	config.GetHystrixConfig().CircuitBreakerProperties.Scope = "api"
 	cmd = control.NewCircuitName("Consumer", config.GetHystrixConfig().CircuitBreakerProperties.Scope, i)

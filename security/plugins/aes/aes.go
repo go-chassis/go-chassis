@@ -4,7 +4,6 @@ import (
 	"os"
 
 	security2 "github.com/go-chassis/foundation/security"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/goplugin"
 	"github.com/go-chassis/go-chassis/security"
 	"github.com/go-mesh/openlogging"
@@ -19,8 +18,8 @@ type Cipher interface {
 	Decrypt(src string) (string, error)
 }
 
-// AESCipher is a cipher used in huawei
-type AESCipher struct {
+// HWAESCipher is a cipher used in huawei
+type HWAESCipher struct {
 	gcryptoEngine Cipher
 }
 
@@ -38,29 +37,29 @@ func new() security2.Cipher {
 	cipher, err := goplugin.LookUpSymbolFromPlugin(cipherPlugin, "Cipher")
 	if err != nil {
 		if os.IsNotExist(err) {
-			lager.Logger.Errorf("%s not found", cipherPlugin)
+			openlogging.GetLogger().Errorf("%s not found", cipherPlugin)
 		} else {
-			lager.Logger.Errorf("Load %s failed, err [%s]", cipherPlugin, err.Error())
+			openlogging.GetLogger().Errorf("Load %s failed, err [%s]", cipherPlugin, err.Error())
 		}
 		return nil
 	}
 	cipherInstance, ok := cipher.(Cipher)
 	if !ok {
-		lager.Logger.Infof("E: Expecting Cipher interface, but got something else.")
+		openlogging.GetLogger().Infof("E: Expecting Cipher interface, but got something else.")
 		return nil
 	}
 	cipherInstance.Init()
-	return &AESCipher{
+	return &HWAESCipher{
 		gcryptoEngine: cipherInstance,
 	}
 }
 
 //Encrypt is method used for encryption
-func (ac *AESCipher) Encrypt(src string) (string, error) {
+func (ac *HWAESCipher) Encrypt(src string) (string, error) {
 	return ac.gcryptoEngine.Encrypt(src)
 }
 
 //Decrypt is method used for decryption
-func (ac *AESCipher) Decrypt(src string) (string, error) {
+func (ac *HWAESCipher) Decrypt(src string) (string, error) {
 	return ac.gcryptoEngine.Decrypt(src)
 }

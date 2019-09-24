@@ -2,7 +2,7 @@ package provider
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/lager"
+
 	"github.com/go-mesh/openlogging"
 )
 
@@ -27,11 +27,11 @@ func InstallProviderPlugin(pluginName string, newFunc func(string) Provider) {
 func RegisterProvider(pluginName string, microserviceName string) Provider {
 	pFunc, exist := providerPlugins[pluginName]
 	if !exist {
-		lager.Logger.Errorf("provider type %s is not exist.", pluginName)
+		openlogging.GetLogger().Errorf("provider type %s is not exist.", pluginName)
 		return nil
 	}
 	p := pFunc(microserviceName)
-	lager.Logger.Debugf("registered provider for service [%s]", microserviceName)
+	openlogging.GetLogger().Debugf("registered provider for service [%s]", microserviceName)
 	RegisterCustomProvider(microserviceName, p)
 	return p
 
@@ -40,7 +40,7 @@ func RegisterProvider(pluginName string, microserviceName string) Provider {
 // RegisterCustomProvider register customer provider
 func RegisterCustomProvider(microserviceName string, p Provider) {
 	if providers[microserviceName] != nil {
-		lager.Logger.Warnf("Can not replace Provider,since it is not nil")
+		openlogging.GetLogger().Warnf("Can not replace Provider,since it is not nil")
 		return
 	}
 	providers[microserviceName] = p

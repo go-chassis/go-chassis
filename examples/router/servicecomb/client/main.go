@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
+	_ "github.com/go-chassis/go-chassis-config/servicecombkie"
+
 	"github.com/go-chassis/go-chassis"
 	_ "github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/client/rest"
@@ -26,7 +28,7 @@ func main() {
 	}
 
 	for i := 0; i < 10; i++ {
-		req, err := rest.NewRequest("POST", "http://ROUTERServer/equal", nil)
+		req, err := rest.NewRequest("POST", "http://paymentService/equal", nil)
 		if err != nil {
 			lager.Logger.Error("new request failed.")
 			return
@@ -42,15 +44,13 @@ func main() {
 		parmByte, _ := json.Marshal(parm)
 		httputil.SetBody(req, parmByte)
 
-		//req.Header.Set("Chassis", "info")
-
 		resp, err := core.NewRestInvoker().ContextDo(context.Background(), req)
 		if err != nil {
 			lager.Logger.Error("do request failed.")
 			return
 		}
 		defer resp.Body.Close()
-		lager.Logger.Info("ROUTER Server equal num [POST]: " + string(httputil.ReadBody(resp)))
+		lager.Logger.Info("paymentService equal num [POST]: " + string(httputil.ReadBody(resp)))
 
 		time.Sleep(1 * time.Second)
 	}

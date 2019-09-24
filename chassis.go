@@ -22,7 +22,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/server/restful"
 
 	//routers
-	_ "github.com/go-chassis/go-chassis/core/router/cse"
+	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -42,24 +42,23 @@ import (
 	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/go-chassis/go-chassis/eventlistener"
 
-	// metric
-	_ "github.com/go-chassis/go-chassis/metrics/prom"
+	// prometheus reporter for circuit breaker metrics
+	_ "github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/reporter"
 
 	// aes package handles security related plugins
 	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 
 	//config centers
-	_ "github.com/go-chassis/go-chassis-config/apollo"
 	_ "github.com/go-chassis/go-chassis-config/configcenter"
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/configcenter"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/metadata"
-	"github.com/go-chassis/go-chassis/metrics"
 	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -149,7 +148,7 @@ func (c *chassis) initialize() error {
 		return err
 	}
 	bootstrap.Bootstrap()
-	if archaius.GetBool("cse.service.registry.disabled", false) != true {
+	if !archaius.GetBool("cse.service.registry.disabled", false) {
 		err := registry.Enable()
 		if err != nil {
 			return err
@@ -160,7 +159,10 @@ func (c *chassis) initialize() error {
 		}
 	}
 
-	configcenter.InitConfigCenter()
+	err = configcenter.InitConfigCenter()
+	if err != nil {
+		openlogging.Warn("lost config server: " + err.Error())
+	}
 	// router needs get configs from config-center when init
 	// so it must init after bootstrap
 	if err = router.Init(); err != nil {
@@ -177,9 +179,7 @@ func (c *chassis) initialize() error {
 	if err = tracing.Init(); err != nil {
 		return err
 	}
-	if err = metrics.Init(); err != nil {
-		return err
-	}
+	go hystrix.StartReporter()
 	circuit.Init()
 	eventlistener.Init()
 	c.Initialized = true

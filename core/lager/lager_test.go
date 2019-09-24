@@ -1,6 +1,7 @@
-package lager
+package lager_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/lager"
 	//"github.com/go-chassis/go-chassis/core/config"
 	"os"
 	"path/filepath"
@@ -17,7 +18,7 @@ func TestInitialize1(t *testing.T) {
 
 	t.Log("Initializing lager")
 	t.Log("creating log/chassis.log")
-	Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	lager.Init(&lager.Options{})
 	defer os.RemoveAll(logdir)
 
 	if _, err := os.Stat(logdir); err != nil {
@@ -27,7 +28,7 @@ func TestInitialize1(t *testing.T) {
 	}
 
 	t.Log("duplicate initialization")
-	Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	lager.Init(&lager.Options{})
 }
 
 func TestInitialize2(t *testing.T) {
@@ -37,17 +38,13 @@ func TestInitialize2(t *testing.T) {
 
 	//initializing config for to initialize PassLagerDefinition variable
 	t.Log("initializing config for to initialize PassLagerDefinition variable")
-	//err := config.Init()
-	//if err != nil {
-	//	log.Printf("Failed to initialize conf, err=%s\n", err)
-	//}
 
 	logdir := path + "/src/github.com/go-chassis/go-chassis/examples/discovery/server/log"
 	os.RemoveAll(logdir)
 
 	//Initializing lager
 	t.Log("Initializing lager")
-	Initialize("", "INFO", "", "size", true, 1, 10, 7)
+	lager.Init(&lager.Options{})
 	defer os.RemoveAll(logdir)
 
 	if _, err := os.Stat(logdir); err != nil {

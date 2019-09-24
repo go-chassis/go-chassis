@@ -1,19 +1,29 @@
-package cse
+package servicecomb
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-mesh/openlogging"
 )
 
-// DarkLaunchRule2RouteRule translates dark launch rule to route rule
-func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
+//ConvertJSON2RouteRule parse raw json from cse server to route rule config
+func ConvertJSON2RouteRule(raw string) ([]*config.RouteRule, error) {
+	rule := &config.DarkLaunchRule{}
+	if err := json.Unmarshal([]byte(raw), rule); err != nil {
+		return nil, err
+	}
+	routeRules := DarkLaunchRule2RouteRule(rule)
+	return routeRules, nil
+}
 
+// DarkLaunchRule2RouteRule translates dark launch rule to route rule
+func DarkLaunchRule2RouteRule(rule *config.DarkLaunchRule) []*config.RouteRule {
 	if rule.Type == DarkLaunchTypeRate {
-		routes := make([]*model.RouteTag, 0)
+		routes := make([]*config.RouteTag, 0)
 		for _, v := range rule.Items {
 			weight, _ := strconv.Atoi(v.PolicyCondition)
 			version := strings.Replace(v.GroupCondition, "version=", "", 1)
@@ -22,17 +32,17 @@ func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
 			routes = append(routes, newTag...)
 
 		}
-		return []*model.RouteRule{{
+		return []*config.RouteRule{{
 			Routes:     routes,
 			Precedence: 1,
 		}}
 	}
 	if rule.Type == DarkLaunchTypeRule {
-		rules := make([]*model.RouteRule, len(rule.Items))
+		rules := make([]*config.RouteRule, len(rule.Items))
 		for i, v := range rule.Items {
 			con := v.PolicyCondition
 			version := strings.Replace(v.GroupCondition, "version=", "", 1)
-			match := model.Match{
+			match := config.Match{
 				HTTPHeaders: map[string]map[string]string{},
 				Headers:     map[string]map[string]string{},
 			}
@@ -52,7 +62,7 @@ func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
 			} else if strings.Contains(con, "~") {
 				setHeadersAndHTTPHeaders(&match, v.CaseInsensitive, "regex", con, "~")
 			}
-			newRule := &model.RouteRule{
+			newRule := &config.RouteRule{
 				Routes:     generateRouteTags(100, strings.Split(version, ",")),
 				Match:      match,
 				Precedence: 1,
@@ -65,18 +75,18 @@ func DarkLaunchRule2RouteRule(rule *model.DarkLaunchRule) []*model.RouteRule {
 }
 
 // generateRouteTags generate route tags
-func generateRouteTags(weights int, versions []string) []*model.RouteTag {
+func generateRouteTags(weights int, versions []string) []*config.RouteTag {
 	length := len(versions)
 	if length == 1 {
-		return []*model.RouteTag{{
+		return []*config.RouteTag{{
 			Weight: weights,
 			Tags:   map[string]string{"version": versions[0]},
 		}}
 	}
 
-	tags := make([]*model.RouteTag, length)
+	tags := make([]*config.RouteTag, length)
 	for i, v := range versions {
-		tags[i] = &model.RouteTag{
+		tags[i] = &config.RouteTag{
 			Weight: weights / length,
 			Tags:   map[string]string{"version": v},
 		}
@@ -89,7 +99,7 @@ func caseInsensitiveToString(isCaseInsensitive bool) string {
 	}
 	return common.FALSE
 }
-func setHeadersAndHTTPHeaders(match *model.Match, isCaseInsensitive bool, cKey, con, sp string) {
+func setHeadersAndHTTPHeaders(match *config.Match, isCaseInsensitive bool, cKey, con, sp string) {
 	cons := strings.Split(con, sp)
 	if len(cons) != 2 {
 		openlogging.GetLogger().Errorf("set router conf to headers failed , conf : %s", con)

@@ -4,3 +4,7 @@ cse:
   service:
     registry:
       address: http://127.0.0.1:30100
+  config:
+    client:
+      serverUri: http://127.0.0.1:30110
+      type: servicecomb-kie

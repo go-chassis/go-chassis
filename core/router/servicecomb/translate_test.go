@@ -1,16 +1,15 @@
-package cse
+//Package servicecomb pull route rule policy from servicecomb control panel
+package servicecomb
 
 import (
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-mesh/openlogging"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDarkLaunchRule2RouteRule(t *testing.T) {
-	openlogging.GetLogger().Info("check translate,type DarkLaunchTypeRule")
-
 	routeRules := DarkLaunchRule2RouteRule(getRule(DarkLaunchTypeRule, "version=1.0",
 		"foo=bar", []string{"1.0"}))
 	// check  routeRules
@@ -110,10 +109,10 @@ func TestDarkLaunchRule2RouteRule(t *testing.T) {
 		}
 	}
 }
-func getRule(darkType, groupCondition, policyCondition string, Versions []string) *model.DarkLaunchRule {
-	return &model.DarkLaunchRule{
+func getRule(darkType, groupCondition, policyCondition string, Versions []string) *config.DarkLaunchRule {
+	return &config.DarkLaunchRule{
 		Type: darkType,
-		Items: []*model.RuleItem{
+		Items: []*config.RuleItem{
 			{
 				GroupName:       "test",
 				GroupCondition:  groupCondition,

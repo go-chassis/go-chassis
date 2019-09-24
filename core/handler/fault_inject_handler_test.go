@@ -71,7 +71,6 @@ service_description:
 
 	})
 	t.Run("rest protocol to service1", func(t *testing.T) {
-		c.Reset()
 		m := map[string]string{
 			common.BuildinTagVersion: "0.1",
 			common.BuildinTagApp:     "default"}
@@ -92,7 +91,6 @@ service_description:
 		})
 	})
 	t.Run("rest protocol to other service", func(t *testing.T) {
-		c.Reset()
 		m := map[string]string{
 			common.BuildinTagVersion: "0.1",
 			common.BuildinTagApp:     "default"}

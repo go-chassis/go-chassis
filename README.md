@@ -10,20 +10,17 @@ go chassis is designed as a protocol-independent framework, any protocol
 is able to integrate with go chassis and leverage same function like load balancing,
 circuit breaker,rate limiting, routing management, those function resilient your service
 
-go chassis makes service observable by bring open tracing and prometheus to it.
+go chassis makes service observable by bringing open tracing and prometheus to it.
 
 go chassis is flexible, many different modules can be replaced by other implementation, 
-like registry, metrics, handler chain, config center etc 
+like registry, metrics, handler chain, config server etc 
 
 With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
 your don't need to investigate, implement and integrate many solutions yourself.
 
-go chassis supports Istio platform, Although Istio is a great platform with a service mesh in data plane, 
-it surely decrease the throughput and increase the latency of your service 
-go chassis can bring better performance to go program, 
+go chassis supports Istio control panel, go chassis can bring better performance to go program, 
 you can use Istio configurations to control go chassis.
 
-Go chassis also has a service mesh solution https://github.com/go-mesh/mesher, it is build on top of go chassis. you can use same registry, configuration to goven all of service writen in diffrent language.
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
  fit both client side discovery and server side discovery pattern 
@@ -41,38 +38,31 @@ Go chassis also has a service mesh solution https://github.com/go-mesh/mesher, i
  - **Hot-reconfiguraion**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting
  - **Dynamic Configuration framework**: Powered by go-archaius, developer is able to develop a service which has hot-reconfiguration feature easily
  - **Fault Injection**: In consumer side, you can inject faults to bring chaos testing into your system
- 
+ - **API gateway and service mesh solution**: powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
+
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
-# Quick Start
+# Get started 
+1.Generate go mod
+```bash
+go mod init
+```
+2.Add go chassis 
+```shell script
+GO111MODULE=on go get github.com/go-chassis/go-chassis
+```
+if you are facing network issue 
+```bash
+export GOPROXY=https://goproxy.io
+```
+
+3.[Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
+
+
+# Documentations
 You can see more documentations in [here](http://docs.go-chassis.com/), 
-this doc is for latest version of go chassis, if you want to see your version's doc,
-follow [here](docs/README.md) to generate it
-
-1. Install [go 1.10+](https://golang.org/doc/install) 
-
-2. Clone the project
-
-```sh
-git clone git@github.com:go-chassis/go-chassis.git
-```
-
-3. Use go mod(go 1.11+, experimental but a recommended way)
-```shell
-cd go-chassis
-export GO111MODULE=on 
-go mod download
-#optional
-export GO111MODULE=on 
-go mod vendor
-```
-NOTICE：if you do not use mod, We can not ensure you the compatibility. however you can still maintain your own vendor, which means you have to solve compiling issue your own.
-
-4. Install [service-center](http://servicecomb.apache.org/release/)
-
-5. [Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
-
-
+this online doc is for latest version of go chassis, if you want to see your version's doc,
+follow [here](docs/README.md) to generate it in local
 
 # Examples
 You can check examples [here](examples)
@@ -107,9 +97,43 @@ highly recommended. that will not prevent you from using kubernetes or Istio,
 Because service center can aggregate heterogeneous registry 
 and give you a unified service registry entry point.
 
-## Kubenetes and Istio
+## Kubernetes and Istio
 go chassis has k8s registry and Istio registry plugins, and support Istio traffic management
 you can use spring cloud or Envoy with go chassis under same service discovery service.
 
+# Other project using go-chassis
+- [apache/servicecomb-kie](https://github.com/apache/servicecomb-kie): 
+A distributed configuration management service, go chassis and mesher integrate with it,
+so that user can manage service configurations by this service.
+- [apache/servicecomb-mesher](https://github.com/apache/servicecomb-mesher): 
+A service mesh able to co-work with go chassis, 
+it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/configurations/edge.html) also.
+
+
+# To start developing go chassis
+
+1. Install [go 1.12+](https://golang.org/doc/install) 
+
+2. Clone the project
+
+```sh
+git clone git@github.com:go-chassis/go-chassis.git
+```
+
+3. Download vendors
+```shell
+cd go-chassis
+export GO111MODULE=on 
+go mod download
+#optional
+export GO111MODULE=on 
+go mod vendor
+```
+NOTICE：if you do not use mod, We can not ensure you the compatibility. 
+however you can still maintain your own vendor, 
+which means you have to solve compiling issue your own.
+
+
+4. Install [service-center](http://servicecomb.apache.org/release/)
 
 

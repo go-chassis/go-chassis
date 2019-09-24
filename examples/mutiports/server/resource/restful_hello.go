@@ -18,7 +18,7 @@ func (r *RestFulHello) Hello(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *RestFulHello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/hello", ResourceFuncName: "Hello"},
+		{Method: http.MethodGet, Path: "/hello", ResourceFunc: r.Hello},
 	}
 }
 
@@ -34,7 +34,7 @@ func (r *Legacy) Do(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *Legacy) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/legacy", ResourceFuncName: "Do"},
+		{Method: http.MethodGet, Path: "/legacy", ResourceFunc: r.Do},
 	}
 }
 
@@ -50,6 +50,6 @@ func (r *Admin) Do(b *rf.Context) {
 //URLPatterns helps to respond for corresponding API calls
 func (r *Admin) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/admin", ResourceFuncName: "Do"},
+		{Method: http.MethodGet, Path: "/admin", ResourceFunc: r.Do},
 	}
 }

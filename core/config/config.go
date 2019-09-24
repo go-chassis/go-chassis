@@ -26,8 +26,9 @@ var lbConfig *model.LBWrapper
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
 
-// RouterDefinition is route rule config
-var RouterDefinition *model.RouterConfig
+//OldRouterDefinition is route rule config
+//Deprecated
+var OldRouterDefinition *RouterConfig
 
 //HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystrixConfig *model.HystrixConfigWrapper
@@ -77,7 +78,7 @@ func parse() error {
 		return err
 	}
 
-	err = readMicroserviceConfigFiles()
+	err = readMicroServiceConfigFiles()
 	if err != nil {
 		return err
 	}
@@ -96,29 +97,38 @@ func parse() error {
 // populateServiceRegistryAddress populate service registry address
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
-	registryAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
-	if registryAddrFromEnv == "" {
-		registryAddrFromEnv = archaius.GetString(common.CseRegistryAddress, "")
-	}
+	registryAddrFromEnv := readCseAddress(common.EnvCSESCEndpoint, common.CseRegistryAddress)
+	openlogging.Debug("detect env", openlogging.WithTags(
+		openlogging.Tags{
+			"ep": registryAddrFromEnv,
+		}))
 	if registryAddrFromEnv != "" {
 		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
 	}
-
 }
 
 // populateConfigCenterAddress populate config center address
 func populateConfigCenterAddress() {
 	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := os.Getenv(common.EnvCSEEndpoint)
-	if configCenterAddrFromEnv == "" {
-		configCenterAddrFromEnv = archaius.GetString(common.CseConfigCenterAddress, "")
-	}
+	configCenterAddrFromEnv := readCseAddress(common.EnvCSECCEndpoint, common.CseConfigCenterAddress)
 	if configCenterAddrFromEnv != "" {
 		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
 	}
+}
+
+// readCseAddress
+func readCseAddress(firstEnv, singleEnv string) string {
+	addrFromEnv := os.Getenv(firstEnv)
+	if addrFromEnv == "" {
+		addrFromEnv = os.Getenv(common.EnvCSEEndpoint)
+		if addrFromEnv == "" {
+			addrFromEnv = archaius.GetString(singleEnv, "")
+		}
+	}
+	return addrFromEnv
 }
 
 // populateMonitorServerAddress populate monitor server address
@@ -192,8 +202,8 @@ func (e *pathError) Error() string { return e.Path + ": " + e.Err.Error() }
 
 // parseRouterConfig is unmarshal the router configuration file(router.yaml)
 func parseRouterConfig(file string) error {
-	RouterDefinition = &model.RouterConfig{}
-	err := unmarshalYamlFile(file, RouterDefinition)
+	OldRouterDefinition = &RouterConfig{}
+	err := unmarshalYamlFile(file, OldRouterDefinition)
 	if err != nil && !os.IsNotExist(err) {
 		return &pathError{Path: file, Err: err}
 	}
@@ -221,8 +231,8 @@ func ReadHystrixFromArchaius() error {
 	return nil
 }
 
-// readMicroserviceConfigFiles read micro service configuration file
-func readMicroserviceConfigFiles() error {
+// readMicroServiceConfigFiles read micro service configuration file
+func readMicroServiceConfigFiles() error {
 	MicroserviceDefinition = &model.MicroserviceCfg{}
 	//find only one microservice yaml
 	microserviceNames := schema.GetMicroserviceNames()
@@ -240,7 +250,10 @@ func readMicroserviceConfigFiles() error {
 		if err != nil {
 			return fmt.Errorf("missing microservice description file: %s", err.Error())
 		}
-		ReadMicroserviceConfigFromBytes(data)
+		err = ReadMicroserviceConfigFromBytes(data)
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 	return ReadMicroserviceConfigFromBytes(data)
@@ -279,9 +292,9 @@ func GetHystrixConfig() *model.HystrixConfig {
 
 // Init is initialize the configuration directory, archaius, route rule, and schema
 func Init() error {
-	if err := parseRouterConfig(fileutil.RouterDefinition()); err != nil {
+	if err := parseRouterConfig(fileutil.RouterConfigPath()); err != nil {
 		if os.IsNotExist(err) {
-			openlogging.GetLogger().Infof("[%s] not exist", fileutil.RouterDefinition())
+			openlogging.GetLogger().Infof("[%s] not exist", fileutil.RouterConfigPath())
 		} else {
 			return err
 		}
@@ -290,7 +303,7 @@ func Init() error {
 	if err != nil {
 		return err
 	}
-	openlogging.GetLogger().Infof("archaius init success")
+	openlogging.Info("archaius init success")
 
 	//Upload schemas using environment variable SCHEMA_ROOT
 	schemaPath := archaius.GetString(common.EnvSchemaRoot, "")

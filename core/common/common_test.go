@@ -90,4 +90,11 @@ func TestXCseHeader(t *testing.T) {
 			assert.NotEmpty(t, s)
 			assert.Equal(t, s, "test4")
 		})
+	t.Run("test old version and new version transfer source service name ", func(t *testing.T) {
+		req.Header = make(map[string][]string)
+		req.Header.Set(common.HeaderSourceName, "test5")
+		s := common.GetXCSEContext(common.HeaderSourceName, req)
+		assert.NotEmpty(t, s)
+		assert.Equal(t, s, "test5")
+	})
 }

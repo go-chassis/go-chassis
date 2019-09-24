@@ -18,7 +18,6 @@ package lager
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/go-mesh/openlogging"
 	"io"
 	"io/ioutil"
 	"os"
@@ -27,6 +26,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/go-mesh/openlogging"
 )
 
 var pathReplacer *strings.Replacer
@@ -165,7 +166,7 @@ func doRollover(fPath string, MaxFileSize int, MaxBackupCount int) {
 	}
 
 	//truncate the file
-	f, err := os.OpenFile(fPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+	f, err := os.OpenFile(fPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0640)
 	if err != nil {
 		Logger.Errorf("truncate path: %s failed: %s", EscapPath(fPath), err)
 		return
@@ -286,13 +287,13 @@ func CopyFile(srcFile, dstFile string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(dstFile, input, 0600)
+	err = ioutil.WriteFile(dstFile, input, 0640)
 	return err
 }
 
 // initLogRotate initialize log rotate
-func initLogRotate(logFilePath string, lag *Lager) {
-	if lag == nil {
+func initLogRotate(logFilePath string, option *Options) {
+	if option == nil {
 		go func() {
 			for {
 				LogRotate(filepath.Dir(logFilePath), LogRotateSize, LogBackupCount)
@@ -300,18 +301,18 @@ func initLogRotate(logFilePath string, lag *Lager) {
 			}
 		}()
 	} else {
-		if lag.RollingPolicy == RollingPolicySize {
+		if option.RollingPolicy == RollingPolicySize {
 			go func() {
 				for {
-					LogRotate(filepath.Dir(logFilePath), lag.LogRotateSize, lag.LogBackupCount)
+					LogRotate(filepath.Dir(logFilePath), option.LogRotateSize, option.LogBackupCount)
 					time.Sleep(30 * time.Second)
 				}
 			}()
 		} else {
 			go func() {
 				for {
-					LogRotate(filepath.Dir(logFilePath), 0, lag.LogBackupCount)
-					time.Sleep(24 * time.Hour * time.Duration(lag.LogRotateDate))
+					LogRotate(filepath.Dir(logFilePath), 0, option.LogBackupCount)
+					time.Sleep(24 * time.Hour * time.Duration(option.LogRotateDate))
 				}
 			}()
 		}

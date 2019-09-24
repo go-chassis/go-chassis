@@ -3,8 +3,8 @@
 
 go chassis runtime will produce metrics, 
 developer is also able to custom metrics.
-by default go chassis use promethues lib to produce metrics data.
-user can custom metrics plugin to replace promethues.
+by default go chassis use prometheus lib to produce metrics data.
+user can custom metrics plugin to replace prometheus.
 
 ## 配置
 

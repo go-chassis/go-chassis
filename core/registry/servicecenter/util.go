@@ -2,12 +2,12 @@ package servicecenter
 
 import (
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
 )
 
@@ -65,10 +65,10 @@ func filterInstances(providerInstances []*proto.MicroServiceInstance) []*registr
 func closeClient(r *client.RegistryClient) error {
 	err := r.Close()
 	if err != nil {
-		lager.Logger.Errorf("Conn close failed. err %s", err)
+		openlogging.GetLogger().Errorf("Conn close failed. err %s", err)
 		return err
 	}
-	lager.Logger.Debugf("Conn close success.")
+	openlogging.GetLogger().Debugf("Conn close success.")
 	return nil
 }
 

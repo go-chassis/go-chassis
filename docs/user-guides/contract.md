@@ -51,16 +51,16 @@ check https://github.com/go-chassis/go-chassis/blob/master/server/restful/router
 
 func (r *RestFulHello) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Root",
+		{Method: http.MethodGet, Path: "/", ResourceFunc: r.Root,
 			Returns: []*rf.Returns{{Code: 200}}},
 
-		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",
+		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFunc: r.Sayhello,
 			Returns: []*rf.Returns{{Code: 200}}},
 
-		{Method: http.MethodPost, Path: "/sayhi", ResourceFuncName: "Sayhi",
+		{Method: http.MethodPost, Path: "/sayhi", ResourceFunc: r.Sayhi,
 			Returns: []*rf.Returns{{Code: 200}}},
 
-		{Method: http.MethodPost, Path: "/sayjson", ResourceFuncName: "SayJSON",
+		{Method: http.MethodPost, Path: "/sayjson", ResourceFunc: r.SayJSON,
 			Returns: []*rf.Returns{{Code: 200}}},
 	}
 }
