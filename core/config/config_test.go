@@ -71,7 +71,7 @@ service_description:
 	err = config.Init()
 	assert.NoError(t, err)
 	time.Sleep(1 * time.Second)
-	config.ReadGlobalConfigFile()
+	config.ReadGlobalConfigFromArchaius()
 
 	c := config.GetConfigCenterConf()
 	assert.Equal(t, "", c.ServerURI)
