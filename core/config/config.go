@@ -54,9 +54,9 @@ func GetDataCenter() *model.DataCenterInfo {
 	return GlobalDefinition.DataCenter
 }
 
-// parse unmarshal configurations on respective structure
-func parse() error {
-	err := ReadGlobalConfigFile()
+// readFromArchaius unmarshal configurations to expected pointer
+func readFromArchaius() error {
+	err := ReadGlobalConfigFromArchaius()
 	if err != nil {
 		return err
 	}
@@ -160,14 +160,13 @@ func populateTenant() {
 	}
 }
 
-// ReadGlobalConfigFile for to unmarshal the global config file(chassis.yaml) information
-func ReadGlobalConfigFile() error {
-	globalDef := model.GlobalCfg{}
-	err := archaius.UnmarshalConfig(&globalDef)
+// ReadGlobalConfigFromArchaius for to unmarshal the global config file(chassis.yaml) information
+func ReadGlobalConfigFromArchaius() error {
+	GlobalDefinition = &model.GlobalCfg{}
+	err := archaius.UnmarshalConfig(&GlobalDefinition)
 	if err != nil {
 		return err
 	}
-	GlobalDefinition = &globalDef
 	return nil
 }
 
@@ -228,7 +227,7 @@ func readMicroServiceConfigFiles() error {
 	MicroserviceDefinition = &model.MicroserviceCfg{}
 	//find only one microservice yaml
 	microserviceNames := schema.GetMicroserviceNames()
-	defPath := fileutil.GetMicroserviceDesc()
+	defPath := fileutil.MicroServiceConfigPath()
 	data, err := ioutil.ReadFile(defPath)
 	if err != nil {
 		openlogging.GetLogger().Errorf(fmt.Sprintf("WARN: Missing microservice description file: %s", err.Error()))
@@ -308,14 +307,14 @@ func Init() error {
 		return schemaError
 	}
 
-	//set microservice names
+	//set micro service names
 	msError := schema.SetMicroServiceNames(schemaPath)
 	if msError != nil {
 		return msError
 	}
 
 	NodeIP = archaius.GetString(common.EnvNodeIP, "")
-	err = parse()
+	err = readFromArchaius()
 	if err != nil {
 		return err
 	}

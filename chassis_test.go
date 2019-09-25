@@ -28,7 +28,7 @@ func TestInit(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(os.Getenv("GOPATH"), "test", "chassisInit"))
 	err := os.MkdirAll(fileutil.GetConfDir(), 0700)
 	assert.NoError(t, err)
-	globalDefFile, err := os.OpenFile(fileutil.GlobalDefinition(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
+	globalDefFile, err := os.OpenFile(fileutil.GlobalConfigPath(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
 	defer globalDefFile.Close()
 
 	// write some text line-by-line to file
@@ -83,7 +83,7 @@ ssl:
   registry.consumer.certPwdFile:
 `)
 	assert.NoError(t, err)
-	msDefFile, err := os.OpenFile(fileutil.GetMicroserviceDesc(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
+	msDefFile, err := os.OpenFile(fileutil.MicroServiceConfigPath(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
 	assert.NoError(t, err)
 	defer msDefFile.Close()
 	_, err = msDefFile.WriteString(`---

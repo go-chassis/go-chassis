@@ -22,7 +22,7 @@ func TestGetWorkDir(t *testing.T) {
 
 func TestHystricDefinaiton(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "test")
-	def := fileutil.HystrixDefinition()
+	def := fileutil.CircuitBreakerConfigPath()
 	assert.Equal(t, filepath.Join("test", "conf", fileutil.Hystric), def)
 }
 func TestMicroserviceDefinition(t *testing.T) {
@@ -30,7 +30,7 @@ func TestMicroserviceDefinition(t *testing.T) {
 	assert.Equal(t, filepath.Join("test", "conf", "micro", fileutil.Definition), def)
 }
 func TestGlobalDefinition(t *testing.T) {
-	def := fileutil.GlobalDefinition()
+	def := fileutil.GlobalConfigPath()
 	assert.Equal(t, filepath.Join("test", "conf", fileutil.Global), def)
 }
 func TestPassLagerDefinition(t *testing.T) {
@@ -60,19 +60,19 @@ func TestChassisHomeDir(t *testing.T) {
 }
 
 func TestGetLoadBalancing(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetLoadBalancing())
+	assert.NotEmpty(t, fileutil.LoadBalancingConfigPath())
 }
 
 func TestGetRateLimiting(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetRateLimiting())
+	assert.NotEmpty(t, fileutil.RateLimitingFile())
 }
 
 func TestGetTLS(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetTLS())
+	assert.NotEmpty(t, fileutil.TLSConfigPath())
 }
 
 func TestGetMonitoring(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetMonitoring())
+	assert.NotEmpty(t, fileutil.MonitoringConfigPath())
 }
 
 func TestGetRouter(t *testing.T) {
@@ -80,13 +80,13 @@ func TestGetRouter(t *testing.T) {
 }
 
 func TestGetMicroserviceDesc(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetMicroserviceDesc())
+	assert.NotEmpty(t, fileutil.MicroServiceConfigPath())
 }
 
 func TestGetAuth(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetAuth())
+	assert.NotEmpty(t, fileutil.AuthConfigPath())
 }
 
 func TestGetTracing(t *testing.T) {
-	assert.NotEmpty(t, fileutil.GetTracing())
+	assert.NotEmpty(t, fileutil.TracingPath())
 }

@@ -4,7 +4,7 @@ require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.8.0+incompatible
 	github.com/go-chassis/foundation v0.0.0-20190621030543-c3b63f787f4c
-	github.com/go-chassis/go-archaius v0.21.0
+	github.com/go-chassis/go-archaius v0.22.0
 	github.com/go-chassis/go-chassis-config v0.12.1-0.20190924031444-785da26fa7df
 	github.com/go-chassis/go-restful-swagger20 v1.0.1
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
