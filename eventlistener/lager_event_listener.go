@@ -1,9 +1,9 @@
 package eventlistener
 
 import (
+	"github.com/go-chassis/go-archaius/event"
 	"strings"
 
-	"github.com/go-chassis/go-archaius/core"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/paas-lager"
 	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
@@ -22,20 +22,20 @@ type LagerEventListener struct {
 }
 
 //Event is a method for Lager event listening
-func (e *LagerEventListener) Event(event *core.Event) {
+func (el *LagerEventListener) Event(e *event.Event) {
 	logger := openlogging.GetLogger()
 	l, ok := logger.(lager.Logger)
 	if !ok {
 		return
 	}
 
-	openlogging.Info("Get lager event", openlogging.WithTags(openlogging.Tags{
-		"key":   event.Key,
-		"value": event.Value,
-		"type":  event.EventType,
+	openlogging.Info("Get lager e", openlogging.WithTags(openlogging.Tags{
+		"key":   e.Key,
+		"value": e.Value,
+		"type":  e.EventType,
 	}))
 
-	v, ok := event.Value.(string)
+	v, ok := e.Value.(string)
 	if !ok {
 		return
 	}
@@ -57,7 +57,7 @@ func (e *LagerEventListener) Event(event *core.Event) {
 		return
 	}
 
-	switch event.EventType {
+	switch e.EventType {
 	case common.Update:
 		l.SetLogLevel(lagerLogLevel)
 	}

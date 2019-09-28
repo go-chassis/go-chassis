@@ -98,7 +98,7 @@ cse:
 
 		os.Setenv(fileutil.ChassisConfDir, d)
 		time.Sleep(1 * time.Second)
-		config.ReadGlobalConfigFile()
+		config.ReadGlobalConfigFromArchaius()
 		check := config.GetContractDiscoveryType()
 		assert.Equal(t, "servicecenter", check)
 

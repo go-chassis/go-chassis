@@ -1,12 +1,11 @@
 package eventlistener
 
 import (
+	"github.com/go-chassis/go-archaius/event"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/qpslimiter"
-
-	"github.com/go-chassis/go-archaius/core"
 )
 
 const (
@@ -21,19 +20,19 @@ type QPSEventListener struct {
 }
 
 //Event is a method for QPS event listening
-func (e *QPSEventListener) Event(event *core.Event) {
+func (el *QPSEventListener) Event(e *event.Event) {
 	qpsLimiter := qpslimiter.GetQPSTrafficLimiter()
 
-	if strings.Contains(event.Key, "enabled") {
+	if strings.Contains(e.Key, "enabled") {
 		return
 	}
 
-	switch event.EventType {
+	switch e.EventType {
 	case common.Update:
-		qpsLimiter.UpdateRateLimit(event.Key, event.Value)
+		qpsLimiter.UpdateRateLimit(e.Key, e.Value)
 	case common.Create:
-		qpsLimiter.UpdateRateLimit(event.Key, event.Value)
+		qpsLimiter.UpdateRateLimit(e.Key, e.Value)
 	case common.Delete:
-		qpsLimiter.DeleteRateLimiter(event.Key)
+		qpsLimiter.DeleteRateLimiter(e.Key)
 	}
 }

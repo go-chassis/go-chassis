@@ -1,15 +1,14 @@
 module github.com/go-chassis/go-chassis
 
 require (
-	github.com/apache/servicecomb-kie v0.1.0 // indirect
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.8.0+incompatible
 	github.com/go-chassis/foundation v0.0.0-20190621030543-c3b63f787f4c
-	github.com/go-chassis/go-archaius v0.20.0
-	github.com/go-chassis/go-chassis-config v0.10.0
+	github.com/go-chassis/go-archaius v0.23.0
+	github.com/go-chassis/go-chassis-config v0.12.1-0.20190924031444-785da26fa7df
 	github.com/go-chassis/go-restful-swagger20 v1.0.1
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
-	github.com/go-mesh/openlogging v1.0.1-0.20181205082104-3d418c478b2d
+	github.com/go-mesh/openlogging v1.0.1
 	github.com/golang/protobuf v1.2.0
 	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/go-version v1.0.0
