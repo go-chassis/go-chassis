@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
@@ -32,7 +33,8 @@ func (c *Chain) Next(i *invocation.Invocation, f invocation.ResponseCallBack) {
 	index := i.HandlerIndex
 	if index >= len(c.Handlers) {
 		r := &invocation.Response{
-			Err: nil,
+			Err:    nil,
+			Status: http.StatusInternalServerError,
 		}
 		f(r)
 		return

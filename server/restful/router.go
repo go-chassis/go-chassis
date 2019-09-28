@@ -143,7 +143,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 			bs := NewBaseServer(inv.Ctx)
 			bs.Req = req
 			bs.Resp = rep
-			ir.Status = bs.Resp.StatusCode()
+
 			// check body size
 			if opts.BodyLimit > 0 {
 				bs.Req.Request.Body = http.MaxBytesReader(bs.Resp, bs.Req.Request.Body, opts.BodyLimit)
@@ -151,6 +151,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 
 			// call real route func
 			handleFunc(bs)
+			ir.Status = bs.Resp.StatusCode()
 
 			if bs.Resp.StatusCode() >= http.StatusBadRequest {
 				return fmt.Errorf("get err from http handle, get status: %d", bs.Resp.StatusCode())
