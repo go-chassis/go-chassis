@@ -3,7 +3,6 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
