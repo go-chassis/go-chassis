@@ -33,8 +33,7 @@ func (c *Chain) Next(i *invocation.Invocation, f invocation.ResponseCallBack) {
 	index := i.HandlerIndex
 	if index >= len(c.Handlers) {
 		r := &invocation.Response{
-			Err:    nil,
-			Status: http.StatusInternalServerError,
+			Err: nil,
 		}
 		f(r)
 		return
