@@ -90,11 +90,11 @@ func readFromArchaius() error {
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
 	registryAddrFromEnv := readCseAddress(common.EnvCSESCEndpoint, common.CseRegistryAddress)
-	openlogging.Debug("detect env", openlogging.WithTags(
-		openlogging.Tags{
-			"ep": registryAddrFromEnv,
-		}))
 	if registryAddrFromEnv != "" {
+		openlogging.Debug("detect env", openlogging.WithTags(
+			openlogging.Tags{
+				"ep": registryAddrFromEnv,
+			}))
 		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
 		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
