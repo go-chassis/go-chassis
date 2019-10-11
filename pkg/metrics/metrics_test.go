@@ -1,6 +1,7 @@
 package metrics_test
 
 import (
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-mesh/openlogging"
 	"github.com/prometheus/common/expfmt"
@@ -12,7 +13,9 @@ func TestInit(t *testing.T) {
 	t.Run("install a plugin", func(t *testing.T) {
 		metrics.InstallPlugin("test", metrics.NewPrometheusExporter)
 	})
-	err := metrics.Init()
+	err := archaius.Init(archaius.WithENVSource())
+	assert.NoError(t, err)
+	err = metrics.Init()
 	assert.NoError(t, err)
 
 }

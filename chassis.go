@@ -2,6 +2,7 @@ package chassis
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"log"
 	"os"
 	"os/signal"
@@ -177,6 +178,9 @@ func (c *chassis) initialize() error {
 	}
 
 	if err = tracing.Init(); err != nil {
+		return err
+	}
+	if err = metrics.Init(); err != nil {
 		return err
 	}
 	go hystrix.StartReporter()

@@ -19,13 +19,11 @@ import (
 	"time"
 
 	"fmt"
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/pkg/circuit"
 	m "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"github.com/go-mesh/openlogging"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -80,14 +78,6 @@ func GetPrometheusSinker() {
 		FlushInterval = t
 		gauges = make(map[string]prometheus.Gauge)
 		gaugeVecs = make(map[string]*prometheus.GaugeVec)
-
-		if archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", true) {
-			onceEnable.Do(func() {
-				EnableRunTimeMetrics()
-				openlogging.Info("go runtime metrics is exported at " + config.GlobalDefinition.Cse.Metrics.APIPath)
-			})
-
-		}
 	})
 }
 
@@ -115,14 +105,6 @@ func gaugeVecFromNameAndValue(name string, val float64, labels prometheus.Labels
 	}
 	gVec.With(labels).Set(val)
 }
-
-// EnableRunTimeMetrics enable runtime metrics
-func EnableRunTimeMetrics() {
-	m.GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
-	m.GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
-}
-
-var onceEnable sync.Once
 
 //ReportMetricsToPrometheus report metrics to prometheus registry, you can use GetSystemPrometheusRegistry to get prometheus registry. by default chassis will report system metrics to prometheus
 func ReportMetricsToPrometheus(cb *hystrix.CircuitBreaker) error {
