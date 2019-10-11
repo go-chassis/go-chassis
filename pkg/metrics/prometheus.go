@@ -2,10 +2,14 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-mesh/openlogging"
 	"github.com/prometheus/client_golang/prometheus"
 	"sync"
 	"time"
 )
+
+var onceEnable sync.Once
 
 //PrometheusExporter is a prom exporter for go chassis
 type PrometheusExporter struct {
@@ -21,6 +25,13 @@ type PrometheusExporter struct {
 
 //NewPrometheusExporter create a prometheus exporter
 func NewPrometheusExporter(options Options) Registry {
+	if archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", true) {
+		onceEnable.Do(func() {
+			EnableRunTimeMetrics()
+			openlogging.Info("go runtime metrics is exported")
+		})
+
+	}
 	return &PrometheusExporter{
 		FlushInterval: options.FlushInterval,
 		lc:            sync.RWMutex{},
@@ -31,6 +42,12 @@ func NewPrometheusExporter(options Options) Registry {
 		gauges:        make(map[string]*prometheus.GaugeVec),
 		histograms:    make(map[string]*prometheus.HistogramVec),
 	}
+}
+
+// EnableRunTimeMetrics enable runtime metrics
+func EnableRunTimeMetrics() {
+	GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
+	GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
 }
 
 //CreateGauge create collector
