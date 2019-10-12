@@ -6,26 +6,23 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
 
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-
+	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/server"
-
-	"os"
-	"path/filepath"
-
-	"github.com/emicklei/go-restful"
 	globalconfig "github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-mesh/openlogging"
 )
@@ -240,10 +237,7 @@ func (r *restfulServer) Start() error {
 
 //register to swagger ui,Whether to create a schema, you need to refer to the configuration.
 func (r *restfulServer) CreateLocalSchema(config server.Options) error {
-	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema == true {
-		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
-		return nil
-	}
+
 	var path string
 	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
 		return errors.New("schema path is empty")
@@ -258,11 +252,17 @@ func (r *restfulServer) CreateLocalSchema(config server.Options) error {
 		openlogging.GetLogger().Infof(format, v...)
 	}
 	swaggerConfig := swagger.Config{
-		WebServices:     r.container.RegisteredWebServices(),
-		WebServicesUrl:  config.Address,
-		ApiPath:         "/apidocs.json",
-		FileStyle:       "yaml",
-		SwaggerFilePath: filepath.Join(path, runtime.ServiceName+".yaml")}
+		WebServices:    r.container.RegisteredWebServices(),
+		WebServicesUrl: config.Address,
+		ApiPath:        "/apidocs",
+		FileStyle:      "yaml",
+		OpenService:    true,
+	}
+	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema {
+		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
+	} else {
+		swaggerConfig.SwaggerFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
+	}
 	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)
 	openlogging.Info("The schema has been created successfully. path:" + path)
 	//set schema information when create local schema file

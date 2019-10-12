@@ -143,6 +143,8 @@ func (d *Data) URLPatterns() []rf.Route {
 	}
 }
 ````
+you can find yor open API doc in http://ip:port/apidocs, after you start your program
+,you can copy the response body into http://editor.swagger.io/ to read document.
 ```yaml
 swagger: "2.0"
 info:
@@ -211,8 +213,9 @@ Paramater type：
 	FormParameterKind
 ```
 
-### Automatically generate schema file in local directory
-The program will generate the schema file locally by default，If you want to define your own instead of automatically generating a schema，
+### Automatically generate schema file
+The program will generate the schema file locally by default, 
+If you want to define your own instead of automatically generating a schema，
 You can modify the configuration '**noRefreshSchema: true**' in chassis.yaml
 
 ```yaml
