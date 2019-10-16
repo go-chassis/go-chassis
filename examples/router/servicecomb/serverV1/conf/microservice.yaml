@@ -1,7 +1,0 @@
----
-#Private property of microservices
-service_description:
-  name: paymentService
-  version: 1.0
-  instance_properties:
-    project: x

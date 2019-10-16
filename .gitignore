@@ -26,7 +26,6 @@ benchmark/server/server
 benchmark/**/log
 coverage.out
 coverage.txt
-go.sum
 
 main
 auth.yaml

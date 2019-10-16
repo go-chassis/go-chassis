@@ -1,7 +1,7 @@
 language: go
 sudo: required
 go: 
-  - 1.11
+  - 1.12
 install: true
 
 before_script:
@@ -28,7 +28,7 @@ jobs:
         - bash scripts/travis/goConstChecker.sh
     - stage: GoLint Checker
       script:
-        - go get -u github.com/golang/lint/golint
+        - go get -u golang.org/x/lint/golint
         - bash scripts/travis/goLintChecker.sh
     - stage: GoCyclo Checker
       script:
