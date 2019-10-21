@@ -213,7 +213,7 @@ following licenses.
 ================================================================
 The following component(s) are provided under the Apache-2.0 License (Apache License 2.0).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_matttproud_golang_protobuf_extensions.
+You can find a copy of the License at ./licenses/LICENSE__Apache2.0 .
 
 github.com/matttproud/golang_protobuf_extensions (v1.0.1)
 github.com/mwitkow/go-conntrack (v0.0.0-20161129095857-cc309e4a2223)
@@ -233,28 +233,28 @@ github.com/go-chassis/paas-lager (v1.0.2-0.20190328010332-cf506050ddb2)
 ================================================================
 The following component(s) are provided under the BSD-2-Clause License (BSD 2-Clause "Simplified" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_pkg_errors.
+You can find a copy of the License at ./licenses/LICENSE_pkg_errors.
 
 github.com/pkg/errors (v0.8.1)
 
 ================================================================
 The following component(s) are provided under the BSD-2-Clause License (BSD 2-Clause "Simplified" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_gorilla_websocket.
+You can find a copy of the License at ./licenses/LICENSE_gorilla_websocket.
 
 github.com/gorilla/websocket (v1.4.0)
 
 ================================================================
 The following component(s) are provided under the BSD-2-Clause License (BSD 2-Clause "Simplified" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_gopherjs_gopherjs.
+You can find a copy of the License at ./licenses/LICENSE_gopherjs_gopherjs.
 
 github.com/gopherjs/gopherjs (v0.0.0-20181017120253-0766667cb4d1)
 
 ================================================================
 The following component(s) are provided under the BSD-3-Clause License (BSD 3-Clause "New" or "Revised" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_x_crypto.
+You can find a copy of the License at ./licenses/LICENSE_x_crypto.
 
 golang.org/x/crypto (v0.0.0-20190308221718-c2843e01d9a2)
 golang.org/x/net (v0.0.0-20190311183353-d8887717615a)
@@ -266,98 +266,98 @@ golang.org/x/tools (v0.0.0-20190328211700-ab21143f2384)
 ================================================================
 The following component(s) are provided under the BSD-3-Clause License (BSD 3-Clause "New" or "Revised" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_alecthomas_template.
+You can find a copy of the License at ./licenses/LICENSE_alecthomas_template.
 
 github.com/alecthomas/template (v0.0.0-20160405071501-a0175ee3bccc)
 
 ================================================================
 The following component(s) are provided under the BSD-3-Clause License (BSD 3-Clause "New" or "Revised" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_golang_protobuf.
+You can find a copy of the License at ./licenses/LICENSE_golang_protobuf.
 
 github.com/golang/protobuf (v1.2.0)
 
 ================================================================
 The following component(s) are provided under the BSD-3-Clause License (BSD 3-Clause "New" or "Revised" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_julienschmidt_httprouter.
+You can find a copy of the License at ./licenses/LICENSE_julienschmidt_httprouter.
 
 github.com/julienschmidt/httprouter (v1.2.0)
 
 ================================================================
 The following component(s) are provided under the BSD-3-Clause License (BSD 3-Clause "New" or "Revised" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_fsnotify_fsnotify.
+You can find a copy of the License at ./licenses/LICENSE_fsnotify_fsnotify.
 
 github.com/fsnotify/fsnotify (v1.4.7)
 
 ================================================================
 The following component(s) are provided under the BSD-3-Clause License (BSD 3-Clause "New" or "Revised" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_pmezard_go-difflib.
+You can find a copy of the License at ./licenses/LICENSE_pmezard_go-difflib.
 
 github.com/pmezard/go-difflib (v1.0.0)
 
 ================================================================
 The following component(s) are provided under the ISC License (ISC License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_davecgh_go-spew.
+You can find a copy of the License at ./licenses/LICENSE_davecgh_go-spew.
 
 github.com/davecgh/go-spew (v1.1.1)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_jtolds_gls.
+You can find a copy of the License at ./licenses/LICENSE_jtolds_gls.
 
 github.com/jtolds/gls (v4.20.0+incompatible)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_go-chassis_go-restful-swagger20.
+You can find a copy of the License at ./licenses/LICENSE_go-chassis_go-restful-swagger20.
 
 github.com/go-chassis/go-restful-swagger20 (v1.0.1)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_go-kit_kit.
+You can find a copy of the License at ./licenses/LICENSE_go-kit_kit.
 
 github.com/go-kit/kit (v0.8.0)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_opentracing_opentracing-go.
+You can find a copy of the License at ./licenses/LICENSE_opentracing_opentracing-go.
 
 github.com/opentracing/opentracing-go (v1.0.2)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_sirupsen_logrus.
+You can find a copy of the License at ./licenses/LICENSE_sirupsen_logrus.
 
 github.com/sirupsen/logrus (v1.2.0)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_spf13_cast.
+You can find a copy of the License at ./licenses/LICENSE_spf13_cast.
 
 github.com/spf13/cast (v1.2.0)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_cenkalti_backoff.
+You can find a copy of the License at ./licenses/LICENSE_cenkalti_backoff.
 
 github.com/cenkalti/backoff (v2.0.0+incompatible)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_beorn7_perks.
+You can find a copy of the License at ./licenses/LICENSE_beorn7_perks.
 
 github.com/beorn7/perks (v0.0.0-20180321164747-3a771d992973)
 
@@ -371,35 +371,35 @@ github.com/go-stack/stack (v1.8.0)
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_json-iterator_go.
+You can find a copy of the License at ./licenses/LICENSE_json-iterator_go.
 
 github.com/json-iterator/go (v1.1.5)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_stretchr_objx.
+You can find a copy of the License at ./licenses/LICENSE_stretchr_objx.
 
 github.com/stretchr/objx (v0.1.1)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_patrickmn_go-cache.
+You can find a copy of the License at ./licenses/LICENSE_patrickmn_go-cache.
 
 github.com/patrickmn/go-cache (v2.1.0+incompatible)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_konsorten_go-windows-terminal-sequences.
+You can find a copy of the License at ./licenses/LICENSE_konsorten_go-windows-terminal-sequences.
 
 github.com/konsorten/go-windows-terminal-sequences (v1.0.1)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_stretchr_testify.
+You can find a copy of the License at ./licenses/LICENSE_stretchr_testify.
 
 github.com/stretchr/testify (v1.3.0)
 
@@ -414,28 +414,28 @@ gopkg.in/alecthomas/kingpin.v2 (v2.2.6)
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_go.uber.org_ratelimit.
+You can find a copy of the License at ./licenses/LICENSE_go.uber.org_ratelimit.
 
 go.uber.org/ratelimit (v0.1.0)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_emicklei_go-restful.
+You can find a copy of the License at ./licenses/LICENSE_emicklei_go-restful.
 
 github.com/emicklei/go-restful (v2.8.0+incompatible)
 
 ================================================================
 The following component(s) are provided under the MIT License (MIT License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_go-logfmt_logfmt.
+You can find a copy of the License at ./licenses/LICENSE_go-logfmt_logfmt.
 
 github.com/go-logfmt/logfmt (v0.3.0)
 
 ================================================================
 The following component(s) are provided under the MPL-2.0 License (Mozilla Public License 2.0).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_hashicorp_go-version.
+You can find a copy of the License at ./licenses/LICENSE_hashicorp_go-version.
 
 github.com/hashicorp/go-version (v1.0.0)
 
@@ -456,14 +456,14 @@ github.com/smartystreets/assertions (v0.0.0-20190116191733-b6c0e53d7304)
 ================================================================
 The following component(s) are provided under the BSD-2-Clause License (BSD 2-Clause "Simplified" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_gopkg.in_check.v1.
+You can find a copy of the License at ./licenses/LICENSE_gopkg.in_check.v1.
 
 gopkg.in/check.v1 (v0.0.0-20161208181325-20d25e280405)
 
 ================================================================
 The following component(s) are provided under the BSD-3-Clause License (BSD 3-Clause "New" or "Revised" License).
 See the respective project link for details.
-You can find a copy of the License at LICENSE_gogo_protobuf.
+You can find a copy of the License at ./licenses/LICENSE_gogo_protobuf.
 
 github.com/gogo/protobuf (v1.1.1)
 
