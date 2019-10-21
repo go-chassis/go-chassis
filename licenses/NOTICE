@@ -1,0 +1,37 @@
+go-chassis Go Chassis
+Copyright 2019-present, tianxiaoliang
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+=======================================================================
+go-chassis Go Chassis Subcomponents:
+
+
+================================================================
+You can find a copy of the Notice at NOTICE_matttproud_golang_protobuf_extensions for the the following component(s)
+See the respective project link for details.
+github.com/matttproud/golang_protobuf_extensions (v1.0.1)
+gopkg.in/yaml.v2 (v2.2.1)
+
+================================================================
+You can find a copy of the Notice at NOTICE_prometheus_client_golang for the the following component(s)
+See the respective project link for details.
+github.com/prometheus/client_golang (v0.9.1)
+github.com/prometheus/client_model (v0.0.0-20190115171406-56726106282f)
+github.com/prometheus/common (v0.2.0)
+github.com/prometheus/procfs (v0.0.0-20190117184657-bf6a532e95b1)
+
+================================================================
+You can find a copy of the Notice at NOTICE_go-chassis_go-archaius for the the following component(s)
+See the respective project link for details.
+github.com/go-chassis/go-archaius (v0.24.0)
+
+================================================================
+You can find a copy of the Notice at NOTICE_go-chassis_paas-lager for the the following component(s)
+See the respective project link for details.
+github.com/go-chassis/paas-lager (v1.0.2-0.20190328010332-cf506050ddb2)
+
+================================================================
+You can find a copy of the Notice at NOTICE_go-mesh_openlogging for the the following component(s)
+See the respective project link for details.
+github.com/go-mesh/openlogging (v1.0.1)
