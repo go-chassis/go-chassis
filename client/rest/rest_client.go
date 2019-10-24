@@ -110,6 +110,10 @@ func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocati
 	defer cancel()
 	if c.opts.TLSConfig != nil {
 		reqSend.URL.Scheme = SchemaHTTPS
+		// client verify target micro service name in mutual tls
+		// remember to set SAN (Subject Alternative Name) as server's micro service name
+		// when generating server.csr
+		c.c.Transport.(*http.Transport).TLSClientConfig.ServerName = inv.MicroServiceName
 	} else {
 		reqSend.URL.Scheme = SchemaHTTP
 	}
