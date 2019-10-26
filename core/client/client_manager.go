@@ -72,6 +72,10 @@ func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 			return nil, err
 		}
 	} else {
+		// client verify target micro service's name in mutual tls
+		// remember to set SAN (Subject Alternative Name) as server's micro service name
+		// when generating server.csr
+		tlsConfig.ServerName = service
 		openlogging.GetLogger().Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
 			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
 	}
