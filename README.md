@@ -39,6 +39,7 @@ you can use Istio configurations to control go chassis.
  - **Dynamic Configuration framework**: Powered by go-archaius, developer is able to develop a service which has hot-reconfiguration feature easily
  - **Fault Injection**: In consumer side, you can inject faults to bring chaos testing into your system
  - **API gateway and service mesh solution**: powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
+ - **Open API 2.0 support** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
 
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
