@@ -2,11 +2,11 @@ module github.com/go-chassis/go-chassis
 
 require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
-	github.com/emicklei/go-restful v2.8.0+incompatible
+	github.com/emicklei/go-restful v2.11.1+incompatible
 	github.com/go-chassis/foundation v0.0.0-20190621030543-c3b63f787f4c
 	github.com/go-chassis/go-archaius v0.24.0
 	github.com/go-chassis/go-chassis-config v0.14.0
-	github.com/go-chassis/go-restful-swagger20 v1.0.1
+	github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-mesh/openlogging v1.0.1
 	github.com/golang/protobuf v1.2.0

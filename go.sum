@@ -9,6 +9,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/emicklei/go-restful v2.8.0+incompatible h1:wN8GCRDPGHguIynsnBartv5GUgGUg1LAU7+xnSn1j7Q=
 github.com/emicklei/go-restful v2.8.0+incompatible/go.mod h1:otzb+WCGbkyDHkqmQmT5YD2WR4BBwUdeQoFo8l/7tVs=
+github.com/emicklei/go-restful v2.11.1+incompatible h1:CjKsv3uWcCMvySPQYKxO8XX3f9zD4FeZRsW4G0B4ffE=
+github.com/emicklei/go-restful v2.11.1+incompatible/go.mod h1:otzb+WCGbkyDHkqmQmT5YD2WR4BBwUdeQoFo8l/7tVs=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/go-chassis/foundation v0.0.0-20190621030543-c3b63f787f4c h1:p+Y6yq7RwHmYjEr/vwdVYGacBqFCc2lPQfNRIC3vRIs=
@@ -19,6 +21,8 @@ github.com/go-chassis/go-chassis-config v0.14.0 h1:OnM9sx2GalDC7vEIhPecRpQlVa8hz
 github.com/go-chassis/go-chassis-config v0.14.0/go.mod h1:qzvK/aoAv0O/khmF6ehW6RgELrF1JR2F555T9izoo2A=
 github.com/go-chassis/go-restful-swagger20 v1.0.1 h1:HdGto0xroWGK504XN0Um7JBc0OPMHDlWwedkd2mTGII=
 github.com/go-chassis/go-restful-swagger20 v1.0.1/go.mod h1:s+06mcAnGsVYQ2sqM4ZPiMJeRj7BTeAM/4gkhZNcsjA=
+github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5 h1:jlUonIaxwdVZrP27t2mPKHDuBz913nXznn4dOtvHzPg=
+github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5/go.mod h1:s+06mcAnGsVYQ2sqM4ZPiMJeRj7BTeAM/4gkhZNcsjA=
 github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2 h1:iORWPbIQ81tJPKWs9TNvcjCQnqvyTlL41F9ILgiTcyM=
 github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2/go.mod h1:tILYbn3+0jjCxhY6/ue9L8eRq+VJ60U6VYIdugqchB4=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
