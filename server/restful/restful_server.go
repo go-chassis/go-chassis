@@ -236,8 +236,7 @@ func (r *restfulServer) Start() error {
 }
 
 //register to swagger ui,Whether to create a schema, you need to refer to the configuration.
-func (r *restfulServer) CreateLocalSchema(config server.Options) error {
-
+func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	var path string
 	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
 		return errors.New("schema path is empty")
@@ -252,16 +251,18 @@ func (r *restfulServer) CreateLocalSchema(config server.Options) error {
 		openlogging.GetLogger().Infof(format, v...)
 	}
 	swaggerConfig := swagger.Config{
-		WebServices:    r.container.RegisteredWebServices(),
-		WebServicesUrl: config.Address,
-		ApiPath:        "/apidocs",
-		FileStyle:      "yaml",
-		OpenService:    true,
+		WebServices:     r.container.RegisteredWebServices(),
+		WebServicesUrl:  opts.Address,
+		ApiPath:         "/apidocs.json",
+		SwaggerPath:     "/swagger/",
+		FileStyle:       "yaml",
+		OpenService:     true,
+		SwaggerFilePath: "./swagger-ui/dist/",
 	}
 	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema {
 		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 	} else {
-		swaggerConfig.SwaggerFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
+		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
 	}
 	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)
 	openlogging.Info("The schema has been created successfully. path:" + path)

@@ -147,7 +147,7 @@ func TestNoRefreshSchemaConfig(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("CHASSIS_HOME"))
 	config.Init()
-	assert.Equal(t, true, config.GlobalDefinition.Cse.NoRefreshSchema)
+	assert.Equal(t, false, config.GlobalDefinition.Cse.NoRefreshSchema)
 	config.GlobalDefinition = &model.GlobalCfg{}
 }
 

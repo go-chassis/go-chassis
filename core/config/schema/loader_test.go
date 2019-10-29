@@ -127,10 +127,10 @@ func TestSetSchemaIDs(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	log.Println(os.Getenv("CHASSIS_HOME"))
 	config := swagger.Config{
-		WebServices:     restful.DefaultContainer.RegisteredWebServices(),
-		OpenService:     true,
-		SwaggerPath:     "/apidocs/",
-		SwaggerFilePath: filepath.Join(os.Getenv("CHASSIS_HOME"), "api.yaml")}
+		WebServices: restful.DefaultContainer.RegisteredWebServices(),
+		OpenService: true,
+		SwaggerPath: "/apidocs/",
+		OutFilePath: filepath.Join(os.Getenv("CHASSIS_HOME"), "api.yaml")}
 	config.Info.Description = "This is a sample server Book server"
 	config.Info.Title = "swagger Book"
 	sws := swagger.RegisterSwaggerService(config, restful.DefaultContainer)
