@@ -49,6 +49,7 @@ type Parameters struct {
 	DataType  string // string, int etc
 	ParamType int    //restful.QueryParameterKind or restful.PathParameterKind
 	Desc      string
+	Required  bool
 }
 
 //Router is to define how route the request
