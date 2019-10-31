@@ -181,19 +181,20 @@ func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful
 //fillParam is for handle parameter by type
 func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder {
 	for _, param := range routeSpec.Parameters {
+		p := &restful.Parameter{}
 		switch param.ParamType {
 		case restful.QueryParameterKind:
-			rb = rb.Param(restful.QueryParameter(param.Name, param.Desc).DataType(param.DataType))
+			p = restful.QueryParameter(param.Name, param.Desc)
 		case restful.PathParameterKind:
-			rb = rb.Param(restful.PathParameter(param.Name, param.Desc).DataType(param.DataType))
+			p = restful.PathParameter(param.Name, param.Desc)
 		case restful.HeaderParameterKind:
-			rb = rb.Param(restful.HeaderParameter(param.Name, param.Desc).DataType(param.DataType))
+			p = restful.HeaderParameter(param.Name, param.Desc)
 		case restful.BodyParameterKind:
-			rb = rb.Param(restful.BodyParameter(param.Name, param.Desc).DataType(param.DataType))
+			p = restful.BodyParameter(param.Name, param.Desc)
 		case restful.FormParameterKind:
-			rb = rb.Param(restful.FormParameter(param.Name, param.Desc).DataType(param.DataType))
-
+			p = restful.FormParameter(param.Name, param.Desc)
 		}
+		rb = rb.Param(p.Required(param.Required).DataType(param.DataType))
 	}
 	return rb
 }

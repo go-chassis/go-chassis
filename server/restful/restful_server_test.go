@@ -159,22 +159,22 @@ type Data struct {
 }
 
 func TestFillParam(t *testing.T) {
-	var rb *rf.RouteBuilder = &rf.RouteBuilder{}
+	var rb = &rf.RouteBuilder{}
 	var routeSpec Route
 	p := &Parameters{
-		"p", "", rf.QueryParameterKind, "",
+		"p", "", rf.QueryParameterKind, "", false,
 	}
 	routeSpec.Parameters = append(routeSpec.Parameters, p)
 	p1 := &Parameters{
-		"p1", "", rf.BodyParameterKind, "",
+		"p1", "", rf.BodyParameterKind, "", false,
 	}
 	routeSpec.Parameters = append(routeSpec.Parameters, p1)
 	p2 := &Parameters{
-		"p2", "", rf.FormParameterKind, "",
+		"p2", "", rf.FormParameterKind, "", false,
 	}
 	routeSpec.Parameters = append(routeSpec.Parameters, p2)
 	p3 := &Parameters{
-		"p3", "", rf.HeaderParameterKind, "",
+		"p3", "", rf.HeaderParameterKind, "", false,
 	}
 	routeSpec.Parameters = append(routeSpec.Parameters, p3)
 
