@@ -20,8 +20,8 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = u'go-chassis'
-copyright = u'2018, xiaoliang'
-author = u'xiaoliang'
+copyright = u'2017-2019, Huawei Technologies Co.,Ltd.'
+author = u'Huawei Technologies Co.,Ltd.'
 
 # The short X.Y version
 version = u''
