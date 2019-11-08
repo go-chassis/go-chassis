@@ -79,7 +79,7 @@ func GetConfigCenterEndpoint() (string, error) {
 	if configCenterURL == "" {
 		if registry.DefaultServiceDiscoveryService != nil {
 			openlogging.Debug("find config server in registry")
-			ccURL, err := endpoint.GetEndpointFromServiceCenter("default", "CseConfigCenter", "latest")
+			ccURL, err := endpoint.GetEndpoint("default", "CseConfigCenter", "latest")
 			if err != nil {
 				openlogging.Warn("failed to find config center endpoints, err: " + err.Error())
 				return "", err
@@ -88,7 +88,6 @@ func GetConfigCenterEndpoint() (string, error) {
 		} else {
 			return "", ErrRegistryDisabled
 		}
-
 	}
 
 	return configCenterURL, nil

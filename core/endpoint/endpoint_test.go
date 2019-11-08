@@ -16,12 +16,12 @@ import (
 )
 
 func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
-	t.Log("Testing GetEndpointFromServiceCenter function")
+	t.Log("Testing GetEndpoint function")
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 	chassis.Init()
 	registry.Enable()
-	_, err := endpoint.GetEndpointFromServiceCenter("default", "test", "0.1")
+	_, err := endpoint.GetEndpoint("default", "test", "0.1")
 	assert.NotNil(t, err)
 }
 
@@ -41,7 +41,7 @@ func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 	_, err := registry.DefaultRegistrator.RegisterService(microservice)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
-	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
+	_, err = endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
 	assert.NotNil(t, err)
 }
 
@@ -66,7 +66,7 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
-	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
+	_, err = endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
 	assert.Nil(t, err)
 }
 
@@ -91,7 +91,7 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
-	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
+	_, err = endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
 	assert.Nil(t, err)
 }
 
@@ -116,6 +116,6 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
-	_, err = endpoint.GetEndpointFromServiceCenter(microservice.AppID, microservice.ServiceName, microservice.Version)
+	_, err = endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
 	assert.Nil(t, err)
 }
