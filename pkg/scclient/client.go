@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -15,12 +16,11 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/go-chassis/foundation/httpclient"
+	bo "github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
 	"github.com/gorilla/websocket"
-
-	bo "github.com/go-chassis/go-chassis/pkg/backoff"
 )
 
 // Define constants for the client
@@ -66,7 +66,7 @@ var (
 // RegistryClient is a structure for the client to communicate to Service-Center
 type RegistryClient struct {
 	Config     *RegistryConfig
-	client     *httpclient.URLClient
+	client     *httpclient.Requests
 	protocol   string
 	watchers   map[string]bool
 	mutex      sync.Mutex
@@ -99,7 +99,7 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 		Tenant: opt.ConfigTenant,
 	}
 
-	options := &httpclient.URLClientOption{
+	options := &httpclient.Options{
 		SSLEnabled: opt.EnableSSL,
 		TLSConfig:  opt.TLSConfig,
 		Compressed: opt.Compressed,
@@ -114,7 +114,7 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 		c.wsDialer = websocket.DefaultDialer
 		c.protocol = "http"
 	}
-	c.client, err = httpclient.GetURLClient(options)
+	c.client, err = httpclient.New(options)
 	if err != nil {
 		return err
 	}
@@ -212,7 +212,7 @@ func (c *RegistryClient) HTTPDo(method string, rawURL string, headers http.Heade
 	for k, v := range c.GetDefaultHeaders() {
 		headers[k] = v
 	}
-	return c.client.HTTPDo(method, rawURL, headers, body)
+	return c.client.Do(context.Background(), method, rawURL, headers, body)
 }
 
 // RegisterService registers the micro-services to Service-Center

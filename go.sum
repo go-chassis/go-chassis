@@ -15,10 +15,14 @@ github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/go-chassis/foundation v0.0.0-20190621030543-c3b63f787f4c h1:p+Y6yq7RwHmYjEr/vwdVYGacBqFCc2lPQfNRIC3vRIs=
 github.com/go-chassis/foundation v0.0.0-20190621030543-c3b63f787f4c/go.mod h1:21/ajGtgJlWTCeM0TxGJdRhO8bJkKirWyV8Stlh6g6c=
+github.com/go-chassis/foundation v0.1.0 h1:ixjSxwUyJS8RkASYz0dNe5ApAL+gec7ejgsU84tIVnw=
+github.com/go-chassis/foundation v0.1.0/go.mod h1:21/ajGtgJlWTCeM0TxGJdRhO8bJkKirWyV8Stlh6g6c=
 github.com/go-chassis/go-archaius v0.24.0 h1:ubNgs3Rv067PI7t37ZJoIMaPPHIBWV+ni/e7XAdW1hU=
 github.com/go-chassis/go-archaius v0.24.0/go.mod h1:5kKZrxGYvKNorKamngLdPe3vVasAtIeB5vDcAv8Vg9I=
 github.com/go-chassis/go-chassis-config v0.14.0 h1:OnM9sx2GalDC7vEIhPecRpQlVa8hz10NOB41+9tii5A=
 github.com/go-chassis/go-chassis-config v0.14.0/go.mod h1:qzvK/aoAv0O/khmF6ehW6RgELrF1JR2F555T9izoo2A=
+github.com/go-chassis/go-chassis-config v0.15.0 h1:cTsUl7r3eo2tFoACHADnymwO/5ebb6RVNTj11kxjiZ8=
+github.com/go-chassis/go-chassis-config v0.15.0/go.mod h1:yuaprnRdObPhYaHVKaocBQPoLfoBFaFmzApM2nRROws=
 github.com/go-chassis/go-restful-swagger20 v1.0.1 h1:HdGto0xroWGK504XN0Um7JBc0OPMHDlWwedkd2mTGII=
 github.com/go-chassis/go-restful-swagger20 v1.0.1/go.mod h1:s+06mcAnGsVYQ2sqM4ZPiMJeRj7BTeAM/4gkhZNcsjA=
 github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5 h1:jlUonIaxwdVZrP27t2mPKHDuBz913nXznn4dOtvHzPg=

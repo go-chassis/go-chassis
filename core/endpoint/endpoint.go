@@ -11,11 +11,10 @@ import (
 	"github.com/go-mesh/openlogging"
 )
 
-//GetEndpointFromServiceCenter is used to get the endpoint based on appID, service name and version
+//GetEndpoint is an API used to get the endpoint of a service in discovery service
 //it will only return endpoints of a service
-func GetEndpointFromServiceCenter(appID, microService, version string) (string, error) {
-	var endPoint string
-
+func GetEndpoint(appID, microService, version string) (string, error) {
+	var endpoint string
 	tags := utiltags.NewDefaultTag(version, appID)
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(runtime.ServiceID, microService, tags)
 	if err != nil {
@@ -35,15 +34,15 @@ func GetEndpointFromServiceCenter(appID, microService, version string) (string, 
 			if strings.Contains(value, "?") {
 				separation := strings.Split(value, "?")
 				if separation[1] == "sslEnabled=true" {
-					endPoint = "https://" + separation[0]
+					endpoint = "https://" + separation[0]
 				} else {
-					endPoint = "http://" + separation[0]
+					endpoint = "http://" + separation[0]
 				}
 			} else {
-				endPoint = "https://" + value
+				endpoint = "https://" + value
 			}
 		}
 	}
 
-	return endPoint, nil
+	return endpoint, nil
 }
