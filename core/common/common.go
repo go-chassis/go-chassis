@@ -23,12 +23,11 @@ const (
 
 // constant for micro service environment parameters
 const (
-	Env = "go-chassis_ENV"
+	Env = "CHASSIS_ENV"
 
-	EnvNodeIP      = "HOSTING_SERVER_IP"
-	EnvSchemaRoot  = "SCHEMA_ROOT"
-	EnvProjectID   = "CSE_PROJECT_ID"
-	EnvCSEEndpoint = "PAAS_CSE_ENDPOINT"
+	EnvNodeIP     = "HOSTING_SERVER_IP"
+	EnvSchemaRoot = "SCHEMA_ROOT"
+	EnvProjectID  = "CSE_PROJECT_ID"
 )
 
 // constant environment keys service center, config center, monitor server addresses
@@ -36,6 +35,7 @@ const (
 	CseRegistryAddress     = "CSE_REGISTRY_ADDR"
 	CseConfigCenterAddress = "CSE_CONFIG_CENTER_ADDR"
 	CseMonitorServer       = "CSE_MONITOR_SERVER_ADDR"
+	EnvCSEEndpoint         = "PAAS_CSE_ENDPOINT"
 	EnvCSESCEndpoint       = "PAAS_CSE_SC_ENDPOINT"
 	EnvCSECCEndpoint       = "PAAS_CSE_CC_ENDPOINT"
 )

@@ -114,11 +114,19 @@ func populateConfigCenterAddress() {
 // readEndpoint
 func readEndpoint(firstEnv, singleEnv string) string {
 	addrFromEnv := os.Getenv(firstEnv)
-	if addrFromEnv == "" {
-		addrFromEnv = os.Getenv(common.EnvCSEEndpoint)
-		if addrFromEnv == "" {
-			addrFromEnv = archaius.GetString(singleEnv, "")
-		}
+	if addrFromEnv != "" {
+		openlogging.Info("read config from " + firstEnv)
+		return addrFromEnv
+	}
+	addrFromEnv = os.Getenv(common.EnvCSEEndpoint)
+	if addrFromEnv != "" {
+		openlogging.Info("read config from " + common.EnvCSEEndpoint)
+		return addrFromEnv
+	}
+	addrFromEnv = archaius.GetString(singleEnv, "")
+	if addrFromEnv != "" {
+		openlogging.Info("read config from " + singleEnv)
+		return addrFromEnv
 	}
 	return addrFromEnv
 }
