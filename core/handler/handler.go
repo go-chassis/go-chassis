@@ -28,11 +28,14 @@ const (
 	RatelimiterConsumer = "ratelimiter-consumer"
 	Router              = "router"
 	FaultInject         = "fault-inject"
+	SkyWalkingConsumer  = "skywalking-consumer"
 
 	//provider chain
 	RatelimiterProvider = "ratelimiter-provider"
 	TracingProvider     = "tracing-provider"
 	BizkeeperProvider   = "bizkeeper-provider"
+	SkyWalkingProvider  = "skywalking-provider"
+
 )
 
 // init is for to initialize the all handlers at boot time
@@ -48,6 +51,8 @@ func init() {
 	HandlerFuncMap[TracingConsumer] = newTracingConsumerHandler
 	HandlerFuncMap[Router] = newRouterHandler
 	HandlerFuncMap[FaultInject] = newFaultHandler
+	HandlerFuncMap[SkyWalkingConsumer] = newSkyWalkingConsumer
+	HandlerFuncMap[SkyWalkingProvider] = newSkyWalkingProvier
 }
 
 // Handler interface for handlers

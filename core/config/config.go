@@ -26,6 +26,9 @@ var lbConfig *model.LBWrapper
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
 
+//MonitorCfgDef has monitorv info, including zipkin and apm.
+var MonitorCfgDef *model.MonitorCfg
+
 //OldRouterDefinition is route rule config
 //Deprecated
 var OldRouterDefinition *RouterConfig
@@ -74,6 +77,9 @@ func readFromArchaius() error {
 	if err != nil {
 		return err
 	}
+
+	ReadMonitorFromArchaius()
+	//ReadMonitorFromFile()
 
 	populateConfigCenterAddress()
 	populateServiceRegistryAddress()
@@ -189,6 +195,36 @@ func ReadLBFromArchaius() error {
 	}
 	lbConfig = &lbDef
 
+	return nil
+}
+
+//ReadMonitorFromArchaius
+func ReadMonitorFromArchaius() error {
+	MonitorCfgDef = &model.MonitorCfg{}
+	err := archaius.UnmarshalConfig(&MonitorCfgDef)
+	if err != nil {
+		openlogging.GetLogger().Errorf("Config init failed. %s", err.Error())
+		return err
+	}
+	openlogging.GetLogger().Debugf("Monitor config. %v", *MonitorCfgDef)
+	return nil
+}
+
+//ReadMonitorFromFile
+func ReadMonitorFromFile() error {
+	defPath := fileutil.MonitoringConfigPath()
+	data, err := ioutil.ReadFile(defPath)
+	if err != nil {
+		openlogging.GetLogger().Errorf("Get monitor config from file failed. %s", err.Error())
+		return err
+	}
+	MonitorCfgDef = &model.MonitorCfg{}
+	err = yaml.Unmarshal(data, &MonitorCfgDef)
+	if err != nil {
+		openlogging.GetLogger().Errorf("Get monitor config from file failed. %s %s", err.Error(), string(data))
+		return err
+	}
+	openlogging.GetLogger().Debugf("Get monitor config from file. %s %s", string(data))
 	return nil
 }
 

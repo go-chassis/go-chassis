@@ -7,9 +7,10 @@ require (
 	github.com/go-chassis/go-archaius v0.24.0
 	github.com/go-chassis/go-chassis-config v0.15.0
 	github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5
+thub.com/go-chassis/go-chassis-apm v0.0.0-20191023020942-fcfffe988a65
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-mesh/openlogging v1.0.1
-	github.com/golang/protobuf v1.2.0
+	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.0.2
@@ -21,12 +22,13 @@ require (
 	github.com/prometheus/procfs v0.0.0-20190117184657-bf6a532e95b1 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.4.0
 	go.uber.org/ratelimit v0.1.0
-	gopkg.in/yaml.v2 v2.2.1
+	gopkg.in/yaml.v2 v2.2.2
 )
 
 replace (
+	github.com/go-chassis/go-chassis-apm v0.0.0-20191023020942-fcfffe988a65 => github.com/surechen/go-chassis-apm v0.0.0-20191111092152-874ccea7f819
 	golang.org/x/crypto v0.0.0-20180820150726-614d502a4dac => github.com/golang/crypto v0.0.0-20180820150726-614d502a4dac
 	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591 => github.com/golang/net v0.0.0-20180824152047-4bcd98cce591
 	golang.org/x/sys v0.0.0-20180824143301-4910a1d54f87 => github.com/golang/sys v0.0.0-20180824143301-4910a1d54f87

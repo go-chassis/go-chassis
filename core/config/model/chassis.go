@@ -25,7 +25,7 @@ type CseStruct struct {
 	Handler         HandlerStruct               `yaml:"handler"`
 	References      map[string]ReferencesStruct `yaml:"references"` //Deprecated
 	FlowControl     FlowControl                 `yaml:"flowcontrol"`
-	Monitor         MonitorStruct               `yaml:"monitor"`
+	Monitor         MonitorStruct               `yaml:"monitormetrics"`
 	Metrics         MetricsStruct               `yaml:"metrics"`
 	Credentials     CredentialStruct            `yaml:"credentials"`
 	Transport       Transport                   `yaml:"transport"`
