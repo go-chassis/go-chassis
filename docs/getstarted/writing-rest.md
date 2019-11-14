@@ -5,7 +5,7 @@ Checkout full example in [here](https://github.com/go-chassis/go-chassis/tree/ma
 this section show you how to write a http server
 
 Create 1 project or go package as recommended 
-
+```
 server
 
 +-- main.go
@@ -15,6 +15,7 @@ server
     +-- chassis.yaml
 
     +-- microservice.yaml
+```
 
 1.Write a struct to hold http logic and url patterns
 ```go
@@ -76,7 +77,7 @@ func main() {
 this section show you how to write a http client
 
 Create 1 project or go package as recommended 
-
+```
 client
 
 +-- main.go
@@ -86,7 +87,7 @@ client
     +-- chassis.yaml
     
     +-- microservice.yaml
-
+```
 1. modify chassis.yaml
 ```yaml
 cse:
