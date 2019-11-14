@@ -6,15 +6,11 @@ this section show you how to write a http server
 
 Create 1 project or go package as recommended 
 
-server/
-
-├── conf
-
-│ ├── chassis.yaml
-
-│ └── microservice.yaml
-
-└── main.go
+server
++-- main.go
++-- conf
+    +-- chassis.yaml
+    +-- microservice.yaml
 
 1.Write a struct to hold http logic and url patterns
 ```go
@@ -77,15 +73,11 @@ this section show you how to write a http client
 
 Create 1 project or go package as recommended 
 
-client/
-
-├── conf
-
-│ ├── chassis.yaml
-
-│ └── microservice.yaml
-
-└── main.go
+client
++-- main.go
++-- conf
+    +-- chassis.yaml
+    +-- microservice.yaml
 
 1. modify chassis.yaml
 ```yaml
@@ -143,7 +135,7 @@ func (d *Data) URLPatterns() []rf.Route {
 	}
 }
 ````
-you can find yor open API doc in http://ip:port/apidocs, after you start your program
+you can find yor open API doc in http://ip:port/apidocs.json, after you start your program
 ,you can copy the response body into http://editor.swagger.io/ to read document.
 ```yaml
 swagger: "2.0"
