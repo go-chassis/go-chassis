@@ -7,9 +7,13 @@ this section show you how to write a http server
 Create 1 project or go package as recommended 
 
 server
+
 +-- main.go
+
 +-- conf
+
     +-- chassis.yaml
+
     +-- microservice.yaml
 
 1.Write a struct to hold http logic and url patterns
@@ -74,9 +78,13 @@ this section show you how to write a http client
 Create 1 project or go package as recommended 
 
 client
+
 +-- main.go
+
 +-- conf
+    
     +-- chassis.yaml
+    
     +-- microservice.yaml
 
 1. modify chassis.yaml
