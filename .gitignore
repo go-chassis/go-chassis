@@ -26,6 +26,8 @@ benchmark/server/server
 benchmark/**/log
 coverage.out
 coverage.txt
-
+core/lager*.copy
+core/config/*.yaml
 main
 auth.yaml
+git rm  examples/discovery/*/conf/*/schema/*.yaml
