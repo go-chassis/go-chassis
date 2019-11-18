@@ -149,9 +149,9 @@ func startBackOff(operation func() error) {
 func URIs2Hosts(uris []string) ([]string, string, error) {
 	hosts := make([]string, 0)
 	var scheme string
-	var hostPortRegex = "(\\.*://.*):(\\d*)\\/?(.*)"
+	var URIRegex = "(\\.*://.*)"
 	for _, addr := range uris {
-		ok, err := regexp.MatchString(hostPortRegex, addr)
+		ok, err := regexp.MatchString(URIRegex, addr)
 		if err != nil {
 			return nil, "", err
 		}
