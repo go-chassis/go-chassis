@@ -118,6 +118,7 @@ github.com/surechen/go-chassis-apm v0.0.0-20191107080906-be3befcf3564/go.mod h1:
 github.com/surechen/go-chassis-apm v0.0.0-20191107082405-c1b34ebd0271 h1:mXtp1/lyDeAdeBQShr66WaF8rDLMWbcbtN6UzoFBOkQ=
 github.com/surechen/go-chassis-apm v0.0.0-20191107082405-c1b34ebd0271/go.mod h1:327fd++oZy+iybwjrLBMfa8wwPphFLBzx5tpOL3tzSU=
 github.com/surechen/go-chassis-apm v0.0.0-20191111092152-874ccea7f819/go.mod h1:wsRuNg5mGfACNgA09jzruRSoadoG4ke2WgRbgTIWsyQ=
+github.com/surechen/go-chassis-apm v0.0.0-20191119020802-d8c9dd3ce7dc/go.mod h1:wsRuNg5mGfACNgA09jzruRSoadoG4ke2WgRbgTIWsyQ=
 github.com/tetratelabs/go2sky v0.1.1-0.20190703154722-1eaab8035277/go.mod h1:A8zvdMCSdFi55v+hozkn8LS44fOwxh5dakfbdYLzEkU=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 go.uber.org/ratelimit v0.1.0 h1:U2AruXqeTb4Eh9sYQSTrMhH8Cb7M0Ian2ibBOnBcnAw=

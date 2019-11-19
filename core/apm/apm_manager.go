@@ -2,7 +2,7 @@ package apm
 
 import (
 	"github.com/go-chassis/go-chassis-apm"
-	"github.com/go-chassis/go-chassis-apm/common"
+	"github.com/go-chassis/go-chassis-apm/tracing"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-mesh/openlogging"
@@ -16,12 +16,12 @@ const (
 	APMServerType = "servertype"
 )
 
-var micoption common.Options
+var micoption tracing.TracingOptions
 
 //CreateEntrySpan use invocation to make spans for apm
 func CreateEntrySpan(i *invocation.Invocation) (interface{}, error) {
 	openlogging.GetLogger().Debugf("CreateEntrySpan. inv:%v", i)
-	spanCtx := common.SpanContext{Ctx: i.Ctx, OperationName: i.MicroServiceName + i.URLPathFormat, ParTraceCtx: i.Headers(), Method: i.Protocol, URL: i.MicroServiceName + i.URLPathFormat}
+	spanCtx := tracing.SpanContext{Ctx: i.Ctx, OperationName: i.MicroServiceName + i.URLPathFormat, ParTraceCtx: i.Headers(), Method: i.Protocol, URL: i.MicroServiceName + i.URLPathFormat}
 	span, err := apm.CreateEntrySpan(&spanCtx, micoption)
 	if err != nil {
 		openlogging.GetLogger().Errorf("CreateEntrySpan err:%s", err.Error())
@@ -35,7 +35,7 @@ func CreateEntrySpan(i *invocation.Invocation) (interface{}, error) {
 //CreateExitSpan use invocation to make spans for apm
 func CreateExitSpan(i *invocation.Invocation) (interface{}, error) {
 	openlogging.GetLogger().Debugf("CreateExitSpan. inv:%v", i)
-	spanCtx := common.SpanContext{Ctx: i.Ctx, OperationName: i.MicroServiceName + i.URLPathFormat, ParTraceCtx: i.Headers(), Method: i.Protocol, URL: i.MicroServiceName + i.URLPathFormat, Peer: i.Endpoint + i.URLPathFormat, TraceCtx: map[string]string{}}
+	spanCtx := tracing.SpanContext{Ctx: i.Ctx, OperationName: i.MicroServiceName + i.URLPathFormat, ParTraceCtx: i.Headers(), Method: i.Protocol, URL: i.MicroServiceName + i.URLPathFormat, Peer: i.Endpoint + i.URLPathFormat, TraceCtx: map[string]string{}}
 	span, err := apm.CreateExitSpan(&spanCtx, micoption)
 	if err != nil {
 		openlogging.GetLogger().Errorf("CreateExitSpan err:%s", err.Error())
@@ -59,7 +59,7 @@ func EndSpan(span interface{}, status int) error {
 func Init() error {
 	openlogging.GetLogger().Debugf("Apm Init %v", *config.MonitorCfgDef)
 	if config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer != "" && config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings != nil && config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings[APMURI] != "" {
-		micoption = common.Options{APMName: config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer, MicServiceName: config.MicroserviceDefinition.ServiceDescription.Name, ServerUri: config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings["URI"]}
+		micoption = tracing.TracingOptions{APMName: config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer, MicServiceName: config.MicroserviceDefinition.ServiceDescription.Name, ServerUri: config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings["URI"]}
 		if serverType, ok := config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings[APMServerType]; ok { //
 			micoption.MicServiceType, _ = strconv.Atoi(serverType)
 		}
