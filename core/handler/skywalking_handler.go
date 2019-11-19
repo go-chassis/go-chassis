@@ -18,20 +18,9 @@
 package handler
 
 import (
-	_ "github.com/go-chassis/go-chassis-apm/tracing/skywalking"
 	"github.com/go-chassis/go-chassis/core/apm"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-mesh/openlogging"
-)
-
-const (
-	HTTPPrefix = "http://"
-)
-
-const (
-	HTTPClientComponentID  = 2
-	ServiceCombComponentID = 28
-	HTTPServerComponentID  = 49
 )
 
 //SkyWalkingProviderHandler struct

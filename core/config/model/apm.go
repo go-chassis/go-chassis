@@ -5,12 +5,12 @@ type MonitorCfg struct {
 	ServiceComb ServiceCombStruct `yaml:"servicecomb"`
 }
 
-// ServiceComb structure
+//ServiceCombStruct structure is for config of servicecomb
 type ServiceCombStruct struct {
 	APM APMStruct `yaml:"apm"`
 }
 
-//APM is for Application Performance Management
+//APMStruct is for Application Performance Management
 type APMStruct struct {
 	Tracing TracingStruct `yaml:"tracing"`
 }

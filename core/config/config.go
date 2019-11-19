@@ -198,7 +198,7 @@ func ReadLBFromArchaius() error {
 	return nil
 }
 
-//ReadMonitorFromArchaius
+//ReadMonitorFromArchaius read monitor config from archauis pkg
 func ReadMonitorFromArchaius() error {
 	MonitorCfgDef = &model.MonitorCfg{}
 	err := archaius.UnmarshalConfig(&MonitorCfgDef)
@@ -210,7 +210,7 @@ func ReadMonitorFromArchaius() error {
 	return nil
 }
 
-//ReadMonitorFromFile
+//ReadMonitorFromFile read monitor config from local file  conf/monitoring.yaml
 func ReadMonitorFromFile() error {
 	defPath := fileutil.MonitoringConfigPath()
 	data, err := ioutil.ReadFile(defPath)
