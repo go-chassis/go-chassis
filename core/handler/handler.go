@@ -35,7 +35,6 @@ const (
 	TracingProvider     = "tracing-provider"
 	BizkeeperProvider   = "bizkeeper-provider"
 	SkyWalkingProvider  = "skywalking-provider"
-
 )
 
 // init is for to initialize the all handlers at boot time
