@@ -90,14 +90,13 @@ func waitingSignal() {
 		openlogging.Info("got server error " + err.Error())
 	}
 	
-	// try to unregister instance first
 	if !config.GetRegistratorDisable() {
+		openlogging.Info("unregister servers ...")
 		if err := server.UnRegistrySelfInstances(); err != nil {
 			openlogging.GetLogger().Warnf("servers failed to unregister: %s", err)
 		}
 	}
 	
-	// stop server
 	for name, s := range server.GetServers() {
 		openlogging.Info("stopping server " + name + "...")
 		err := s.Stop()
