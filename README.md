@@ -111,7 +111,7 @@ so that user can manage service configurations by this service.
 - [apache/servicecomb-mesher](https://github.com/apache/servicecomb-mesher): 
 A service mesh able to co-work with go chassis, 
 it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/configurations/edge.html) also.
-
+- [KubeEdge](https://github.com/kubeedge/kubeedge): Kubernetes Native Edge Computing Framework (project under CNCF) https://kubeedge.io
 
 # To start developing go chassis
 
