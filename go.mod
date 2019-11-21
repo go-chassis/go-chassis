@@ -5,7 +5,7 @@ require (
 	github.com/emicklei/go-restful v2.11.1+incompatible
 	github.com/go-chassis/foundation v0.1.0
 	github.com/go-chassis/go-archaius v0.24.0
-	github.com/go-chassis/go-chassis-apm v0.0.0-20191023020942-fcfffe988a65
+	github.com/go-chassis/go-chassis-apm v0.0.0-20191121081610-bf85a4b6c3f3
 	github.com/go-chassis/go-chassis-config v0.15.0
 	github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
@@ -28,7 +28,6 @@ require (
 )
 
 replace (
-	github.com/go-chassis/go-chassis-apm v0.0.0-20191023020942-fcfffe988a65 => github.com/surechen/go-chassis-apm v0.0.0-20191119020802-d8c9dd3ce7dc
 	golang.org/x/crypto v0.0.0-20180820150726-614d502a4dac => github.com/golang/crypto v0.0.0-20180820150726-614d502a4dac
 	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591 => github.com/golang/net v0.0.0-20180824152047-4bcd98cce591
 	golang.org/x/sys v0.0.0-20180824143301-4910a1d54f87 => github.com/golang/sys v0.0.0-20180824143301-4910a1d54f87

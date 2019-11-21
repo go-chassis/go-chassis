@@ -59,7 +59,7 @@ func EndSpan(span interface{}, status int) error {
 func Init() error {
 	openlogging.GetLogger().Debugf("Apm Init %v", *config.MonitorCfgDef)
 	if config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer != "" && config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings != nil && config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings[APMURI] != "" {
-		troption = tracing.TracingOptions{APMName: config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer, MicServiceName: config.MicroserviceDefinition.ServiceDescription.Name, ServerUri: config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings["URI"]}
+		troption = tracing.TracingOptions{APMName: config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer, MicServiceName: config.MicroserviceDefinition.ServiceDescription.Name, ServerURI: config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings["URI"]}
 		if serverType, ok := config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings[APMServerType]; ok { //
 			troption.MicServiceType, _ = strconv.Atoi(serverType)
 		}
