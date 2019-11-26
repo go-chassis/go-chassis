@@ -89,7 +89,7 @@ func waitingSignal() {
 	case err := <-server.ErrRuntime:
 		openlogging.Info("got server error " + err.Error())
 	}
-	
+
 	if !config.GetRegistratorDisable() {
 		registry.HBService.Stop()
 		openlogging.Info("unregister servers ...")
@@ -97,7 +97,7 @@ func waitingSignal() {
 			openlogging.GetLogger().Warnf("servers failed to unregister: %s", err)
 		}
 	}
-	
+
 	for name, s := range server.GetServers() {
 		openlogging.Info("stopping server " + name + "...")
 		err := s.Stop()
