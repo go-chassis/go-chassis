@@ -91,6 +91,7 @@ func waitingSignal() {
 	}
 	
 	if !config.GetRegistratorDisable() {
+		registry.HBService.Stop()
 		openlogging.Info("unregister servers ...")
 		if err := server.UnRegistrySelfInstances(); err != nil {
 			openlogging.GetLogger().Warnf("servers failed to unregister: %s", err)
