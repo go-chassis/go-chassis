@@ -89,6 +89,15 @@ func waitingSignal() {
 	case err := <-server.ErrRuntime:
 		openlogging.Info("got server error " + err.Error())
 	}
+
+	if !config.GetRegistratorDisable() {
+		registry.HBService.Stop()
+		openlogging.Info("unregister servers ...")
+		if err := server.UnRegistrySelfInstances(); err != nil {
+			openlogging.GetLogger().Warnf("servers failed to unregister: %s", err)
+		}
+	}
+
 	for name, s := range server.GetServers() {
 		openlogging.Info("stopping server " + name + "...")
 		err := s.Stop()
@@ -97,11 +106,7 @@ func waitingSignal() {
 		}
 		openlogging.Info(name + " server stop success")
 	}
-	if !config.GetRegistratorDisable() {
-		if err := server.UnRegistrySelfInstances(); err != nil {
-			openlogging.GetLogger().Warnf("servers failed to unregister: %s", err)
-		}
-	}
+
 	openlogging.Info("go chassis server gracefully shutdown")
 }
 

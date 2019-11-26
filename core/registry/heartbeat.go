@@ -33,8 +33,6 @@ type HeartbeatService struct {
 // Start start the heartbeat system
 func (s *HeartbeatService) Start() {
 	s.shutdown = false
-	defer s.Stop()
-
 	s.run()
 }
 
@@ -119,7 +117,7 @@ func (s *HeartbeatService) run() {
 
 // RetryRegister retrying to register micro-service, and instance
 func (s *HeartbeatService) RetryRegister(sid, iid string) {
-	for {
+	for !s.shutdown {
 		openlogging.Info("try to re-register")
 		_, err := DefaultServiceDiscoveryService.GetAllMicroServices()
 		if err != nil {
@@ -132,11 +130,11 @@ func (s *HeartbeatService) RetryRegister(sid, iid string) {
 			err = reRegisterSelfMSI(sid, iid)
 		}
 		if err == nil {
+			openlogging.Warn("Re-register self success")
 			break
 		}
 		time.Sleep(DefaultRetryTime)
 	}
-	openlogging.Warn("Re-register self success")
 }
 
 // ReRegisterSelfMSandMSI 重新注册微服务和实例
