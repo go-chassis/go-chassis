@@ -1,7 +1,6 @@
 # Tracing
 ## Introduction
-Go chassis use opentacing-go or skywalking to trace distributed system call
-# 1 Opentacing-go
+Go chassis use opentacing-go to trace distributed system call
 ## Configuration
 
 the config is in monitoring.yaml
@@ -66,34 +65,3 @@ func (r *TracingHello) Trace(b *rf.Context) {
 ```
 
 check [examples](https://github.com/go-chassis/go-chassis-examples/tree/master/monitoring)
-
-# 2 Skywalking
-## Configurations
-**In conf/monitoring.yaml**
-
-**servicecomb.apm.tracing.tracer**
->  *(optional, string)* tracer'name, only skywalking now
-
-**servicecomb.apm.tracing.settings**
->  *(optional, map)* options including :
->  URI server address of skywalking 
->  servertype: service type, match componentid in skywalking ex:  5001:servicecomb-mesher 5002:servicecomb-service-center 28:servicecomb-java-cahssis 
->  enable: if open
-
-## Example
-```yaml
-servicecomb:
-  apm:                                #application performance monitor
-    tracing:
-      tracer: skywalking
-      settings:
-        enable: true                  #enable tracing ability
-        URI: 127.0.0.1:11800          #url of skywalking 
-        servertype: 5001              #server type
-```
-## Step：
-**1 import package "github.com/go-chassis/go-chassis-apm/tracing/skywalking" to init skywalking**
-
-**2 handler name is defined in github.com/go-chassis/go-chassis/core/handler**
-- [1] Adding handler name 'handler.SkyWalkingConsumer' in consumerChain.
-- [2] Adding handler name 'handler.SkyWalkingProvider' in providerChain.
