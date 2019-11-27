@@ -36,8 +36,6 @@ import (
 	_ "github.com/go-chassis/go-chassis-config/configcenter"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-mesh/openlogging"
-	//apm
-	_ "github.com/go-chassis/go-chassis-apm/tracing/skywalking"
 )
 
 var goChassis *chassis

@@ -92,22 +92,8 @@ servicecomb:
         servertype: 5001              #server type
 ```
 ## Step：
-**handler name is defined in github.com/go-chassis/go-chassis/core/handler**
+**1 import package "github.com/go-chassis/go-chassis-apm/tracing/skywalking" to init skywalking**
+
+**2 handler name is defined in github.com/go-chassis/go-chassis/core/handler**
 - [1] Adding handler name 'handler.SkyWalkingConsumer' in consumerChain.
 - [2] Adding handler name 'handler.SkyWalkingProvider' in providerChain.
-## Example
-```golang
-consumerChain := strings.Join([]string{
-		chassisHandler.Router,
-		chassisHandler.RatelimiterConsumer,
-		chassisHandler.BizkeeperConsumer,
-		chassisHandler.Loadbalance,
-		chassisHandler.Transport,
-		chassisHandler.SkyWalkingConsumer,
-	}, ",")
-	providerChain := strings.Join([]string{
-		chassisHandler.RatelimiterProvider,
-		chassisHandler.Transport,
-		chassisHandler.SkyWalkingProvider,
-	}, ",")
-```
