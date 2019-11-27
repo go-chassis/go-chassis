@@ -32,7 +32,7 @@ func (sp *SkyWalkingProviderHandler) Handle(chain *Chain, i *invocation.Invocati
 	openlogging.GetLogger().Debug("SkyWalkingProviderHandler begin " + i.MicroServiceName)
 	span, err := apm.CreateEntrySpan(i)
 	if err != nil {
-		openlogging.GetLogger().Error("CreateEntrySpan error:%s", err.Error())
+		openlogging.GetLogger().Error("CreateEntrySpan error: " + err.Error())
 	}
 	chain.Next(i, func(r *invocation.Response) (err error) {
 		err = cb(r)
