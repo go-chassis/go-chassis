@@ -29,10 +29,10 @@ type SkyWalkingProviderHandler struct {
 
 //Handle is for provider
 func (sp *SkyWalkingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	openlogging.GetLogger().Debug("SkyWalkingProviderHandler begin " + i.MicroServiceName)
+	openlogging.Debug("SkyWalkingProviderHandler begin " + i.MicroServiceName)
 	span, err := apm.CreateEntrySpan(i)
 	if err != nil {
-		openlogging.GetLogger().Error("CreateEntrySpan error: " + err.Error())
+		openlogging.Error("CreateEntrySpan error: " + err.Error())
 	}
 	chain.Next(i, func(r *invocation.Response) (err error) {
 		err = cb(r)
@@ -57,20 +57,20 @@ type SkyWalkingConsumerHandler struct {
 
 //Handle is for consumer
 func (sc *SkyWalkingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	openlogging.GetLogger().Debug("SkyWalkingConsumerHandler begin " + i.MicroServiceName)
+	openlogging.Debug("SkyWalkingConsumerHandler begin " + i.MicroServiceName)
 	span, err := apm.CreateEntrySpan(i)
 	if err != nil {
-		openlogging.GetLogger().Error("CreateEntrySpan error:" + err.Error())
+		openlogging.Error("CreateEntrySpan error:" + err.Error())
 	}
 	spanExit, err := apm.CreateExitSpan(i)
 	if err != nil {
-		openlogging.GetLogger().Error("CreateExitSpan error:" + err.Error())
+		openlogging.Error("CreateExitSpan error:" + err.Error())
 	}
 	chain.Next(i, func(r *invocation.Response) (err error) {
 		err = cb(r)
 		apm.EndSpan(spanExit, r.Status)
 		apm.EndSpan(span, r.Status)
-		openlogging.GetLogger().Debug("SkyWalkingConsumerHandler end.")
+		openlogging.Debug("SkyWalkingConsumerHandler end.")
 		return
 	})
 }

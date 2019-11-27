@@ -203,7 +203,7 @@ func ReadMonitorFromArchaius() error {
 	MonitorCfgDef = &model.MonitorCfg{}
 	err := archaius.UnmarshalConfig(&MonitorCfgDef)
 	if err != nil {
-		openlogging.GetLogger().Error("Config init failed. " + err.Error())
+		openlogging.Error("Config init failed. " + err.Error())
 		return err
 	}
 	return nil
@@ -214,13 +214,13 @@ func ReadMonitorFromFile() error {
 	defPath := fileutil.MonitoringConfigPath()
 	data, err := ioutil.ReadFile(defPath)
 	if err != nil {
-		openlogging.GetLogger().Error("Get monitor config from file failed. " + err.Error())
+		openlogging.Error("Get monitor config from file failed. " + err.Error())
 		return err
 	}
 	MonitorCfgDef = &model.MonitorCfg{}
 	err = yaml.Unmarshal(data, &MonitorCfgDef)
 	if err != nil {
-		openlogging.GetLogger().Error("Get monitor config from file failed. " + err.Error())
+		openlogging.Error("Get monitor config from file failed. " + err.Error())
 		return err
 	}
 	return nil
