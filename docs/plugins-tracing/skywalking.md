@@ -39,18 +39,3 @@ servicecomb:
         URI: 127.0.0.1:11800          #url of skywalking 
         servertype: 5001              #server type
 ```
-
-```golang
-consumerChain := strings.Join([]string{
-    chassisHandler.Router,
-    chassisHandler.RatelimiterConsumer,
-    chassisHandler.BizkeeperConsumer,
-    chassisHandler.Loadbalance,
-    chassisHandler.SkyWalkingConsumer,
-}, ",")
-
-providerChain := strings.Join([]string{
-    chassisHandler.RatelimiterProvider,
-    chassisHandler.SkyWalkingProvider,
-}, ",")
-```
