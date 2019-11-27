@@ -56,16 +56,16 @@ func EndSpan(span interface{}, status int) error {
 
 //Init apm
 func Init() error {
-	openlogging.Debug("Apm Init " + config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer)
-	if config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer != "" && config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings != nil && config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings[APMURI] != "" {
-		troption = tracing.TracingOptions{APMName: config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer, MicServiceName: config.MicroserviceDefinition.ServiceDescription.Name, ServerURI: config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings["URI"]}
-		if serverType, ok := config.MonitorCfgDef.ServiceComb.APM.Tracing.Settings[APMServerType]; ok { //
+	openlogging.Debug("Apm Init " + config.GetAPM().Tracing.Tracer)
+	if config.GetAPM().Tracing.Tracer != "" && config.GetAPM().Tracing.Settings != nil && config.GetAPM().Tracing.Settings[APMURI] != "" {
+		troption = tracing.TracingOptions{APMName: config.GetAPM().Tracing.Tracer, MicServiceName: config.MicroserviceDefinition.ServiceDescription.Name, ServerURI: config.GetAPM().Tracing.Settings["URI"]}
+		if serverType, ok := config.GetAPM().Tracing.Settings[APMServerType]; ok { //
 			troption.MicServiceType, _ = strconv.Atoi(serverType)
 		}
 		apm.Init(troption)
 	} else {
-		openlogging.Error("Apm Init failed. check apm config " + config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer)
+		openlogging.Error("Apm Init failed. check apm config " + config.GetAPM().Tracing.Tracer)
 	}
-	openlogging.Info("Apm Init:" + config.MonitorCfgDef.ServiceComb.APM.Tracing.Tracer + " micname:" + config.MicroserviceDefinition.ServiceDescription.Name)
+	openlogging.Info("Apm Init:" + config.GetAPM().Tracing.Tracer + " micname:" + config.MicroserviceDefinition.ServiceDescription.Name)
 	return nil
 }

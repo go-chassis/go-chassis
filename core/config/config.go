@@ -57,6 +57,11 @@ func GetDataCenter() *model.DataCenterInfo {
 	return GlobalDefinition.DataCenter
 }
 
+//GetAPM return monitor config info
+func GetAPM() model.APMStruct {
+	return MonitorCfgDef.ServiceComb.APM
+}
+
 // readFromArchaius unmarshal configurations to expected pointer
 func readFromArchaius() error {
 	err := ReadGlobalConfigFromArchaius()
