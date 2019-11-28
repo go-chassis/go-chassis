@@ -205,10 +205,12 @@ func (r *restfulServer) Start() error {
 	r.opts.Address = config.Address
 	r.mux.Unlock()
 	r.container.Add(r.ws)
+	sslFlag := ""
 	if r.opts.TLSConfig != nil {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container, TLSConfig: r.opts.TLSConfig}
 	} else {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
+		sslFlag = "?sslEnabled=true"
 	}
 	// create schema
 	err = r.CreateLocalSchema(config)
@@ -221,7 +223,7 @@ func (r *restfulServer) Start() error {
 		return fmt.Errorf("failed to start listener: %s", err.Error())
 	}
 
-	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort)
+	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort)+sslFlag
 
 	go func() {
 		err = r.server.Serve(l)
