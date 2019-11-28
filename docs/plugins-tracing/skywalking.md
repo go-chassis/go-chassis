@@ -41,13 +41,12 @@ servicecomb:
 ```
 
 ```
-  handler:
-    chain:
-      Consumer:
-        outgoing:  #consumer handlers
-        #ex: router, ratelimiter-consumer, bizkeeper-consumer, loadbalance, port-selector, transport, skywalking-consumer
-      Provider:
-        incoming:   #provider handlers
-        #ex:  ratelimiter-provider, transport, skywalking-provider
-
+handler:
+  chain:
+    Consumer:
+      default:  #consumer handlers
+      #ex: router, ratelimiter-consumer, bizkeeper-consumer, loadbalance, port-selector, transport, skywalking-consumer
+    Provider:
+      default:  #provider handlers
+      #ex:  skywalking-provider
 ```
