@@ -39,3 +39,15 @@ servicecomb:
         URI: 127.0.0.1:11800          #url of skywalking 
         servertype: 5001              #server type
 ```
+
+```
+  handler:
+    chain:
+      Consumer:
+        outgoing:  #consumer handlers
+        #ex: router, ratelimiter-consumer, bizkeeper-consumer, loadbalance, port-selector, transport, skywalking-consumer
+      Provider:
+        incoming:   #provider handlers
+        #ex:  ratelimiter-provider, transport, skywalking-provider
+
+```
