@@ -36,6 +36,8 @@ const (
 	MimeMult          = "multipart/form-data"
 )
 
+const openTLS = "?sslEnabled=true"
+
 func init() {
 	server.InstallPlugin(Name, newRestfulServer)
 }
@@ -208,9 +210,9 @@ func (r *restfulServer) Start() error {
 	sslFlag := ""
 	if r.opts.TLSConfig != nil {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container, TLSConfig: r.opts.TLSConfig}
+		sslFlag = openTLS
 	} else {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
-		sslFlag = "?sslEnabled=true"
 	}
 	// create schema
 	err = r.CreateLocalSchema(config)
