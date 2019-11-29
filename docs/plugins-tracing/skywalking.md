@@ -45,7 +45,7 @@ handler:
   chain:
     Consumer:
       default:  #consumer handlers
-      #ex: router, ratelimiter-consumer, bizkeeper-consumer, loadbalance, port-selector, transport, skywalking-consumer
+      #ex: bizkeeper-consumer,router,loadbalance,tracing-consumer,ratelimiter-consumer,transport,skywalking-consumer
     Provider:
       default:  #provider handlers
       #ex:  skywalking-provider
