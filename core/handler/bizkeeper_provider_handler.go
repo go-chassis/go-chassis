@@ -32,7 +32,7 @@ func (bk *BizKeeperProviderHandler) Handle(chain *Chain, i *invocation.Invocatio
 
 	//if err is not nil, means fallback is nil, return original err
 	if err != nil {
-		writeErr(err, cb)
+		WriteBackErr(err, 0, cb)
 	}
 
 	cb(<-finish)

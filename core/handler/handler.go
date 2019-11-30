@@ -57,9 +57,11 @@ type Handler interface {
 	Name() string
 }
 
-func writeErr(err error, cb invocation.ResponseCallBack) {
+//WriteBackErr write err and callback
+func WriteBackErr(err error, status int, cb invocation.ResponseCallBack) {
 	r := &invocation.Response{
-		Err: err,
+		Err:    err,
+		Status: status,
 	}
 	cb(r)
 }
