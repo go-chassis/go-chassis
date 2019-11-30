@@ -34,7 +34,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 
 	err := router.Route(h, &registry.SourceInfo{Name: i.SourceMicroService, Tags: tags}, i)
 	if err != nil {
-		writeErr(err, cb)
+		WriteBackErr(err, 0, cb)
 	}
 
 	//call next chain

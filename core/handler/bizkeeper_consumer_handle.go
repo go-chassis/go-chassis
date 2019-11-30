@@ -28,7 +28,7 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 	finish := make(chan *invocation.Response, 1)
 	f, err := GetFallbackFun(command, common.Consumer, i, finish, cmdConfig.ForceFallback)
 	if err != nil {
-		writeErr(err, cb)
+		WriteBackErr(err, 0, cb)
 		return
 	}
 	err = hystrix.Do(command, func() (err error) {
@@ -46,7 +46,7 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 
 	//if err is not nil, means fallback is nil, return original err
 	if err != nil {
-		writeErr(err, cb)
+		WriteBackErr(err, 0, cb)
 		return
 	}
 

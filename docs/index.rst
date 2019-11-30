@@ -13,6 +13,7 @@ Welcome to go-chassis's documentation!
    intro
    get-started
    user-guides
+   middleware
    istio-guides
    huawei-guides
    discovery-guides

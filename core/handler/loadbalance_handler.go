@@ -88,7 +88,7 @@ func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocatio
 func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, lbConfig control.LoadBalancingConfig, cb invocation.ResponseCallBack) {
 	ep, err := lb.getEndpoint(i, lbConfig)
 	if err != nil {
-		writeErr(err, cb)
+		WriteBackErr(err, 0, cb)
 		return
 	}
 
@@ -116,7 +116,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 	ep, err := lb.getEndpoint(i, lbConfig)
 	if err != nil {
 		// if get endpoint failed, no need to retry
-		writeErr(err, cb)
+		WriteBackErr(err, 0, cb)
 		return
 	}
 	operation := func() error {
