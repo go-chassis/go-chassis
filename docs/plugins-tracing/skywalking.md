@@ -43,10 +43,11 @@ servicecomb:
 ```
 handler:
   chain:
-    Consumer:
-      default:  #consumer handlers
-      #ex: bizkeeper-consumer,router,loadbalance,tracing-consumer,ratelimiter-consumer,transport,skywalking-consumer
     Provider:
       default:  #provider handlers
       #ex:  skywalking-provider
+handler:
+  chain:
+    Consumer:
+      default: bizkeeper-consumer,router,loadbalance,tracing-consumer,ratelimiter-consumer,skywalking-consumer,transport
 ```
