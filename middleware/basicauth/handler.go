@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package auth
+package basicauth
 
 import (
 	"encoding/base64"
@@ -27,20 +27,22 @@ import (
 	"strings"
 )
 
+//errors
 var (
 	ErrInvalidBase64 = errors.New("invalid base64")
 	ErrNoHeader      = errors.New("not authorized")
 	ErrInvalidAuth   = errors.New("invalid authentication")
 )
 
+//HeaderAuth is common auth header
 const HeaderAuth = "Authorization"
 
-//BasicAuthHandler is is a handler
-type BasicAuthHandler struct {
+//Handler is is a basic auth pre process raw data in handler
+type Handler struct {
 }
 
-// Handle is to handle the router related things
-func (ph *BasicAuthHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+// Handle pre process raw data in handler
+func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	if req, ok := i.Args.(*http.Request); ok {
 		subject := req.Header.Get(HeaderAuth)
 		if subject == "" {
@@ -70,11 +72,11 @@ func (ph *BasicAuthHandler) Handle(chain *handler.Chain, i *invocation.Invocatio
 }
 
 func newBasicAuth() handler.Handler {
-	return &BasicAuthHandler{}
+	return &Handler{}
 }
 
 // Name returns the router string
-func (ph *BasicAuthHandler) Name() string {
+func (ph *Handler) Name() string {
 	return "basicAuth"
 }
 func decode(subject string) (user string, pwd string, err error) {

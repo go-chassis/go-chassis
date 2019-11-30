@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package auth
+package basicauth
 
 import (
 	"github.com/go-chassis/go-chassis/core/common"
@@ -27,23 +27,23 @@ import (
 	"testing"
 )
 
-type FakeHandler struct{}
+type fakeHandler struct{}
 
-func (h *FakeHandler) Name() string {
+func (h *fakeHandler) Name() string {
 
 	return "fake"
 }
 
-func (h *FakeHandler) Handle(*handler.Chain, *invocation.Invocation, invocation.ResponseCallBack) {
+func (h *fakeHandler) Handle(*handler.Chain, *invocation.Invocation, invocation.ResponseCallBack) {
 	log.Println("authorized")
 	return
 }
 
 func new() handler.Handler {
-	return &FakeHandler{}
+	return &fakeHandler{}
 }
 func TestUseBasicAuth(t *testing.T) {
-	UseBasicAuth(&BasicAuth{
+	Use(&BasicAuth{
 		Realm: "test-realm",
 		Authorize: func(u, p string) error {
 			return nil
