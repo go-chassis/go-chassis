@@ -225,7 +225,7 @@ func (r *restfulServer) Start() error {
 		return fmt.Errorf("failed to start listener: %s", err.Error())
 	}
 
-	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort)+sslFlag
+	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort) + sslFlag
 
 	go func() {
 		err = r.server.Serve(l)
