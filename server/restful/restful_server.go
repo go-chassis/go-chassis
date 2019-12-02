@@ -36,6 +36,8 @@ const (
 	MimeMult          = "multipart/form-data"
 )
 
+const openTLS = "?sslEnabled=true"
+
 func init() {
 	server.InstallPlugin(Name, newRestfulServer)
 }
@@ -205,8 +207,10 @@ func (r *restfulServer) Start() error {
 	r.opts.Address = config.Address
 	r.mux.Unlock()
 	r.container.Add(r.ws)
+	sslFlag := ""
 	if r.opts.TLSConfig != nil {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container, TLSConfig: r.opts.TLSConfig}
+		sslFlag = openTLS
 	} else {
 		r.server = &http.Server{Addr: config.Address, Handler: r.container}
 	}
@@ -221,7 +225,7 @@ func (r *restfulServer) Start() error {
 		return fmt.Errorf("failed to start listener: %s", err.Error())
 	}
 
-	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort)
+	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort) + sslFlag
 
 	go func() {
 		err = r.server.Serve(l)
