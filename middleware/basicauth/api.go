@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-//Package auth supply common auth middleware, for example basic auth
-package auth
+//Package basicauth supply basicAuth middleware abstraction
+package basicauth
 
 import (
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -25,17 +25,17 @@ import (
 
 var auth *BasicAuth
 
-//BasicAuth should implement basic auth
-//it is single
+//BasicAuth should implement basic auth server side logic
+//it is singleton
 type BasicAuth struct {
 	Realm        string                                     //required
 	Authorize    func(user, pwd string) error               //required
 	Authenticate func(user string, req *http.Request) error //optional
 }
 
-//UseBasicAuth put a custom basic auth logic
+//Use put a custom basic auth logic
 //then register handler to chassis
-func UseBasicAuth(middleware *BasicAuth) {
+func Use(middleware *BasicAuth) {
 	auth = middleware
 	handler.RegisterHandler("basicAuth", newBasicAuth)
 }

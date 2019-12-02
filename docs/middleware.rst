@@ -1,4 +1,4 @@
-Get started
+Middleware
 ======================================
 
 .. toctree::
