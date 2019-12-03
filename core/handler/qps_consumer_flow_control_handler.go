@@ -5,7 +5,7 @@ import (
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/qpslimiter"
+	"github.com/go-chassis/go-chassis/core/qps"
 	"net/http"
 )
 
@@ -22,33 +22,38 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 	}
 	//qps rate <=0
 	if rlc.Rate <= 0 {
-		switch i.Reply.(type) {
-		case *http.Response:
-			resp := i.Reply.(*http.Response)
-			resp.StatusCode = http.StatusTooManyRequests
-		}
-		r := &invocation.Response{}
-		r.Status = http.StatusTooManyRequests
-		r.Err = fmt.Errorf("%s | %v", rlc.Key, rlc.Rate)
+		r := newErrResponse(i, rlc)
 		cb(r)
 		return
 	}
 	//get operation meta info ms.schema, ms.schema.operation, ms
-	rl.GetOrCreate(rlc)
-	chain.Next(i, cb)
+	if qps.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate) {
+		chain.Next(i, cb)
+	} else {
+		r := newErrResponse(i, rlc)
+		cb(r)
+		return
+	}
+
+}
+
+func newErrResponse(i *invocation.Invocation, rlc control.RateLimitingConfig) *invocation.Response {
+	switch i.Reply.(type) {
+	case *http.Response:
+		resp := i.Reply.(*http.Response)
+		resp.StatusCode = http.StatusTooManyRequests
+	}
+	r := &invocation.Response{}
+	r.Status = http.StatusTooManyRequests
+	r.Err = fmt.Errorf("%s | %v", rlc.Key, rlc.Rate)
+	return r
 }
 
 func newConsumerRateLimiterHandler() Handler {
 	return &ConsumerRateLimiterHandler{}
 }
 
-// Name returns consumerratelimiter string
+// Name returns name
 func (rl *ConsumerRateLimiterHandler) Name() string {
 	return "consumerratelimiter"
-}
-
-// GetOrCreate is for getting or creating qps limiter meta data
-func (rl *ConsumerRateLimiterHandler) GetOrCreate(rlc control.RateLimitingConfig) {
-	qpslimiter.GetQPSTrafficLimiter().ProcessQPSTokenReq(rlc.Key, rlc.Rate)
-	return
 }

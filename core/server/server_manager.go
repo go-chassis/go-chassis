@@ -62,9 +62,9 @@ func StartServer() error {
 			openlogging.GetLogger().Errorf("servers failed to start, err %s", err)
 			return fmt.Errorf("can not start [%s] server,%s", name, err.Error())
 		}
-		openlogging.GetLogger().Info(name + " server start success")
+		openlogging.GetLogger().Debug(name + " server start success")
 	}
-	openlogging.GetLogger().Info("All server Start Completed")
+	openlogging.GetLogger().Info("all server start completed")
 
 	return nil
 }

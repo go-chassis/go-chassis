@@ -236,7 +236,7 @@ func (r *restfulServer) Start() error {
 
 	}()
 
-	openlogging.GetLogger().Infof("Restful server listening on: %s", registry.InstanceEndpoints[config.ProtocolServerName])
+	openlogging.GetLogger().Infof("http server is listening at %s", registry.InstanceEndpoints[config.ProtocolServerName])
 	return nil
 }
 
@@ -270,7 +270,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
 	}
 	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)
-	openlogging.Info("The schema has been created successfully. path:" + path)
+	openlogging.Info("contract has been created successfully. path:" + path)
 	//set schema information when create local schema file
 	err := schema.SetSchemaInfo(sws)
 	if err != nil {

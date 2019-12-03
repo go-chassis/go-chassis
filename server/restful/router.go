@@ -78,7 +78,7 @@ func GetRouteGroup(schema interface{}) string {
 func GetRouteSpecs(schema interface{}) ([]Route, error) {
 	v, ok := schema.(Router)
 	if !ok {
-		return []Route{}, fmt.Errorf("<rest.RegisterResource> is not implemetn Router interface")
+		return []Route{}, fmt.Errorf("can not register APIs to server: %s", reflect.TypeOf(schema).String())
 	}
 	return v.URLPatterns(), nil
 }

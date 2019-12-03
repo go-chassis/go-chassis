@@ -73,13 +73,11 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	registry.SelfInstancesCache.Set(instance.ServiceId, instanceIDs, 0)
-	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, MicroServiceID: %s", instance.ServiceId)
 
 	if instance.HealthCheck == nil ||
 		instance.HealthCheck.Mode == client.CheckByHeartbeat {
 		registry.HBService.AddTask(sid, instanceID)
 	}
-	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
 	return instanceID, nil
 }
 

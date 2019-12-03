@@ -73,9 +73,9 @@ func enableRegistrator(opts Options) error {
 		return err
 	}
 
-	if err := RegisterMicroservice(); err != nil {
+	if err := RegisterService(); err != nil {
 		openlogging.GetLogger().Errorf("start backoff for register microservice: %s", err)
-		startBackOff(RegisterMicroservice)
+		startBackOff(RegisterService)
 	}
 	go HBService.Start()
 
@@ -192,9 +192,9 @@ func DoRegister() error {
 		}
 	}
 	if isAutoRegister {
-		if err := RegisterMicroserviceInstances(); err != nil {
+		if err := RegisterServiceInstances(); err != nil {
 			openlogging.GetLogger().Errorf("start back off for register microservice instances background: %s", err)
-			go startBackOff(RegisterMicroserviceInstances)
+			go startBackOff(RegisterServiceInstances)
 		}
 	}
 	return nil

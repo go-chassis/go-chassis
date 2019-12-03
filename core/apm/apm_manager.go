@@ -63,9 +63,9 @@ func Init() error {
 			troption.MicServiceType, _ = strconv.Atoi(serverType)
 		}
 		apm.Init(troption)
+		openlogging.Info("apm Init:" + config.GetAPM().Tracing.Tracer + " service:" + config.MicroserviceDefinition.ServiceDescription.Name)
 	} else {
-		openlogging.Error("Apm Init failed. check apm config " + config.GetAPM().Tracing.Tracer)
+		openlogging.Warn("apm Init failed. check apm config " + config.GetAPM().Tracing.Tracer)
 	}
-	openlogging.Info("Apm Init:" + config.GetAPM().Tracing.Tracer + " micname:" + config.MicroserviceDefinition.ServiceDescription.Name)
 	return nil
 }

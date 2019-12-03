@@ -1,0 +1,77 @@
+swagger: "2.0"
+info:
+  title: ""
+  version: ""
+basePath: /
+paths:
+  /:
+    get:
+      operationId: Root
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /healthz:
+    get:
+      operationId: RestCheck
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+  /metrics:
+    get:
+      operationId: HTTPHandleFunc
+  /sayerror:
+    get:
+      operationId: Sayhi
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+  /sayhello/{userid}:
+    get:
+      operationId: Sayhello
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /sayhi:
+    post:
+      operationId: Sayhi
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /sayhimessage:
+    post:
+      operationId: Sayhi
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+  /sayjson:
+    post:
+      operationId: SayJSON
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /saymessage/{name}:
+    get:
+      operationId: Saymessage
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'

@@ -7,7 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/qpslimiter"
+	"github.com/go-chassis/go-chassis/core/qps"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 
@@ -55,12 +55,12 @@ func (p *Panel) GetRateLimiting(inv invocation.Invocation, serviceType string) c
 	rl := control.RateLimitingConfig{}
 	rl.Enabled = archaius.GetBool("cse.flowcontrol."+serviceType+".qps.enabled", true)
 	if serviceType == common.Consumer {
-		keys := qpslimiter.GetConsumerKey(inv.SourceMicroService, inv.MicroServiceName, inv.SchemaID, inv.OperationID)
-		rl.Rate, rl.Key = qpslimiter.GetQPSTrafficLimiter().GetQPSRateWithPriority(
+		keys := qps.GetConsumerKey(inv.SourceMicroService, inv.MicroServiceName, inv.SchemaID, inv.OperationID)
+		rl.Rate, rl.Key = qps.GetRateLimiters().GetQPSRateWithPriority(
 			keys.OperationQualifiedName, keys.SchemaQualifiedName, keys.MicroServiceName)
 	} else {
-		keys := qpslimiter.GetProviderKey(inv.SourceMicroService)
-		rl.Rate, rl.Key = qpslimiter.GetQPSTrafficLimiter().GetQPSRateWithPriority(
+		keys := qps.GetProviderKey(inv.SourceMicroService)
+		rl.Rate, rl.Key = qps.GetRateLimiters().GetQPSRateWithPriority(
 			keys.ServiceOriented, keys.Global)
 	}
 

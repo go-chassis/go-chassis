@@ -1,4 +1,6 @@
-package qpslimiter
+//Package qps supply functionality about QPS
+//for example rate limiting
+package qps
 
 import (
 	"strconv"
@@ -6,7 +8,7 @@ import (
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-mesh/openlogging"
-	"go.uber.org/ratelimit"
+	"k8s.io/client-go/util/flowcontrol"
 )
 
 // constant qps default rate
@@ -14,68 +16,56 @@ const (
 	DefaultRate = 2147483647
 )
 
-// LimiterMap qps limiter map struct
-type LimiterMap struct {
-	KeyMap map[string]ratelimit.Limiter
+// RateLimiters qps limiter map struct
+type RateLimiters struct {
+	m map[string]flowcontrol.RateLimiter
 	sync.RWMutex
 }
 
 // variables of qps limiter ansd mutex variable
 var (
-	qpsLimiter *LimiterMap
+	qpsLimiter *RateLimiters
 	once       = new(sync.Once)
 )
 
-// GetQPSTrafficLimiter get qps traffic limiter
-func GetQPSTrafficLimiter() *LimiterMap {
-	initializeMap := func() {
-		qpsLimiter = &LimiterMap{}
-		qpsLimiter.KeyMap = make(map[string]ratelimit.Limiter)
-	}
-
-	once.Do(initializeMap)
+// GetRateLimiters get qps rate limiters
+func GetRateLimiters() *RateLimiters {
+	once.Do(func() {
+		qpsLimiter = &RateLimiters{m: make(map[string]flowcontrol.RateLimiter)}
+	})
 	return qpsLimiter
 }
 
-// ProcessQPSTokenReq process qps token request
-func (qpsL *LimiterMap) ProcessQPSTokenReq(key string, qpsRate int) {
+// TryAccept process qps token request
+func (qpsL *RateLimiters) TryAccept(key string, qpsRate int) bool {
 	qpsL.RLock()
-
-	limiter, ok := qpsL.KeyMap[key]
+	limiter, ok := qpsL.m[key]
 	if !ok {
 		qpsL.RUnlock()
 		//If the key operation is not present in the map, then add the new key operation to the map
-		qpsL.ProcessDefaultRateRpsTokenReq(key, qpsRate)
-		return
+		return qpsL.addLimiter(key, qpsRate)
 	}
-
 	qpsL.RUnlock()
-	limiter.Take()
+	return limiter.TryAccept()
 
-	return
 }
 
-// ProcessDefaultRateRpsTokenReq process default rate pps token request
-func (qpsL *LimiterMap) ProcessDefaultRateRpsTokenReq(key string, qpsRate int) {
+// addLimiter process default rate pps token request
+func (qpsL *RateLimiters) addLimiter(key string, qpsRate int) bool {
 	var bucketSize int
-
 	// add a limiter object for the newly found operation in the Default Hash map
 	// so that the default rate will be applied to subsequent token requests to this new operation
 	if qpsRate >= 1 {
-		bucketSize = int(qpsRate)
+		bucketSize = qpsRate
 	} else {
 		bucketSize = DefaultRate
 	}
-
 	qpsL.Lock()
 	// Create a new bucket for the new operation
-	r := ratelimit.New(bucketSize)
-	qpsL.KeyMap[key] = r
+	r := flowcontrol.NewTokenBucketRateLimiter(float32(bucketSize), 1)
+	qpsL.m[key] = r
 	qpsL.Unlock()
-
-	r.Take()
-
-	return
+	return r.TryAccept()
 }
 
 // GetQPSRate get qps rate
@@ -89,7 +79,7 @@ func GetQPSRate(rateConfig string) (int, bool) {
 }
 
 // GetQPSRateWithPriority get qps rate with priority
-func (qpsL *LimiterMap) GetQPSRateWithPriority(cmd ...string) (int, string) {
+func (qpsL *RateLimiters) GetQPSRateWithPriority(cmd ...string) (int, string) {
 	var (
 		qpsVal      int
 		configExist bool
@@ -106,16 +96,16 @@ func (qpsL *LimiterMap) GetQPSRateWithPriority(cmd ...string) (int, string) {
 }
 
 // UpdateRateLimit update rate limit
-func (qpsL *LimiterMap) UpdateRateLimit(key string, value interface{}) {
+func (qpsL *RateLimiters) UpdateRateLimit(key string, value interface{}) {
 	switch v := value.(type) {
 	case int:
-		qpsL.ProcessDefaultRateRpsTokenReq(key, value.(int))
+		qpsL.addLimiter(key, value.(int))
 	case string:
 		convertedIntValue, err := strconv.Atoi(value.(string))
 		if err != nil {
 			openlogging.GetLogger().Warnf("Invalid Value type received for QPSLateLimiter: %v", v, err)
 		} else {
-			qpsL.ProcessDefaultRateRpsTokenReq(key, convertedIntValue)
+			qpsL.addLimiter(key, convertedIntValue)
 		}
 	default:
 		openlogging.GetLogger().Warnf("Invalid Value type received for QPSLateLimiter: %v", v)
@@ -123,8 +113,8 @@ func (qpsL *LimiterMap) UpdateRateLimit(key string, value interface{}) {
 }
 
 // DeleteRateLimiter delete rate limiter
-func (qpsL *LimiterMap) DeleteRateLimiter(key string) {
+func (qpsL *RateLimiters) DeleteRateLimiter(key string) {
 	qpsL.Lock()
-	delete(qpsL.KeyMap, key)
+	delete(qpsL.m, key)
 	qpsL.Unlock()
 }

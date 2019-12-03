@@ -1,0 +1,21 @@
+---
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
+  protocols:
+    rest:
+      listenAddress: "127.0.0.1:5001"
+      #advertiseAddress: "internal_ip:5001"
+  handler:
+    chain:
+      Provider:
+        default: ratelimiter-provider
+  flowcontrol:
+    Provider:
+      qps:
+        enabled: true  # enable rate limiting or not
+        global:
+          limit: 1   # default limit of provider
+        limit:
+          someConsumerService: 1  # rate limit for request from a consumer

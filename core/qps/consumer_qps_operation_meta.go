@@ -1,4 +1,4 @@
-package qpslimiter
+package qps
 
 import (
 	"github.com/go-chassis/go-chassis/core/common"
