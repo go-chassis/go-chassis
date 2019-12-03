@@ -10,7 +10,7 @@ require (
 	github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-mesh/openlogging v1.0.1
-	github.com/golang/protobuf v1.3.1
+	github.com/golang/protobuf v1.3.2
 	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.0.2
@@ -23,8 +23,11 @@ require (
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/stretchr/testify v1.4.0
-	go.uber.org/ratelimit v0.1.0
-	gopkg.in/yaml.v2 v2.2.2
+	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2 // indirect
+	gopkg.in/yaml.v2 v2.2.4
+	k8s.io/apimachinery v0.0.0-20191123233150-4c4803ed55e3
+	k8s.io/client-go v11.0.0+incompatible
+	k8s.io/utils v0.0.0-20191114200735-6ca3b61696b6 // indirect
 )
 
 replace (
@@ -35,3 +38,5 @@ replace (
 	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2 => github.com/golang/time v0.0.0-20180412165947-fbb02b2291d2
 	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8 => github.com/google/go-genproto v0.0.0-20180817151627-c66870c02cf8
 )
+
+go 1.13

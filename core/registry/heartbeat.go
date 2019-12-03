@@ -44,7 +44,7 @@ func (s *HeartbeatService) Stop() {
 // AddTask add new micro-service instance to the heartbeat system
 func (s *HeartbeatService) AddTask(microServiceID, microServiceInstanceID string) {
 	key := fmt.Sprintf("%s/%s", microServiceID, microServiceInstanceID)
-	openlogging.GetLogger().Infof("Add HB task, task:%s", key)
+	openlogging.GetLogger().Infof("add heartbeat task:%s", key)
 	s.mux.Lock()
 	if _, ok := s.instances[key]; !ok {
 		s.instances[key] = &HeartbeatTask{
@@ -139,13 +139,13 @@ func (s *HeartbeatService) RetryRegister(sid, iid string) {
 
 // ReRegisterSelfMSandMSI 重新注册微服务和实例
 func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
-	err := RegisterMicroservice()
+	err := RegisterService()
 	if err != nil {
 		openlogging.GetLogger().Errorf("The reRegisterSelfMSandMSI() startMicroservice failed: %s", err)
 		return err
 	}
 
-	err = RegisterMicroserviceInstances()
+	err = RegisterServiceInstances()
 	if err != nil {
 		openlogging.GetLogger().Errorf("The reRegisterSelfMSandMSI() startInstances failed: %s", err)
 		return err

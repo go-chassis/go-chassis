@@ -63,27 +63,3 @@ cse:
           Server: 100  # rate limit for request to a provider
 ```
 
-## API
-
-qpslimiter提供获取流控实例的接口GetQpsTrafficLimiter和相关的处理接口。其中ProcessQpsTokenReq根据目标qpsRate在handler chain当中sleep相应时间实现限流，UpdateRateLimit提供更新qpsRate限制的接口，DeleteRateLimiter提供了删除流控实例的接口。
-
-##### 对请求流控
-
-```go
-qpslimiter.GetQpsTrafficLimiter().ProcessQpsTokenReq(key string, qpsRate int)
-```
-
-##### 更新流控限制
-
-```go
-qpslimiter.GetQpsTrafficLimiter().UpdateRateLimit(key string, value interface{})
-```
-
-##### 删除流控实例
-
-```go
-qpslimiter.GetQpsTrafficLimiter().DeleteRateLimiter(key string)
-```
-
-
-
