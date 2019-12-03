@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	configclient "github.com/go-chassis/go-chassis-config"
+	"github.com/go-chassis/go-archaius/source/remote"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/endpoint"
@@ -137,10 +137,10 @@ func initConfigCenter(ccEndpoint, tenantName string,
 
 	var ccObj = &archaius.RemoteInfo{
 		DefaultDimension: map[string]string{
-			configclient.LabelApp:         runtime.App,
-			configclient.LabelService:     runtime.ServiceName,
-			configclient.LabelVersion:     runtime.Version,
-			configclient.LabelEnvironment: runtime.Environment,
+			remote.LabelApp:         runtime.App,
+			remote.LabelService:     runtime.ServiceName,
+			remote.LabelVersion:     runtime.Version,
+			remote.LabelEnvironment: runtime.Environment,
 		},
 		URL:             ccEndpoint,
 		TenantName:      tenantName,
