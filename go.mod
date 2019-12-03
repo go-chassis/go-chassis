@@ -5,11 +5,12 @@ require (
 	github.com/emicklei/go-restful v2.11.1+incompatible
 	github.com/go-chassis/foundation v0.1.0
 	github.com/go-chassis/go-archaius v0.24.0
+	github.com/go-chassis/go-chassis-apm v0.0.0-20191121081610-bf85a4b6c3f3
 	github.com/go-chassis/go-chassis-config v0.15.0
 	github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-mesh/openlogging v1.0.1
-	github.com/golang/protobuf v1.2.0
+	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.0.2
@@ -21,9 +22,9 @@ require (
 	github.com/prometheus/procfs v0.0.0-20190117184657-bf6a532e95b1 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.4.0
 	go.uber.org/ratelimit v0.1.0
-	gopkg.in/yaml.v2 v2.2.1
+	gopkg.in/yaml.v2 v2.2.2
 )
 
 replace (
