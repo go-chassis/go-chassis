@@ -49,5 +49,5 @@ handler:
 handler:
   chain:
     Consumer:
-      default: bizkeeper-consumer,router,loadbalance,tracing-consumer,ratelimiter-consumer,skywalking-consumer,transport
+      default: bizkeeper-consumer,router,loadbalance,ratelimiter-consumer,skywalking-consumer,transport
 ```
