@@ -3,12 +3,12 @@
 go-chassis-apm is a plugin of go chassis, it reports tracing data to skywalking server
 
 ## Configurations
-you must import go-chassis-apm plugin pkg in main.go
+1.import go-chassis-apm plugin pkg in main.go
 ```go
 import _ "github.com/go-chassis/go-chassis-apm/tracing/skywalking"
 ```
 
-**In conf/monitoring.yaml**
+2.edit conf/monitoring.yaml
 
 **servicecomb.apm.tracing.tracer**
 >  *(optional, string)* tracer'name, only skywalking now
@@ -23,10 +23,9 @@ import _ "github.com/go-chassis/go-chassis-apm/tracing/skywalking"
 **servicecomb.apm.tracing.settings.enable**
 >  *(optional, bool)* enable skywalking tracing ability
 
-**Add handler name which are defined in github.com/go-chassis/go-chassis/core/handler**
->  Adding handler name *handler.SkyWalkingConsumer* in consumerChain.
+3.Add handler name which are defined in github.com/go-chassis/go-chassis/core/handler
 
->  Adding handler name *handler.SkyWalkingProvider* in providerChain.
+skywalking-consumer and skywalking-provider
 
 ## Example
 ```yaml
@@ -44,10 +43,7 @@ servicecomb:
 handler:
   chain:
     Provider:
-      default:  #provider handlers
-      #ex:  skywalking-provider
-handler:
-  chain:
+      default: skywalking-provider
     Consumer:
-      default: bizkeeper-consumer,router,loadbalance,ratelimiter-consumer,skywalking-consumer,transport
+      default: router,loadbalance,skywalking-consumer,transport
 ```
