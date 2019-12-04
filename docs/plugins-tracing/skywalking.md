@@ -36,7 +36,7 @@ servicecomb:
       settings:
         enable: true                  #enable tracing ability
         URI: 127.0.0.1:11800          #url of skywalking 
-        servertype: 5001              #server type
+        serverType: 5001              #server type
 ```
 
 ```
