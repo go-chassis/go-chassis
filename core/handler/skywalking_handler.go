@@ -47,7 +47,7 @@ func (sp *SkyWalkingProviderHandler) Name() string {
 }
 
 //NewSkyWalkingProvier return provider handler for SkyWalking
-func newSkyWalkingProvier() Handler {
+func newSkyWalkingProvider() Handler {
 	return &SkyWalkingProviderHandler{}
 }
 
