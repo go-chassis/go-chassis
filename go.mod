@@ -5,7 +5,7 @@ require (
 	github.com/emicklei/go-restful v2.11.1+incompatible
 	github.com/go-chassis/foundation v0.1.1-0.20191113114104-2b05871e9ec4
 	github.com/go-chassis/go-archaius v1.0.0
-	github.com/go-chassis/go-chassis-apm v0.0.0-20191121081610-bf85a4b6c3f3
+	github.com/go-chassis/go-chassis-apm v0.0.0-20191204033153-87995847a7a5
 	github.com/go-chassis/go-restful-swagger20 v1.0.2-0.20191029071646-8c0119f661c5
 	github.com/go-chassis/paas-lager v1.0.2-0.20190328010332-cf506050ddb2
 	github.com/go-mesh/openlogging v1.0.1

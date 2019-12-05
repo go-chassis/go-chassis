@@ -11,8 +11,8 @@ import (
 
 //monitoring.yaml
 const (
-	APMURI        = "URI"
-	APMServerType = "servertype"
+	URI        = "URI"
+	ServerType = "serverType"
 )
 
 var troption tracing.TracingOptions
@@ -56,10 +56,10 @@ func EndSpan(span interface{}, status int) error {
 
 //Init apm
 func Init() error {
-	openlogging.Debug("Apm Init " + config.GetAPM().Tracing.Tracer)
-	if config.GetAPM().Tracing.Tracer != "" && config.GetAPM().Tracing.Settings != nil && config.GetAPM().Tracing.Settings[APMURI] != "" {
+	openlogging.Debug("apm Init " + config.GetAPM().Tracing.Tracer)
+	if config.GetAPM().Tracing.Tracer != "" && config.GetAPM().Tracing.Settings != nil && config.GetAPM().Tracing.Settings[URI] != "" {
 		troption = tracing.TracingOptions{APMName: config.GetAPM().Tracing.Tracer, MicServiceName: config.MicroserviceDefinition.ServiceDescription.Name, ServerURI: config.GetAPM().Tracing.Settings["URI"]}
-		if serverType, ok := config.GetAPM().Tracing.Settings[APMServerType]; ok { //
+		if serverType, ok := config.GetAPM().Tracing.Settings[ServerType]; ok { //
 			troption.MicServiceType, _ = strconv.Atoi(serverType)
 		}
 		apm.Init(troption)
