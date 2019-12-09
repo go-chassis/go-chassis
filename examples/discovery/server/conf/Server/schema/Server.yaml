@@ -60,6 +60,9 @@ paths:
       - '*/*'
   /sayjson:
     post:
+      tags:
+      - users
+      - test
       operationId: SayJSON
       consumes:
       - '*/*'

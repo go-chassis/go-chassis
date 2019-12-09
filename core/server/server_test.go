@@ -140,7 +140,7 @@ func TestSrcMgrErr(t *testing.T) {
 	testRegistryObj := new(mock.RegistratorMock)
 	registry.DefaultRegistrator = testRegistryObj
 	//testRegistryObj.On("UnregisterMicroServiceInstance","microServiceID", "microServiceInstanceID").Return(nil)
-	testRegistryObj.On("UnRegisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
+	testRegistryObj.On("Unregister instance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""

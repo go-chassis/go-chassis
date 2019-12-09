@@ -620,7 +620,7 @@ func (c *RegistryClient) RegisterMicroServiceInstance(microServiceInstance *prot
 		return "", err
 	}
 	if resp == nil {
-		return "", fmt.Errorf("RegisterMicroServiceInstance failed, response is empty, MicroServiceId = %s", microServiceInstance.ServiceId)
+		return "", fmt.Errorf("register instance failed, response is empty, MicroServiceId = %s", microServiceInstance.ServiceId)
 	}
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -634,7 +634,7 @@ func (c *RegistryClient) RegisterMicroServiceInstance(microServiceInstance *prot
 		}
 		return response.InstanceID, nil
 	}
-	return "", fmt.Errorf("RegisterMicroServiceInstance failed, MicroServiceId: %s, response StatusCode: %d, response body: %s",
+	return "", fmt.Errorf("register instance failed, MicroServiceId: %s, response StatusCode: %d, response body: %s",
 		microServiceInstance.ServiceId, resp.StatusCode, string(body))
 }
 
@@ -766,7 +766,7 @@ func (c *RegistryClient) UnregisterMicroServiceInstance(microServiceID, microSer
 		return false, err
 	}
 	if resp == nil {
-		return false, fmt.Errorf("UnregisterMicroServiceInstance failed, response is empty, MicroServiceId/MicroServiceInstanceId: %s/%s", microServiceID, microServiceInstanceID)
+		return false, fmt.Errorf("Unregister instance failed, response is empty, MicroServiceId/MicroServiceInstanceId: %s/%s", microServiceID, microServiceInstanceID)
 	}
 	if resp.StatusCode != http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
