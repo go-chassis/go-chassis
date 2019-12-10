@@ -1,12 +1,12 @@
 package tracing_test
 
 import (
+	"errors"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

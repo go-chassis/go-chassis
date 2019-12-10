@@ -13,7 +13,6 @@ require (
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v0.9.1
 	github.com/prometheus/client_model v0.0.0-20190115171406-56726106282f // indirect
 	github.com/prometheus/common v0.2.0
