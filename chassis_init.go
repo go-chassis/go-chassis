@@ -25,7 +25,6 @@ import (
 	"github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/configcenter"
 	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/apm"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -154,10 +153,6 @@ func (c *chassis) initialize() error {
 		return err
 	}
 	if err = metrics.Init(); err != nil {
-		return err
-	}
-	//apm is for application performance monitor
-	if err = apm.Init(); err != nil {
 		return err
 	}
 	go hystrix.StartReporter()
