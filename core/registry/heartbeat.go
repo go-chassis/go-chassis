@@ -177,11 +177,11 @@ func reRegisterSelfMSI(sid, iid string) error {
 
 	value, ok := SelfInstancesCache.Get(microServiceInstance.ServiceID)
 	if !ok {
-		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, microServiceID/instanceID: %s/%s", sid, instanceID)
+		openlogging.GetLogger().Warnf("register instance get SelfInstancesCache failed, microServiceID/instanceID: %s/%s", sid, instanceID)
 	}
 	instanceIDs, ok := value.([]string)
 	if !ok {
-		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance type asserts failed, microServiceID/instanceID: %s/%s", sid, instanceID)
+		openlogging.GetLogger().Warnf("register instance type asserts failed, microServiceID/instanceID: %s/%s", sid, instanceID)
 	}
 	var isRepeat bool
 	for _, va := range instanceIDs {
@@ -193,7 +193,7 @@ func reRegisterSelfMSI(sid, iid string) error {
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	SelfInstancesCache.Set(microServiceInstance.ServiceID, instanceIDs, 0)
-	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
+	openlogging.GetLogger().Infof("register instance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
 
 	return nil
 }

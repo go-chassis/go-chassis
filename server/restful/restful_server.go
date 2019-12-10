@@ -157,7 +157,9 @@ func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful
 		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
 	rb = fillParam(routeSpec, rb)
-
+	for k, v := range routeSpec.Metadata {
+		rb = rb.Metadata(k, v)
+	}
 	for _, r := range routeSpec.Returns {
 		rb = rb.Returns(r.Code, r.Message, r.Model)
 	}
@@ -197,6 +199,7 @@ func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder 
 			p = restful.FormParameter(param.Name, param.Desc)
 		}
 		rb = rb.Param(p.Required(param.Required).DataType(param.DataType))
+
 	}
 	return rb
 }
