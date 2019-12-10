@@ -50,8 +50,6 @@ func init() {
 	HandlerFuncMap[TracingConsumer] = newTracingConsumerHandler
 	HandlerFuncMap[Router] = newRouterHandler
 	HandlerFuncMap[FaultInject] = newFaultHandler
-	HandlerFuncMap[SkyWalkingConsumer] = newSkyWalkingConsumer
-	HandlerFuncMap[SkyWalkingProvider] = newSkyWalkingProvider
 }
 
 // Handler interface for handlers
