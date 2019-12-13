@@ -88,7 +88,7 @@ func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocatio
 func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, lbConfig control.LoadBalancingConfig, cb invocation.ResponseCallBack) {
 	ep, err := lb.getEndpoint(i, lbConfig)
 	if err != nil {
-		WriteBackErr(err, 0, cb)
+		WriteBackErr(err, http.StatusServiceUnavailable, cb)
 		return
 	}
 
