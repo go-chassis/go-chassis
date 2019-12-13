@@ -145,7 +145,7 @@ func readEndpoint(firstEnv, singleEnv string) string {
 // populateMonitorServerAddress populate monitor server address
 func populateMonitorServerAddress() {
 	//Monitor Center Address , higher priority for environment variable
-	monitorServerAddrFromEnv := archaius.GetString(common.CseMonitorServer, "")
+	monitorServerAddrFromEnv := archaius.GetString(common.EnvCSEEndpoint, "")
 	if monitorServerAddrFromEnv != "" {
 		GlobalDefinition.Cse.Monitor.Client.ServerURI = monitorServerAddrFromEnv
 	}
