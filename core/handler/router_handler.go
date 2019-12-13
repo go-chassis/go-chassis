@@ -6,6 +6,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/router"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"net/http"
 )
 
 // RouterHandler router handler
@@ -34,7 +35,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 
 	err := router.Route(h, &registry.SourceInfo{Name: i.SourceMicroService, Tags: tags}, i)
 	if err != nil {
-		WriteBackErr(err, 0, cb)
+		WriteBackErr(err, http.StatusInternalServerError, cb)
 	}
 
 	//call next chain
