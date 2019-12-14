@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2 // indirect
 	gopkg.in/yaml.v2 v2.2.4
-	k8s.io/apimachinery v0.0.0-20191123233150-4c4803ed55e3
+	k8s.io/apimachinery v0.0.0-20191213205550-43dfa306b0f3
 	k8s.io/client-go v11.0.0+incompatible
 	k8s.io/utils v0.0.0-20191114200735-6ca3b61696b6 // indirect
 )
