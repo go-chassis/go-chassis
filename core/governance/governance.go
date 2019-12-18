@@ -23,6 +23,7 @@ import (
 	"strings"
 )
 
+//prefix const
 const (
 	KindMatchPrefix        = "servicecomb.match"
 	KindRateLimitingPrefix = "servicecomb.rateLimiting"

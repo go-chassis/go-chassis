@@ -28,6 +28,7 @@ import (
 
 var matches sync.Map
 
+//Method decide value Match expression oor not
 type Method func(value, expression string) bool
 
 var matchPlugin = map[string]Method{
@@ -44,11 +45,11 @@ func mark(inv *invocation.Invocation) {
 	})
 }
 
-//compare value and expression
-func match(strategy, value, expression string) (bool, error) {
+//Match compare value and expression
+func Match(strategy, value, expression string) (bool, error) {
 	f, ok := matchPlugin[strategy]
 	if !ok {
-		return false, fmt.Errorf("invalid match method")
+		return false, fmt.Errorf("invalid Match method")
 	}
 	return f(value, expression), nil
 }
@@ -56,7 +57,7 @@ func exact(value, express string) bool {
 	return value == express
 }
 
-//SaveMatchPolicy saves match policy
+//SaveMatchPolicy saves Match policy
 func SaveMatchPolicy(value string, k string, name string) {
 	m := &config.MatchPolicy{}
 	err := yaml.Unmarshal([]byte(value), m)

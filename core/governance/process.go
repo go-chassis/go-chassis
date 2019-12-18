@@ -24,6 +24,8 @@ import (
 	"strings"
 )
 
+//ProcessMatch saves all policy to match module
+//then match module is able to mark invocation
 func ProcessMatch(key string, value string) {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {
@@ -32,6 +34,9 @@ func ProcessMatch(key string, value string) {
 	name := s[2]
 	match.SaveMatchPolicy(value, key, name)
 }
+
+//ProcessLimiter saves limiter, after a invocation is marked,
+//go chassis will get correspond limiter with mark name
 func ProcessLimiter(key string, value string) {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {

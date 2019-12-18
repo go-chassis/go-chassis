@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-package match
+package qps
 
-//Handler can be registered in chain
-//it compares the Match rule with invocation and mark this invocation
-type Handler struct {
-}
+//TODO rate limiting

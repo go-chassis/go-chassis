@@ -95,7 +95,7 @@ type RuleItem struct {
 type MatchPolicy struct {
 }
 
-//Limiter is rate limiter policy
+//LimiterConfig is rate limiter policy
 type LimiterConfig struct {
 	Match string
 	QPS   string
