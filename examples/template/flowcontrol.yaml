@@ -1,0 +1,5 @@
+servicecomb:
+  rateLimiting:
+    limit-json: |
+        match: match-user-jason
+        quota: 5000

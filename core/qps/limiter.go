@@ -18,14 +18,14 @@ const (
 
 // RateLimiters qps limiter map struct
 type RateLimiters struct {
-	m map[string]flowcontrol.RateLimiter
 	sync.RWMutex
+	m map[string]flowcontrol.RateLimiter
 }
 
-// variables of qps limiter ansd mutex variable
+// variables of qps limiter and mutex variable
 var (
-	qpsLimiter *RateLimiters
 	once       = new(sync.Once)
+	qpsLimiter *RateLimiters
 )
 
 // GetRateLimiters get qps rate limiters
@@ -95,7 +95,7 @@ func (qpsL *RateLimiters) GetQPSRateWithPriority(cmd ...string) (int, string) {
 
 }
 
-// UpdateRateLimit update rate limit
+// UpdateRateLimit update or add rate limiter
 func (qpsL *RateLimiters) UpdateRateLimit(key string, value interface{}) {
 	switch v := value.(type) {
 	case int:
@@ -103,12 +103,12 @@ func (qpsL *RateLimiters) UpdateRateLimit(key string, value interface{}) {
 	case string:
 		convertedIntValue, err := strconv.Atoi(value.(string))
 		if err != nil {
-			openlogging.GetLogger().Warnf("Invalid Value type received for QPSLateLimiter: %v", v, err)
+			openlogging.GetLogger().Warnf("invalid value type received for rate limiter: %v", v, err)
 		} else {
 			qpsL.addLimiter(key, convertedIntValue)
 		}
 	default:
-		openlogging.GetLogger().Warnf("Invalid Value type received for QPSLateLimiter: %v", v)
+		openlogging.GetLogger().Warnf("invalid value type received for rate limiter: %v", v)
 	}
 }
 

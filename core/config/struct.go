@@ -90,3 +90,13 @@ type RuleItem struct {
 	CaseInsensitive bool     `json:"caseInsensitive"`
 	Versions        []string `json:"versions"`
 }
+
+//MatchPolicy specify a request mach policy
+type MatchPolicy struct {
+}
+
+//LimiterConfig is rate limiter policy
+type LimiterConfig struct {
+	Match string
+	QPS   string
+}
