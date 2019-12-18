@@ -1,0 +1,11 @@
+servicecomb:
+  match:
+    match-user-json: |
+        headers:
+          cookie:
+            regex: "^(.*?;)?(user=jason)(;.*)?$"
+          user:
+            equal: jason
+        apiPath:
+          contains: "some/api"
+        method: GET

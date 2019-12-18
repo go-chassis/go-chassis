@@ -26,7 +26,7 @@ func (el *QPSEventListener) Event(e *event.Event) {
 	if strings.Contains(e.Key, "enabled") {
 		return
 	}
-
+	//TODO watch new config
 	switch e.EventType {
 	case common.Update:
 		qpsLimiter.UpdateRateLimit(e.Key, e.Value)

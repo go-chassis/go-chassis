@@ -88,7 +88,6 @@ func readFromArchaius() error {
 
 	populateConfigCenterAddress()
 	populateServiceRegistryAddress()
-	populateMonitorServerAddress()
 	populateServiceEnvironment()
 	populateServiceName()
 	populateVersion()
@@ -140,15 +139,6 @@ func readEndpoint(firstEnv, singleEnv string) string {
 		return addrFromEnv
 	}
 	return addrFromEnv
-}
-
-// populateMonitorServerAddress populate monitor server address
-func populateMonitorServerAddress() {
-	//Monitor Center Address , higher priority for environment variable
-	monitorServerAddrFromEnv := archaius.GetString(common.EnvCSEEndpoint, "")
-	if monitorServerAddrFromEnv != "" {
-		GlobalDefinition.Cse.Monitor.Client.ServerURI = monitorServerAddrFromEnv
-	}
 }
 
 // populateServiceEnvironment populate service environment

@@ -12,8 +12,8 @@ var errViolateBuildIn = errors.New("can not replace build-in handler func")
 
 //ErrDuplicatedHandler means you registered more than 1 handler with same name
 var ErrDuplicatedHandler = errors.New("duplicated handler registration")
-var buildIn = []string{BizkeeperConsumer, BizkeeperProvider, Loadbalance, Router, TracingConsumer,
-	TracingProvider, RatelimiterConsumer, RatelimiterProvider, Transport, FaultInject}
+var buildIn = []string{BizkeeperConsumer, BizKeeperProvider, Loadbalance, Router, TracingConsumer,
+	TracingProvider, RateLimiterConsumer, RateLimiterProvider, Transport, FaultInject}
 
 // HandlerFuncMap handler function map
 var HandlerFuncMap = make(map[string]func() Handler)
@@ -25,15 +25,15 @@ const (
 	Loadbalance         = "loadbalance"
 	BizkeeperConsumer   = "bizkeeper-consumer"
 	TracingConsumer     = "tracing-consumer"
-	RatelimiterConsumer = "ratelimiter-consumer"
+	RateLimiterConsumer = "ratelimiter-consumer"
 	Router              = "router"
 	FaultInject         = "fault-inject"
 	SkyWalkingConsumer  = "skywalking-consumer"
 
 	//provider chain
-	RatelimiterProvider = "ratelimiter-provider"
+	RateLimiterProvider = "ratelimiter-provider"
 	TracingProvider     = "tracing-provider"
-	BizkeeperProvider   = "bizkeeper-provider"
+	BizKeeperProvider   = "bizkeeper-provider"
 	SkyWalkingProvider  = "skywalking-provider"
 )
 
@@ -43,9 +43,9 @@ func init() {
 	HandlerFuncMap[Transport] = newTransportHandler
 	HandlerFuncMap[Loadbalance] = newLBHandler
 	HandlerFuncMap[BizkeeperConsumer] = newBizKeeperConsumerHandler
-	HandlerFuncMap[BizkeeperProvider] = newBizKeeperProviderHandler
-	HandlerFuncMap[RatelimiterConsumer] = newConsumerRateLimiterHandler
-	HandlerFuncMap[RatelimiterProvider] = newProviderRateLimiterHandler
+	HandlerFuncMap[BizKeeperProvider] = newBizKeeperProviderHandler
+	HandlerFuncMap[RateLimiterConsumer] = newConsumerRateLimiterHandler
+	HandlerFuncMap[RateLimiterProvider] = newProviderRateLimiterHandler
 	HandlerFuncMap[TracingProvider] = newTracingProviderHandler
 	HandlerFuncMap[TracingConsumer] = newTracingConsumerHandler
 	HandlerFuncMap[Router] = newRouterHandler
