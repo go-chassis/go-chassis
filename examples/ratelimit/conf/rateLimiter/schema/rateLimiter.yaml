@@ -1,0 +1,13 @@
+swagger: "2.0"
+info:
+  title: ""
+  version: ""
+basePath: /
+paths:
+  /limit:
+    get:
+      operationId: Limit
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
