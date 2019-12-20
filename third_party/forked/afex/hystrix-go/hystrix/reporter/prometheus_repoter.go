@@ -14,12 +14,12 @@ package reporter
 // Forked from github.com/deathowl
 // Some parts of this file have been modified to make it functional in this package
 import (
+	"github.com/go-chassis/go-archaius"
 	"strings"
 	"sync"
 	"time"
 
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/pkg/circuit"
 	m "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
@@ -71,7 +71,7 @@ var gaugeVecs map[string]*prometheus.GaugeVec
 // GetPrometheusSinker get prometheus configurations
 func GetPrometheusSinker() {
 	onceInit.Do(func() {
-		t, err := time.ParseDuration(config.GlobalDefinition.Cse.Metrics.FlushInterval)
+		t, err := time.ParseDuration(archaius.GetString("cse.metrics.flushInterval", "10s"))
 		if err != nil {
 			t = time.Second * 10
 		}
@@ -175,17 +175,17 @@ func ReportMetricsToPrometheus(cb *hystrix.CircuitBreaker) error {
 	gaugeVecFromNameAndValue(fmt.Sprintf("%s.%s", metricName, "mean"),
 		float64(runDuration.Mean()), promLabels)
 	promLabels["quantile"] = "0.05"
-	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(0.05)), promLabels)
+	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(5)), promLabels)
 	promLabels["quantile"] = "0.25"
-	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(0.25)), promLabels)
+	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(25)), promLabels)
 	promLabels["quantile"] = "0.5"
-	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(0.5)), promLabels)
+	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(5)), promLabels)
 	promLabels["quantile"] = "0.75"
-	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(0.75)), promLabels)
+	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(75)), promLabels)
 	promLabels["quantile"] = "0.90"
-	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(0.90)), promLabels)
+	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(90)), promLabels)
 	promLabels["quantile"] = "0.99"
-	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(0.99)), promLabels)
+	gaugeVecFromNameAndValue(metricName, float64(runDuration.Percentile(99)), promLabels)
 	return nil
 }
 func init() {
