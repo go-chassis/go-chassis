@@ -74,10 +74,6 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 	}
 	registry.SelfInstancesCache.Set(instance.ServiceId, instanceIDs, 0)
 
-	if instance.HealthCheck == nil ||
-		instance.HealthCheck.Mode == client.CheckByHeartbeat {
-		registry.HBService.AddTask(sid, instanceID)
-	}
 	return instanceID, nil
 }
 
@@ -119,12 +115,6 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 		instanceIDs = append(instanceIDs, instanceID)
 	}
 	registry.SelfInstancesCache.Set(instance.ServiceId, instanceIDs, 0)
-	openlogging.GetLogger().Infof("register instance success, MicroServiceID: %s", instance.ServiceId)
-
-	if instance.HealthCheck == nil ||
-		instance.HealthCheck.Mode == client.CheckByHeartbeat {
-		registry.HBService.AddTask(microServiceID, instanceID)
-	}
 	openlogging.GetLogger().Infof("register instance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID)
 	return microServiceID, instanceID, nil
 }
@@ -168,7 +158,7 @@ func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (
 		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
 		return bo, err
 	}
-	openlogging.GetLogger().Debugf("Heartbeat success, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
+	openlogging.GetLogger().Debugf("heartbeat success, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
 	return bo, nil
 }
 

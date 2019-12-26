@@ -94,8 +94,6 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 	scc.AddDependencies(msdep)
 
 	heartBeatSvc := registry.HeartbeatService{}
-	heartBeatSvc.RefreshTask(sid, insID)
-	heartBeatSvc.RemoveTask(sid, insID)
 	heartBeatSvc.Stop()
 	scc.Close()
 }

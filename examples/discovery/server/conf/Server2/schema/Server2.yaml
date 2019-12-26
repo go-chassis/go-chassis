@@ -1,0 +1,29 @@
+swagger: "2.0"
+info:
+  title: ""
+  version: ""
+basePath: /
+paths:
+  /:
+    get:
+      operationId: Root
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /error:
+    get:
+      operationId: Error
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "500":
+          description: ""
+  /metrics:
+    get:
+      operationId: HTTPHandleFunc
