@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -25,9 +24,8 @@ type HeartbeatTask struct {
 
 // HeartbeatService heartbeat service
 type HeartbeatService struct {
-	instances map[string]*HeartbeatTask
-	shutdown  bool
-	mux       sync.Mutex
+	shutdown bool
+	mux      sync.Mutex
 }
 
 // Start start the heartbeat system
@@ -41,96 +39,41 @@ func (s *HeartbeatService) Stop() {
 	s.shutdown = true
 }
 
-// AddTask add new micro-service instance to the heartbeat system
-func (s *HeartbeatService) AddTask(microServiceID, microServiceInstanceID string) {
-	key := fmt.Sprintf("%s/%s", microServiceID, microServiceInstanceID)
-	openlogging.GetLogger().Infof("add heartbeat task:%s", key)
-	s.mux.Lock()
-	if _, ok := s.instances[key]; !ok {
-		s.instances[key] = &HeartbeatTask{
-			ServiceID:  microServiceID,
-			InstanceID: microServiceInstanceID,
-			Time:       time.Now(),
-		}
-	}
-	s.mux.Unlock()
-}
-
-// RemoveTask remove micro-service instance from the heartbeat system
-func (s *HeartbeatService) RemoveTask(microServiceID, microServiceInstanceID string) {
-	key := fmt.Sprintf("%s/%s", microServiceID, microServiceInstanceID)
-	s.mux.Lock()
-	delete(s.instances, key)
-	s.mux.Unlock()
-}
-
-// RefreshTask refresh heartbeat for micro-service instance
-func (s *HeartbeatService) RefreshTask(microServiceID, microServiceInstanceID string) {
-	key := fmt.Sprintf("%s/%s", microServiceID, microServiceInstanceID)
-	s.mux.Lock()
-	if _, ok := s.instances[key]; ok {
-		s.instances[key].Time = time.Now()
-	}
-	s.mux.Unlock()
-}
-
-// toggleTask toggle task
-func (s *HeartbeatService) toggleTask(microServiceID, microServiceInstanceID string, running bool) {
-	key := fmt.Sprintf("%s/%s", microServiceID, microServiceInstanceID)
-	s.mux.Lock()
-	if _, ok := s.instances[key]; ok {
-		s.instances[key].Running = running
-	}
-	s.mux.Unlock()
-}
-
 // DoHeartBeat do heartbeat for each instance
 func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID string) {
-	s.toggleTask(microServiceID, microServiceInstanceID, true)
 	_, err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
-		openlogging.GetLogger().Errorf("Run Heartbeat fail: %s", err)
-		s.RemoveTask(microServiceID, microServiceInstanceID)
+		openlogging.GetLogger().Errorf("heartbeat fail,try to recover, err: %s", err)
 		s.RetryRegister(microServiceID, microServiceInstanceID)
 	}
-	s.RefreshTask(microServiceID, microServiceInstanceID)
-	s.toggleTask(microServiceID, microServiceInstanceID, false)
 }
 
 // run runs the heartbeat system
 func (s *HeartbeatService) run() {
 	for !s.shutdown {
-		s.mux.Lock()
-		endTime := time.Now()
-		for _, v := range s.instances {
-			if v.Running {
-				continue
-			}
-			if endTime.Sub(v.Time) >= common.DefaultHBInterval*time.Second {
-				go s.DoHeartBeat(v.ServiceID, v.InstanceID)
-			}
-		}
-		s.mux.Unlock()
-		time.Sleep(time.Second)
+		s.DoHeartBeat(runtime.ServiceID, runtime.InstanceID)
+		time.Sleep(30 * time.Second)
 	}
 }
 
-// RetryRegister retrying to register micro-service, and instance
+//RetryRegister try to register micro-service, and instance
 func (s *HeartbeatService) RetryRegister(sid, iid string) {
 	for !s.shutdown {
 		openlogging.Info("try to re-register")
-		_, err := DefaultServiceDiscoveryService.GetAllMicroServices()
-		if err != nil {
-			openlogging.GetLogger().Errorf("DefaultRegistrator is not healthy %s", err)
-			continue
-		}
-		if _, e := DefaultServiceDiscoveryService.GetMicroService(sid); e != nil {
+		var err error
+		if _, err = DefaultServiceDiscoveryService.GetMicroService(sid); err != nil {
 			err = s.ReRegisterSelfMSandMSI()
-		} else {
-			err = reRegisterSelfMSI(sid, iid)
+			if err != nil {
+				openlogging.Error("recover failed:" + err.Error())
+			} else {
+				openlogging.Warn("recovered service")
+			}
 		}
-		if err == nil {
-			openlogging.Warn("Re-register self success")
+		err = reRegisterSelfMSI(sid, iid)
+		if err != nil {
+			openlogging.Error("recover failed:" + err.Error())
+		} else {
+			openlogging.Warn("recovered instance")
 			break
 		}
 		time.Sleep(DefaultRetryTime)
