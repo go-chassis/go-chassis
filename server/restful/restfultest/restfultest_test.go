@@ -18,6 +18,8 @@
 package restfultest_test
 
 import (
+	log "github.com/go-chassis/paas-lager"
+	"github.com/go-mesh/openlogging"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -76,6 +78,14 @@ func newFakeHandler() handler.Handler {
 }
 
 func TestNew(t *testing.T) {
+	log.Init(log.Config{
+		Writers:       []string{"stdout"},
+		LoggerLevel:   "DEBUG",
+		LogFormatText: false,
+	})
+
+	logger := log.NewLogger("ut")
+	openlogging.SetLogger(logger)
 	r, _ := http.NewRequest("GET", "/demo/sayhello/some_user", nil)
 	c, err := restfultest.New(&DummyResource{}, nil)
 	assert.NoError(t, err)
