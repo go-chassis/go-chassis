@@ -19,10 +19,8 @@ package restfultest
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"reflect"
-	"runtime"
 	"strings"
 
 	"github.com/emicklei/go-restful"
@@ -61,15 +59,7 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 		handler := func(req *restful.Request, rep *restful.Response) {
 			defer func() {
 				if r := recover(); r != nil {
-					var stacktrace string
-					for i := 1; ; i++ {
-						_, f, l, got := runtime.Caller(i)
-						if !got {
-							break
-						}
-
-						stacktrace += fmt.Sprintf("%s:%d\n", f, l)
-					}
+					stacktrace := chassisRestful.GetTrace()
 					openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
 						"path":  routes[k].Path,
 						"panic": r,
