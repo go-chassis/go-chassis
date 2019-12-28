@@ -13,14 +13,12 @@ func TestInitialize1(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	logDir := filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
 	os.Setenv("CHASSIS_HOME", logDir)
-	os.RemoveAll(logDir)
 
 	t.Log("Initializing lager")
 	t.Log("creating log/chassis.log")
 	lager.Init(&lager.Options{
 		LoggerFile: filepath.Join("log", "chassis.log"),
 	})
-	defer os.RemoveAll(logDir)
 
 	if _, err := os.Stat(logDir); err != nil {
 		if os.IsNotExist(err) {
@@ -36,7 +34,6 @@ func TestInitialize2(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	logDir := filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
 	os.Setenv("CHASSIS_HOME", logDir)
-	os.RemoveAll(logDir)
 
 	//initializing config for to initialize PassLagerDefinition variable
 	t.Log("initializing config for to initialize PassLagerDefinition variable")
@@ -44,7 +41,6 @@ func TestInitialize2(t *testing.T) {
 	//Initializing lager
 	t.Log("Initializing lager")
 	lager.Init(&lager.Options{})
-	defer os.RemoveAll(logDir)
 
 	if _, err := os.Stat(logDir); err != nil {
 		if os.IsNotExist(err) {
