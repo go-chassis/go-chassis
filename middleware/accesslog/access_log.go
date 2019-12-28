@@ -1,14 +1,16 @@
 package accesslog
 
 import (
+	"time"
+
 	"github.com/emicklei/go-restful"
+	"github.com/go-mesh/openlogging"
+
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/initiator"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-	"github.com/go-mesh/openlogging"
-	"time"
 )
 
 type Recorder func(startTime time.Time, i *invocation.Invocation)
@@ -29,7 +31,7 @@ func init() {
 		return
 	}
 
-	if initiator.LoggerOptions.AccessLogFile == "stdout" {
+	if initiator.LoggerOptions.AccessLogFile == lager.Stdout {
 		log = openlogging.GetLogger()
 	} else {
 		var err error
@@ -54,7 +56,7 @@ func init() {
 		return instance
 	})
 	if err != nil {
-		openlogging.GetLogger().Errorf("register access handler failed, %s", err.Error())
+		openlogging.GetLogger().Errorf("register access log handler failed, %s", err.Error())
 	}
 }
 
@@ -72,11 +74,8 @@ func (a *accessLog) Handle(chain *handler.Chain, i *invocation.Invocation, cb in
 	now := time.Now()
 	chain.Next(i, func(response *invocation.Response) error {
 		err := cb(response)
-		if err != nil {
-			return err
-		}
 		a.recorder(now, i)
-		return nil
+		return err
 	})
 }
 
