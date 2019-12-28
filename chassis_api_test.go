@@ -116,7 +116,7 @@ service_description:
 	err = chassis.Init()
 	assert.NoError(t, err)
 
-	chassis.RegisterSchema("rest", "str")
+	chassis.RegisterRestSchema("str")
 
 	restServer, err := server.GetServer("rest")
 	assert.NotNil(t, restServer)

@@ -25,7 +25,7 @@ func (r *DemoResource) URLPatterns() []restful.Route {
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/{project_root}/
 
 func main() {
-	chassis.RegisterSchema("rest", &DemoResource{})
+	chassis.RegisterRestSchema(&DemoResource{})
 	if err := chassis.Init(); err != nil {
 		lager.Logger.Error("Init failed." + err.Error())
 		return

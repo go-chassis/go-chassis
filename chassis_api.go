@@ -44,6 +44,16 @@ func init() {
 	goChassis = &chassis{}
 }
 
+// RegisterRestSchema registers rest api service to specific server by name
+func RegisterRestSchema(structPtr interface{}, opts ...server.RegisterOption) {
+	goChassis.registerSchema(common.ProtocolRest, structPtr, opts...)
+}
+
+// RegisterHighwaySchema registers rest api service to specific server by name
+func RegisterHighwaySchema(structPtr interface{}, opts ...server.RegisterOption) {
+	goChassis.registerSchema(common.ProtocolHighway, structPtr, opts...)
+}
+
 //RegisterSchema Register a API service to specific server by name
 //You must register API first before Call Init
 func RegisterSchema(serverName string, structPtr interface{}, opts ...server.RegisterOption) {

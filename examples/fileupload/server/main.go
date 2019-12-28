@@ -8,7 +8,7 @@ import (
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/server/
 func main() {
-	chassis.RegisterSchema("rest", &example.RestFulUpload{})
+	chassis.RegisterRestSchema(&example.RestFulUpload{})
 
 	if err := chassis.Init(); err != nil {
 		lager.Logger.Error("Init failed." + err.Error())

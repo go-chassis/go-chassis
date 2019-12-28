@@ -10,8 +10,8 @@ import (
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
-	chassis.RegisterSchema("rest", &schemas.RestFulHello{})
-	chassis.RegisterSchema("rest", &schemas.RestFulMessage{})
+	chassis.RegisterRestSchema(&schemas.RestFulHello{})
+	chassis.RegisterRestSchema(&schemas.RestFulMessage{})
 	//start all server you register in server/schemas.
 	if err := chassis.Init(); err != nil {
 		lager.Logger.Error("Init failed." + err.Error())
