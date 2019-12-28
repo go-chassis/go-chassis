@@ -13,6 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 )
 
+// Recorder recorder
 type Recorder func(startTime time.Time, i *invocation.Invocation)
 
 var (

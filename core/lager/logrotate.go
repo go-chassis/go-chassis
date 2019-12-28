@@ -292,6 +292,7 @@ func CopyFile(srcFile, dstFile string) error {
 	return err
 }
 
+// NewRotateConfig return config
 func NewRotateConfig(option *Options) *RotateConfig {
 	rc := new(RotateConfig)
 	rc.BackupCount = LogBackupCount
