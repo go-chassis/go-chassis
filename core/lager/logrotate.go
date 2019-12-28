@@ -349,37 +349,10 @@ func (r *rotators) Rotate(rc *RotateConfig) {
 	r.logFilePaths[rc.logFilePath] = rc
 
 	go func() {
+		openlogging.Info("start log rotate task")
 		for {
 			LogRotate(rc.logFileDir, rc.Size, rc.BackupCount)
 			time.Sleep(rc.CheckCycle)
 		}
 	}()
-}
-
-// initLogRotate initialize log rotate
-func initLogRotate(logFilePath string, option *Options) {
-	if option == nil {
-		go func() {
-			for {
-				LogRotate(filepath.Dir(logFilePath), LogRotateSize, LogBackupCount)
-				time.Sleep(30 * time.Second)
-			}
-		}()
-	} else {
-		if option.RollingPolicy == RollingPolicySize {
-			go func() {
-				for {
-					LogRotate(filepath.Dir(logFilePath), option.LogRotateSize, option.LogBackupCount)
-					time.Sleep(30 * time.Second)
-				}
-			}()
-		} else {
-			go func() {
-				for {
-					LogRotate(filepath.Dir(logFilePath), 0, option.LogBackupCount)
-					time.Sleep(24 * time.Hour * time.Duration(option.LogRotateDate))
-				}
-			}()
-		}
-	}
 }

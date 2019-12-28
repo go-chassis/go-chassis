@@ -64,7 +64,6 @@ func Init(option *Options) {
 	if err != nil {
 		panic(err)
 	}
-	initLogRotate(logFilePath, option)
 	openlogging.SetLogger(Logger)
 	openlogging.Debug("logger init success")
 	return
