@@ -13,12 +13,12 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 )
 
-// Recorder recorder
-type Recorder func(startTime time.Time, i *invocation.Invocation)
+// Record recorder
+type Record func(startTime time.Time, i *invocation.Invocation)
 
 var (
 	instance = &accessLog{
-		recorder: restfulRecorder,
+		record: restfulRecord,
 	}
 
 	log openlogging.Logger
@@ -61,13 +61,13 @@ func init() {
 	}
 }
 
-// CustomizeRecorder support customize recorder
-func CustomizeRecorder(recorder Recorder) {
-	instance.recorder = recorder
+// CustomizeRecord support customize recorder
+func CustomizeRecord(record Record) {
+	instance.record = record
 }
 
 type accessLog struct {
-	recorder func(time.Time, *invocation.Invocation)
+	record func(time.Time, *invocation.Invocation)
 }
 
 // Handle ...
@@ -75,7 +75,7 @@ func (a *accessLog) Handle(chain *handler.Chain, i *invocation.Invocation, cb in
 	now := time.Now()
 	chain.Next(i, func(response *invocation.Response) error {
 		err := cb(response)
-		a.recorder(now, i)
+		a.record(now, i)
 		return err
 	})
 }
@@ -85,7 +85,7 @@ func (a *accessLog) Name() string {
 	return handlerNameAccessLog
 }
 
-func restfulRecorder(startTime time.Time, i *invocation.Invocation) {
+func restfulRecord(startTime time.Time, i *invocation.Invocation) {
 	req := i.Args.(*restful.Request)
 	resp := i.Reply.(*restful.Response)
 	log.Infof("%s %s from %s %d %dms", req.Request.Method, req.Request.URL.String(),

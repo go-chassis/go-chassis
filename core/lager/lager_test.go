@@ -2,8 +2,6 @@ package lager_test
 
 import (
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/env"
-
 	//"github.com/go-chassis/go-chassis/core/config"
 	"os"
 	"path/filepath"
@@ -14,7 +12,7 @@ import (
 func TestInitialize1(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	logDir := filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
-	env.ChassisHome = logDir
+	os.Setenv("CHASSIS_HOME", logDir)
 	os.RemoveAll(logDir)
 
 	t.Log("Initializing lager")
@@ -37,7 +35,7 @@ func TestInitialize1(t *testing.T) {
 func TestInitialize2(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	logDir := filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
-	env.ChassisHome = logDir
+	os.Setenv("CHASSIS_HOME", logDir)
 	os.RemoveAll(logDir)
 
 	//initializing config for to initialize PassLagerDefinition variable

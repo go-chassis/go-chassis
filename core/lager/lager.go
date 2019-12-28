@@ -2,7 +2,6 @@ package lager
 
 import (
 	"errors"
-	"github.com/go-chassis/go-chassis/env"
 	"log"
 	"os"
 	"path/filepath"
@@ -75,7 +74,7 @@ func NewLog(option *Options) (lager.Logger, error) {
 
 	localPath := ""
 	if !filepath.IsAbs(option.LoggerFile) {
-		localPath = env.ChassisHome
+		localPath = os.Getenv("CHASSIS_HOME")
 	}
 	err := createLogFile(localPath, option.LoggerFile)
 	if err != nil {
