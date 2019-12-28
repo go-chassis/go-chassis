@@ -68,6 +68,37 @@ func Init(option *Options) {
 	return
 }
 
+func toLogLevel(option string) (lager.LogLevel, error) {
+	logLevel := lager.DEBUG
+	switch option {
+	case LevelDebug:
+	case LevelInfo:
+		logLevel = lager.INFO
+	case LevelWarn:
+		logLevel = lager.WARN
+	case LevelError:
+		logLevel = lager.ERROR
+	case LevelFatal:
+		logLevel = lager.FATAL
+	default:
+		return 0, errors.New("invalid log level, valid: DEBUG, INFO, WARN, ERROR, FATAL")
+	}
+
+	return logLevel, nil
+}
+
+func toFile(writer string) (*os.File, error) {
+	switch writer {
+	case Stdout:
+		return os.Stdout, nil
+	case Stderr:
+		return os.Stderr, nil
+	case File:
+		return os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	}
+	return os.Stdout, nil
+}
+
 // NewLog returns a logger
 func NewLog(option *Options) (lager.Logger, error) {
 	checkPassLagerDefinition(option)
@@ -87,34 +118,15 @@ func NewLog(option *Options) (lager.Logger, error) {
 	logger := lager.NewLoggerExt(logFilePath, option.LogFormatText)
 	option.LoggerFile = logFilePath
 
-	logLevel := lager.DEBUG
-	switch option.LoggerLevel {
-	case LevelDebug:
-	case LevelInfo:
-		logLevel = lager.INFO
-	case LevelWarn:
-		logLevel = lager.WARN
-	case LevelError:
-		logLevel = lager.ERROR
-	case LevelFatal:
-		logLevel = lager.FATAL
-	default:
-		return nil, errors.New("invalid log level, valid: DEBUG, INFO, WARN, ERROR, FATAL")
+	logLevel, err := toLogLevel(option.LoggerLevel)
+	if err != nil {
+		return nil, err
 	}
 
 	for _, writer := range writers {
-		var f *os.File
-		switch writer {
-		case Stdout:
-			f = os.Stdout
-		case Stderr:
-			f = os.Stderr
-		case File:
-			var err error
-			f, err = os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-			if err != nil {
-				return nil, err
-			}
+		f, err := toFile(writer)
+		if err != nil {
+			return nil, err
 		}
 		sink := lager.NewReconfigurableSink(lager.NewWriterSink(writer, f, lager.DEBUG), logLevel)
 		logger.RegisterSink(sink)
