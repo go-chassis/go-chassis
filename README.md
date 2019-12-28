@@ -66,7 +66,7 @@ export GOPROXY=https://goproxy.io
 # Documentations
 You can see more documentations in [here](http://docs.go-chassis.com/), 
 this online doc is for latest version of go chassis, if you want to see your version's doc,
-follow [here](docs/README.md) to generate it in local
+follow [here](docs/README.md) to generate it in local or visit or https://go-chassis.readthedocs.io/
 
 # Examples
 You can check examples [here](examples)
