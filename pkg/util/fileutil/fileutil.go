@@ -54,28 +54,30 @@ func GetWorkDir() (string, error) {
 }
 
 func initDir() {
-	if h := os.Getenv(ChassisHome); h != "" {
-		homeDir = h
-	} else {
-		wd, err := GetWorkDir()
-		if err != nil {
-			panic(err)
+	once.Do(func() {
+		if h := os.Getenv(ChassisHome); h != "" {
+			homeDir = h
+		} else {
+			wd, err := GetWorkDir()
+			if err != nil {
+				panic(err)
+			}
+			homeDir = wd
 		}
-		homeDir = wd
-	}
 
-	// set conf dir, CHASSIS_CONF_DIR has highest priority
-	if confDir := os.Getenv(ChassisConfDir); confDir != "" {
-		configDir = confDir
-	} else {
-		// CHASSIS_HOME has second most high priority
-		configDir = filepath.Join(homeDir, "conf")
-	}
+		// set conf dir, CHASSIS_CONF_DIR has highest priority
+		if confDir := os.Getenv(ChassisConfDir); confDir != "" {
+			configDir = confDir
+		} else {
+			// CHASSIS_HOME has second most high priority
+			configDir = filepath.Join(homeDir, "conf")
+		}
+	})
 }
 
 //ChassisHomeDir is function used to get the home directory of chassis
 func ChassisHomeDir() string {
-	once.Do(initDir)
+	initDir()
 	return homeDir
 }
 
