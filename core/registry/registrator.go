@@ -36,9 +36,7 @@ var DefaultAddr = "http://127.0.0.1:30100"
 var registryFunc = make(map[string]func(opts Options) Registrator)
 
 // HBService variable of heartbeat service
-var HBService = &HeartbeatService{
-	instances: make(map[string]*HeartbeatTask),
-}
+var HBService = &HeartbeatService{}
 
 // Registrator is the interface for developer to update information in service registry
 type Registrator interface {
@@ -77,9 +75,8 @@ func enableRegistrator(opts Options) error {
 		openlogging.GetLogger().Errorf("start backoff for register microservice: %s", err)
 		startBackOff(RegisterService)
 	}
-	go HBService.Start()
 
-	openlogging.GetLogger().Infof("Enable [%s] registrator.", rt)
+	openlogging.GetLogger().Infof("enable [%s] registrator.", rt)
 	return nil
 }
 
@@ -197,5 +194,6 @@ func DoRegister() error {
 			go startBackOff(RegisterServiceInstances)
 		}
 	}
+	go HBService.Start()
 	return nil
 }

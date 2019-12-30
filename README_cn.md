@@ -49,7 +49,7 @@ export GOPROXY=https://goproxy.io
 # 文档
 这是在线文档 [here](http://docs.go-chassis.com/), 
 但他总是最新的版本, 如果你使用其他版本的go chassis
-你可以跟随[这里](docs/README.md)来生成本地文档
+你可以跟随[这里](docs/README.md)来生成本地文档，或者访问https://go-chassis.readthedocs.io/
 
 # 例子
 当前有两个例子库，提供很多使用场景

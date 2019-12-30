@@ -93,16 +93,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 	restHandler := func(req *restful.Request, rep *restful.Response) {
 		defer func() {
 			if r := recover(); r != nil {
-				var stacktrace string
-				for i := 1; ; i++ {
-					_, f, l, got := runtime.Caller(i)
-					if !got {
-						break
-					}
-
-					stacktrace += fmt.Sprintf("%s:%d\n", f, l)
-				}
-
+				var stacktrace = GetTrace()
 				openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
 					"path":  route.Path,
 					"panic": r,
@@ -211,4 +202,17 @@ func getFunctionName(i interface{}) string {
 	// replace suffix "-fm" if function is bounded to struct
 	reg := regexp.MustCompile("-fm$")
 	return reg.ReplaceAllString(funcName, "")
+}
+
+//GetTrace get trace
+func GetTrace() string {
+	var stacktrace string
+	for i := 1; ; i++ {
+		_, f, l, got := runtime.Caller(i)
+		if !got {
+			break
+		}
+		stacktrace += fmt.Sprintf("%s:%d\n", f, l)
+	}
+	return stacktrace
 }
