@@ -70,11 +70,12 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 }
 
 // HTTPRequest2Invocation convert http request to uniform invocation data format
-func HTTPRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
+func HTTPRequest2Invocation(req *restful.Request, schema, operation string, resp *restful.Response) (*invocation.Invocation, error) {
 	inv := &invocation.Invocation{
 		MicroServiceName:   runtime.ServiceName,
 		SourceMicroService: common.GetXCSEContext(common.HeaderSourceName, req.Request),
 		Args:               req,
+		Reply:              resp,
 		Protocol:           common.ProtocolRest,
 		SchemaID:           schema,
 		OperationID:        operation,

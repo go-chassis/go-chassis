@@ -70,7 +70,7 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 					}
 				}
 			}()
-			inv, err := chassisRestful.HTTPRequest2Invocation(req, schemaName, routes[k].ResourceFuncName)
+			inv, err := chassisRestful.HTTPRequest2Invocation(req, schemaName, routes[k].ResourceFuncName, rep)
 			if err != nil {
 				openlogging.Error("transfer http request to invocation failed", openlogging.WithTags(openlogging.Tags{
 					"err": err.Error(),

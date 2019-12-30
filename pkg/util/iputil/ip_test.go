@@ -5,6 +5,8 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/stretchr/testify/assert"
 	"net"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -65,4 +67,32 @@ func Test_IsIPv6Address(t *testing.T) {
 			assert.Equal(t, "http", s)
 			assert.Equal(t, "127.0.0.1:8080", hosts[0])
 		})
+}
+
+func TestRemoteIP(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "http://127.0.0.1:80/hello", nil)
+
+	r.RemoteAddr = "127.0.0.1:49152"
+	assert.EqualValues(t, "127.0.0.1", iputil.RemoteIP(r))
+}
+
+func TestForwardedIPs(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "http://127.0.0.1:80/hello", nil)
+
+	r.Header.Add("X-Forwarded-For", "127.0.0.1")
+	assert.EqualValues(t, []string{"127.0.0.1"}, iputil.ForwardedIPs(r))
+}
+
+func TestRealIP(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "http://127.0.0.1:80/hello", nil)
+
+	r.Header.Add("X-Real-Ip", "127.0.0.1")
+	assert.EqualValues(t, "127.0.0.1", iputil.RealIP(r))
+}
+
+func TestClientIP(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "http://127.0.0.1:80/hello", nil)
+
+	r.Header.Add("X-Real-Ip", "127.0.0.1")
+	assert.EqualValues(t, "127.0.0.1", iputil.ClientIP(r))
 }

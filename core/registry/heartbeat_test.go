@@ -24,7 +24,10 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
-	config.Init()
+	err := config.Init()
+	if err != nil {
+		t.Error(err.Error())
+	}
 	runtime.Init()
 	t.Log(os.Getenv("CHASSIS_HOME"))
 	registry.Enable()

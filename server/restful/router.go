@@ -116,7 +116,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 			rep.WriteErrorString(http.StatusInternalServerError, err.Error())
 			return
 		}
-		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName)
+		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName, rep)
 		if err != nil {
 			openlogging.Error("transfer http request to invocation failed.", openlogging.WithTags(openlogging.Tags{
 				"err": err.Error(),

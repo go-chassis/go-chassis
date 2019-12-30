@@ -25,8 +25,9 @@ func InitLogger() {
 	//initialize log in any case
 	if err != nil {
 		lager.Init(&lager.Options{
-			LoggerLevel:   "INFO",
+			LoggerLevel:   lager.LevelInfo,
 			RollingPolicy: "size",
+			Writers:       lager.Stdout,
 		})
 		if os.IsNotExist(err) {
 			lager.Logger.Infof("[%s] not exist", fileutil.LogConfigPath())
