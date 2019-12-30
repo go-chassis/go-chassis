@@ -6,6 +6,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/status"
 	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
@@ -28,7 +29,7 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 	finish := make(chan *invocation.Response, 1)
 	f, err := GetFallbackFun(command, common.Consumer, i, finish, cmdConfig.ForceFallback)
 	if err != nil {
-		WriteBackErr(err, 0, cb)
+		WriteBackErr(err, status.Status(i.Protocol, status.InternalServerError), cb)
 		return
 	}
 	err = hystrix.Do(command, func() (err error) {
@@ -44,9 +45,14 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 		return
 	}, f)
 
-	//if err is not nil, means fallback is nil, return original err
+	// err is not nil in conditions:
+	// 1 fallback is nil
+	//   1.1 chain.Next() fail
+	//   1.2 hystrix mechanism, retur error as ErrMaxConcurrency / ErrCircuitOpen / ErrForceFallback
+	// 2 fallback is not nil
+	//   2.1 fallback failed no matter chain.Next() is executed or not
 	if err != nil {
-		WriteBackErr(err, 0, cb)
+		WriteBackErr(err, status.Status(i.Protocol, status.ServiceUnavailable), cb)
 		return
 	}
 
