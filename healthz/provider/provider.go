@@ -51,5 +51,5 @@ func (hc *HealthCheck) URLPatterns() []rf.Route {
 }
 
 func init() {
-	chassis.RegisterRestSchema(defaultHealthCheck, server.WithSchemaID("_chassis_rest_healthz"))
+	chassis.RegisterSchema("rest", defaultHealthCheck, server.WithSchemaID("_chassis_rest_healthz"))
 }

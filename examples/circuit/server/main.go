@@ -10,7 +10,7 @@ import (
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/server/
 
 func main() {
-	chassis.RegisterRestSchema(&resource.RestFulMessage{}, server.WithSchemaID("RestHelloService"))
+	chassis.RegisterSchema("rest", &resource.RestFulMessage{}, server.WithSchemaID("RestHelloService"))
 	if err := chassis.Init(); err != nil {
 		lager.Logger.Error("Init failed." + err.Error())
 		return
