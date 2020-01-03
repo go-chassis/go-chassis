@@ -21,12 +21,18 @@ import "net/http"
 
 //status key const
 const (
-	ServiceUnavailable = "ServiceUnavailable"
+	Unauthorized = "Unauthorized"
+
+	InternalServerError = "InternalServerError"
+	ServiceUnavailable  = "ServiceUnavailable"
 	//TODO more status key
 )
 
 var defaultStatus = map[string]int{
-	ServiceUnavailable: http.StatusServiceUnavailable,
+	Unauthorized: http.StatusUnauthorized,
+
+	InternalServerError: http.StatusInternalServerError,
+	ServiceUnavailable:  http.StatusServiceUnavailable,
 	//TODO more default status
 }
 

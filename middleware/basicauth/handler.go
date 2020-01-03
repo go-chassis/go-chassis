@@ -22,6 +22,7 @@ import (
 	"errors"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/status"
 	"github.com/go-mesh/openlogging"
 	"net/http"
 	"strings"
@@ -46,24 +47,24 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 	if req, ok := i.Args.(*http.Request); ok {
 		subject := req.Header.Get(HeaderAuth)
 		if subject == "" {
-			handler.WriteBackErr(ErrNoHeader, http.StatusUnauthorized, cb)
+			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 			return
 		}
 		u, p, err := decode(subject)
 		if err != nil {
 			openlogging.Error("can not decode base 64:" + err.Error())
-			handler.WriteBackErr(ErrNoHeader, http.StatusUnauthorized, cb)
+			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 			return
 		}
 		err = auth.Authorize(u, p)
 		if err != nil {
-			handler.WriteBackErr(ErrNoHeader, http.StatusUnauthorized, cb)
+			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 			return
 		}
 		if auth.Authenticate != nil {
 			err = auth.Authenticate(u, req)
 			if err != nil {
-				handler.WriteBackErr(ErrNoHeader, http.StatusUnauthorized, cb)
+				handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 				return
 			}
 		}
