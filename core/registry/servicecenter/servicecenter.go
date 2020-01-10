@@ -55,25 +55,6 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 		openlogging.GetLogger().Errorf("register instance failed.")
 		return "", err
 	}
-	value, ok := registry.SelfInstancesCache.Get(instance.ServiceId)
-	if !ok {
-		openlogging.GetLogger().Warnf("register instance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	instanceIDs, ok := value.([]string)
-	if !ok {
-		openlogging.GetLogger().Warnf("register instance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	var isRepeat bool
-	for _, va := range instanceIDs {
-		if va == instanceID {
-			isRepeat = true
-		}
-	}
-	if !isRepeat {
-		instanceIDs = append(instanceIDs, instanceID)
-	}
-	registry.SelfInstancesCache.Set(instance.ServiceId, instanceIDs, 0)
-
 	return instanceID, nil
 }
 
@@ -96,25 +77,6 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 		openlogging.GetLogger().Errorf("register instance failed. %s", err)
 		return microServiceID, "", err
 	}
-
-	value, ok := registry.SelfInstancesCache.Get(instance.ServiceId)
-	if !ok {
-		openlogging.GetLogger().Warnf("register instance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	instanceIDs, ok := value.([]string)
-	if !ok {
-		openlogging.GetLogger().Warnf("register instance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	var isRepeat bool
-	for _, va := range instanceIDs {
-		if va == instanceID {
-			isRepeat = true
-		}
-	}
-	if !isRepeat {
-		instanceIDs = append(instanceIDs, instanceID)
-	}
-	registry.SelfInstancesCache.Set(instance.ServiceId, instanceIDs, 0)
 	openlogging.GetLogger().Infof("register instance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID)
 	return microServiceID, instanceID, nil
 }
@@ -126,23 +88,6 @@ func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServic
 		openlogging.GetLogger().Errorf("unregister instance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 		return err
 	}
-
-	value, ok := registry.SelfInstancesCache.Get(microServiceID)
-	if !ok {
-		openlogging.GetLogger().Warnf("Unregister instance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
-	}
-	instanceIDs, ok := value.([]string)
-	if !ok {
-		openlogging.GetLogger().Warnf("Unregister instance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
-	}
-	var newInstanceIDs = make([]string, 0)
-	for _, v := range instanceIDs {
-		if v != microServiceInstanceID {
-			newInstanceIDs = append(newInstanceIDs, v)
-		}
-	}
-	registry.SelfInstancesCache.Set(microServiceID, newInstanceIDs, 0)
-
 	openlogging.GetLogger().Debugf("unregister instance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 	return nil
 }

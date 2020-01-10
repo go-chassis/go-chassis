@@ -155,19 +155,6 @@ func RegisterServiceInstances() error {
 		runtime.InstanceMD = service.ServiceDescription.InstanceProperties
 		openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID)
 	}
-
-	value, _ := SelfInstancesCache.Get(microServiceInstance.ServiceID)
-	instanceIDs, _ := value.([]string)
-	var isRepeat bool
-	for _, va := range instanceIDs {
-		if va == instanceID {
-			isRepeat = true
-		}
-	}
-	if !isRepeat {
-		instanceIDs = append(instanceIDs, instanceID)
-	}
-	SelfInstancesCache.Set(runtime.ServiceID, instanceIDs, 0)
 	openlogging.GetLogger().Infof("register instance success, instanceID: %s.", instanceID)
 	return nil
 }

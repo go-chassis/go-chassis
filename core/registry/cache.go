@@ -17,9 +17,6 @@ const (
 //MicroserviceInstanceIndex key: ServiceName, value: []instance
 var MicroserviceInstanceIndex CacheIndex
 
-//SelfInstancesCache key: serviceID, value: []instanceID
-var SelfInstancesCache *cache.Cache
-
 //ipIndexedCache is for caching map of instance IP and service information
 //key: instance ip, value: SourceInfo
 var ipIndexedCache *cache.Cache
@@ -37,7 +34,6 @@ func initCache() *cache.Cache { return cache.New(DefaultExpireTime, 0) }
 
 func enableRegistryCache() {
 	MicroserviceInstanceIndex = NewIndexCache()
-	SelfInstancesCache = initCache()
 	ipIndexedCache = initCache()
 	SchemaServiceIndexedCache = initCache()
 	SchemaInterfaceIndexedCache = initCache()
