@@ -3,10 +3,10 @@ package fault
 import (
 	"errors"
 	"fmt"
-	"math/rand"
-	"time"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"math/rand"
+	"time"
 )
 
 // constant for default values values of abort and delay percentages
@@ -14,8 +14,8 @@ const (
 	DefaultAbortPercentage int = 100
 	DefaultDelayPercentage int = 100
 
-	MaxPercentage		   int = 100
-	MinPercentage		   int = 0
+	MaxPercentage int = 100
+	MinPercentage int = 0
 )
 
 // ValidateAndApplyFault validate and apply the fault rule
@@ -78,7 +78,7 @@ func ValidateFaultDelay(fault *model.Fault) error {
 
 //ApplyFaultInjection abort/delay
 func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configuredPercent int, faultType string) error {
-	if rand.Intn(MaxPercentage) + 1 <= configuredPercent {
+	if rand.Intn(MaxPercentage)+1 <= configuredPercent {
 		return injectFault(faultType, fault)
 	}
 	return nil
@@ -89,7 +89,7 @@ func injectFault(faultType string, fault *model.Fault) error {
 	if faultType == "delay" {
 		time.Sleep(fault.Delay.FixedDelay)
 	}
-	
+
 	if faultType == "abort" {
 		return errors.New("injecting abort")
 	}
