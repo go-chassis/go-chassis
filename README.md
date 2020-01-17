@@ -9,20 +9,22 @@ Go-Chassis is a microservice framework for rapid development of microservices in
 
 ### Why use Go chassis
 
-go chassis is designed as a protocol-independent framework, any protocol 
+- go chassis is designed as a protocol-independent framework, any protocol 
 is able to integrate with go chassis and leverage same function like load balancing,
 circuit breaker,rate limiting, routing management, those function resilient your service
 
-go chassis makes service observable by bringing open tracing and prometheus to it.
+- go chassis makes service observable by bringing open tracing and prometheus to it.
 
-go chassis is flexible, many different modules can be replaced by other implementation, 
+- go chassis is flexible, many different modules can be replaced by other implementation, 
 like registry, metrics, handler chain, config server etc 
 
-With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
+- With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
 your don't need to investigate, implement and integrate many solutions yourself.
 
-go chassis supports Istio control panel, go chassis can bring better performance to go program, 
+- go chassis supports Istio control panel, go chassis can bring better performance to go program, 
 you can use Istio configurations to control go chassis.
+
+- https://github.com/huaweicloud/spring-cloud-huawei integrate with servicecomb, go chassis can work together with spring cloud.
 
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
