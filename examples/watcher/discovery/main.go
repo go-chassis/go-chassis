@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func main()  {
+func main() {
 	registryClient := &client.RegistryClient{}
 
 	err := registryClient.Initialize(
@@ -23,13 +23,13 @@ func main()  {
 	}
 
 	disService := &proto.MicroService{
-		AppId: "default",
-		ServiceName:"dismyserver1",
-		Version: "0.0.1",
+		AppId:       "default",
+		ServiceName: "dismyserver1",
+		Version:     "0.0.1",
 		Environment: "",
 	}
 
-	disSid ,err := registryClient.RegisterService(disService)
+	disSid, err := registryClient.RegisterService(disService)
 	if err != nil {
 		fmt.Printf("err[%v]\n", err)
 		os.Exit(1)
@@ -43,8 +43,7 @@ func main()  {
 	}
 	_, _ = registryClient.FindMicroServiceInstances(disSid, "default", "myserver1", "0.0.1") //告诉sc, 关注的provider信息
 
-
-	for ; ;  {
+	for {
 		time.Sleep(time.Second)
 	}
 }

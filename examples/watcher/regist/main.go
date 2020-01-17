@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func main()  {
+func main() {
 	registryClient := &client.RegistryClient{}
 
 	err := registryClient.Initialize(
@@ -22,27 +22,26 @@ func main()  {
 	}
 
 	/*
-	"myapp1.1", "myserver1", "0.0.1", "")
+		"myapp1.1", "myserver1", "0.0.1", "")
 	*/
 	service := &proto.MicroService{
-		AppId: "default",
-		ServiceName:"myserver1",
-		Version: "0.0.1",
+		AppId:       "default",
+		ServiceName: "myserver1",
+		Version:     "0.0.1",
 		Environment: "",
 	}
 
-	sid ,err := registryClient.RegisterService(service)
+	sid, err := registryClient.RegisterService(service)
 	if err != nil {
 		fmt.Printf("err[%v]\n", err)
 		os.Exit(1)
 	}
 	fmt.Printf("sid[%v]\n", sid)
 
-
 	instance := proto.MicroServiceInstance{
 		ServiceId: sid,
-		HostName: "insdfsdsdfsdff2233",
-		Status: common.DefaultStatus,
+		HostName:  "insdfsdsdfsdff2233",
+		Status:    common.DefaultStatus,
 		Endpoints: []string{"localhost:808"},
 		Properties: map[string]string{
 			"Name": "12",
@@ -56,7 +55,7 @@ func main()  {
 	}
 
 	count := 0
-	for ; ;  {
+	for {
 		count++
 		if count == 10 {
 			break
@@ -66,5 +65,3 @@ func main()  {
 	registryClient.UnregisterMicroServiceInstance(sid, iid)
 	fmt.Printf("sid[%v], iid[%v]\n", sid, iid)
 }
-
-
