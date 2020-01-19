@@ -48,7 +48,6 @@ type Registrator interface {
 	RegisterServiceInstance(sid string, instance *MicroServiceInstance) (string, error)
 	RegisterServiceAndInstance(microService *MicroService, instance *MicroServiceInstance) (string, string, error)
 	Heartbeat(microServiceID, microServiceInstanceID string) (bool, error)
-	AddDependencies(dep *MicroServiceDependency) error
 	UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error
 	UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error
 	UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error

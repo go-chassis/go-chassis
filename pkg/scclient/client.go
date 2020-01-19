@@ -585,7 +585,7 @@ func (c *RegistryClient) FindMicroServiceInstances(consumerID, appID, microServi
 		r := resp.Header.Get(HeaderRevision)
 		if r != c.revision && r != "" {
 			c.revision = r
-			openlogging.GetLogger().Debug("Instance got new revision " + c.revision)
+			openlogging.GetLogger().Debug("service center has new revision " + c.revision)
 		}
 
 		return response.Instances, nil
@@ -766,7 +766,7 @@ func (c *RegistryClient) UnregisterMicroServiceInstance(microServiceID, microSer
 		return false, err
 	}
 	if resp == nil {
-		return false, fmt.Errorf("Unregister instance failed, response is empty, MicroServiceId/MicroServiceInstanceId: %s/%s", microServiceID, microServiceInstanceID)
+		return false, fmt.Errorf("unregister instance failed, response is empty, MicroServiceId/MicroServiceInstanceId: %s/%s", microServiceID, microServiceInstanceID)
 	}
 	if resp.StatusCode != http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
