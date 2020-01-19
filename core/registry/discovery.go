@@ -35,10 +35,7 @@ func InstallContractDiscovery(name string, f func(opts Options) ContractDiscover
 
 //ServiceDiscovery fetch service and instances from remote or local
 type ServiceDiscovery interface {
-	GetMicroServiceID(appID, microServiceName, version, env string) (string, error)
-	GetAllMicroServices() ([]*MicroService, error)
 	GetMicroService(microServiceID string) (*MicroService, error)
-	GetMicroServiceInstances(consumerID, providerID string) ([]*MicroServiceInstance, error)
 	FindMicroServiceInstances(consumerID, microServiceName string, tags utiltags.Tags) ([]*MicroServiceInstance, error)
 	AutoSync()
 	Close() error
