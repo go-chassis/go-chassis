@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func main() {
+func main()  {
 	registryClient := &client.RegistryClient{}
 
 	err := registryClient.Initialize(
@@ -43,7 +43,7 @@ func main() {
 	}
 	_, _ = registryClient.FindMicroServiceInstances(disSid, "default", "myserver1", "0.0.1") //告诉sc, 关注的provider信息
 
-	for {
+	for ; ;  {
 		time.Sleep(time.Second)
 	}
 }

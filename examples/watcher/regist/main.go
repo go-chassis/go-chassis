@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func main() {
+func main()  {
 	registryClient := &client.RegistryClient{}
 
 	err := registryClient.Initialize(
@@ -21,9 +21,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	/*
-		"myapp1.1", "myserver1", "0.0.1", "")
-	*/
 	service := &proto.MicroService{
 		AppId:       "default",
 		ServiceName: "myserver1",
@@ -55,7 +52,7 @@ func main() {
 	}
 
 	count := 0
-	for {
+	for ; ;  {
 		count++
 		if count == 10 {
 			break
