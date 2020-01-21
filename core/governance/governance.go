@@ -38,9 +38,9 @@ var processFuncMap = map[string]ProcessFunc{
 //ProcessFunc process a config
 type ProcessFunc func(key string, value string)
 
-//InstallProcess install a func to process config,
+//InstallProcessor install a func to process config,
 //if a config key matches the key prefix, then the func will process the config
-func InstallProcess(keyPrefix string, process ProcessFunc) {
+func InstallProcessor(keyPrefix string, process ProcessFunc) {
 	processFuncMap[keyPrefix] = process
 }
 
