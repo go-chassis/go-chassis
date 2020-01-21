@@ -45,6 +45,8 @@ github.com/go-chassis/go-archaius v0.24.0 h1:ubNgs3Rv067PI7t37ZJoIMaPPHIBWV+ni/e
 github.com/go-chassis/go-archaius v0.24.0/go.mod h1:5kKZrxGYvKNorKamngLdPe3vVasAtIeB5vDcAv8Vg9I=
 github.com/go-chassis/go-archaius v1.0.0 h1:grSgvtpJsyYk0+1UiSqShF6+Zv0L6SWdsOUNi49bVTQ=
 github.com/go-chassis/go-archaius v1.0.0/go.mod h1:Px2evF91zbMr78UQ+lwehjEwXelwgvTtHzIeODsBEEE=
+github.com/go-chassis/go-archaius v1.0.1-0.20200121100918-32f6f1a3f33d h1:62TEFw6c0cSkknaNm56kXz95OedPcy+9EWb+shfjySM=
+github.com/go-chassis/go-archaius v1.0.1-0.20200121100918-32f6f1a3f33d/go.mod h1:Px2evF91zbMr78UQ+lwehjEwXelwgvTtHzIeODsBEEE=
 github.com/go-chassis/go-chassis-apm v0.0.0-20191121081610-bf85a4b6c3f3 h1:xo+dS9OWrCrqhQ8QAprL+Fk/r8imc+NvTzfiGp5aMWo=
 github.com/go-chassis/go-chassis-apm v0.0.0-20191121081610-bf85a4b6c3f3/go.mod h1:wsRuNg5mGfACNgA09jzruRSoadoG4ke2WgRbgTIWsyQ=
 github.com/go-chassis/go-chassis-apm v0.0.0-20191204033153-87995847a7a5/go.mod h1:wsRuNg5mGfACNgA09jzruRSoadoG4ke2WgRbgTIWsyQ=

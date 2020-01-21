@@ -154,7 +154,7 @@ func initConfigCenter(ccEndpoint, tenantName string,
 		RefreshPort:     config.GetConfigCenterConf().RefreshPort,
 	}
 
-	err := archaius.EnableRemoteSource(ccObj, nil)
+	err := archaius.EnableRemoteSource("config-center", ccObj)
 
 	if err != nil {
 		return err
