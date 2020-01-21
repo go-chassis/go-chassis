@@ -33,6 +33,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 	//config centers
+	_ "github.com/go-chassis/go-archaius/source/remote"
 	_ "github.com/go-chassis/go-archaius/source/remote/configcenter"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-mesh/openlogging"
