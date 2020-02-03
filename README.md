@@ -62,14 +62,13 @@ if you are facing network issue
 export GOPROXY=https://goproxy.io
 ```
 
-3.[Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
+3.[Write your first http micro service](https://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
 
 
 # Documentations
-You can see more documentations in [here](http://docs.go-chassis.com/), 
+You can see more documentations in [here](https://go-chassis.readthedocs.io/), 
 this online doc is for latest version of go chassis, if you want to see your version's doc,
-follow [here](docs/README.md) to generate it in local or visit https://go-chassis.readthedocs.io/
-
+follow [here](docs/README.md) to generate it in local
 # Examples
 You can check examples [here](examples)
 
