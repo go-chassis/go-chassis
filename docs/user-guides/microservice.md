@@ -29,7 +29,7 @@ you can consider a project as an micro service, after compile, build and run, it
 > *(optional, map)* micro service metadata ，usually it is defined in project, and never changed
 
 **instance_properties**
-> *(optional, map)* instance metadata, during runtime, if can be different based on environment 
+> *(optional, map)* instance metadata, during runtime, it can be different based on environment
 
 **paths**
 > *(optional, array)* micro service API paths, will be registered with servicecenter
