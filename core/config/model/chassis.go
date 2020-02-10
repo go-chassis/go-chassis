@@ -94,20 +94,16 @@ type Config struct {
 
 // ConfigClient client structure
 type ConfigClient struct {
-	Type              string                 `yaml:"type"`
-	ServerURI         string                 `yaml:"serverUri"`
-	TenantName        string                 `yaml:"tenantName"`
-	RefreshMode       int                    `yaml:"refreshMode"`
-	RefreshInterval   int                    `yaml:"refreshInterval"`
-	RefreshPort       string                 `yaml:"refreshPort"`
-	Autodiscovery     bool                   `yaml:"autodiscovery"`
-	APIVersion        ConfigAPIVersionStruct `yaml:"api"`
-	ApolloServiceName string                 `yaml:"serviceName"`
-	ApolloEnv         string                 `yaml:"env"`
-	ApolloNameSpace   string                 `yaml:"namespace"`
-	ApolloToken       string                 `yaml:"token"`
-	ClusterName       string                 `yaml:"cluster"`
-	Enabled           bool                   `yaml:"enabled"`
+	Type            string                 `yaml:"type"`
+	ServerURI       string                 `yaml:"serverUri"`
+	TenantName      string                 `yaml:"tenantName"`
+	RefreshMode     int                    `yaml:"refreshMode"`
+	RefreshInterval int                    `yaml:"refreshInterval"`
+	RefreshPort     string                 `yaml:"refreshPort"`
+	Autodiscovery   bool                   `yaml:"autodiscovery"`
+	APIVersion      ConfigAPIVersionStruct `yaml:"api"`
+	Enabled         bool                   `yaml:"enabled"`
+	Dimension       map[string]string      `yaml:"dimension"`
 }
 
 // ConfigAPIVersionStruct is the structure for configuration API version
