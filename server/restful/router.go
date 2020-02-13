@@ -90,7 +90,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 	if err != nil {
 		return nil, err
 	}
-	restHandler := func(req *restful.Request, rep *restful.Response) {
+	restHandler := func(req *restful.Request, resp *restful.Response) {
 		defer func() {
 			if r := recover(); r != nil {
 				var stacktrace = GetTrace()
@@ -99,7 +99,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 					"panic": r,
 					"stack": stacktrace,
 				}))
-				if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
+				if err := resp.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
 					openlogging.Error("write response failed when handler panic.", openlogging.WithTags(openlogging.Tags{
 						"err": err.Error(),
 					}))
@@ -107,47 +107,36 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 			}
 		}()
 
-		c, err := handler.GetChain(common.Provider, opts.ChainName)
+		originChain, err := handler.GetChain(common.Provider, opts.ChainName)
 		if err != nil {
 			openlogging.Error("handler chain init err.", openlogging.WithTags(openlogging.Tags{
 				"err": err.Error(),
 			}))
-			rep.AddHeader("Content-Type", "text/plain")
-			rep.WriteErrorString(http.StatusInternalServerError, err.Error())
+			resp.AddHeader("Content-Type", "text/plain")
+			resp.WriteErrorString(http.StatusInternalServerError, err.Error())
 			return
 		}
-		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName, rep)
+		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName, resp)
 		if err != nil {
 			openlogging.Error("transfer http request to invocation failed.", openlogging.WithTags(openlogging.Tags{
 				"err": err.Error(),
 			}))
 			return
 		}
+		bs := NewBaseServer(inv.Ctx)
+		bs.Req = req
+		bs.Resp = resp
+		//create a new chain for each resource handler
+		c := &handler.Chain{}
+		*c = *originChain
+		c.AddHandler(newHandler(handleFunc, bs, opts))
 		//give inv.Ctx to user handlers, modules may inject headers in handler chain
 		c.Next(inv, func(ir *invocation.Response) error {
 			if ir.Err != nil {
-				if rep != nil {
-					rep.WriteHeader(ir.Status)
+				if resp != nil {
+					resp.WriteHeader(ir.Status)
 				}
 				return ir.Err
-			}
-			Invocation2HTTPRequest(inv, req)
-
-			bs := NewBaseServer(inv.Ctx)
-			bs.Req = req
-			bs.Resp = rep
-
-			// check body size
-			if opts.BodyLimit > 0 {
-				bs.Req.Request.Body = http.MaxBytesReader(bs.Resp, bs.Req.Request.Body, opts.BodyLimit)
-			}
-
-			// call real route func
-			handleFunc(bs)
-			ir.Status = bs.Resp.StatusCode()
-
-			if bs.Resp.StatusCode() >= http.StatusBadRequest {
-				return fmt.Errorf("get err from http handle, get status: %d", bs.Resp.StatusCode())
 			}
 			return nil
 		})
