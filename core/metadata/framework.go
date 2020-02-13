@@ -5,7 +5,7 @@ package metadata
 
 // constant for sdk version, name, registration component
 const (
-	SdkVersion                    = "1.8.1"
+	SdkVersion                    = "2.0.0"
 	SdkName                       = "Go-Chassis"
 	SdkRegistrationComponent      = "SDK"
 	PlatformRegistrationComponent = "PLATFORM"
