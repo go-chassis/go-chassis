@@ -7,6 +7,7 @@ import (
 )
 
 //Context is a struct which has both request and response objects
+// and request context
 type Context struct {
 	Ctx  context.Context
 	Req  *restful.Request
