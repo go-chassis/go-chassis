@@ -52,10 +52,6 @@ func ValidateFaultAbort(fault *model.Fault) error {
 		return fmt.Errorf("invalid httpfault percentage:must be in range 0..100")
 	}
 
-	if fault.Abort.Percent == MinPercentage {
-		fault.Abort.Percent = DefaultAbortPercentage
-	}
-
 	return nil
 }
 
@@ -63,10 +59,6 @@ func ValidateFaultAbort(fault *model.Fault) error {
 func ValidateFaultDelay(fault *model.Fault) error {
 	if fault.Delay.Percent < MinPercentage || fault.Delay.Percent > MaxPercentage {
 		return errors.New("percentage must be in range 0..100")
-	}
-
-	if fault.Delay.Percent == MinPercentage {
-		fault.Delay.Percent = DefaultDelayPercentage
 	}
 
 	if fault.Delay.FixedDelay < time.Millisecond {
