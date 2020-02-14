@@ -25,25 +25,10 @@ func Test_ApplyFaultInjection(t *testing.T) {
 	v = fault.ApplyFaultInjection(fault1, inv, 100, "abort")
 	assert.Equal(t, v, fmt.Errorf("injecting abort"))
 
-	m := map[string]string{
-		common.BuildinTagVersion: "0.1",
-		common.BuildinTagApp:     "default"}
-	inv := &invocation.Invocation{
-		MicroServiceName: "service1",
-		RouteTags: utiltags.Tags{
-			KV:    m,
-			Label: utiltags.LabelOfTags(m),
-		},
-	}
-	err := fault.ValidateAndApplyFault(&model.Fault{
-		Delay: model.Delay{
-			Percent:    50,
-			FixedDelay: 1 * time.Second,
-		},
-		Abort: model.Abort{
-			Percent:    0,
-			HTTPStatus: 500,
-		},
-	}, inv)
-	assert.NoError(t, err)
+	//delay must not return error
+	v = fault.ApplyFaultInjection(fault1, inv, 0, "delay")
+	assert.Equal(t, v, nil)
+	//abort must not return error
+	v = fault.ApplyFaultInjection(fault1, inv, 0, "abort")
+	assert.Equal(t, v, nil)
 }
