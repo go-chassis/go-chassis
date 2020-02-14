@@ -150,6 +150,10 @@ func populateServiceEnvironment() {
 
 // populateServiceName populate service name
 func populateServiceName() {
+	if runtime.ServiceName != "" {
+		openlogging.Info("service name is " + runtime.ServiceName)
+		return
+	}
 	if e := archaius.GetString(common.ServiceName, ""); e != "" {
 		MicroserviceDefinition.ServiceDescription.Name = e
 	}
@@ -157,6 +161,10 @@ func populateServiceName() {
 
 // populateVersion populate version
 func populateVersion() {
+	if runtime.Version != "" {
+		openlogging.Info("service version is " + runtime.Version)
+		return
+	}
 	if e := archaius.GetString(common.Version, ""); e != "" {
 		MicroserviceDefinition.ServiceDescription.Version = e
 	}
