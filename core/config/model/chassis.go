@@ -2,7 +2,6 @@ package model
 
 //GlobalCfg chassis.yaml 配置项
 type GlobalCfg struct {
-	AppID      string            `yaml:"APPLICATION_ID"` //Deprecated
 	Cse        CseStruct         `yaml:"cse"`
 	Panel      ControlPanel      `yaml:"control"`
 	Ssl        map[string]string `yaml:"ssl"`
