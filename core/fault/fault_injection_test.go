@@ -24,11 +24,4 @@ func Test_ApplyFaultInjection(t *testing.T) {
 	//abort must return error
 	v = fault.ApplyFaultInjection(fault1, inv, 100, "abort")
 	assert.Equal(t, v, fmt.Errorf("injecting abort"))
-
-	//delay must not return error
-	v = fault.ApplyFaultInjection(fault1, inv, 0, "delay")
-	assert.Equal(t, v, nil)
-	//abort must not return error
-	v = fault.ApplyFaultInjection(fault1, inv, 0, "abort")
-	assert.Equal(t, v, nil)
 }
