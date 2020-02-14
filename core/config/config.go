@@ -26,7 +26,7 @@ var lbConfig *model.LBWrapper
 // and description of the instance
 var MicroserviceDefinition *model.MicroserviceCfg
 
-//MonitorCfgDef has monitorv info, including zipkin and apm.
+//MonitorCfgDef has monitor info, including zipkin and apm.
 var MonitorCfgDef *model.MonitorCfg
 
 //OldRouterDefinition is route rule config
@@ -35,9 +35,6 @@ var OldRouterDefinition *RouterConfig
 
 //HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystrixConfig *model.HystrixConfigWrapper
-
-// NodeIP gives the information of node ip
-var NodeIP string
 
 // ErrNoName is used to represent the service name missing error
 var ErrNoName = errors.New("micro service name is missing in description file")
@@ -78,67 +75,20 @@ func readFromArchaius() error {
 		return err
 	}
 
-	err = readMicroServiceConfigFiles()
+	err = readMicroServiceSpecFiles()
 	if err != nil {
 		return err
 	}
 
 	ReadMonitorFromArchaius()
-	//ReadMonitorFromFile()
 
-	populateConfigCenterAddress()
-	populateServiceRegistryAddress()
 	populateServiceEnvironment()
 	populateServiceName()
 	populateVersion()
+	populateApp()
 	populateTenant()
 
 	return nil
-}
-
-// populateServiceRegistryAddress populate service registry address
-func populateServiceRegistryAddress() {
-	//Registry Address , higher priority for environment variable
-	registryAddrFromEnv := readEndpoint(common.EnvCSESCEndpoint, common.CseRegistryAddress)
-	if registryAddrFromEnv != "" {
-		openlogging.Debug("detect env", openlogging.WithTags(
-			openlogging.Tags{
-				"ep": registryAddrFromEnv,
-			}))
-		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
-	}
-}
-
-// populateConfigCenterAddress populate config center address
-func populateConfigCenterAddress() {
-	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := readEndpoint(common.EnvCSECCEndpoint, common.CseConfigCenterAddress)
-	if configCenterAddrFromEnv != "" {
-		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
-	}
-}
-
-// readEndpoint
-func readEndpoint(firstEnv, singleEnv string) string {
-	addrFromEnv := os.Getenv(firstEnv)
-	if addrFromEnv != "" {
-		openlogging.Info("read config from " + firstEnv)
-		return addrFromEnv
-	}
-	addrFromEnv = os.Getenv(common.EnvCSEEndpoint)
-	if addrFromEnv != "" {
-		openlogging.Info("read config from " + common.EnvCSEEndpoint)
-		return addrFromEnv
-	}
-	addrFromEnv = archaius.GetString(singleEnv, "")
-	if addrFromEnv != "" {
-		openlogging.Info("read config from " + singleEnv)
-		return addrFromEnv
-	}
-	return addrFromEnv
 }
 
 // populateServiceEnvironment populate service environment
@@ -159,6 +109,12 @@ func populateServiceName() {
 func populateVersion() {
 	if e := archaius.GetString(common.Version, ""); e != "" {
 		MicroserviceDefinition.ServiceDescription.Version = e
+	}
+}
+
+func populateApp() {
+	if e := archaius.GetString(common.App, ""); e != "" {
+		MicroserviceDefinition.AppID = e
 	}
 }
 
@@ -259,8 +215,8 @@ func ReadHystrixFromArchaius() error {
 	return nil
 }
 
-// readMicroServiceConfigFiles read micro service configuration file
-func readMicroServiceConfigFiles() error {
+// readMicroServiceSpecFiles read micro service configuration file
+func readMicroServiceSpecFiles() error {
 	MicroserviceDefinition = &model.MicroserviceCfg{}
 	//find only one microservice yaml
 	microserviceNames := schema.GetMicroserviceNames()
@@ -331,7 +287,6 @@ func Init() error {
 	if err != nil {
 		return err
 	}
-	openlogging.Info("archaius init success")
 
 	//Upload schemas using environment variable SCHEMA_ROOT
 	schemaPath := archaius.GetString(common.EnvSchemaRoot, "")
@@ -345,12 +300,13 @@ func Init() error {
 	}
 
 	//set micro service names
-	msError := schema.SetMicroServiceNames(schemaPath)
-	if msError != nil {
-		return msError
+	err = schema.SetMicroServiceNames(schemaPath)
+	if err != nil {
+		return err
 	}
 
-	NodeIP = archaius.GetString(common.EnvNodeIP, "")
+	runtime.NodeIP = archaius.GetString(common.EnvNodeIP, "")
+
 	err = readFromArchaius()
 	if err != nil {
 		return err
@@ -360,11 +316,7 @@ func Init() error {
 	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
 	runtime.Environment = MicroserviceDefinition.ServiceDescription.Environment
 	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties
-	if MicroserviceDefinition.AppID != "" { //microservice.yaml has first priority
-		runtime.App = MicroserviceDefinition.AppID
-	} else if GlobalDefinition.AppID != "" { //chassis.yaml has second priority
-		runtime.App = GlobalDefinition.AppID
-	}
+	runtime.App = MicroserviceDefinition.AppID
 	if runtime.App == "" {
 		runtime.App = common.DefaultApp
 	}

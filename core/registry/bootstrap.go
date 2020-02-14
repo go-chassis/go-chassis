@@ -130,7 +130,7 @@ func RegisterServiceInstances() error {
 		EndpointsMap: eps,
 		HostName:     runtime.HostName,
 		Status:       service.ServiceDescription.ServicesStatus,
-		Metadata:     map[string]string{"nodeIP": config.NodeIP},
+		Metadata:     map[string]string{"nodeIP": runtime.NodeIP},
 	}
 	var dInfo = new(DataCenterInfo)
 	if config.GlobalDefinition.DataCenter.Name != "" && config.GlobalDefinition.DataCenter.AvailableZone != "" {
