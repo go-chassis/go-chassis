@@ -6,9 +6,14 @@ all of invocation will be executed by circuit, under its protection, if there is
 circuit will open to stop network communication
 it also monitor each service call to make service [observable](https://docs.go-chassis.com/user-guides/metrics.html)
 
-## **Configuration**
+## **Usage**
 
-Circuit breaker scope is controlled by 
+1.Import it in your main file
+```go
+import _ github.com/go-chassis/go-chassis/middleware/circuit
+```
+
+2.Learn Configurations
 
 **cse.circuitBreaker.scope**
 > *(optional, string)* service、instance or api, 
@@ -99,7 +104,8 @@ cse:
     Consumer:
       policy: throwexception
 ```
-usually you must set bizkeeper-consumer handler in chain before load balancing and transport
+
+you must set bizkeeper-consumer handler in chain before transport
 , here is a example 
 ```yaml
 handler:

@@ -15,12 +15,14 @@ package reporter
 // Some parts of this file have been modified to make it functional in this package
 import (
 	"github.com/go-chassis/go-archaius"
+	circuit2 "github.com/go-chassis/go-chassis/middleware/circuit"
+
 	"strings"
 	"sync"
 	"time"
 
 	"fmt"
-	"github.com/go-chassis/go-chassis/pkg/circuit"
+
 	m "github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
@@ -122,56 +124,56 @@ func ReportMetricsToPrometheus(cb *hystrix.CircuitBreaker) error {
 	fallbackFailuresName := cb.Name + ".fallbackFailures"
 	totalDurationName := cb.Name + ".totalDuration"
 	runDurationName := cb.Name + ".runDuration"
-	_, sn, operationID, schemaID := circuit.ParseCircuitCMD(errorsName)
+	_, sn, operationID, schemaID := circuit2.ParseCircuitCMD(errorsName)
 	promLabels := prometheus.Labels{"hostname": runtime.HostName, "self": runtime.ServiceName,
 		"target": sn, "appID": runtime.App, "version": runtime.Version,
 		"schemaID": schemaID, "operationID": operationID}
 	for k, v := range runtime.MD {
 		promLabels[k] = v
 	}
-	metricName := circuit.GetMetricsName(errorsName)
+	metricName := circuit2.GetMetricsName(errorsName)
 	errCount := cb.Metrics.DefaultCollector().Errors().Sum(now)
 	gaugeVecFromNameAndValue(metricName, errCount, promLabels)
 
 	attemptsCount := cb.Metrics.DefaultCollector().NumRequests().Sum(now)
-	metricName = circuit.GetMetricsName(attemptsName)
+	metricName = circuit2.GetMetricsName(attemptsName)
 	gaugeVecFromNameAndValue(metricName, attemptsCount, promLabels)
 
 	successesCount := cb.Metrics.DefaultCollector().Successes().Sum(now)
-	metricName = circuit.GetMetricsName(successesName)
+	metricName = circuit2.GetMetricsName(successesName)
 	gaugeVecFromNameAndValue(metricName, successesCount, promLabels)
 
 	failureCount := cb.Metrics.DefaultCollector().Failures().Sum(now)
-	metricName = circuit.GetMetricsName(failuresName)
+	metricName = circuit2.GetMetricsName(failuresName)
 	gaugeVecFromNameAndValue(metricName, failureCount, promLabels)
 
 	rejectCount := cb.Metrics.DefaultCollector().Rejects().Sum(now)
-	metricName = circuit.GetMetricsName(rejectsName)
+	metricName = circuit2.GetMetricsName(rejectsName)
 	gaugeVecFromNameAndValue(metricName, rejectCount, promLabels)
 
 	scCount := cb.Metrics.DefaultCollector().ShortCircuits().Sum(now)
-	metricName = circuit.GetMetricsName(shortCircuitsName)
+	metricName = circuit2.GetMetricsName(shortCircuitsName)
 	gaugeVecFromNameAndValue(metricName, scCount, promLabels)
 
 	timeoutCount := cb.Metrics.DefaultCollector().Timeouts().Sum(now)
-	metricName = circuit.GetMetricsName(timeoutsName)
+	metricName = circuit2.GetMetricsName(timeoutsName)
 	gaugeVecFromNameAndValue(metricName, timeoutCount, promLabels)
 
 	fbsCount := cb.Metrics.DefaultCollector().FallbackSuccesses().Sum(now)
-	metricName = circuit.GetMetricsName(fallbackSuccessesName)
+	metricName = circuit2.GetMetricsName(fallbackSuccessesName)
 	gaugeVecFromNameAndValue(metricName, fbsCount, promLabels)
 
 	fbfCount := cb.Metrics.DefaultCollector().FallbackFailures().Sum(now)
-	metricName = circuit.GetMetricsName(fallbackFailuresName)
+	metricName = circuit2.GetMetricsName(fallbackFailuresName)
 	gaugeVecFromNameAndValue(metricName, fbfCount, promLabels)
 
 	latencyTotalMean := cb.Metrics.DefaultCollector().TotalDuration().Mean()
-	metricName = circuit.GetMetricsName(totalDurationName)
+	metricName = circuit2.GetMetricsName(totalDurationName)
 	gaugeVecFromNameAndValue(fmt.Sprintf("%s.%s", metricName, "mean"),
 		float64(latencyTotalMean), promLabels)
 
 	runDuration := cb.Metrics.DefaultCollector().RunDuration()
-	metricName = circuit.GetMetricsName(runDurationName)
+	metricName = circuit2.GetMetricsName(runDurationName)
 	gaugeVecFromNameAndValue(fmt.Sprintf("%s.%s", metricName, "mean"),
 		float64(runDuration.Mean()), promLabels)
 	promLabels["quantile"] = "0.05"
