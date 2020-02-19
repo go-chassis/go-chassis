@@ -38,9 +38,13 @@ var DefaultSchemaIDsMap map[string]string
 ## Example
 the contract file structure is as below
     conf
+    
     `-- myservice
+    
         `-- schema
+	
             |-- myschema1.yaml
+	    
             `-- myschema2.yaml
 
 
