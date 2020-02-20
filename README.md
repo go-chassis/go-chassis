@@ -115,6 +115,9 @@ A service mesh able to co-work with go chassis,
 it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/configurations/edge.html) also.
 - [KubeEdge](https://github.com/kubeedge/kubeedge): Kubernetes Native Edge Computing Framework (project under CNCF) https://kubeedge.io
 
+# Known Users
+![趣头条](https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=61fc74acb212c8fcb4f3f1cbc438f578/d8f9d72a6059252dc75d1b883f9b033b5ab5b9f7.jpg)
+
 # To start developing go chassis
 
 1. Install [go 1.12+](https://golang.org/doc/install) 
