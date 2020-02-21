@@ -96,6 +96,14 @@ func RegisterService() error {
 	}
 	runtime.ServiceID = sid
 	openlogging.GetLogger().Infof("register service success:[%s] ", runtime.ServiceID)
+
+	return nil
+}
+
+// RegisterServiceInstances register micro-service instances
+func RegisterServiceInstances() error {
+	var err error
+	service := config.MicroserviceDefinition
 	runtime.Schemas, err = schema.GetSchemaIDs(service.ServiceDescription.Name)
 	for _, schemaID := range runtime.Schemas {
 		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
@@ -105,14 +113,6 @@ func RegisterService() error {
 		}
 		openlogging.Debug("upload contract to registry, " + schemaID)
 	}
-
-	return nil
-}
-
-// RegisterServiceInstances register micro-service instances
-func RegisterServiceInstances() error {
-	var err error
-	service := config.MicroserviceDefinition
 	openlogging.Debug("start to register instance.")
 	eps, err := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
 	if err != nil {
