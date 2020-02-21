@@ -23,8 +23,9 @@ const (
 
 // constant for micro service environment parameters
 const (
-	EnvNodeIP     = "HOSTING_SERVER_IP"
-	EnvSchemaRoot = "SCHEMA_ROOT"
+	EnvCSEEndpoint = "PAAS_CSE_ENDPOINT"
+	EnvNodeIP      = "HOSTING_SERVER_IP"
+	EnvSchemaRoot  = "SCHEMA_ROOT"
 )
 
 // env connect with "." like service_description.name and service_description.version which can not be used in k8s.

@@ -80,6 +80,8 @@ func readFromArchaius() error {
 		return err
 	}
 
+	populateConfigCenterAddress()
+	populateServiceRegistryAddress()
 	ReadMonitorFromArchaius()
 
 	populateServiceEnvironment()
@@ -89,6 +91,41 @@ func readFromArchaius() error {
 	populateTenant()
 
 	return nil
+}
+
+// populateServiceRegistryAddress populate service registry address
+func populateServiceRegistryAddress() {
+	//Registry Address , higher priority for environment variable
+	registryAddrFromEnv := readEndpoint()
+	if registryAddrFromEnv != "" {
+		openlogging.Debug("detect env", openlogging.WithTags(
+			openlogging.Tags{
+				"ep": registryAddrFromEnv,
+			}))
+		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
+		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
+		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
+		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
+	}
+}
+
+// populateConfigCenterAddress populate config center address
+func populateConfigCenterAddress() {
+	//Config Center Address , higher priority for environment variable
+	configCenterAddrFromEnv := readEndpoint()
+	if configCenterAddrFromEnv != "" {
+		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
+	}
+}
+
+// readEndpoint
+func readEndpoint() string {
+	addrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+	if addrFromEnv != "" {
+		openlogging.Info("read config from " + common.EnvCSEEndpoint)
+		return addrFromEnv
+	}
+	return addrFromEnv
 }
 
 // populateServiceEnvironment populate service environment
