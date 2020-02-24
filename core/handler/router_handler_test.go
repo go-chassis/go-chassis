@@ -32,6 +32,10 @@ func TestRouterHandler_Handle(t *testing.T) {
 			MicroServiceName: "service1",
 			RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 		}
+
+		err := router.Init()
+		assert.NoError(t, err)
+
 		c.Next(i, func(r *invocation.Response) error {
 			assert.NoError(t, r.Err)
 			return r.Err
