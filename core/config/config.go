@@ -96,7 +96,7 @@ func readFromArchaius() error {
 // populateServiceRegistryAddress populate service registry address
 func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
-	registryAddrFromEnv := readEndpoint()
+	registryAddrFromEnv := readEndpoint(common.EnvSCEndpoint)
 	if registryAddrFromEnv != "" {
 		openlogging.Debug("detect env", openlogging.WithTags(
 			openlogging.Tags{
@@ -112,17 +112,17 @@ func populateServiceRegistryAddress() {
 // populateConfigCenterAddress populate config center address
 func populateConfigCenterAddress() {
 	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := readEndpoint()
+	configCenterAddrFromEnv := readEndpoint(common.EnvCCEndpoint)
 	if configCenterAddrFromEnv != "" {
 		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
 	}
 }
 
 // readEndpoint
-func readEndpoint() string {
-	addrFromEnv := os.Getenv(common.EnvCSEEndpoint)
+func readEndpoint(env string) string {
+	addrFromEnv := archaius.GetString(env, archaius.GetString(common.EnvCSEEndpoint, ""))
 	if addrFromEnv != "" {
-		openlogging.Info("read config from " + common.EnvCSEEndpoint)
+		openlogging.Info("read config " + addrFromEnv)
 		return addrFromEnv
 	}
 	return addrFromEnv

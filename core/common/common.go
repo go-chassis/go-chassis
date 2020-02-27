@@ -26,6 +26,8 @@ const (
 	EnvCSEEndpoint = "PAAS_CSE_ENDPOINT"
 	EnvNodeIP      = "HOSTING_SERVER_IP"
 	EnvSchemaRoot  = "SCHEMA_ROOT"
+	EnvSCEndpoint  = "PAAS_CSE_SC_ENDPOINT"
+	EnvCCEndpoint  = "PAAS_CSE_CC_ENDPOINT"
 )
 
 // env connect with "." like service_description.name and service_description.version which can not be used in k8s.
