@@ -148,5 +148,6 @@ which means you have to solve compiling issue your own.
 # Maintainers
 
 tianxiaoliang xiaoliang.tian@gmail.com
+dengguojie    denggj7@163.com
 
 
