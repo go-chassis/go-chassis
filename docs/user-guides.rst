@@ -20,7 +20,6 @@ User guides
    user-guides/router
    user-guides/rate-limiting
    user-guides/fault-tolerance
-   user-guides/cb-and-fallback
    user-guides/transport
    user-guides/tracing
    user-guides/metrics

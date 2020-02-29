@@ -1,13 +1,13 @@
-package handler
+package circuit
 
 import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/status"
-	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 
@@ -20,7 +20,7 @@ const (
 type BizKeeperConsumerHandler struct{}
 
 // Handle function is for to handle the chain
-func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+func (bk *BizKeeperConsumerHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	command, cmdConfig := control.DefaultPanel.GetCircuitBreaker(*i, common.Consumer)
 
 	cmdConfig.MetricsConsumerNum = archaius.GetInt("cse.metrics.circuitMetricsConsumerNum", hystrix.DefaultMetricsConsumerNum)
@@ -29,7 +29,7 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 	finish := make(chan *invocation.Response, 1)
 	f, err := GetFallbackFun(command, common.Consumer, i, finish, cmdConfig.ForceFallback)
 	if err != nil {
-		WriteBackErr(err, status.Status(i.Protocol, status.InternalServerError), cb)
+		handler.WriteBackErr(err, status.Status(i.Protocol, status.InternalServerError), cb)
 		return
 	}
 	err = hystrix.Do(command, func() (err error) {
@@ -52,7 +52,7 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *Chain, i *invocation.Invocatio
 	// 2 fallback is not nil
 	//   2.1 fallback failed no matter chain.Next() is executed or not
 	if err != nil {
-		WriteBackErr(err, status.Status(i.Protocol, status.ServiceUnavailable), cb)
+		handler.WriteBackErr(err, status.Status(i.Protocol, status.ServiceUnavailable), cb)
 		return
 	}
 
@@ -65,9 +65,9 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invoca
 	if enabled || isForce {
 		p := config.GetPolicy(i.MicroServiceName, t)
 		if p == "" {
-			p = circuit.ReturnErr
+			p = ReturnErr
 		}
-		f, err := circuit.GetFallback(p)
+		f, err := GetFallback(p)
 		if err != nil {
 			return nil, err
 		}
@@ -77,11 +77,18 @@ func GetFallbackFun(cmd, t string, i *invocation.Invocation, finish chan *invoca
 }
 
 // newBizKeeperConsumerHandler new bizkeeper consumer handler
-func newBizKeeperConsumerHandler() Handler {
+func newBizKeeperConsumerHandler() handler.Handler {
 	return &BizKeeperConsumerHandler{}
 }
 
 // Name is for to represent the name of bizkeeper handler
 func (bk *BizKeeperConsumerHandler) Name() string {
 	return Name
+}
+
+func init() {
+	handler.RegisterHandler(Name, newBizKeeperConsumerHandler)
+	handler.RegisterHandler("bizkeeper-provider", newBizKeeperProviderHandler)
+	Init()
+	go hystrix.StartReporter()
 }

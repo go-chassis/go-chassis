@@ -2,10 +2,11 @@ package circuit_test
 
 import (
 	"errors"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/circuit"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/middleware/circuit"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFallbackErr(t *testing.T) {

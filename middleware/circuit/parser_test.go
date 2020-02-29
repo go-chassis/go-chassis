@@ -18,9 +18,10 @@
 package circuit_test
 
 import (
-	"github.com/go-chassis/go-chassis/pkg/circuit"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/middleware/circuit"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestExtractSchemaAndOperation(t *testing.T) {

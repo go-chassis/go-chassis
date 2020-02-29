@@ -12,7 +12,7 @@ var errViolateBuildIn = errors.New("can not replace build-in handler func")
 
 //ErrDuplicatedHandler means you registered more than 1 handler with same name
 var ErrDuplicatedHandler = errors.New("duplicated handler registration")
-var buildIn = []string{BizkeeperConsumer, BizKeeperProvider, Loadbalance, Router, TracingConsumer,
+var buildIn = []string{Loadbalance, Router, TracingConsumer,
 	TracingProvider, RateLimiterConsumer, RateLimiterProvider, Transport, FaultInject}
 
 // HandlerFuncMap handler function map
@@ -23,7 +23,6 @@ const (
 	//consumer chain
 	Transport           = "transport"
 	Loadbalance         = "loadbalance"
-	BizkeeperConsumer   = "bizkeeper-consumer"
 	TracingConsumer     = "tracing-consumer"
 	RateLimiterConsumer = "ratelimiter-consumer"
 	Router              = "router"
@@ -33,7 +32,6 @@ const (
 	//provider chain
 	RateLimiterProvider = "ratelimiter-provider"
 	TracingProvider     = "tracing-provider"
-	BizKeeperProvider   = "bizkeeper-provider"
 	SkyWalkingProvider  = "skywalking-provider"
 )
 
@@ -42,8 +40,6 @@ func init() {
 	//register build-in handler,don't need to call RegisterHandlerFunc
 	HandlerFuncMap[Transport] = newTransportHandler
 	HandlerFuncMap[Loadbalance] = newLBHandler
-	HandlerFuncMap[BizkeeperConsumer] = newBizKeeperConsumerHandler
-	HandlerFuncMap[BizKeeperProvider] = newBizKeeperProviderHandler
 	HandlerFuncMap[RateLimiterConsumer] = newConsumerRateLimiterHandler
 	HandlerFuncMap[RateLimiterProvider] = newProviderRateLimiterHandler
 	HandlerFuncMap[TracingProvider] = newTracingProviderHandler

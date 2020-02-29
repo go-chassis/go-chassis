@@ -1,4 +1,4 @@
-diff -u <(echo -n) <(goconst ./... | grep -v vendor | grep -v third_party)
+diff -u <(echo -n) <(goconst ./... | grep -v vendor | grep -v examples | grep -v third_party)
 if [ $? == 0 ]; then
 	echo "No goConst problem"
 	exit 0
