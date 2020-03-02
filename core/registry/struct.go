@@ -1,6 +1,8 @@
 package registry
 
-import "github.com/go-chassis/go-chassis/core/common"
+import (
+	"github.com/go-chassis/go-chassis/core/common"
+)
 
 // MicroService struct having full info about micro-service
 type MicroService struct {
@@ -39,7 +41,7 @@ type MicroServiceInstance struct {
 	DefaultProtocol string
 	DefaultEndpoint string
 	Status          string
-	EndpointsMap    map[string]string
+	EndpointsMap    map[string]*EndPoint
 	Metadata        map[string]string
 	DataCenterInfo  *DataCenterInfo
 }

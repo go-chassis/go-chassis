@@ -1,10 +1,11 @@
 package endpoint_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/endpoint"
 	_ "github.com/go-chassis/go-chassis/initiator"
+	"path/filepath"
 
 	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/core/endpoint"
 	"github.com/go-chassis/go-chassis/core/registry"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
@@ -17,8 +18,13 @@ import (
 
 func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 	t.Log("Testing GetEndpoint function")
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	goModuleValue := os.Getenv("GO111MODULE")
+	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
+	if goModuleValue == "on" ||goModuleValue == "auto" {
+		rootDir, _ = os.Getwd()
+		rootDir = filepath.Join(rootDir, "..", "..")
+	}
+	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	chassis.Init()
 	registry.Enable()
 	_, err := endpoint.GetEndpoint("default", "test", "0.1")
@@ -26,8 +32,13 @@ func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 }
 
 func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	goModuleValue := os.Getenv("GO111MODULE")
+	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
+	if goModuleValue == "on" ||goModuleValue == "auto" {
+		rootDir, _ = os.Getwd()
+		rootDir = filepath.Join(rootDir, "..", "..")
+	}
+	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
@@ -46,8 +57,13 @@ func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 }
 
 func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	goModuleValue := os.Getenv("GO111MODULE")
+	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
+	if goModuleValue == "on" ||goModuleValue == "auto" {
+		rootDir, _ = os.Getwd()
+		rootDir = filepath.Join(rootDir, "..", "..")
+	}
+	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
@@ -58,7 +74,8 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:8088"},
+		EndpointsMap: map[string]*registry.EndPoint{
+			"rest": &registry.EndPoint{HostOrIP:"10.146.207.197", Port: "8088", SslEnabled:false}},
 		HostName:     "default",
 		Status:       common.DefaultStatus,
 	}
@@ -66,13 +83,20 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
-	_, err = endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
+	url, err := endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
 	assert.Nil(t, err)
+	assert.Contains(t, url, "http://")
+	t.Logf("url %s", url)
 }
 
 func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	goModuleValue := os.Getenv("GO111MODULE")
+	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
+	if goModuleValue == "on" ||goModuleValue == "auto" {
+		rootDir, _ = os.Getwd()
+		rootDir = filepath.Join(rootDir, "..", "..")
+	}
+	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
@@ -83,7 +107,9 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080?sslEnabled=true"},
+		EndpointsMap: map[string]*registry.EndPoint{
+			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port:"8080", SslEnabled:true},
+		},
 		HostName:     "default",
 		Status:       common.DefaultStatus,
 	}
@@ -91,13 +117,20 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
-	_, err = endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
+	url, err := endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
 	assert.Nil(t, err)
+	assert.Contains(t, url, "https://")
+	t.Logf("url %s", url)
 }
 
 func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	goModuleValue := os.Getenv("GO111MODULE")
+	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
+	if goModuleValue == "on" ||goModuleValue == "auto" {
+		rootDir, _ = os.Getwd()
+		rootDir = filepath.Join(rootDir, "..", "..")
+	}
+	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
@@ -108,7 +141,9 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:8089?sslEnabled=false"},
+		EndpointsMap: map[string]*registry.EndPoint{
+			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port:"8080", SslEnabled:false},
+		},
 		HostName:     "default",
 		Status:       common.DefaultStatus,
 	}
@@ -116,6 +151,8 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	time.Sleep(1 * time.Second)
 	assert.NoError(t, err)
-	_, err = endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
+	url, err := endpoint.GetEndpoint(microservice.AppID, microservice.ServiceName, microservice.Version)
 	assert.Nil(t, err)
+	assert.Contains(t, url, "http://")
+	t.Logf("url %s", url)
 }

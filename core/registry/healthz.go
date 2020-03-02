@@ -128,7 +128,7 @@ func (hc *HealthChecker) doCheck(i *WrapInstance) <-chan checkResult {
 		}
 
 		for protocol, ep := range i.Instance.EndpointsMap {
-			r.Err = client.Test(ctx, protocol, ep, req)
+			r.Err = client.Test(ctx, protocol, ep.GenEndpoint(), req)
 			return
 		}
 	}()
@@ -197,7 +197,7 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 			continue
 		} else {
 			for p, ep := range exp.EndpointsMap {
-				if err := chassisClient.Close(p, service, ep); err != nil {
+				if err := chassisClient.Close(p, service, ep.GenEndpoint()); err != nil {
 					if err != chassisClient.ErrClientNotExist {
 						openlogging.Error(fmt.Sprintf("can not close [%s] client for service [%s],intance [%s,%s,%s]: %s",
 							p, service, exp.InstanceID, ep, exp.HostName, err))

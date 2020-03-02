@@ -79,13 +79,13 @@ func TestInitError(t *testing.T) {
 		})
 	t.Run("get Client without initializing",
 		func(t *testing.T) {
-			c, err := client.GetClient("fake1", "", "")
+			c, err := client.GetClient("fake1", "", "", false)
 			assert.Error(t, err)
 			assert.Nil(t, c)
 		})
 	t.Run("get Client for rest",
 		func(t *testing.T) {
-			c, err := client.GetClient("rest", "", "")
+			c, err := client.GetClient("rest", "", "", false)
 			assert.Nil(t, err)
 			assert.NotNil(t, c)
 		})
@@ -108,7 +108,7 @@ func TestInit(t *testing.T) {
 		})
 	t.Run("get Client after initializing",
 		func(t *testing.T) {
-			c, err := client.GetClient("fake", "service1", "127.0.0.1:9090")
+			c, err := client.GetClient("fake", "service1", "127.0.0.1:9090", false)
 			assert.NoError(t, err)
 			assert.NotNil(t, c)
 		})
@@ -132,7 +132,7 @@ func BenchmarkGetClient(b *testing.B) {
 	m["grpc"] = model.Protocol{}
 	config.GlobalDefinition.Cse.Protocols = m
 
-	c, err := client.GetClient("highway", "", "")
+	c, err := client.GetClient("highway", "", "", false)
 	b.Log(c)
 	if err != nil {
 		b.Error(b, err)
@@ -140,19 +140,19 @@ func BenchmarkGetClient(b *testing.B) {
 
 	b.Run("benchmark get highway client , no support by default",
 		func(b *testing.B) {
-			c, err := client.GetClient("highway", "", "")
+			c, err := client.GetClient("highway", "", "", false)
 			assert.Nil(b, c)
 			assert.NotNil(b, err)
 		})
 	b.Run("benchmark get grpc client , no support by default",
 		func(b *testing.B) {
-			c, err := client.GetClient("grpc", "", "")
+			c, err := client.GetClient("grpc", "", "", false)
 			assert.Nil(b, c)
 			assert.NotNil(b, err)
 		})
 	b.Run("benchmark get rest client",
 		func(b *testing.B) {
-			c, err := client.GetClient("rest", "", "")
+			c, err := client.GetClient("rest", "", "", false)
 			assert.NotNil(b, c)
 			assert.Nil(b, err)
 		})
@@ -163,10 +163,10 @@ func TestSetTimeoutToClientCache(t *testing.T) {
 	m := make(map[string]model.Protocol)
 	m["rest"] = model.Protocol{}
 	config.GlobalDefinition.Cse.Protocols = m
-	c, err := client.GetClient("rest", "rest_server", "")
+	c, err := client.GetClient("rest", "rest_server", "", false)
 	assert.NotEmpty(t, c)
 	assert.Nil(t, err)
-	c, err = client.GetClient("rest", "rest_server1", "")
+	c, err = client.GetClient("rest", "rest_server1", "", false)
 	assert.NotEmpty(t, c)
 	assert.Nil(t, err)
 
@@ -179,10 +179,10 @@ func TestSetTimeoutToClientCache(t *testing.T) {
 		func(t *testing.T) {
 			spec.Consumer.TimeoutInMilliseconds = 20
 			client.SetTimeoutToClientCache(spec)
-			c, err := client.GetClient("rest", "rest_server", "")
+			c, err := client.GetClient("rest", "rest_server", "", false)
 			assert.Nil(t, err)
 			assert.Equal(t, time.Duration(20)*time.Millisecond, c.GetOptions().Timeout)
-			c, err = client.GetClient("rest", "rest_server1", "")
+			c, err = client.GetClient("rest", "rest_server1", "", false)
 			assert.Nil(t, err)
 			assert.Equal(t, time.Duration(20)*time.Millisecond, c.GetOptions().Timeout)
 		})
@@ -195,10 +195,10 @@ func TestSetTimeoutToClientCache(t *testing.T) {
 				},
 			}
 			client.SetTimeoutToClientCache(spec)
-			c, err := client.GetClient("rest", "rest_server", "")
+			c, err := client.GetClient("rest", "rest_server", "", false)
 			assert.Nil(t, err)
 			assert.Equal(t, time.Duration(10)*time.Millisecond, c.GetOptions().Timeout)
-			c, err = client.GetClient("rest", "rest_server1", "")
+			c, err = client.GetClient("rest", "rest_server1", "", false)
 			assert.Nil(t, err)
 			assert.Equal(t, time.Duration(20)*time.Millisecond, c.GetOptions().Timeout)
 		})

@@ -2,7 +2,6 @@ package registry
 
 import (
 	"errors"
-
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/schema"
@@ -134,7 +133,14 @@ func RegisterMicroserviceInstances() error {
 	}
 	openlogging.GetLogger().Infof("service support protocols %v", config.GlobalDefinition.Cse.Protocols)
 	if len(InstanceEndpoints) != 0 {
-		eps = InstanceEndpoints
+		eps = make(map[string]*EndPoint, len(InstanceEndpoints))
+		for m, ep := range InstanceEndpoints {
+			epObj, err := NewEndPoint(ep)
+			if err != nil {
+				continue
+			}
+			eps[m] = epObj
+		}
 	}
 	if service.ServiceDescription.ServicesStatus == "" {
 		service.ServiceDescription.ServicesStatus = common.DefaultStatus

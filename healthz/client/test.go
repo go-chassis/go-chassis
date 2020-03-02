@@ -24,7 +24,7 @@ func Test(ctx context.Context, protocol, endpoint string, expected Reply) (err e
 }
 
 func restTest(ctx context.Context, endpoint string, expected Reply) (err error) {
-	c, err := client.GetClient(common.ProtocolRest, expected.ServiceName, "")
+	c, err := client.GetClient(common.ProtocolRest, expected.ServiceName, "", false)
 	if err != nil {
 		return
 	}

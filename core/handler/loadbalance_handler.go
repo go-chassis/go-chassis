@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-chassis/core/registry"
 	"io/ioutil"
 	"net/http"
 
@@ -20,7 +21,7 @@ import (
 // LBHandler loadbalancer handler struct
 type LBHandler struct{}
 
-func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.LoadBalancingConfig) (string, error) {
+func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.LoadBalancingConfig) (*registry.EndPoint, error) {
 	var strategyFun func() loadbalancer.Strategy
 	var err error
 	if i.Strategy == "" {
@@ -43,16 +44,15 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 
 	s, err := loadbalancer.BuildStrategy(i, strategyFun())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	ins, err := s.Pick()
 	if err != nil {
 		lbErr := loadbalancer.LBError{Message: err.Error()}
-		return "", lbErr
+		return nil, lbErr
 	}
 
-	var ep string
 	if i.Protocol == "" {
 		i.Protocol = archaius.GetString("cse.references."+i.MicroServiceName+".transport", ins.DefaultProtocol)
 	}
@@ -70,7 +70,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 			protocolServer, i.MicroServiceName, ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
 		openlogging.GetLogger().Errorf(lbErr.Error())
-		return "", lbErr
+		return nil, lbErr
 	}
 	return ep, nil
 }
@@ -92,7 +92,8 @@ func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, l
 		return
 	}
 
-	i.Endpoint = ep
+	i.Endpoint = ep.Host()
+	i.SslEnable = ep.IsSSLEnable()
 	chain.Next(i, cb)
 }
 
@@ -120,7 +121,8 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		return
 	}
 	operation := func() error {
-		i.Endpoint = ep
+		i.Endpoint = ep.Host()
+		i.SslEnable = ep.IsSSLEnable()
 		callTimes++
 		var respErr error
 		i.HandlerIndex = handlerIndex

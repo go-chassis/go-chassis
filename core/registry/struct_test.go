@@ -46,3 +46,4 @@ func TestMicroServiceInstance_Equal(t *testing.T) {
 	}
 	assert.False(t, ins5.Equal(ins6))
 }
+

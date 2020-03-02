@@ -160,7 +160,14 @@ func reRegisterSelfMSI(sid, iid string) error {
 		return err
 	}
 	if len(InstanceEndpoints) != 0 {
-		eps = InstanceEndpoints
+		eps = make(map[string]*EndPoint, len(InstanceEndpoints))
+		for m, ep := range InstanceEndpoints {
+			epObj, err := NewEndPoint(ep)
+			if err != nil {
+				continue
+			}
+			eps[m] = epObj
+		}
 	}
 	microServiceInstance := &MicroServiceInstance{
 		InstanceID:   iid,

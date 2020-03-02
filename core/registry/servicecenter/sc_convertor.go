@@ -67,7 +67,7 @@ func ToMicroServiceInstance(ins *proto.MicroServiceInstance) *registry.MicroServ
 	}
 	m, p := registry.GetProtocolMap(ins.Endpoints)
 	msi.EndpointsMap = m
-	msi.DefaultEndpoint = m[p]
+	msi.DefaultEndpoint = m[p].GenEndpoint()
 	msi.DefaultProtocol = p
 	if ins.DataCenterInfo != nil {
 		msi.DataCenterInfo = &registry.DataCenterInfo{

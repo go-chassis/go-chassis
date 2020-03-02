@@ -108,7 +108,7 @@ func (r *WeightedResponseStrategy) Pick() (*registry.MicroServiceInstance, error
 		}
 		loadbalancer.LatencyMapRWMutex.RUnlock()
 		for _, instance := range r.instances {
-			if instanceAddr == instance.EndpointsMap[r.protocol] {
+			if instanceAddr == instance.EndpointsMap[r.protocol].GenEndpoint() {
 				return instance, nil
 			}
 		}

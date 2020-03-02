@@ -1,14 +1,16 @@
 package handler_test
 
 import (
+	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"log"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
@@ -22,61 +24,64 @@ func init() {
 		RollingPolicy: "size",
 	})
 }
+
 func TestTransportHandler_HandleRest(t *testing.T) {
 	t.Log("testing transport handler with rest protocol")
-	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "communication/client")
-	os.Setenv("CHASSIS_HOME", p)
+	microContent := `---
+#微服务的私有属性
+service_description:
+  name: Client
+  version: 0.1`
 
-	config.Init()
-	config.GlobalDefinition.Cse.Protocols = map[string]model.Protocol{
-		"rest": {Listen: "0.0.0.0:2678", Advertise: "0.0.0.0:8888", WorkerNumber: 1},
-	}
+	yamlContent := `---
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  protocols:
+    rest:
+      listenAddress: 127.0.0.1:5001
+      workerNumber: 1
+      advertiseAddress: 127.0.0.1:5001`
 
-	/*fn := func(sock transport.Socket) {
-		defer sock.Close()
+	wd, _ := fileutil.GetWorkDir()
+	os.Setenv("CHASSIS_HOME", wd)
+	defer os.Unsetenv("CHASSIS_HOME")
+	chassisConf := filepath.Join(wd, "conf")
+	err := os.MkdirAll(chassisConf, 0700)
+	assert.NoError(t, err)
+	chassisyaml := filepath.Join(chassisConf, "chassis.yaml")
+	microserviceyaml := filepath.Join(chassisConf, "microservice.yaml")
+	f1, err := os.Create(chassisyaml)
+	assert.NoError(t, err)
+	f2, err := os.Create(microserviceyaml)
+	defer os.RemoveAll(chassisConf)
+	assert.NoError(t, err)
+	_, err = io.WriteString(f1, yamlContent)
+	assert.NoError(t, err)
+	_, err = io.WriteString(f2, microContent)
 
-		for {
-			//metadata := make(map[string]string)
-			//metadata["requestID"] = "0"
-			responseHeader, responseBody, _, ID, err := sock.Recv()
-			if err != nil {
-				return
-			}
-			log.Println("server receive", string(responseBody))
-			if err := sock.Send(responseHeader, responseBody, nil, ID); err != nil {
-				return
-			}
-			log.Println("server send", string(responseBody))
-		}
-	}
-
-	done := make(chan bool)
-
-	go func() {
-		if err := l.Accept(fn); err != nil {
-			log.Println(err)
-			select {
-			case <-done:
-			default:
-				t.Errorf("Unexpected accept err: %v", err)
-			}
-		}
-	}()*/
+	err = config.Init()
+	assert.Nil(t, err)
+	t.Logf("%#v", config.GlobalDefinition)
 
 	//dial
 	c := &handler.Chain{}
 	i := &invocation.Invocation{}
 	i.Reply = &helloworld.HelloReply{}
+	i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+	i.Reply = rest.NewResponse()
 
 	i.Endpoint = "127.0.0.1:9992"
 	i.Protocol = "rest"
+
 	h := &handler.TransportHandler{}
 	c.Handlers = append(c.Handlers, h)
 
 	c.Next(i, func(r *invocation.Response) error {
-		log.Println("chain start")
-		log.Println(r.Result)
-		log.Println(r.Err)
+		t.Log("chain start")
+		t.Logf("%#v", r.Result)
+		t.Logf("%#v", r.Err)
 		assert.Equal(t, nil, r.Result)
 		return r.Err
 	})
