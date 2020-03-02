@@ -33,7 +33,7 @@ type ResponseCallBack func(*Response) error
 type Invocation struct {
 	HandlerIndex       int
 	SslEnable          bool
-	Endpoint           string//service's ip and port, it is decided in load balancing
+	Endpoint           string //service's ip and port, it is decided in load balancing
 	Protocol           string
 	Port               string //Port is the name of a real service port
 	SourceServiceID    string
@@ -123,7 +123,7 @@ func (inv *Invocation) Headers() map[string]string {
 	return inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 }
 
-func (inv *Invocation) GenEndPoint() string{
+func (inv *Invocation) GenEndPoint() string {
 	if inv.SslEnable {
 		return inv.Endpoint + "?" + ssLEnabledQuery
 	}

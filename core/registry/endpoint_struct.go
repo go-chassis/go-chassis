@@ -21,7 +21,7 @@ func NewEndPoint(schema string) (*EndPoint, error) {
 	return parseAddress(schema)
 }
 
-func (e *EndPoint) Host()string {
+func (e *EndPoint) Host() string {
 	if e.Port == "" {
 		return e.HostOrIP
 	}

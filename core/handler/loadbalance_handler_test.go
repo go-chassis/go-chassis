@@ -123,8 +123,8 @@ cse:
 		InstanceID: "instanceID",
 		EndpointsMap: map[string]*registry.EndPoint{
 			"rest": &registry.EndPoint{
-				HostOrIP: "127.0.0.1",
-				Port: "1234",
+				HostOrIP:   "127.0.0.1",
+				Port:       "1234",
 				SslEnabled: true,
 			},
 		},
@@ -132,8 +132,8 @@ cse:
 	var ms2 = new(registry.MicroServiceInstance)
 	ms2.EndpointsMap = map[string]*registry.EndPoint{
 		"rest": &registry.EndPoint{
-			HostOrIP: "127.0.0.1",
-			Port: "1234",
+			HostOrIP:   "127.0.0.1",
+			Port:       "1234",
 			SslEnabled: true,
 		},
 	}

@@ -22,7 +22,6 @@ const (
 	protocolSymbol = "://"
 )
 
-
 //GetProtocolMap returns the protocol map
 func GetProtocolMap(eps []string) (map[string]*EndPoint, string) {
 	m := make(map[string]*EndPoint)
@@ -35,7 +34,7 @@ func GetProtocolMap(eps []string) (map[string]*EndPoint, string) {
 			ep = addr
 			proto = "unknown"
 		} else {
-			ep = addr[idx + len(protocolSymbol):]
+			ep = addr[idx+len(protocolSymbol):]
 			proto = addr[:idx]
 		}
 		u, err := NewEndPoint(ep)
@@ -208,4 +207,3 @@ func getTLSConfig(scheme, t string) (*tls.Config, error) {
 	}
 	return tlsConfig, nil
 }
-

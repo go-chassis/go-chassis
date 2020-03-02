@@ -23,7 +23,7 @@ func init() {
 func TestServicecenter_Heartbeat(t *testing.T) {
 	goModuleValue := os.Getenv("GO111MODULE")
 	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" ||goModuleValue == "auto" {
+	if goModuleValue == "on" || goModuleValue == "auto" {
 		rootDir, _ = os.Getwd()
 		rootDir = filepath.Join(rootDir, "..", "..")
 	}
@@ -76,7 +76,7 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 	goModuleValue := os.Getenv("GO111MODULE")
 	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" ||goModuleValue == "auto" {
+	if goModuleValue == "on" || goModuleValue == "auto" {
 		rootDir, _ = os.Getwd()
 		rootDir = filepath.Join(rootDir, "..", "..")
 	}

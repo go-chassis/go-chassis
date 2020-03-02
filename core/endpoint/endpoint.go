@@ -40,4 +40,3 @@ func GetEndpoint(appID, microService, version string) (string, error) {
 
 	return endpoint, nil
 }
-

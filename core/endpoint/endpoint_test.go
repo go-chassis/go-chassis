@@ -20,7 +20,7 @@ func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 	t.Log("Testing GetEndpoint function")
 	goModuleValue := os.Getenv("GO111MODULE")
 	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" ||goModuleValue == "auto" {
+	if goModuleValue == "on" || goModuleValue == "auto" {
 		rootDir, _ = os.Getwd()
 		rootDir = filepath.Join(rootDir, "..", "..")
 	}
@@ -34,7 +34,7 @@ func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 	goModuleValue := os.Getenv("GO111MODULE")
 	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" ||goModuleValue == "auto" {
+	if goModuleValue == "on" || goModuleValue == "auto" {
 		rootDir, _ = os.Getwd()
 		rootDir = filepath.Join(rootDir, "..", "..")
 	}
@@ -59,7 +59,7 @@ func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 	goModuleValue := os.Getenv("GO111MODULE")
 	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" ||goModuleValue == "auto" {
+	if goModuleValue == "on" || goModuleValue == "auto" {
 		rootDir, _ = os.Getwd()
 		rootDir = filepath.Join(rootDir, "..", "..")
 	}
@@ -75,9 +75,9 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.EndPoint{
-			"rest": &registry.EndPoint{HostOrIP:"10.146.207.197", Port: "8088", SslEnabled:false}},
-		HostName:     "default",
-		Status:       common.DefaultStatus,
+			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port: "8088", SslEnabled: false}},
+		HostName: "default",
+		Status:   common.DefaultStatus,
 	}
 
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -92,7 +92,7 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 	goModuleValue := os.Getenv("GO111MODULE")
 	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" ||goModuleValue == "auto" {
+	if goModuleValue == "on" || goModuleValue == "auto" {
 		rootDir, _ = os.Getwd()
 		rootDir = filepath.Join(rootDir, "..", "..")
 	}
@@ -108,10 +108,10 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.EndPoint{
-			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port:"8080", SslEnabled:true},
+			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port: "8080", SslEnabled: true},
 		},
-		HostName:     "default",
-		Status:       common.DefaultStatus,
+		HostName: "default",
+		Status:   common.DefaultStatus,
 	}
 
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -126,7 +126,7 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 	goModuleValue := os.Getenv("GO111MODULE")
 	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" ||goModuleValue == "auto" {
+	if goModuleValue == "on" || goModuleValue == "auto" {
 		rootDir, _ = os.Getwd()
 		rootDir = filepath.Join(rootDir, "..", "..")
 	}
@@ -142,10 +142,10 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.EndPoint{
-			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port:"8080", SslEnabled:false},
+			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port: "8080", SslEnabled: false},
 		},
-		HostName:     "default",
-		Status:       common.DefaultStatus,
+		HostName: "default",
+		Status:   common.DefaultStatus,
 	}
 
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
