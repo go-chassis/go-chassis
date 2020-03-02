@@ -58,6 +58,7 @@ type WeightedResponseStrategy struct {
 	protocol         string
 	checkValuesExist bool
 	avgLatencyMap    map[string]time.Duration
+	tags             string
 }
 
 func init() {
@@ -94,7 +95,15 @@ func newWeightedResponseStrategy() loadbalancer.Strategy {
 // ReceiveData receive data
 func (r *WeightedResponseStrategy) ReceiveData(inv *invocation.Invocation, instances []*registry.MicroServiceInstance, serviceKey string) {
 	r.instances = instances
-	r.serviceName = strings.Split(serviceKey, "|")[0]
+	keys := strings.SplitN(serviceKey, "|", 2)
+	switch len(keys) {
+	case 1:
+		r.serviceName = keys[0]
+	case 2:
+		r.serviceName = keys[0]
+		r.tags = keys[1]
+
+	}
 	r.protocol = inv.Protocol
 }
 
@@ -103,12 +112,12 @@ func (r *WeightedResponseStrategy) Pick() (*registry.MicroServiceInstance, error
 	if rand.Intn(100) < 70 {
 		var instanceAddr string
 		loadbalancer.LatencyMapRWMutex.RLock()
-		if len(loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey(r.serviceName, "", r.protocol)]) != 0 {
-			instanceAddr = loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey(r.serviceName, "", r.protocol)][0].Addr
+		if len(loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey(r.serviceName, r.tags, r.protocol)]) != 0 {
+			instanceAddr = loadbalancer.ProtocolStatsMap[loadbalancer.BuildKey(r.serviceName, r.tags, r.protocol)][0].Addr
 		}
 		loadbalancer.LatencyMapRWMutex.RUnlock()
 		for _, instance := range r.instances {
-			if instanceAddr == instance.EndpointsMap[r.protocol].GenEndpoint() {
+        if len(instanceAddr) != 0 && strings.Contains(instance.EndpointsMap[r.protocol].GenEndpoint(), instanceAddr) {
 				return instance, nil
 			}
 		}

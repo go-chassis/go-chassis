@@ -25,6 +25,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-mesh/openlogging"
@@ -231,7 +232,7 @@ func LogRotate(path string, MaxFileSize int, MaxBackupCount int) {
 	//filter .log .trace files
 	defer func() {
 		if e := recover(); e != nil {
-			Logger.Errorf("LogRotate catch an exception")
+			Logger.Errorf("LogRotate catch an exception, %v", e)
 		}
 	}()
 
@@ -291,30 +292,67 @@ func CopyFile(srcFile, dstFile string) error {
 	return err
 }
 
-// initLogRotate initialize log rotate
-func initLogRotate(logFilePath string, option *Options) {
-	if option == nil {
-		go func() {
-			for {
-				LogRotate(filepath.Dir(logFilePath), LogRotateSize, LogBackupCount)
-				time.Sleep(30 * time.Second)
-			}
-		}()
+// NewRotateConfig return config
+func NewRotateConfig(option *Options) *RotateConfig {
+	rc := new(RotateConfig)
+	rc.BackupCount = LogBackupCount
+	if option.LogBackupCount > 0 {
+		rc.BackupCount = option.LogBackupCount
+	}
+	rc.logFilePath = option.LoggerFile
+	rc.logFileDir = filepath.Dir(option.LoggerFile)
+	if option.RollingPolicy == RollingPolicySize {
+		rc.Size = LogRotateSize
+		if option.LogRotateSize > 0 {
+			rc.Size = option.LogRotateSize
+		}
+		rc.CheckCycle = 30 * time.Second
 	} else {
-		if option.RollingPolicy == RollingPolicySize {
-			go func() {
-				for {
-					LogRotate(filepath.Dir(logFilePath), option.LogRotateSize, option.LogBackupCount)
-					time.Sleep(30 * time.Second)
-				}
-			}()
-		} else {
-			go func() {
-				for {
-					LogRotate(filepath.Dir(logFilePath), 0, option.LogBackupCount)
-					time.Sleep(24 * time.Hour * time.Duration(option.LogRotateDate))
-				}
-			}()
+		rc.CheckCycle = 24 * time.Hour
+		if option.LogRotateDate > 1 {
+			rc.CheckCycle = 24 * time.Hour * time.Duration(option.LogRotateDate)
 		}
 	}
+	return rc
+}
+
+// Rotators global rotate instance
+var Rotators = &rotators{
+	logFilePaths: make(map[string]*RotateConfig, 5),
+}
+
+type rotators struct {
+	logFilePaths map[string]*RotateConfig
+	locker       sync.Mutex
+}
+
+// RotateConfig rotate config
+type RotateConfig struct {
+	logFilePath string
+	logFileDir  string
+	Policy      string
+	Size        int
+	BackupCount int
+	CheckCycle  time.Duration
+
+	RotateDate int
+}
+
+// Rotate rotate log
+func (r *rotators) Rotate(rc *RotateConfig) {
+	r.locker.Lock()
+	defer r.locker.Unlock()
+	if _, exist := r.logFilePaths[rc.logFileDir]; exist {
+		return
+	}
+
+	r.logFilePaths[rc.logFilePath] = rc
+
+	go func() {
+		openlogging.Info("start log rotate task")
+		for {
+			LogRotate(rc.logFileDir, rc.Size, rc.BackupCount)
+			time.Sleep(rc.CheckCycle)
+		}
+	}()
 }

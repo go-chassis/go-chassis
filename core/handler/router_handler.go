@@ -5,6 +5,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/core/status"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 )
 
@@ -34,7 +35,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 
 	err := router.Route(h, &registry.SourceInfo{Name: i.SourceMicroService, Tags: tags}, i)
 	if err != nil {
-		WriteBackErr(err, 0, cb)
+		WriteBackErr(err, status.Status(i.Protocol, status.ServiceUnavailable), cb)
 	}
 
 	//call next chain

@@ -70,11 +70,12 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 }
 
 // HTTPRequest2Invocation convert http request to uniform invocation data format
-func HTTPRequest2Invocation(req *restful.Request, schema, operation string) (*invocation.Invocation, error) {
+func HTTPRequest2Invocation(req *restful.Request, schema, operation string, resp *restful.Response) (*invocation.Invocation, error) {
 	inv := &invocation.Invocation{
 		MicroServiceName:   runtime.ServiceName,
 		SourceMicroService: common.GetXCSEContext(common.HeaderSourceName, req.Request),
 		Args:               req,
+		Reply:              resp,
 		Protocol:           common.ProtocolRest,
 		SchemaID:           schema,
 		OperationID:        operation,
@@ -157,7 +158,9 @@ func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful
 		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
 	rb = fillParam(routeSpec, rb)
-
+	for k, v := range routeSpec.Metadata {
+		rb = rb.Metadata(k, v)
+	}
 	for _, r := range routeSpec.Returns {
 		rb = rb.Returns(r.Code, r.Message, r.Model)
 	}
@@ -197,6 +200,7 @@ func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder 
 			p = restful.FormParameter(param.Name, param.Desc)
 		}
 		rb = rb.Param(p.Required(param.Required).DataType(param.DataType))
+
 	}
 	return rb
 }
@@ -236,7 +240,7 @@ func (r *restfulServer) Start() error {
 
 	}()
 
-	openlogging.GetLogger().Infof("Restful server listening on: %s", registry.InstanceEndpoints[config.ProtocolServerName])
+	openlogging.GetLogger().Infof("http server is listening at %s", registry.InstanceEndpoints[config.ProtocolServerName])
 	return nil
 }
 
@@ -270,7 +274,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
 	}
 	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)
-	openlogging.Info("The schema has been created successfully. path:" + path)
+	openlogging.Info("contract has been created successfully. path:" + path)
 	//set schema information when create local schema file
 	err := schema.SetSchemaInfo(sws)
 	if err != nil {

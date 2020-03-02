@@ -3,7 +3,9 @@ package iputil
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/go-mesh/openlogging"
 	"net"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -129,4 +131,48 @@ func StartListener(listenAddress string, tlsConfig *tls.Config) (listener net.Li
 		}
 	}
 	return
+}
+
+// ClientIP returns client ip
+func ClientIP(r *http.Request) string {
+	ips := ForwardedIPs(r)
+	if len(ips) > 0 {
+		rip, _, err := net.SplitHostPort(ips[0])
+		if err != nil {
+			openlogging.GetLogger().Warnf("get client ip catch a err, %s", err.Error())
+			return ips[0]
+		}
+		return rip
+	}
+
+	realIP := RealIP(r)
+	if len(realIP) > 0 {
+		return realIP
+	}
+	return RemoteIP(r)
+}
+
+// RemoteIP returns remote ip
+func RemoteIP(r *http.Request) string {
+	remoteIP := r.RemoteAddr
+	rip, _, err := net.SplitHostPort(remoteIP)
+	if err != nil {
+		openlogging.GetLogger().Warnf("get remote ip catch a err, %s", err.Error())
+		return remoteIP
+	}
+	return rip
+}
+
+// ForwardedIPs returns forwarded for ips
+func ForwardedIPs(r *http.Request) []string {
+	ips := r.Header.Get("X-Forwarded-For")
+	if len(ips) == 0 {
+		return []string{}
+	}
+	return strings.Split(ips, ",")
+}
+
+// RealIP returns real ip
+func RealIP(r *http.Request) string {
+	return r.Header.Get("X-Real-Ip")
 }

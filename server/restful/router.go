@@ -24,16 +24,17 @@ const (
 
 //Route describe http route path and swagger specifications for API
 type Route struct {
-	Method           string             //Method is one of the following: GET,PUT,POST,DELETE. required
-	Path             string             //Path contains a path pattern. required
-	ResourceFunc     func(ctx *Context) //the func this API calls. you must set this field or ResourceFunc, if you set both, ResourceFunc will be used
-	ResourceFuncName string             //the func this API calls. you must set this field or ResourceFunc
-	FuncDesc         string             //tells what this route is all about. Optional.
-	Parameters       []*Parameters      //Parameters is a slice of request parameters for a single endpoint Optional.
-	Returns          []*Returns         //what kind of response this API returns. Optional.
-	Read             interface{}        //Read tells what resource type will be read from the request payload. Optional.
-	Consumes         []string           //Consumes specifies that this WebService can consume one or more MIME types.
-	Produces         []string           //Produces specifies that this WebService can produce one or more MIME types.
+	Method           string                 //Method is one of the following: GET,PUT,POST,DELETE. required
+	Path             string                 //Path contains a path pattern. required
+	ResourceFunc     func(ctx *Context)     //the func this API calls. you must set this field or ResourceFunc, if you set both, ResourceFunc will be used
+	ResourceFuncName string                 //the func this API calls. you must set this field or ResourceFunc
+	FuncDesc         string                 //tells what this route is all about. Optional.
+	Parameters       []*Parameters          //Parameters is a slice of request parameters for a single endpoint Optional.
+	Returns          []*Returns             //what kind of response this API returns. Optional.
+	Read             interface{}            //Read tells what resource type will be read from the request payload. Optional.
+	Consumes         []string               //Consumes specifies that this WebService can consume one or more MIME types.
+	Produces         []string               //Produces specifies that this WebService can produce one or more MIME types.
+	Metadata         map[string]interface{} //Metadata adds or updates a key=value pair to api
 }
 
 //Returns describe response doc
@@ -78,7 +79,7 @@ func GetRouteGroup(schema interface{}) string {
 func GetRouteSpecs(schema interface{}) ([]Route, error) {
 	v, ok := schema.(Router)
 	if !ok {
-		return []Route{}, fmt.Errorf("<rest.RegisterResource> is not implemetn Router interface")
+		return []Route{}, fmt.Errorf("can not register APIs to server: %s", reflect.TypeOf(schema).String())
 	}
 	return v.URLPatterns(), nil
 }
@@ -89,25 +90,16 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 	if err != nil {
 		return nil, err
 	}
-	restHandler := func(req *restful.Request, rep *restful.Response) {
+	restHandler := func(req *restful.Request, resp *restful.Response) {
 		defer func() {
 			if r := recover(); r != nil {
-				var stacktrace string
-				for i := 1; ; i++ {
-					_, f, l, got := runtime.Caller(i)
-					if !got {
-						break
-					}
-
-					stacktrace += fmt.Sprintf("%s:%d\n", f, l)
-				}
-
+				var stacktrace = GetTrace()
 				openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
 					"path":  route.Path,
 					"panic": r,
 					"stack": stacktrace,
 				}))
-				if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
+				if err := resp.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
 					openlogging.Error("write response failed when handler panic.", openlogging.WithTags(openlogging.Tags{
 						"err": err.Error(),
 					}))
@@ -115,47 +107,36 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 			}
 		}()
 
-		c, err := handler.GetChain(common.Provider, opts.ChainName)
+		originChain, err := handler.GetChain(common.Provider, opts.ChainName)
 		if err != nil {
 			openlogging.Error("handler chain init err.", openlogging.WithTags(openlogging.Tags{
 				"err": err.Error(),
 			}))
-			rep.AddHeader("Content-Type", "text/plain")
-			rep.WriteErrorString(http.StatusInternalServerError, err.Error())
+			resp.AddHeader("Content-Type", "text/plain")
+			resp.WriteErrorString(http.StatusInternalServerError, err.Error())
 			return
 		}
-		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName)
+		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName, resp)
 		if err != nil {
 			openlogging.Error("transfer http request to invocation failed.", openlogging.WithTags(openlogging.Tags{
 				"err": err.Error(),
 			}))
 			return
 		}
+		bs := NewBaseServer(inv.Ctx)
+		bs.Req = req
+		bs.Resp = resp
+		//create a new chain for each resource handler
+		c := &handler.Chain{}
+		*c = *originChain
+		c.AddHandler(newHandler(handleFunc, bs, opts))
 		//give inv.Ctx to user handlers, modules may inject headers in handler chain
 		c.Next(inv, func(ir *invocation.Response) error {
 			if ir.Err != nil {
-				if rep != nil {
-					rep.WriteHeader(ir.Status)
+				if resp != nil {
+					resp.WriteHeader(ir.Status)
 				}
 				return ir.Err
-			}
-			Invocation2HTTPRequest(inv, req)
-
-			bs := NewBaseServer(inv.Ctx)
-			bs.Req = req
-			bs.Resp = rep
-
-			// check body size
-			if opts.BodyLimit > 0 {
-				bs.Req.Request.Body = http.MaxBytesReader(bs.Resp, bs.Req.Request.Body, opts.BodyLimit)
-			}
-
-			// call real route func
-			handleFunc(bs)
-			ir.Status = bs.Resp.StatusCode()
-
-			if bs.Resp.StatusCode() >= http.StatusBadRequest {
-				return fmt.Errorf("get err from http handle, get status: %d", bs.Resp.StatusCode())
 			}
 			return nil
 		})
@@ -210,4 +191,17 @@ func getFunctionName(i interface{}) string {
 	// replace suffix "-fm" if function is bounded to struct
 	reg := regexp.MustCompile("-fm$")
 	return reg.ReplaceAllString(funcName, "")
+}
+
+//GetTrace get trace
+func GetTrace() string {
+	var stacktrace string
+	for i := 1; ; i++ {
+		_, f, l, got := runtime.Caller(i)
+		if !got {
+			break
+		}
+		stacktrace += fmt.Sprintf("%s:%d\n", f, l)
+	}
+	return stacktrace
 }

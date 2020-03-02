@@ -39,6 +39,9 @@ var InstanceID string
 //InstanceStatus is the current status of instance
 var InstanceStatus string
 
+//NodeIP is the host ip which go chassis running on, if you deploy it in kubernetes
+var NodeIP string
+
 // Init runtime information
 func Init() error {
 	return nil

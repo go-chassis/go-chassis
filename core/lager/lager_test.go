@@ -11,17 +11,16 @@ import (
 
 func TestInitialize1(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-
-	logdir := path + "/src/github.com/go-chassis/go-chassis/examples/discovery/server/log"
-	os.RemoveAll(logdir)
+	logDir := filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
+	os.Setenv("CHASSIS_HOME", logDir)
 
 	t.Log("Initializing lager")
 	t.Log("creating log/chassis.log")
-	lager.Init(&lager.Options{})
-	defer os.RemoveAll(logdir)
+	lager.Init(&lager.Options{
+		LoggerFile: filepath.Join("log", "chassis.log"),
+	})
 
-	if _, err := os.Stat(logdir); err != nil {
+	if _, err := os.Stat(logDir); err != nil {
 		if os.IsNotExist(err) {
 			t.Error(err)
 		}
@@ -33,21 +32,17 @@ func TestInitialize1(t *testing.T) {
 
 func TestInitialize2(t *testing.T) {
 	path := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis",
-		"go-chassis", "examples", "discovery", "server"))
+	logDir := filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
+	os.Setenv("CHASSIS_HOME", logDir)
 
 	//initializing config for to initialize PassLagerDefinition variable
 	t.Log("initializing config for to initialize PassLagerDefinition variable")
 
-	logdir := path + "/src/github.com/go-chassis/go-chassis/examples/discovery/server/log"
-	os.RemoveAll(logdir)
-
 	//Initializing lager
 	t.Log("Initializing lager")
 	lager.Init(&lager.Options{})
-	defer os.RemoveAll(logdir)
 
-	if _, err := os.Stat(logdir); err != nil {
+	if _, err := os.Stat(logDir); err != nil {
 		if os.IsNotExist(err) {
 			t.Error(err)
 		}

@@ -36,9 +36,7 @@ var DefaultAddr = "http://127.0.0.1:30100"
 var registryFunc = make(map[string]func(opts Options) Registrator)
 
 // HBService variable of heartbeat service
-var HBService = &HeartbeatService{
-	instances: make(map[string]*HeartbeatTask),
-}
+var HBService = &HeartbeatService{}
 
 // Registrator is the interface for developer to update information in service registry
 type Registrator interface {
@@ -50,7 +48,6 @@ type Registrator interface {
 	RegisterServiceInstance(sid string, instance *MicroServiceInstance) (string, error)
 	RegisterServiceAndInstance(microService *MicroService, instance *MicroServiceInstance) (string, string, error)
 	Heartbeat(microServiceID, microServiceInstanceID string) (bool, error)
-	AddDependencies(dep *MicroServiceDependency) error
 	UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error
 	UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error
 	UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error
@@ -73,13 +70,12 @@ func enableRegistrator(opts Options) error {
 		return err
 	}
 
-	if err := RegisterMicroservice(); err != nil {
+	if err := RegisterService(); err != nil {
 		openlogging.GetLogger().Errorf("start backoff for register microservice: %s", err)
-		startBackOff(RegisterMicroservice)
+		startBackOff(RegisterService)
 	}
-	go HBService.Start()
 
-	openlogging.GetLogger().Infof("Enable [%s] registrator.", rt)
+	openlogging.GetLogger().Infof("enable [%s] registrator.", rt)
 	return nil
 }
 
@@ -192,10 +188,11 @@ func DoRegister() error {
 		}
 	}
 	if isAutoRegister {
-		if err := RegisterMicroserviceInstances(); err != nil {
+		if err := RegisterServiceInstances(); err != nil {
 			openlogging.GetLogger().Errorf("start back off for register microservice instances background: %s", err)
-			go startBackOff(RegisterMicroserviceInstances)
+			go startBackOff(RegisterServiceInstances)
 		}
 	}
+	go HBService.Start()
 	return nil
 }

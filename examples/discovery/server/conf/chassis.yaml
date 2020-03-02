@@ -32,6 +32,11 @@ cse:
       #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
       refeshInterval : 30s
       watch: true
+#      tls: TODO
+#        verifyPeer: false
+#        trustCaFile:
+#        certFile:
+#        keyFile:
   config:
     client:
 #      serverUri: http://127.0.0.1:30103

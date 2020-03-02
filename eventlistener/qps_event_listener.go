@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/qpslimiter"
+	"github.com/go-chassis/go-chassis/core/qps"
 )
 
 const (
@@ -21,12 +21,12 @@ type QPSEventListener struct {
 
 //Event is a method for QPS event listening
 func (el *QPSEventListener) Event(e *event.Event) {
-	qpsLimiter := qpslimiter.GetQPSTrafficLimiter()
+	qpsLimiter := qps.GetRateLimiters()
 
 	if strings.Contains(e.Key, "enabled") {
 		return
 	}
-
+	//TODO watch new config
 	switch e.EventType {
 	case common.Update:
 		qpsLimiter.UpdateRateLimit(e.Key, e.Value)

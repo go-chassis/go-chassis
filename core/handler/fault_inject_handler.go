@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/fault"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-mesh/openlogging"
-	"github.com/pkg/errors"
 )
 
 // constant for fault handler name

@@ -33,7 +33,8 @@ import (
 	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
 	//config centers
-	_ "github.com/go-chassis/go-chassis-config/configcenter"
+	_ "github.com/go-chassis/go-archaius/source/remote"
+	_ "github.com/go-chassis/go-archaius/source/remote/configcenter"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-mesh/openlogging"
 )
@@ -114,7 +115,7 @@ func waitingSignal() {
 func Init() error {
 	if goChassis.DefaultConsumerChainNames == nil {
 		defaultChain := strings.Join([]string{
-			handler.RatelimiterConsumer,
+			handler.RateLimiterConsumer,
 			handler.Router,
 			handler.Loadbalance,
 			handler.TracingConsumer,
@@ -126,7 +127,7 @@ func Init() error {
 	}
 	if goChassis.DefaultProviderChainNames == nil {
 		defaultChain := strings.Join([]string{
-			handler.RatelimiterProvider,
+			handler.RateLimiterProvider,
 			handler.TracingProvider,
 		}, ",")
 		goChassis.DefaultProviderChainNames = map[string]string{

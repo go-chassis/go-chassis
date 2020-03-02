@@ -1,10 +1,10 @@
 package router_test
 
 import (
+	"errors"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/router"
 	_ "github.com/go-chassis/go-chassis/initiator"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

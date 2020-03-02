@@ -9,20 +9,22 @@ Go-Chassis is a microservice framework for rapid development of microservices in
 
 ### Why use Go chassis
 
-go chassis is designed as a protocol-independent framework, any protocol 
+- go chassis is designed as a protocol-independent framework, any protocol 
 is able to integrate with go chassis and leverage same function like load balancing,
 circuit breaker,rate limiting, routing management, those function resilient your service
 
-go chassis makes service observable by bringing open tracing and prometheus to it.
+- go chassis makes service observable by bringing open tracing and prometheus to it.
 
-go chassis is flexible, many different modules can be replaced by other implementation, 
+- go chassis is flexible, many different modules can be replaced by other implementation, 
 like registry, metrics, handler chain, config server etc 
 
-With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
+- With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
 your don't need to investigate, implement and integrate many solutions yourself.
 
-go chassis supports Istio control panel, go chassis can bring better performance to go program, 
+- go chassis supports Istio control panel, go chassis can bring better performance to go program, 
 you can use Istio configurations to control go chassis.
+
+- https://github.com/huaweicloud/spring-cloud-huawei integrate with servicecomb, go chassis can work together with spring cloud.
 
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
@@ -60,14 +62,13 @@ if you are facing network issue
 export GOPROXY=https://goproxy.io
 ```
 
-3.[Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
+3.[Write your first http micro service](https://go-chassis.readthedocs.io/en/latest/getstarted/writing-rest.html)
 
 
 # Documentations
-You can see more documentations in [here](http://docs.go-chassis.com/), 
+You can see more documentations in [here](https://go-chassis.readthedocs.io/), 
 this online doc is for latest version of go chassis, if you want to see your version's doc,
 follow [here](docs/README.md) to generate it in local
-
 # Examples
 You can check examples [here](examples)
 
@@ -114,6 +115,9 @@ A service mesh able to co-work with go chassis,
 it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/configurations/edge.html) also.
 - [KubeEdge](https://github.com/kubeedge/kubeedge): Kubernetes Native Edge Computing Framework (project under CNCF) https://kubeedge.io
 
+# Known Users
+![趣头条](https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=61fc74acb212c8fcb4f3f1cbc438f578/d8f9d72a6059252dc75d1b883f9b033b5ab5b9f7.jpg)
+
 # To start developing go chassis
 
 1. Install [go 1.12+](https://golang.org/doc/install) 
@@ -140,4 +144,6 @@ which means you have to solve compiling issue your own.
 
 4. Install [service-center](http://servicecomb.apache.org/release/)
 
+
+For more infomation about go chassis, read github wiki page
 

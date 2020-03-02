@@ -9,21 +9,14 @@ you can control the value by setting environment
 > where to read the schema files, 
 the path format is {SCHEMA_ROOT}/{SERVICE_NAME}/{schema_id}.yaml 
 
+**CAS_COMPONENT_NAME**
+> service name registered to service center
+
+**CAS_INSTANCE_VERSION**
+> version registered to service center
+
+**CAS_APPLICATION_NAME**
+> app registered to service center
+
 **PAAS_CSE_ENDPOINT**
 > address of config center and service center
-
-**CSE_REGISTRY_ADDR**
-> address of service center
-
-**CSE_CONFIG_CENTER_ADDR**
-> address of config center
-
-**CSE_MONITOR_SERVER_ADDR**
-> address of dashboard service
-
-**SERVICE_NAME**
-> service name will be registered in service center
-
-**VERSION**
-> version will be registered in service center
-

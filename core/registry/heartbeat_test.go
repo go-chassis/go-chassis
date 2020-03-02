@@ -30,7 +30,10 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 
 	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
-	config.Init()
+	err := config.Init()
+	if err != nil {
+		t.Error(err.Error())
+	}
 	runtime.Init()
 	registry.Enable()
 	registry.DoRegister()

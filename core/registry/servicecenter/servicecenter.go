@@ -52,34 +52,9 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 	instance.ServiceId = sid
 	instanceID, err := r.registryClient.RegisterMicroServiceInstance(instance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("RegisterMicroServiceInstance failed.")
+		openlogging.GetLogger().Errorf("register instance failed.")
 		return "", err
 	}
-	value, ok := registry.SelfInstancesCache.Get(instance.ServiceId)
-	if !ok {
-		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	instanceIDs, ok := value.([]string)
-	if !ok {
-		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	var isRepeat bool
-	for _, va := range instanceIDs {
-		if va == instanceID {
-			isRepeat = true
-		}
-	}
-	if !isRepeat {
-		instanceIDs = append(instanceIDs, instanceID)
-	}
-	registry.SelfInstancesCache.Set(instance.ServiceId, instanceIDs, 0)
-	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, MicroServiceID: %s", instance.ServiceId)
-
-	if instance.HealthCheck == nil ||
-		instance.HealthCheck.Mode == client.CheckByHeartbeat {
-		registry.HBService.AddTask(sid, instanceID)
-	}
-	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
 	return instanceID, nil
 }
 
@@ -99,35 +74,10 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 	instance.ServiceId = microServiceID
 	instanceID, err := r.registryClient.RegisterMicroServiceInstance(instance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("RegisterMicroServiceInstance failed. %s", err)
+		openlogging.GetLogger().Errorf("register instance failed. %s", err)
 		return microServiceID, "", err
 	}
-
-	value, ok := registry.SelfInstancesCache.Get(instance.ServiceId)
-	if !ok {
-		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	instanceIDs, ok := value.([]string)
-	if !ok {
-		openlogging.GetLogger().Warnf("RegisterMicroServiceInstance type asserts failed,  Mid/Sid: %s/%s", instance.ServiceId, instanceID)
-	}
-	var isRepeat bool
-	for _, va := range instanceIDs {
-		if va == instanceID {
-			isRepeat = true
-		}
-	}
-	if !isRepeat {
-		instanceIDs = append(instanceIDs, instanceID)
-	}
-	registry.SelfInstancesCache.Set(instance.ServiceId, instanceIDs, 0)
-	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, MicroServiceID: %s", instance.ServiceId)
-
-	if instance.HealthCheck == nil ||
-		instance.HealthCheck.Mode == client.CheckByHeartbeat {
-		registry.HBService.AddTask(microServiceID, instanceID)
-	}
-	openlogging.GetLogger().Infof("RegisterMicroServiceInstance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID)
+	openlogging.GetLogger().Infof("register instance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID)
 	return microServiceID, instanceID, nil
 }
 
@@ -135,27 +85,10 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error {
 	isSuccess, err := r.registryClient.UnregisterMicroServiceInstance(microServiceID, microServiceInstanceID)
 	if !isSuccess || err != nil {
-		openlogging.GetLogger().Errorf("unregisterMicroServiceInstance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		openlogging.GetLogger().Errorf("unregister instance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 		return err
 	}
-
-	value, ok := registry.SelfInstancesCache.Get(microServiceID)
-	if !ok {
-		openlogging.GetLogger().Warnf("UnregisterMicroServiceInstance get SelfInstancesCache failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
-	}
-	instanceIDs, ok := value.([]string)
-	if !ok {
-		openlogging.GetLogger().Warnf("UnregisterMicroServiceInstance type asserts failed, Mid/Sid: %s/%s", microServiceID, microServiceInstanceID)
-	}
-	var newInstanceIDs = make([]string, 0)
-	for _, v := range instanceIDs {
-		if v != microServiceInstanceID {
-			newInstanceIDs = append(newInstanceIDs, v)
-		}
-	}
-	registry.SelfInstancesCache.Set(microServiceID, newInstanceIDs, 0)
-
-	openlogging.GetLogger().Debugf("unregisterMicroServiceInstance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	openlogging.GetLogger().Debugf("unregister instance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
 	return nil
 }
 
@@ -170,7 +103,7 @@ func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (
 		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
 		return bo, err
 	}
-	openlogging.GetLogger().Debugf("Heartbeat success, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
+	openlogging.GetLogger().Debugf("heartbeat success, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
 	return bo, nil
 }
 

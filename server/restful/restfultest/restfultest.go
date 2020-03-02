@@ -59,18 +59,18 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 		handler := func(req *restful.Request, rep *restful.Response) {
 			defer func() {
 				if r := recover(); r != nil {
+					stacktrace := chassisRestful.GetTrace()
 					openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
 						"path":  routes[k].Path,
 						"panic": r,
+						"stack": stacktrace,
 					}))
 					if err := rep.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
-						openlogging.Error("write response failed when handler panic,", openlogging.WithTags(openlogging.Tags{
-							"err": err.Error(),
-						}))
+						openlogging.Error("write response failed when handler panic,err: " + err.Error())
 					}
 				}
 			}()
-			inv, err := chassisRestful.HTTPRequest2Invocation(req, schemaName, routes[k].ResourceFuncName)
+			inv, err := chassisRestful.HTTPRequest2Invocation(req, schemaName, routes[k].ResourceFuncName, rep)
 			if err != nil {
 				openlogging.Error("transfer http request to invocation failed", openlogging.WithTags(openlogging.Tags{
 					"err": err.Error(),

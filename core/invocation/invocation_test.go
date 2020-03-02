@@ -21,7 +21,6 @@ func TestInvocation_Headers(t *testing.T) {
 	inv.SetHeader("asd", "123")
 	assert.Equal(t, "123", inv.Headers()["asd"])
 	assert.Equal(t, "1", inv.Metadata["a"])
-	inv.Reset()
 }
 
 /*

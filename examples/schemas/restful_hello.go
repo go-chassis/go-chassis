@@ -71,7 +71,11 @@ func (r *RestFulHello) URLPatterns() []rf.Route {
 		{Method: http.MethodPost, Path: "/sayhi", ResourceFunc: r.Sayhi,
 			Returns: []*rf.Returns{{Code: 200}}},
 
-		{Method: http.MethodPost, Path: "/sayjson", ResourceFunc: r.SayJSON,
+		{Method: http.MethodPost, Path: "/sayjson",
+			ResourceFunc: r.SayJSON,
+			Metadata: map[string]interface{}{
+				"tags": []string{"users", "test"},
+			},
 			Returns: []*rf.Returns{{Code: 200}}},
 	}
 }

@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/control"
+	_ "github.com/go-chassis/go-chassis/control/archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	chassisModel "github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/handler"
@@ -25,7 +27,6 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
-	"io"
 )
 
 var callTimes = 0

@@ -27,7 +27,7 @@ type Response struct {
 // ResponseCallBack process invocation response
 type ResponseCallBack func(*Response) error
 
-//Invocation is the basic struct that used in go sdk to make client and transport layer transparent .
+//Invocation is the basic struct that used in go chassis to make client and transport layer transparent .
 //developer should implements a client which is able to transfer invocation to there own request
 //a protocol server should transfer request to invocation and then back to request
 type Invocation struct {
@@ -69,7 +69,21 @@ func (inv *Invocation) Reset() {
 	inv.RouteTags = utiltags.Tags{}
 	inv.Filters = nil
 	inv.Strategy = ""
+}
 
+//GetMark return match rule name that request matches
+func (inv *Invocation) GetMark() string {
+	m, ok := inv.Metadata["mark"].(string)
+	if ok {
+		return m
+	}
+	return ""
+}
+
+//Mark marks a invocation, it means the invocation matches a match rule
+//so that governance rule can be applied to invocation with specific mark
+func (inv *Invocation) Mark(matchRuleName string) {
+	inv.Metadata["mark"] = matchRuleName
 }
 
 // New create invocation, context can not be nil

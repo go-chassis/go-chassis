@@ -30,13 +30,14 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	}
 
 	defaultTags := utiltags.Tags{}
-	loadbalancer.SetLatency(2*time.Second, "127.0.0.1:8080", "Server", defaultTags, common.ProtocolRest)
-	loadbalancer.SetLatency(3*time.Second, "127.0.0.1:8080", "Server", defaultTags, common.ProtocolRest)
-	loadbalancer.SetLatency(4*time.Second, "127.0.0.1:8080", "Server", defaultTags, common.ProtocolRest)
+	restTags := utiltags.Tags{Label: "app:mesh-app|version:latest"}
+	loadbalancer.SetLatency(2*time.Second, "127.0.0.1:8080", "Server", restTags, common.ProtocolRest)
+	loadbalancer.SetLatency(3*time.Second, "127.0.0.1:8080", "Server", restTags, common.ProtocolRest)
+	loadbalancer.SetLatency(4*time.Second, "127.0.0.1:8080", "Server", restTags, common.ProtocolRest)
 
-	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:8080", "Server", defaultTags, common.ProtocolRest)
-	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:8080", "Server", defaultTags, common.ProtocolRest)
-	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:8080", "Server", defaultTags, common.ProtocolRest)
+	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:8080", "Server", restTags, common.ProtocolRest)
+	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:8080", "Server", restTags, common.ProtocolRest)
+	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:8080", "Server", restTags, common.ProtocolRest)
 
 	loadbalancer.SetLatency(1*time.Second, "127.0.0.1:9090", "Server", defaultTags, common.ProtocolHighway)
 	loadbalancer.SetLatency(3*time.Second, "127.0.0.1:9090", "Server", defaultTags, common.ProtocolHighway)
@@ -53,7 +54,7 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	inv := &invocation.Invocation{
 		Protocol: common.ProtocolRest,
 	}
-	s.ReceiveData(inv, instances, "Server")
+	s.ReceiveData(inv, instances, "Server|app:mesh-app|version:latest")
 	time.Sleep(31 * time.Second)
 	var count int
 	for i := 0; i < 100; i++ {

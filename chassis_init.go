@@ -34,10 +34,8 @@ import (
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/go-chassis/go-chassis/eventlistener"
-	"github.com/go-chassis/go-chassis/pkg/circuit"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -155,8 +153,7 @@ func (c *chassis) initialize() error {
 	if err = metrics.Init(); err != nil {
 		return err
 	}
-	go hystrix.StartReporter()
-	circuit.Init()
+
 	eventlistener.Init()
 	c.Initialized = true
 	return nil

@@ -1,0 +1,52 @@
+swagger: "2.0"
+info:
+  title: ""
+  version: ""
+basePath: /
+paths:
+  /:
+    get:
+      operationId: Root
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /metrics:
+    get:
+      operationId: HTTPHandleFunc
+  /sayhello/{userid}:
+    get:
+      operationId: Sayhello
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /sayhi:
+    post:
+      operationId: Sayhi
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""
+  /sayjson:
+    post:
+      tags:
+      - users
+      - test
+      operationId: SayJSON
+      consumes:
+      - '*/*'
+      produces:
+      - '*/*'
+      responses:
+        "200":
+          description: ""

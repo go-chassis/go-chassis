@@ -23,21 +23,11 @@ const (
 
 // constant for micro service environment parameters
 const (
-	Env = "CHASSIS_ENV"
-
-	EnvNodeIP     = "HOSTING_SERVER_IP"
-	EnvSchemaRoot = "SCHEMA_ROOT"
-	EnvProjectID  = "CSE_PROJECT_ID"
-)
-
-// constant environment keys service center, config center, monitor server addresses
-const (
-	CseRegistryAddress     = "CSE_REGISTRY_ADDR"
-	CseConfigCenterAddress = "CSE_CONFIG_CENTER_ADDR"
-	CseMonitorServer       = "CSE_MONITOR_SERVER_ADDR"
-	EnvCSEEndpoint         = "PAAS_CSE_ENDPOINT"
-	EnvCSESCEndpoint       = "PAAS_CSE_SC_ENDPOINT"
-	EnvCSECCEndpoint       = "PAAS_CSE_CC_ENDPOINT"
+	EnvCSEEndpoint = "PAAS_CSE_ENDPOINT"
+	EnvNodeIP      = "HOSTING_SERVER_IP"
+	EnvSchemaRoot  = "SCHEMA_ROOT"
+	EnvSCEndpoint  = "PAAS_CSE_SC_ENDPOINT"
+	EnvCCEndpoint  = "PAAS_CSE_CC_ENDPOINT"
 )
 
 // env connect with "." like service_description.name and service_description.version which can not be used in k8s.
@@ -45,8 +35,10 @@ const (
 // To support this declaring constant for service name and version
 // constant for service name and version.
 const (
-	ServiceName = "SERVICE_NAME"
-	Version     = "VERSION"
+	ServiceName = "CAS_COMPONENT_NAME"
+	Version     = "CAS_INSTANCE_VERSION"
+	App         = "CAS_APPLICATION_NAME"
+	Env         = "ENVIRONMENT"
 )
 
 // constant for microservice environment

@@ -5,18 +5,15 @@ import (
 	_ "github.com/go-chassis/go-chassis/initiator"
 
 	"errors"
-	"os"
-	"testing"
-	"time"
-
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/registry/mock"
 	"github.com/go-chassis/go-chassis/core/server"
 	_ "github.com/go-chassis/go-chassis/server/restful"
-	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
 func TestWithOptions(t *testing.T) {
@@ -48,25 +45,6 @@ func TestSrcMgr(t *testing.T) {
 
 	err := config.Init()
 	assert.NoError(t, err)
-
-	var arr = []string{"127.0.0.1", "hgfghfff"}
-
-	registry.SelfInstancesCache = cache.New(0, 0)
-	registry.SelfInstancesCache.Set("abc", arr, time.Second*30)
-	/*a:=func(...transport.Option) transport.Transport{
-		//var t transport.Transport
-		tp :=tcp.NewTransport()
-		return tp
-	}
-
-	transport.InstallPlugin("rest",a)*/
-
-	/*f:=func(...server.Option) server.Server{
-		var s server.Server
-
-		return s
-	}
-	server.InstallPlugin("rest",f)*/
 
 	testRegistryObj := new(mock.RegistratorMock)
 	registry.DefaultRegistrator = testRegistryObj
@@ -126,21 +104,10 @@ func TestSrcMgrErr(t *testing.T) {
 	err := config.Init()
 	assert.NoError(t, err)
 
-	var arr = []string{"127.0.0.1", "hgfghfff"}
-	registry.SelfInstancesCache = cache.New(0, 0)
-	registry.SelfInstancesCache.Set("abc", arr, time.Second*30)
-	registry.SelfInstancesCache.Set("def", "def", time.Second*30)
-
-	/*f:=func(...server.Option) server.Server{
-		var s server.Server
-		return s
-	}
-	server.InstallPlugin("protocol",f)*/
-
 	testRegistryObj := new(mock.RegistratorMock)
 	registry.DefaultRegistrator = testRegistryObj
 	//testRegistryObj.On("UnregisterMicroServiceInstance","microServiceID", "microServiceInstanceID").Return(nil)
-	testRegistryObj.On("UnRegisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
+	testRegistryObj.On("Unregister instance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""

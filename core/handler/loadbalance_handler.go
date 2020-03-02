@@ -13,6 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/core/status"
 	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/pkg/util"
 	"github.com/go-mesh/openlogging"
@@ -88,7 +89,7 @@ func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocatio
 func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, lbConfig control.LoadBalancingConfig, cb invocation.ResponseCallBack) {
 	ep, err := lb.getEndpoint(i, lbConfig)
 	if err != nil {
-		WriteBackErr(err, 0, cb)
+		WriteBackErr(err, status.Status(i.Protocol, status.ServiceUnavailable), cb)
 		return
 	}
 
@@ -117,7 +118,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 	ep, err := lb.getEndpoint(i, lbConfig)
 	if err != nil {
 		// if get endpoint failed, no need to retry
-		WriteBackErr(err, 0, cb)
+		WriteBackErr(err, status.Status(i.Protocol, status.ServiceUnavailable), cb)
 		return
 	}
 	operation := func() error {
