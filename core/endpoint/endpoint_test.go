@@ -75,7 +75,8 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.EndPoint{
-			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port: "8088", SslEnabled: false}},
+			"rest": {HostOrIP: "10.146.207.197", Port: "8088", SslEnabled: false},
+		},
 		HostName: "default",
 		Status:   common.DefaultStatus,
 	}
@@ -108,7 +109,7 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.EndPoint{
-			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port: "8080", SslEnabled: true},
+			"rest": {HostOrIP: "10.146.207.197", Port: "8080", SslEnabled: true},
 		},
 		HostName: "default",
 		Status:   common.DefaultStatus,
@@ -142,7 +143,7 @@ func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.EndPoint{
-			"rest": &registry.EndPoint{HostOrIP: "10.146.207.197", Port: "8080", SslEnabled: false},
+			"rest": {HostOrIP: "10.146.207.197", Port: "8080", SslEnabled: false},
 		},
 		HostName: "default",
 		Status:   common.DefaultStatus,

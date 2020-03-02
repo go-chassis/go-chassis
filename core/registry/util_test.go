@@ -157,8 +157,8 @@ func TestUtil(t *testing.T) {
 }
 func TestGetProtocolList(t *testing.T) {
 	m := map[string]*registry.EndPoint{
-		"rest": &registry.EndPoint{HostOrIP: "1.1.1.1"},
-		"http": &registry.EndPoint{HostOrIP: "1.1.1.1"},
+		"rest": {HostOrIP: "1.1.1.1"},
+		"http": {HostOrIP: "1.1.1.1"},
 	}
 	eps := registry.GetProtocolList(m)
 	assert.Equal(t, 2, len(eps))

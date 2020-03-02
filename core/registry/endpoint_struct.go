@@ -21,6 +21,7 @@ func NewEndPoint(schema string) (*EndPoint, error) {
 	return parseAddress(schema)
 }
 
+//Host return the host
 func (e *EndPoint) Host() string {
 	if e.Port == "" {
 		return e.HostOrIP
@@ -28,6 +29,7 @@ func (e *EndPoint) Host() string {
 	return net.JoinHostPort(e.HostOrIP, e.Port)
 }
 
+//GenEndpoint return the endpoint string which it contain the sslEnabled=true query arg or not
 func (e *EndPoint) GenEndpoint() string {
 	sslFlag := ""
 	if e.SslEnabled {
@@ -40,10 +42,12 @@ func (e *EndPoint) GenEndpoint() string {
 	return net.JoinHostPort(e.HostOrIP, e.Port) + sslFlag
 }
 
+//IsSSLEnable return it is use ssl or not
 func (e *EndPoint) IsSSLEnable() bool {
 	return e.SslEnabled
 }
 
+//SetSSLEnable set ssl enable or not
 func (e *EndPoint) SetSSLEnable(enabled bool) {
 	e.SslEnabled = enabled
 }

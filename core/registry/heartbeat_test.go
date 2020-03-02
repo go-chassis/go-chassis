@@ -47,12 +47,12 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]*registry.EndPoint{"rest": &registry.EndPoint{
+		EndpointsMap: map[string]*registry.EndPoint{"rest": {
 			HostOrIP:   "10.146.207.197",
 			Port:       "8080",
 			SslEnabled: false,
 		},
-			"cse": &registry.EndPoint{
+			"cse": {
 				HostOrIP:   "10.146.207.197",
 				Port:       "8080",
 				SslEnabled: false,
@@ -97,7 +97,7 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]*registry.EndPoint{"rest": &registry.EndPoint{
+		EndpointsMap: map[string]*registry.EndPoint{"rest": {
 			HostOrIP:   "10.146.207.197",
 			Port:       "8080",
 			SslEnabled: false,

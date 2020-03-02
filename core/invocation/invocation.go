@@ -123,6 +123,7 @@ func (inv *Invocation) Headers() map[string]string {
 	return inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 }
 
+//GenEndPoint return the endpoint what contain sslEnabled query arg when ssl is enable
 func (inv *Invocation) GenEndPoint() string {
 	if inv.SslEnable {
 		return inv.Endpoint + "?" + ssLEnabledQuery
