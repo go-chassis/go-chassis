@@ -31,10 +31,27 @@ func TestSessionStickinessStrategy_Pick(t *testing.T) {
 	config.Init()
 	instances := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]string{"rest": "1", "highway": "10.0.0.3:8080"},
+			EndpointsMap: map[string]*registry.EndPoint{
+				"rest": {
+					false,
+					"10.0.0.3",
+					"8080",
+				},
+			},
 		},
 		{
-			EndpointsMap: map[string]string{"rest": "2", "highway": "10.0.0.3:8080"},
+			EndpointsMap: map[string]*registry.EndPoint{
+				"rest": {
+					false,
+					"2",
+					"",
+				},
+				"highway": {
+					false,
+					"10.0.0.3",
+					"8080",
+				},
+			},
 		},
 	}
 
@@ -50,7 +67,7 @@ func TestSessionStickinessStrategy_Pick(t *testing.T) {
 		instance, err := s.Pick()
 		assert.NoError(t, err)
 		assert.NotEqual(t, last, instance.EndpointsMap["rest"])
-		last = instance.EndpointsMap["rest"]
+		last = instance.EndpointsMap["rest"].GenEndpoint()
 	}
 	session.Save("dummy", "1", 0)
 	for i := 0; i < 100; i++ {

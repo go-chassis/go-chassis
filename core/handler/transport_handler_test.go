@@ -1,7 +1,9 @@
 package handler_test
 
 import (
+	"context"
 	"github.com/go-chassis/go-chassis/client/rest"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"io"
@@ -71,6 +73,9 @@ cse:
 	i.Reply = &helloworld.HelloReply{}
 	i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
 	i.Reply = rest.NewResponse()
+	i.Ctx = context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
+		"user": "test",
+	})
 
 	i.Endpoint = "127.0.0.1:9992"
 	i.Protocol = "rest"

@@ -64,16 +64,33 @@ func TestBuildStrategy(t *testing.T) {
 	}
 	testData2 := []*registry.MicroServiceInstance{
 		{
-			InstanceID:   "01",
-			HostName:     "test1",
-			Status:       "UP",
-			EndpointsMap: map[string]string{"rest": "127.0.0.1", "highway": "10.0.0.3:8080"},
+			InstanceID: "01",
+			HostName:   "test1",
+			Status:     "UP",
+			EndpointsMap: map[string]*registry.EndPoint{
+				"rest": {
+					false,
+					"127.0.0.1",
+					"",
+				},
+				"highway": {
+					false,
+					"10.0.0.3",
+					"8080",
+				},
+			},
 		},
 		{
-			InstanceID:   "02",
-			HostName:     "test2",
-			Status:       "UP",
-			EndpointsMap: map[string]string{"highway": "10.0.0.3:8080"},
+			InstanceID: "02",
+			HostName:   "test2",
+			Status:     "UP",
+			EndpointsMap: map[string]*registry.EndPoint{
+				"highway": {
+					false,
+					"10.0.0.3",
+					"8080",
+				},
+			},
 		},
 	}
 
@@ -151,14 +168,26 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 	}
 	testData2 := []*registry.MicroServiceInstance{
 		{
-			HostName:     "test1",
-			Status:       "UP",
-			EndpointsMap: map[string]string{"highway": "10.0.0.4:1234"},
+			HostName: "test1",
+			Status:   "UP",
+			EndpointsMap: map[string]*registry.EndPoint{
+				"highway": {
+					false,
+					"10.0.0.4",
+					"1234",
+				},
+			},
 		},
 		{
-			HostName:     "test2",
-			Status:       "UP",
-			EndpointsMap: map[string]string{"highway": "10.0.0.3:1234"},
+			HostName: "test2",
+			Status:   "UP",
+			EndpointsMap: map[string]*registry.EndPoint{
+				"highway": {
+					false,
+					"10.0.0.3",
+					"1234",
+				},
+			},
 		},
 	}
 	_, _, _ = registry.DefaultRegistrator.RegisterServiceAndInstance(testData1[0], testData2[0])

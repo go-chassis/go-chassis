@@ -45,10 +45,16 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		Level:       "FRONT",
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:5080"},
-		InstanceID:   "event1",
-		HostName:     "event_test",
-		Status:       client.MSInstanceUP,
+		EndpointsMap: map[string]*registry.EndPoint{
+			"rest": {
+				false,
+				"10.146.207.197",
+				"5080",
+			},
+		},
+		InstanceID: "event1",
+		HostName:   "event_test",
+		Status:     client.MSInstanceUP,
 	}
 	sid, instanceID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
