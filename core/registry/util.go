@@ -23,8 +23,8 @@ const (
 )
 
 //GetProtocolMap returns the protocol map
-func GetProtocolMap(eps []string) (map[string]*EndPoint, string) {
-	m := make(map[string]*EndPoint)
+func GetProtocolMap(eps []string) (map[string]*Endpoint, string) {
+	m := make(map[string]*Endpoint)
 	var p string
 	for _, addr := range eps {
 		proto := ""
@@ -49,7 +49,7 @@ func GetProtocolMap(eps []string) (map[string]*EndPoint, string) {
 }
 
 //GetProtocolList returns the protocol list
-func GetProtocolList(m map[string]*EndPoint) []string {
+func GetProtocolList(m map[string]*Endpoint) []string {
 	eps := []string{}
 	for p, ep := range m {
 		uri := p + protocolSymbol + ep.GenEndpoint()
@@ -77,8 +77,8 @@ func MakeEndpoints(m map[string]model.Protocol) []string {
 }
 
 //MakeEndpointMap returns the endpoints map
-func MakeEndpointMap(m map[string]model.Protocol) (map[string]*EndPoint, error) {
-	eps := make(map[string]*EndPoint, 0)
+func MakeEndpointMap(m map[string]model.Protocol) (map[string]*Endpoint, error) {
+	eps := make(map[string]*Endpoint, 0)
 	for name, protocol := range m {
 		ep := protocol.Listen
 		if len(protocol.Advertise) > 0 {

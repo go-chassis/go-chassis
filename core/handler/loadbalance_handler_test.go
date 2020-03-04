@@ -121,20 +121,20 @@ cse:
 	var mss []*registry.MicroServiceInstance
 	var ms1 = &registry.MicroServiceInstance{
 		InstanceID: "instanceID",
-		EndpointsMap: map[string]*registry.EndPoint{
+		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
 				HostOrIP:   "127.0.0.1",
 				Port:       "1234",
-				SslEnabled: true,
+				SSLEnabled: true,
 			},
 		},
 	}
 	var ms2 = new(registry.MicroServiceInstance)
-	ms2.EndpointsMap = map[string]*registry.EndPoint{
+	ms2.EndpointsMap = map[string]*registry.Endpoint{
 		"rest": {
 			HostOrIP:   "127.0.0.1",
 			Port:       "1234",
-			SslEnabled: true,
+			SSLEnabled: true,
 		},
 	}
 	ms2.InstanceID = "ins2"
@@ -172,8 +172,8 @@ cse:
 	assert.Equal(t, "loadbalancer", str)
 	assert.Equal(t, "rest", i.Protocol)
 	assert.Equal(t, "127.0.0.1:1234", i.Endpoint)
-	assert.Equal(t, "127.0.0.1:1234?sslEnabled=true", i.GenEndPoint())
-	assert.True(t, i.SslEnable)
+	assert.Equal(t, "127.0.0.1:1234?sslEnabled=true", i.GenEndpoint())
+	assert.True(t, i.SSLEnable)
 
 }
 func TestLBHandlerWithRetry(t *testing.T) {
@@ -235,14 +235,14 @@ cse:
 	var mss []*registry.MicroServiceInstance
 	var ms1 = &registry.MicroServiceInstance{
 		InstanceID: "instanceID",
-		EndpointsMap: map[string]*registry.EndPoint{
+		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
 				HostOrIP: "127.0.0.1",
 			},
 		},
 	}
 	var ms2 = new(registry.MicroServiceInstance)
-	ms2.EndpointsMap = map[string]*registry.EndPoint{
+	ms2.EndpointsMap = map[string]*registry.Endpoint{
 		"rest": {
 			HostOrIP: "127.0.0.1",
 		},
@@ -282,8 +282,8 @@ cse:
 	assert.Equal(t, "loadbalancer", str)
 	assert.Equal(t, "rest", i.Protocol)
 	assert.Equal(t, "127.0.0.1", i.Endpoint)
-	assert.Equal(t, "127.0.0.1", i.GenEndPoint())
-	assert.False(t, i.SslEnable)
+	assert.Equal(t, "127.0.0.1", i.GenEndpoint())
+	assert.False(t, i.SSLEnable)
 }
 func TestTLSLBHandlerWithNoRetry(t *testing.T) {
 	microContent := `---
@@ -336,8 +336,8 @@ cse:
 	var mss []*registry.MicroServiceInstance
 	var ms1 = new(registry.MicroServiceInstance)
 	var ms2 = new(registry.MicroServiceInstance)
-	var mp = make(map[string]*registry.EndPoint)
-	mp["any-tls"] = &registry.EndPoint{HostOrIP: "127.0.0.1", SslEnabled: true}
+	var mp = make(map[string]*registry.Endpoint)
+	mp["any-tls"] = &registry.Endpoint{HostOrIP: "127.0.0.1", SSLEnabled: true}
 	ms1.EndpointsMap = mp
 	ms1.InstanceID = "ins1"
 	ms2.EndpointsMap = mp
@@ -379,8 +379,8 @@ cse:
 	assert.Equal(t, "loadbalancer", str)
 	assert.Equal(t, "any-tls", i.Protocol)
 	assert.Equal(t, "127.0.0.1", i.Endpoint)
-	assert.Equal(t, "127.0.0.1?sslEnabled=true", i.GenEndPoint())
-	assert.True(t, i.SslEnable)
+	assert.Equal(t, "127.0.0.1?sslEnabled=true", i.GenEndpoint())
+	assert.True(t, i.SSLEnable)
 }
 func TestLBHandlerWithNoRetry(t *testing.T) {
 	microContent := `---
@@ -433,8 +433,8 @@ cse:
 	var mss []*registry.MicroServiceInstance
 	var ms1 = new(registry.MicroServiceInstance)
 	var ms2 = new(registry.MicroServiceInstance)
-	var mp = make(map[string]*registry.EndPoint)
-	mp["any"] = &registry.EndPoint{HostOrIP: "127.0.0.1", Port: "123", SslEnabled: false}
+	var mp = make(map[string]*registry.Endpoint)
+	mp["any"] = &registry.Endpoint{HostOrIP: "127.0.0.1", Port: "123", SSLEnabled: false}
 	ms1.EndpointsMap = mp
 	ms1.InstanceID = "ins1"
 	ms2.EndpointsMap = mp
@@ -463,7 +463,7 @@ cse:
 		testRegistryObj.On("FindMicroServiceInstances",
 			"selfServiceID", "appID", "service3", "1.0", "").
 			Return(
-				[]*registry.MicroServiceInstance{{EndpointsMap: make(map[string]*registry.EndPoint, 0)}}, nil)
+				[]*registry.MicroServiceInstance{{EndpointsMap: make(map[string]*registry.Endpoint, 0)}}, nil)
 
 		i := &invocation.Invocation{
 			MicroServiceName: "service3",
@@ -540,7 +540,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 		{
 			HostName: "test1",
 			Status:   "UP",
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					HostOrIP: "10.0.0.4",
 					Port:     "1234",
@@ -550,7 +550,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 		{
 			HostName: "test2",
 			Status:   "UP",
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					HostOrIP: "10.0.0.3",
 					Port:     "1234",

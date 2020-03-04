@@ -31,7 +31,7 @@ func TestSessionStickinessStrategy_Pick(t *testing.T) {
 	config.Init()
 	instances := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
 					"10.0.0.3",
@@ -40,7 +40,7 @@ func TestSessionStickinessStrategy_Pick(t *testing.T) {
 			},
 		},
 		{
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
 					"2",

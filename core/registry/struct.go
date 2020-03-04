@@ -41,7 +41,7 @@ type MicroServiceInstance struct {
 	DefaultProtocol string
 	DefaultEndpoint string
 	Status          string
-	EndpointsMap    map[string]*EndPoint
+	EndpointsMap    map[string]*Endpoint
 	Metadata        map[string]string
 	DataCenterInfo  *DataCenterInfo
 }

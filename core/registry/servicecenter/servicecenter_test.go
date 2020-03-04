@@ -45,7 +45,7 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]*registry.EndPoint{
+		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
 				false,
 				"10.146.207.197",

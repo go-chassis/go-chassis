@@ -67,7 +67,7 @@ func TestBuildStrategy(t *testing.T) {
 			InstanceID: "01",
 			HostName:   "test1",
 			Status:     "UP",
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
 					"127.0.0.1",
@@ -84,7 +84,7 @@ func TestBuildStrategy(t *testing.T) {
 			InstanceID: "02",
 			HostName:   "test2",
 			Status:     "UP",
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					false,
 					"10.0.0.3",
@@ -170,7 +170,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 		{
 			HostName: "test1",
 			Status:   "UP",
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					false,
 					"10.0.0.4",
@@ -181,7 +181,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 		{
 			HostName: "test2",
 			Status:   "UP",
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					false,
 					"10.0.0.3",

@@ -9,20 +9,20 @@ const (
 	ssLEnabledQuery = "sslEnabled=true"
 )
 
-// EndPoint struct having full info about micro-service instance endpoint
-type EndPoint struct {
-	SslEnabled bool
+// Endpoint struct having full info about micro-service instance endpoint
+type Endpoint struct {
+	SSLEnabled bool
 	HostOrIP   string
 	Port       string
 }
 
 // NewEndPoint return a Endpoint object what parse from url
-func NewEndPoint(schema string) (*EndPoint, error) {
+func NewEndPoint(schema string) (*Endpoint, error) {
 	return parseAddress(schema)
 }
 
 //Host return the host
-func (e *EndPoint) Host() string {
+func (e *Endpoint) Host() string {
 	if e.Port == "" {
 		return e.HostOrIP
 	}
@@ -30,9 +30,9 @@ func (e *EndPoint) Host() string {
 }
 
 //GenEndpoint return the endpoint string which it contain the sslEnabled=true query arg or not
-func (e *EndPoint) GenEndpoint() string {
+func (e *Endpoint) GenEndpoint() string {
 	sslFlag := ""
-	if e.SslEnabled {
+	if e.SSLEnabled {
 		sslFlag = "?" + ssLEnabledQuery
 	}
 
@@ -43,25 +43,25 @@ func (e *EndPoint) GenEndpoint() string {
 }
 
 //IsSSLEnable return it is use ssl or not
-func (e *EndPoint) IsSSLEnable() bool {
-	return e.SslEnabled
+func (e *Endpoint) IsSSLEnable() bool {
+	return e.SSLEnabled
 }
 
 //SetSSLEnable set ssl enable or not
-func (e *EndPoint) SetSSLEnable(enabled bool) {
-	e.SslEnabled = enabled
+func (e *Endpoint) SetSSLEnable(enabled bool) {
+	e.SSLEnabled = enabled
 }
 
-func (e *EndPoint) String() string {
+func (e *Endpoint) String() string {
 	return e.GenEndpoint()
 }
 
-func parseAddress(address string) (*EndPoint, error) {
-	ep := EndPoint{}
+func parseAddress(address string) (*Endpoint, error) {
+	ep := Endpoint{}
 	idx := strings.Index(address, "?")
 	if idx != -1 {
 		if strings.Contains(address, ssLEnabledQuery) {
-			ep.SslEnabled = true
+			ep.SSLEnabled = true
 		}
 		address = address[:idx]
 	}

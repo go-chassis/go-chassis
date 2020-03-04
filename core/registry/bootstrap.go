@@ -119,7 +119,7 @@ func RegisterServiceInstances() error {
 	}
 	openlogging.GetLogger().Infof("service support protocols %v", config.GlobalDefinition.Cse.Protocols)
 	if len(InstanceEndpoints) != 0 {
-		eps = make(map[string]*EndPoint, len(InstanceEndpoints))
+		eps = make(map[string]*Endpoint, len(InstanceEndpoints))
 		for m, ep := range InstanceEndpoints {
 			epObj, err := NewEndPoint(ep)
 			if err != nil {

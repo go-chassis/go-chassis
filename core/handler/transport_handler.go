@@ -32,10 +32,21 @@ func errNotNil(err error, cb invocation.ResponseCallBack) {
 // Handle is to handle transport related things
 func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 
-	c, err := client.GetClient(i.Protocol, i.MicroServiceName, i.GenEndPoint(), i.SslEnable)
+	c, err := client.GetClient(i.Protocol, i.MicroServiceName, i.GenEndpoint())
 	if err != nil {
 		errNotNil(err, cb)
 		return
+	}
+
+	if i.SSLEnable {
+		tlsConfig, err := client.ReadTSLConfig(i.MicroServiceName, i.Protocol)
+		if err != nil {
+			errNotNil(err, cb)
+			return
+		}
+		ops := c.GetOptions()
+		ops.TLSConfig = tlsConfig
+		c.ReloadConfigs(ops)
 	}
 
 	r := &invocation.Response{}

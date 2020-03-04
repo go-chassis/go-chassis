@@ -61,36 +61,33 @@ func GetMaxIdleCon(p string) int {
 }
 
 // CreateClient is for to create client based on protocol and the service name
-func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolClient, error) {
+func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
 		openlogging.Error(fmt.Sprintf("do not support [%s] client", protocol))
 		return nil, err
 	}
-	var tlsConfig *tls.Config
-	var sslConfig *secCommon.SSLConfig
-	if sslEnable {
-		tlsConfig, sslConfig, err = chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
-		if err != nil {
-			if !chassisTLS.IsSSLConfigNotExist(err) {
-				return nil, err
-			}
-		} else {
-			// client verify target micro service's name in mutual tls
-			// remember to set SAN (Subject Alternative Name) as server's micro service name
-			// when generating server.csr
-			tlsConfig.ServerName = service
-			openlogging.GetLogger().Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
-				protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
-		}
-	}
+	//var tlsConfig *tls.Config
+	//var sslConfig *secCommon.SSLConfig
+	//tlsConfig, sslConfig, err = chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
+	//if err != nil {
+	//	if !chassisTLS.IsSSLConfigNotExist(err) {
+	//		return nil, err
+	//	}
+	//} else {
+	//	// client verify target micro service's name in mutual tls
+	//	// remember to set SAN (Subject Alternative Name) as server's micro service name
+	//	// when generating server.csr
+	//	tlsConfig.ServerName = service
+	//	openlogging.GetLogger().Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
+	//		protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+	//}
 	var command string
 	if service != "" {
 		command = strings.Join([]string{common.Consumer, service}, ".")
 	}
 	return f(Options{
 		Service:   service,
-		TLSConfig: tlsConfig,
 		PoolSize:  GetMaxIdleCon(protocol),
 		Failure:   GetFailureMap(protocol),
 		Timeout:   config.GetTimeoutDurationFromArchaius(command, common.Consumer),
@@ -101,8 +98,28 @@ func generateKey(protocol, service, endpoint string) string {
 	return protocol + service + endpoint
 }
 
+//ReadTSLConfig return the tls config for service and protocol
+func ReadTSLConfig(service, protocol string) (*tls.Config, error) {
+	var tlsConfig *tls.Config
+	var sslConfig *secCommon.SSLConfig
+	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
+	if err != nil {
+		if !chassisTLS.IsSSLConfigNotExist(err) {
+			return nil, err
+		}
+	} else {
+		// client verify target micro service's name in mutual tls
+		// remember to set SAN (Subject Alternative Name) as server's micro service name
+		// when generating server.csr
+		tlsConfig.ServerName = service
+		openlogging.GetLogger().Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
+			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+	}
+	return tlsConfig, nil
+}
+
 // GetClient is to get the client based on protocol, service,endpoint name
-func GetClient(protocol, service, endpoint string, sslEnable bool) (ProtocolClient, error) {
+func GetClient(protocol, service, endpoint string) (ProtocolClient, error) {
 	var c ProtocolClient
 	var err error
 	key := generateKey(protocol, service, endpoint)
@@ -111,7 +128,7 @@ func GetClient(protocol, service, endpoint string, sslEnable bool) (ProtocolClie
 	sl.RUnlock()
 	if !ok {
 		openlogging.Info("Create client for " + protocol + ":" + service + ":" + endpoint)
-		c, err = CreateClient(protocol, service, endpoint, sslEnable)
+		c, err = CreateClient(protocol, service, endpoint)
 		if err != nil {
 			return nil, err
 		}

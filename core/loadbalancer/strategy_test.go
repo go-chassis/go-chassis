@@ -15,7 +15,7 @@ func TestRandomStrategy_Pick(t *testing.T) {
 	config.Init()
 	instances := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
 					"1",
@@ -29,7 +29,7 @@ func TestRandomStrategy_Pick(t *testing.T) {
 			},
 		},
 		{
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
 					"2",
@@ -66,7 +66,7 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 	config.Init()
 	instances := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
 					"1",
@@ -80,7 +80,7 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 			},
 		},
 		{
-			EndpointsMap: map[string]*registry.EndPoint{
+			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
 					"2",

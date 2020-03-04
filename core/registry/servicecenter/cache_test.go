@@ -45,7 +45,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		Level:       "FRONT",
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]*registry.EndPoint{
+		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
 				false,
 				"10.146.207.197",

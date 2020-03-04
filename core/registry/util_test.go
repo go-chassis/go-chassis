@@ -156,7 +156,7 @@ func TestUtil(t *testing.T) {
 	assert.Equal(t, common.ProtocolHighway+"://"+iputil.DefaultEndpoint4Protocol(common.ProtocolHighway), strArr[0])
 }
 func TestGetProtocolList(t *testing.T) {
-	m := map[string]*registry.EndPoint{
+	m := map[string]*registry.Endpoint{
 		"rest": {HostOrIP: "1.1.1.1"},
 		"http": {HostOrIP: "1.1.1.1"},
 	}

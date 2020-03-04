@@ -33,7 +33,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 	datacenter.Name = config.GlobalDefinition.DataCenter.Name
 	testData := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]*registry.EndPoint{"rest": {
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
 				"127.0.0.1",
 				"80",
@@ -42,7 +42,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 			DataCenterInfo: datacenter,
 		},
 		{
-			EndpointsMap: map[string]*registry.EndPoint{"rest": {
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
 				"127.0.0.1",
 				"80",
@@ -58,7 +58,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 	datacenter.Region = "default"
 	testData = []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]*registry.EndPoint{"rest": {
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
 				"127.0.0.1",
 				"80",
@@ -76,7 +76,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 	datacenter.AvailableZone = "default-df-2"
 	testData = []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]*registry.EndPoint{"rest": {
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
 				"127.0.0.1",
 				"80",

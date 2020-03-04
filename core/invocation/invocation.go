@@ -32,7 +32,7 @@ type ResponseCallBack func(*Response) error
 //a protocol server should transfer request to invocation and then back to request
 type Invocation struct {
 	HandlerIndex       int
-	SslEnable          bool
+	SSLEnable          bool
 	Endpoint           string //service's ip and port, it is decided in load balancing
 	Protocol           string
 	Port               string //Port is the name of a real service port
@@ -54,7 +54,7 @@ type Invocation struct {
 //Reset reset clear a invocation
 func (inv *Invocation) Reset() {
 	inv.Endpoint = ""
-	inv.SslEnable = false
+	inv.SSLEnable = false
 	inv.Protocol = ""
 	inv.SourceServiceID = ""
 	inv.SourceMicroService = ""
@@ -123,9 +123,9 @@ func (inv *Invocation) Headers() map[string]string {
 	return inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 }
 
-//GenEndPoint return the endpoint what contain sslEnabled query arg when ssl is enable
-func (inv *Invocation) GenEndPoint() string {
-	if inv.SslEnable {
+//GenEndpoint return the endpoint what contain sslEnabled query arg when ssl is enable
+func (inv *Invocation) GenEndpoint() string {
+	if inv.SSLEnable {
 		return inv.Endpoint + "?" + ssLEnabledQuery
 	}
 	return inv.Endpoint

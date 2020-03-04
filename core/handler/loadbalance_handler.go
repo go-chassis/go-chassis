@@ -22,7 +22,7 @@ import (
 // LBHandler loadbalancer handler struct
 type LBHandler struct{}
 
-func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.LoadBalancingConfig) (*registry.EndPoint, error) {
+func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.LoadBalancingConfig) (*registry.Endpoint, error) {
 	var strategyFun func() loadbalancer.Strategy
 	var err error
 	if i.Strategy == "" {
@@ -94,7 +94,7 @@ func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, l
 	}
 
 	i.Endpoint = ep.Host()
-	i.SslEnable = ep.IsSSLEnable()
+	i.SSLEnable = ep.IsSSLEnable()
 	chain.Next(i, cb)
 }
 
@@ -123,7 +123,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 	}
 	operation := func() error {
 		i.Endpoint = ep.Host()
-		i.SslEnable = ep.IsSSLEnable()
+		i.SSLEnable = ep.IsSSLEnable()
 		callTimes++
 		var respErr error
 		i.HandlerIndex = handlerIndex
