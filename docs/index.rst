@@ -14,9 +14,7 @@ Welcome to go-chassis's documentation!
    get-started
    user-guides
    middleware
-   istio-guides
-   huawei-guides
-   discovery-guides
+   control-plane
    plugin-tracing-guides
    protocol-plugins
 
