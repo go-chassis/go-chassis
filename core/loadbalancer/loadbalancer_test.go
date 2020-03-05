@@ -71,12 +71,10 @@ func TestBuildStrategy(t *testing.T) {
 				"rest": {
 					false,
 					"127.0.0.1",
-					"",
 				},
 				"highway": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},
@@ -87,8 +85,7 @@ func TestBuildStrategy(t *testing.T) {
 			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},
@@ -173,8 +170,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					false,
-					"10.0.0.4",
-					"1234",
+					"10.0.0.4:1234",
 				},
 			},
 		},
@@ -184,8 +180,7 @@ func BenchmarkDefaultSelector_Select(b *testing.B) {
 			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
 					false,
-					"10.0.0.3",
-					"1234",
+					"10.0.0.3:1234",
 				},
 			},
 		},

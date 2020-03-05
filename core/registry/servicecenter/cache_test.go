@@ -48,8 +48,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
 				false,
-				"10.146.207.197",
-				"5080",
+				"10.146.207.197:5080",
 			},
 		},
 		InstanceID: "event1",

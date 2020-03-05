@@ -123,8 +123,7 @@ cse:
 		InstanceID: "instanceID",
 		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
-				HostOrIP:   "127.0.0.1",
-				Port:       "1234",
+				Host:       "127.0.0.1:1234",
 				SSLEnabled: true,
 			},
 		},
@@ -132,8 +131,7 @@ cse:
 	var ms2 = new(registry.MicroServiceInstance)
 	ms2.EndpointsMap = map[string]*registry.Endpoint{
 		"rest": {
-			HostOrIP:   "127.0.0.1",
-			Port:       "1234",
+			Host:       "127.0.0.1:1234",
 			SSLEnabled: true,
 		},
 	}
@@ -237,14 +235,14 @@ cse:
 		InstanceID: "instanceID",
 		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
-				HostOrIP: "127.0.0.1",
+				Host: "127.0.0.1",
 			},
 		},
 	}
 	var ms2 = new(registry.MicroServiceInstance)
 	ms2.EndpointsMap = map[string]*registry.Endpoint{
 		"rest": {
-			HostOrIP: "127.0.0.1",
+			Host: "127.0.0.1",
 		},
 	}
 	ms2.InstanceID = "ins2"
@@ -337,7 +335,7 @@ cse:
 	var ms1 = new(registry.MicroServiceInstance)
 	var ms2 = new(registry.MicroServiceInstance)
 	var mp = make(map[string]*registry.Endpoint)
-	mp["any-tls"] = &registry.Endpoint{HostOrIP: "127.0.0.1", SSLEnabled: true}
+	mp["any-tls"] = &registry.Endpoint{Host: "127.0.0.1", SSLEnabled: true}
 	ms1.EndpointsMap = mp
 	ms1.InstanceID = "ins1"
 	ms2.EndpointsMap = mp
@@ -434,7 +432,7 @@ cse:
 	var ms1 = new(registry.MicroServiceInstance)
 	var ms2 = new(registry.MicroServiceInstance)
 	var mp = make(map[string]*registry.Endpoint)
-	mp["any"] = &registry.Endpoint{HostOrIP: "127.0.0.1", Port: "123", SSLEnabled: false}
+	mp["any"] = &registry.Endpoint{Host: "127.0.0.1:123", SSLEnabled: false}
 	ms1.EndpointsMap = mp
 	ms1.InstanceID = "ins1"
 	ms2.EndpointsMap = mp
@@ -542,8 +540,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			Status:   "UP",
 			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
-					HostOrIP: "10.0.0.4",
-					Port:     "1234",
+					Host: "10.0.0.4:1234",
 				},
 			},
 		},
@@ -552,8 +549,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			Status:   "UP",
 			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
-					HostOrIP: "10.0.0.3",
-					Port:     "1234",
+					Host: "10.0.0.3:1234",
 				},
 			},
 		},

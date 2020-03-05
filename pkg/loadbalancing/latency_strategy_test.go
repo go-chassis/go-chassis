@@ -25,13 +25,11 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
-					"127.0.0.1",
-					"8080",
+					"127.0.0.1:8080",
 				},
 				"highway": {
 					false,
-					"127.0.0.1",
-					"9090",
+					"127.0.0.1:9090",
 				},
 			},
 		},
@@ -39,13 +37,11 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 				"highway": {
 					false,
-					"10.0.0.3",
-					"9090",
+					"10.0.0.3:9090",
 				},
 			},
 		},

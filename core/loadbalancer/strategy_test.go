@@ -19,12 +19,10 @@ func TestRandomStrategy_Pick(t *testing.T) {
 				"rest": {
 					false,
 					"1",
-					"",
 				},
 				"highway": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},
@@ -33,12 +31,10 @@ func TestRandomStrategy_Pick(t *testing.T) {
 				"rest": {
 					false,
 					"2",
-					"",
 				},
 				"highway": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},
@@ -70,12 +66,10 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 				"rest": {
 					false,
 					"1",
-					"",
 				},
 				"highway": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},
@@ -84,12 +78,10 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 				"rest": {
 					false,
 					"2",
-					"",
 				},
 				"highway": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},

@@ -35,8 +35,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 		{
 			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
-				"127.0.0.1",
-				"80",
+				"127.0.0.1:80",
 			}},
 			Metadata:       map[string]string{"key": "1"},
 			DataCenterInfo: datacenter,
@@ -44,8 +43,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 		{
 			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
-				"127.0.0.1",
-				"80",
+				"127.0.0.1:80",
 			}},
 			Metadata: map[string]string{"key": "1"},
 		},
@@ -60,8 +58,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 		{
 			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
-				"127.0.0.1",
-				"80",
+				"127.0.0.1:80",
 			}},
 			Metadata:       map[string]string{"key": "1"},
 			DataCenterInfo: datacenter,
@@ -78,8 +75,7 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 		{
 			EndpointsMap: map[string]*registry.Endpoint{"rest": {
 				false,
-				"127.0.0.1",
-				"80",
+				"127.0.0.1:80",
 			}},
 			Metadata:       map[string]string{"key": "1"},
 			DataCenterInfo: datacenter,

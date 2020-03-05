@@ -50,19 +50,19 @@ func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 
 		c: &http.Client{
 			Timeout:   opts.Timeout,
-			Transport: &tp,
+			Transport: tp,
 		},
 	}
 	return rc, nil
 }
 
-func newTransport(opts client.Options) http.Transport {
+func newTransport(opts client.Options) *http.Transport {
 	poolSize := DefaultMaxConnsPerHost
 	if opts.PoolSize != 0 {
 		poolSize = opts.PoolSize
 	}
 
-	tp := http.Transport{
+	tp := &http.Transport{
 		MaxIdleConns:        poolSize,
 		MaxIdleConnsPerHost: poolSize,
 		DialContext: (&net.Dialer{

@@ -7,7 +7,6 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-mesh/openlogging"
-	"net"
 )
 
 //GetEndpoint is an API used to get the endpoint of a service in discovery service
@@ -31,9 +30,9 @@ func GetEndpoint(appID, microService, version string) (string, error) {
 	for _, instance := range instances {
 		for _, value := range instance.EndpointsMap {
 			if value.IsSSLEnable() {
-				endpoint = "https://" + net.JoinHostPort(value.HostOrIP, value.Port)
+				endpoint = "https://" + value.Host
 			} else {
-				endpoint = "http://" + net.JoinHostPort(value.HostOrIP, value.Port)
+				endpoint = "http://" + value.Host
 			}
 		}
 	}

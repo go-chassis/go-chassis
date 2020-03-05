@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"net"
 	"strings"
 )
 
@@ -12,21 +11,12 @@ const (
 // Endpoint struct having full info about micro-service instance endpoint
 type Endpoint struct {
 	SSLEnabled bool
-	HostOrIP   string
-	Port       string
+	Host       string
 }
 
 // NewEndPoint return a Endpoint object what parse from url
 func NewEndPoint(schema string) (*Endpoint, error) {
 	return parseAddress(schema)
-}
-
-//Host return the host
-func (e *Endpoint) Host() string {
-	if e.Port == "" {
-		return e.HostOrIP
-	}
-	return net.JoinHostPort(e.HostOrIP, e.Port)
 }
 
 //GenEndpoint return the endpoint string which it contain the sslEnabled=true query arg or not
@@ -36,10 +26,7 @@ func (e *Endpoint) GenEndpoint() string {
 		sslFlag = "?" + ssLEnabledQuery
 	}
 
-	if e.Port == "" {
-		return e.HostOrIP + sslFlag
-	}
-	return net.JoinHostPort(e.HostOrIP, e.Port) + sslFlag
+	return e.Host + sslFlag
 }
 
 //IsSSLEnable return it is use ssl or not
@@ -66,14 +53,9 @@ func parseAddress(address string) (*Endpoint, error) {
 		address = address[:idx]
 	}
 	if pIdx := strings.Index(address, ":"); pIdx == -1 {
-		ep.HostOrIP = address
+		ep.Host = address
 		return &ep, nil
 	}
-	ip, port, err := net.SplitHostPort(address)
-	if err != nil {
-		return nil, err
-	}
-	ep.HostOrIP = ip
-	ep.Port = port
+	ep.Host = address
 	return &ep, nil
 }

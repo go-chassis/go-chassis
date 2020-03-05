@@ -34,8 +34,7 @@ func TestSessionStickinessStrategy_Pick(t *testing.T) {
 			EndpointsMap: map[string]*registry.Endpoint{
 				"rest": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},
@@ -44,12 +43,10 @@ func TestSessionStickinessStrategy_Pick(t *testing.T) {
 				"rest": {
 					false,
 					"2",
-					"",
 				},
 				"highway": {
 					false,
-					"10.0.0.3",
-					"8080",
+					"10.0.0.3:8080",
 				},
 			},
 		},
