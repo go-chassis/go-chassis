@@ -23,7 +23,7 @@ import (
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/configcenter"
+	"github.com/go-chassis/go-chassis/configserver"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -130,11 +130,11 @@ func (c *chassis) initialize() error {
 		}
 	}
 
-	err = configcenter.Init()
+	err = configserver.Init()
 	if err != nil {
 		openlogging.Warn("lost config server: " + err.Error())
 	}
-	// router needs get configs from config-center when init
+	// router needs get configs from config-server when init
 	// so it must init after bootstrap
 	if err = router.Init(); err != nil {
 		return err

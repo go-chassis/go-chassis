@@ -1,4 +1,4 @@
-package configcenter
+package configserver
 
 import (
 	"crypto/tls"
@@ -19,10 +19,8 @@ import (
 )
 
 const (
-	//Name is a variable of type string
-	Name = "configcenter"
-	//DefaultConfigCenter is config center
-	DefaultConfigCenter = "config_center"
+	//configServerName is a variable of type string of config server
+	configServerName = "configServer"
 )
 
 //ErrRefreshMode means config is mis used
@@ -31,18 +29,18 @@ var (
 	ErrRegistryDisabled = errors.New("discovery is disabled")
 )
 
-// Init initialize config center
+// Init initialize config server
 func Init() error {
-	configCenterURL, err := GetConfigCenterEndpoint()
+	configServerURL, err := GetConfigServerEndpoint()
 	if err != nil {
 		openlogging.Warn("can not get config server endpoint: " + err.Error())
 		return nil
 	}
 
 	var enableSSL bool
-	tlsConfig, tlsError := getTLSForClient(configCenterURL)
+	tlsConfig, tlsError := getTLSForClient(configServerURL)
 	if tlsError != nil {
-		openlogging.GetLogger().Errorf("Get %s.%s TLS config failed, err:[%s]", Name, common.Consumer, tlsError.Error())
+		openlogging.GetLogger().Errorf("Get %s.%s TLS config failed, err:[%s]", configServerName, common.Consumer, tlsError.Error())
 		return tlsError
 	}
 
@@ -52,62 +50,57 @@ func Init() error {
 		enableSSL = true
 	}
 
-	TenantName := config.GetConfigCenterConf().TenantName
-	if TenantName == "" {
-		TenantName = common.DefaultTenant
-	}
-	interval := config.GetConfigCenterConf().RefreshInterval
+	interval := config.GetConfigServerConf().RefreshInterval
 	if interval == 0 {
 		interval = 30
 	}
 
-	err = initConfigCenter(configCenterURL, TenantName,
-		enableSSL, tlsConfig, interval)
+	err = initConfigServer(configServerURL, enableSSL, tlsConfig, interval)
 	if err != nil {
-		openlogging.Error("failed to init config center" + err.Error())
+		openlogging.Error("failed to init config server: " + err.Error())
 		return err
 	}
 
-	openlogging.Warn("config center init success")
+	openlogging.Warn("config server init success")
 	return nil
 }
 
-//GetConfigCenterEndpoint will read local config center uri first, if there is not,
-// it will try to discover config center from registry
-func GetConfigCenterEndpoint() (string, error) {
-	configCenterURL := config.GetConfigCenterConf().ServerURI
-	if configCenterURL == "" {
+//GetConfigServerEndpoint will read local config server uri first, if there is not,
+// it will try to discover config server from registry
+func GetConfigServerEndpoint() (string, error) {
+	configServerURL := config.GetConfigServerConf().ServerURI
+	if configServerURL == "" {
 		if registry.DefaultServiceDiscoveryService != nil {
 			openlogging.Debug("find config server in registry")
 			ccURL, err := endpoint.GetEndpoint("default", "CseConfigCenter", "latest")
 			if err != nil {
-				openlogging.Warn("failed to find config center endpoints, err: " + err.Error())
+				openlogging.Warn("failed to find config server endpoints, err: " + err.Error())
 				return "", err
 			}
-			configCenterURL = ccURL
+			configServerURL = ccURL
 		} else {
 			return "", ErrRegistryDisabled
 		}
 	}
 
-	return configCenterURL, nil
+	return configServerURL, nil
 }
 
-func getTLSForClient(configCenterURL string) (*tls.Config, error) {
-	if !strings.Contains(configCenterURL, "://") {
+func getTLSForClient(configServerURL string) (*tls.Config, error) {
+	if !strings.Contains(configServerURL, "://") {
 		return nil, nil
 	}
-	ccURL, err := url.Parse(configCenterURL)
+	ccURL, err := url.Parse(configServerURL)
 	if err != nil {
-		openlogging.Error("Error occurred while parsing config center Server Uri" + err.Error())
+		openlogging.Error("Error occurred while parsing config Server Uri" + err.Error())
 		return nil, err
 	}
 	if ccURL.Scheme == common.HTTP {
 		return nil, nil
 	}
 
-	sslTag := Name + "." + common.Consumer
-	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(Name, "", common.Consumer)
+	sslTag := configServerName + "." + common.Consumer
+	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(configServerName, "", common.Consumer)
 	if err != nil {
 		if chassisTLS.IsSSLConfigNotExist(err) {
 			return nil, fmt.Errorf("%s TLS mode, but no ssl config", sslTag)
@@ -120,41 +113,34 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 	return tlsConfig, nil
 }
 
-func initConfigCenter(ccEndpoint, tenantName string,
-	enableSSL bool, tlsConfig *tls.Config, interval int) error {
+func initConfigServer(endpoint string, enableSSL bool, tlsConfig *tls.Config, interval int) error {
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
-	if refreshMode != 0 && refreshMode != 1 {
+	if refreshMode != remote.ModeWatch && refreshMode != remote.ModeInterval {
 		openlogging.Error(ErrRefreshMode.Error())
 		return ErrRefreshMode
 	}
 
-	clientType := config.GlobalDefinition.Cse.Config.Client.Type
-	if clientType == "" {
-		clientType = DefaultConfigCenter
+	remoteSourceType := archaius.GetString("cse.config.client.type", archaius.KieSource)
 
-	}
-
-	var ccObj = &archaius.RemoteInfo{
+	var ri = &archaius.RemoteInfo{
 		DefaultDimension: map[string]string{
 			remote.LabelApp:         runtime.App,
 			remote.LabelService:     runtime.ServiceName,
 			remote.LabelVersion:     runtime.Version,
 			remote.LabelEnvironment: runtime.Environment,
 		},
-		URL:             ccEndpoint,
-		TenantName:      tenantName,
+		URL:             endpoint,
 		EnableSSL:       enableSSL,
 		TLSConfig:       tlsConfig,
 		RefreshMode:     refreshMode,
 		RefreshInterval: interval,
-		AutoDiscovery:   config.GetConfigCenterConf().Autodiscovery,
-		ClientType:      clientType,
-		APIVersion:      config.GetConfigCenterConf().APIVersion.Version,
-		RefreshPort:     config.GetConfigCenterConf().RefreshPort,
+		AutoDiscovery:   config.GetConfigServerConf().Autodiscovery,
+		APIVersion:      config.GetConfigServerConf().APIVersion.Version,
+		RefreshPort:     config.GetConfigServerConf().RefreshPort,
 	}
 
-	err := archaius.EnableRemoteSource("config-center", ccObj)
+	err := archaius.EnableRemoteSource(remoteSourceType, ri)
 
 	if err != nil {
 		return err

@@ -1,7 +1,7 @@
 language: go
 sudo: required
 go: 
-  - 1.12
+  - 1.13
 install: true
 
 before_script:

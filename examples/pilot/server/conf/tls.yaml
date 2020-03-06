@@ -8,11 +8,11 @@
 #   registry.Consumer.keyFile:
 #   registry.Consumer.certPwdFile:
 
-#   configcenter.Consumer.cipherPlugin: default
-#   configcenter.Consumer.verifyPeer: false
-#   configcenter.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-#   configcenter.Consumer.protocol: TLSv1.2
-#   configcenter.Consumer.caFile:
-#   configcenter.Consumer.certFile:
-#   configcenter.Consumer.keyFile:
-#   configcenter.Consumer.certPwdFile:
+#   configServer.Consumer.cipherPlugin: default
+#   configServer.Consumer.verifyPeer: false
+#   configServer.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+#   configServer.Consumer.protocol: TLSv1.2
+#   configServer.Consumer.caFile:
+#   configServer.Consumer.certFile:
+#   configServer.Consumer.keyFile:
+#   configServer.Consumer.certPwdFile:
