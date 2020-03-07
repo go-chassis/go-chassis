@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"crypto/tls"
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/client"
@@ -9,7 +8,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/go-chassis/go-chassis/session"
 	"github.com/go-mesh/openlogging"
 	"net/http"
@@ -34,12 +32,8 @@ func errNotNil(err error, cb invocation.ResponseCallBack) {
 // Handle is to handle transport related things
 func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 
-	c, err := client.GetClient(i.Protocol, i.MicroServiceName, i.GenEndpoint())
+	c, err := client.GetClient(i)
 	if err != nil {
-		errNotNil(err, cb)
-		return
-	}
-	if err := setClientTLSConfig(i, c); err != nil {
 		errNotNil(err, cb)
 		return
 	}
@@ -76,22 +70,6 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 
 	r.Result = i.Reply
 	cb(r)
-}
-
-func setClientTLSConfig(i *invocation.Invocation, c client.ProtocolClient) error {
-	var tlsConfig *tls.Config
-	tlsConfig, err := client.ReadTLSConfig(i.MicroServiceName, i.Protocol)
-	//it will set tls config when provider's endpoint has sslEnable=true suffix or
-	// consumer had set provider tls config
-	if i.SSLEnable && err != nil {
-		return err
-	} else if !i.SSLEnable && !chassisTLS.IsSSLConfigNotExist(err) {
-		return err
-	}
-	opts := c.GetOptions()
-	opts.TLSConfig = tlsConfig
-	c.ReloadConfigs(opts)
-	return nil
 }
 
 //ProcessSpecialProtocol handles special logic for protocol

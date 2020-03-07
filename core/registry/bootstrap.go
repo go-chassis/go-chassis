@@ -123,6 +123,7 @@ func RegisterServiceInstances() error {
 		for m, ep := range InstanceEndpoints {
 			epObj, err := NewEndPoint(ep)
 			if err != nil {
+				openlogging.GetLogger().Errorf("parser instance protocol %s endpoint error %s", m, err)
 				continue
 			}
 			eps[m] = epObj

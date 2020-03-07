@@ -24,15 +24,18 @@ func Test(ctx context.Context, protocol, endpoint string, expected Reply) (err e
 }
 
 func restTest(ctx context.Context, endpoint string, expected Reply) (err error) {
-	c, err := client.GetClient(common.ProtocolRest, expected.ServiceName, "")
+	req, _ := rest.NewRequest(http.MethodGet, "http://"+expected.ServiceName+"/healthz", nil)
+	i := &invocation.Invocation{Args: req}
+	i.Protocol = common.ProtocolRest
+	i.MicroServiceName = expected.ServiceName
+
+	c, err := client.GetClient(i)
 	if err != nil {
 		return
 	}
 
-	arg, _ := rest.NewRequest(http.MethodGet, "http://"+expected.ServiceName+"/healthz", nil)
-	req := &invocation.Invocation{Args: arg}
 	rsp := rest.NewResponse()
-	err = c.Call(ctx, endpoint, req, rsp)
+	err = c.Call(ctx, endpoint, i, rsp)
 	if rsp.Body != nil {
 		defer rsp.Body.Close()
 	}

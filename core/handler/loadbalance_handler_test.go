@@ -123,7 +123,7 @@ cse:
 		InstanceID: "instanceID",
 		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
-				Host:       "127.0.0.1:1234",
+				Address:    "127.0.0.1:1234",
 				SSLEnabled: true,
 			},
 		},
@@ -131,7 +131,7 @@ cse:
 	var ms2 = new(registry.MicroServiceInstance)
 	ms2.EndpointsMap = map[string]*registry.Endpoint{
 		"rest": {
-			Host:       "127.0.0.1:1234",
+			Address:    "127.0.0.1:1234",
 			SSLEnabled: true,
 		},
 	}
@@ -170,7 +170,6 @@ cse:
 	assert.Equal(t, "loadbalancer", str)
 	assert.Equal(t, "rest", i.Protocol)
 	assert.Equal(t, "127.0.0.1:1234", i.Endpoint)
-	assert.Equal(t, "127.0.0.1:1234?sslEnabled=true", i.GenEndpoint())
 	assert.True(t, i.SSLEnable)
 
 }
@@ -235,14 +234,14 @@ cse:
 		InstanceID: "instanceID",
 		EndpointsMap: map[string]*registry.Endpoint{
 			"rest": {
-				Host: "127.0.0.1",
+				Address: "127.0.0.1",
 			},
 		},
 	}
 	var ms2 = new(registry.MicroServiceInstance)
 	ms2.EndpointsMap = map[string]*registry.Endpoint{
 		"rest": {
-			Host: "127.0.0.1",
+			Address: "127.0.0.1",
 		},
 	}
 	ms2.InstanceID = "ins2"
@@ -280,7 +279,6 @@ cse:
 	assert.Equal(t, "loadbalancer", str)
 	assert.Equal(t, "rest", i.Protocol)
 	assert.Equal(t, "127.0.0.1", i.Endpoint)
-	assert.Equal(t, "127.0.0.1", i.GenEndpoint())
 	assert.False(t, i.SSLEnable)
 }
 func TestTLSLBHandlerWithNoRetry(t *testing.T) {
@@ -335,7 +333,7 @@ cse:
 	var ms1 = new(registry.MicroServiceInstance)
 	var ms2 = new(registry.MicroServiceInstance)
 	var mp = make(map[string]*registry.Endpoint)
-	mp["any-tls"] = &registry.Endpoint{Host: "127.0.0.1", SSLEnabled: true}
+	mp["any-tls"] = &registry.Endpoint{Address: "127.0.0.1", SSLEnabled: true}
 	ms1.EndpointsMap = mp
 	ms1.InstanceID = "ins1"
 	ms2.EndpointsMap = mp
@@ -377,7 +375,6 @@ cse:
 	assert.Equal(t, "loadbalancer", str)
 	assert.Equal(t, "any-tls", i.Protocol)
 	assert.Equal(t, "127.0.0.1", i.Endpoint)
-	assert.Equal(t, "127.0.0.1?sslEnabled=true", i.GenEndpoint())
 	assert.True(t, i.SSLEnable)
 }
 func TestLBHandlerWithNoRetry(t *testing.T) {
@@ -432,7 +429,7 @@ cse:
 	var ms1 = new(registry.MicroServiceInstance)
 	var ms2 = new(registry.MicroServiceInstance)
 	var mp = make(map[string]*registry.Endpoint)
-	mp["any"] = &registry.Endpoint{Host: "127.0.0.1:123", SSLEnabled: false}
+	mp["any"] = &registry.Endpoint{Address: "127.0.0.1:123", SSLEnabled: false}
 	ms1.EndpointsMap = mp
 	ms1.InstanceID = "ins1"
 	ms2.EndpointsMap = mp
@@ -540,7 +537,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			Status:   "UP",
 			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
-					Host: "10.0.0.4:1234",
+					Address: "10.0.0.4:1234",
 				},
 			},
 		},
@@ -549,7 +546,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 			Status:   "UP",
 			EndpointsMap: map[string]*registry.Endpoint{
 				"highway": {
-					Host: "10.0.0.3:1234",
+					Address: "10.0.0.3:1234",
 				},
 			},
 		},

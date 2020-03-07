@@ -93,7 +93,7 @@ func (lb *LBHandler) handleWithNoRetry(chain *Chain, i *invocation.Invocation, l
 		return
 	}
 
-	i.Endpoint = ep.Host
+	i.Endpoint = ep.Address
 	i.SSLEnable = ep.IsSSLEnable()
 	chain.Next(i, cb)
 }
@@ -122,7 +122,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		return
 	}
 	operation := func() error {
-		i.Endpoint = ep.Host
+		i.Endpoint = ep.Address
 		i.SSLEnable = ep.IsSSLEnable()
 		callTimes++
 		var respErr error

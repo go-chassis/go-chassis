@@ -156,7 +156,7 @@ func (c *Client) ReloadConfigs(opts client.Options) {
 	c.opts = client.EqualOpts(c.opts, opts)
 	c.c.Timeout = c.opts.Timeout
 	tp := newTransport(opts)
-	c.c.Transport = &tp
+	c.c.Transport = tp
 }
 
 // GetOptions method return opts

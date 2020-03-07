@@ -13,10 +13,6 @@ const (
 	Provider
 )
 
-const (
-	ssLEnabledQuery = "sslEnabled=true"
-)
-
 // Response is invocation response struct
 type Response struct {
 	Status int
@@ -121,12 +117,4 @@ func (inv *Invocation) SetHeader(k, v string) {
 //Headers return a map that protocol plugin should deliver in transport
 func (inv *Invocation) Headers() map[string]string {
 	return inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
-}
-
-//GenEndpoint return the endpoint what contain sslEnabled query arg when ssl is enable
-func (inv *Invocation) GenEndpoint() string {
-	if inv.SSLEnable {
-		return inv.Endpoint + "?" + ssLEnabledQuery
-	}
-	return inv.Endpoint
 }

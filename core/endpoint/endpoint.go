@@ -30,9 +30,9 @@ func GetEndpoint(appID, microService, version string) (string, error) {
 	for _, instance := range instances {
 		for _, value := range instance.EndpointsMap {
 			if value.IsSSLEnable() {
-				endpoint = "https://" + value.Host
+				endpoint = "https://" + value.Address
 			} else {
-				endpoint = "http://" + value.Host
+				endpoint = "http://" + value.Address
 			}
 		}
 	}

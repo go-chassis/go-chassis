@@ -11,7 +11,7 @@ const (
 // Endpoint struct having full info about micro-service instance endpoint
 type Endpoint struct {
 	SSLEnabled bool
-	Host       string
+	Address    string
 }
 
 // NewEndPoint return a Endpoint object what parse from url
@@ -21,12 +21,10 @@ func NewEndPoint(schema string) (*Endpoint, error) {
 
 //GenEndpoint return the endpoint string which it contain the sslEnabled=true query arg or not
 func (e *Endpoint) GenEndpoint() string {
-	sslFlag := ""
 	if e.SSLEnabled {
-		sslFlag = "?" + ssLEnabledQuery
+		return e.Address + "?" + ssLEnabledQuery
 	}
-
-	return e.Host + sslFlag
+	return e.Address
 }
 
 //IsSSLEnable return it is use ssl or not
@@ -53,9 +51,9 @@ func parseAddress(address string) (*Endpoint, error) {
 		address = address[:idx]
 	}
 	if pIdx := strings.Index(address, ":"); pIdx == -1 {
-		ep.Host = address
+		ep.Address = address
 		return &ep, nil
 	}
-	ep.Host = address
+	ep.Address = address
 	return &ep, nil
 }

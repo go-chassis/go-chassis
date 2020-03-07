@@ -48,11 +48,11 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.Endpoint{"rest": {
-			Host:       "10.146.207.197:8080",
+			Address:    "10.146.207.197:8080",
 			SSLEnabled: false,
 		},
 			"cse": {
-				Host:       "10.146.207.197:8080",
+				Address:    "10.146.207.197:8080",
 				SSLEnabled: false,
 			},
 		},
@@ -96,7 +96,7 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
 		EndpointsMap: map[string]*registry.Endpoint{"rest": {
-			Host:       "10.146.207.197:8080",
+			Address:    "10.146.207.197:8080",
 			SSLEnabled: false,
 		}},
 		HostName: "default",
