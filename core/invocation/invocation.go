@@ -47,26 +47,6 @@ type Invocation struct {
 	Filters            []string
 }
 
-//Reset reset clear a invocation
-func (inv *Invocation) Reset() {
-	inv.Endpoint = ""
-	inv.SSLEnable = false
-	inv.Protocol = ""
-	inv.SourceServiceID = ""
-	inv.SourceMicroService = ""
-	inv.MicroServiceName = ""
-	inv.SchemaID = ""
-	inv.OperationID = ""
-	inv.Args = nil
-	inv.URLPathFormat = ""
-	inv.Reply = nil
-	inv.Ctx = nil
-	inv.Metadata = nil
-	inv.RouteTags = utiltags.Tags{}
-	inv.Filters = nil
-	inv.Strategy = ""
-}
-
 //GetMark return match rule name that request matches
 func (inv *Invocation) GetMark() string {
 	m, ok := inv.Metadata["mark"].(string)
