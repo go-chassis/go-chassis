@@ -145,5 +145,5 @@ which means you have to solve compiling issue your own.
 4. Install [service-center](http://servicecomb.apache.org/release/)
 
 
-For more infomation about go chassis, read github wiki page
+For more information about go chassis, read github wiki page
 
