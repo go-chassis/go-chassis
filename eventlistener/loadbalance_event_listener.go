@@ -10,8 +10,7 @@ import (
 // constants for loadbalancer strategy name, and timeout
 const (
 	//LoadBalanceKey is variable of type string that matches load balancing events
-	LoadBalanceKey          = "^cse\\.loadbalance\\."
-	regex4normalloadbalance = "^cse\\.loadbalance\\.(strategy|SessionStickinessRule|retryEnabled|retryOnNext|retryOnSame|backoff)"
+	LoadBalanceKey = "^cse\\.loadbalance\\."
 )
 
 //LoadbalancingEventListener is a struct
