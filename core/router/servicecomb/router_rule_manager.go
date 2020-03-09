@@ -19,7 +19,7 @@ const (
 )
 
 //MergeLocalAndRemoteConfig get router config from archaius,
-//including local file,memory and config center
+//including local file,memory and config server
 func MergeLocalAndRemoteConfig() (map[string][]*config.RouteRule, error) {
 	destinations := make(map[string][]*config.RouteRule, 0)
 	//set config from file first
@@ -47,7 +47,7 @@ func processV2Rule(ruleV2Map map[string]interface{}, destinations map[string][]*
 	for k, v := range ruleV2Map {
 		value, ok := v.(string)
 		if !ok {
-			return nil, errors.New("route rule is not a yaml string format, please check the configuration in config center")
+			return nil, errors.New("route rule is not a yaml string format, please check the configuration in config server")
 		}
 
 		service := strings.Replace(k, DarkLaunchPrefixV2, "", 1)
@@ -64,7 +64,7 @@ func processV1Rule(ruleV1Map map[string]interface{}, destinations map[string][]*
 	for k, v := range ruleV1Map {
 		value, ok := v.(string)
 		if !ok {
-			return nil, errors.New("route rule is not a json string format, please check the configuration in config center")
+			return nil, errors.New("route rule is not a json string format, please check the configuration in config server")
 		}
 
 		service := strings.Replace(k, DarkLaunchPrefix, "", 1)

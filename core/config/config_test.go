@@ -73,7 +73,7 @@ service_description:
 	time.Sleep(1 * time.Second)
 	config.ReadGlobalConfigFromArchaius()
 
-	c := config.GetConfigCenterConf()
+	c := config.GetConfigServerConf()
 	assert.Equal(t, "", c.ServerURI)
 
 	dc := config.GetDataCenter()

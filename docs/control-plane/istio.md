@@ -1,7 +1,23 @@
-Get started
+Istio
 =====
 
 go-chassis can be integrated with Istio for service discovery and routing. To enable Istio pilot support in go-chassis, the simple 2 steps are needed during development:
+
+### Configuration
+
+edit chassis.yaml.
+
+**registrator.disabled**
+
+ Must disable registrator, because registrator is is used in client side discovery. go-chassis leverage server side discovery which supported by kubernetes
+
+**serviceDiscovery.type**
+
+ specify the plugin type to pilotv2
+
+**serviceDiscovery.address**
+ the pilot address
+
 
 - **Import the istiov2 registry plugin from mesher**
 
@@ -37,7 +53,7 @@ In the original go-chassis configuration, user can specify tag based route rules
 ## router.yaml
 router:
   infra: cse
-routeRule:
+routeRule: |
   targetService:
     - precedence: 2
       route:

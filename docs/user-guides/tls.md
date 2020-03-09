@@ -22,7 +22,7 @@ ssl:
 ### tag and role
 tag indicates what is the tls config target.   
 
-registry.Consumer, configcenter.Consumer etc is build-in config to define the tls settings for 
+registry.Consumer, configServer.Consumer etc is build-in config to define the tls settings for 
 control plane services(like service center, config center), you can not use them.
 
 you can custom tls settings by following rules. 
@@ -41,7 +41,7 @@ tag usually comprises of service name, role(Consumer or Provider) and protocol.
 **registrator.Consumer**
 > 服务注册中心TLS配置
 
-**configcenter.Consumer**
+**configServer.Consumer**
 >配置中心TLS配置                                     |
 
 

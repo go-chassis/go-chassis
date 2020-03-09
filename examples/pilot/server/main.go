@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-chassis/go-chassis"
 	_ "github.com/go-chassis/go-chassis/bootstrap"
-	_ "github.com/go-chassis/go-chassis/configcenter"
+	_ "github.com/go-chassis/go-chassis/configserver"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/examples/schemas"
 )
