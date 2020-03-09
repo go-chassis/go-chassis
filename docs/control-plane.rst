@@ -9,4 +9,5 @@ Control panels
    control-plane/servicecomb
    control-plane/cse
    control-plane/istio
+   control-plane/apollo
 
