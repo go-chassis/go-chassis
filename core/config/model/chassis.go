@@ -86,7 +86,7 @@ type QPSProps struct {
 	Limit   map[string]string `yaml:"limit"`
 }
 
-// Config represent config center configurations
+// Config represent config server configurations
 type Config struct {
 	Client ConfigClient `yaml:"client"`
 }

@@ -17,7 +17,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// GlobalDefinition is having the information about region, load balancing, service center, config center,
+// GlobalDefinition is having the information about region, load balancing, service center, config server,
 // protocols, and handlers for the micro service
 var GlobalDefinition *model.GlobalCfg
 var lbConfig *model.LBWrapper
@@ -39,8 +39,8 @@ var HystrixConfig *model.HystrixConfigWrapper
 // ErrNoName is used to represent the service name missing error
 var ErrNoName = errors.New("micro service name is missing in description file")
 
-//GetConfigCenterConf return config center conf
-func GetConfigCenterConf() model.ConfigClient {
+//GetConfigServerConf return config server conf
+func GetConfigServerConf() model.ConfigClient {
 	return GlobalDefinition.Cse.Config.Client
 }
 
@@ -80,7 +80,7 @@ func readFromArchaius() error {
 		return err
 	}
 
-	populateConfigCenterAddress()
+	populateConfigServerAddress()
 	populateServiceRegistryAddress()
 	ReadMonitorFromArchaius()
 
@@ -109,12 +109,12 @@ func populateServiceRegistryAddress() {
 	}
 }
 
-// populateConfigCenterAddress populate config center address
-func populateConfigCenterAddress() {
-	//Config Center Address , higher priority for environment variable
-	configCenterAddrFromEnv := readEndpoint(common.EnvCCEndpoint)
-	if configCenterAddrFromEnv != "" {
-		GlobalDefinition.Cse.Config.Client.ServerURI = configCenterAddrFromEnv
+// populateConfigServerAddress populate config server address
+func populateConfigServerAddress() {
+	//config server Address , higher priority for environment variable
+	configServerAddrFromEnv := readEndpoint(common.EnvCCEndpoint)
+	if configServerAddrFromEnv != "" {
+		GlobalDefinition.Cse.Config.Client.ServerURI = configServerAddrFromEnv
 	}
 }
 

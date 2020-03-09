@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chassis/go-archaius/source/remote"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -143,9 +144,9 @@ const (
 	FALSE = "false"
 )
 
-// const default config for config-center
+// const default config for config-server
 const (
-	DefaultRefreshMode = 1
+	DefaultRefreshMode = remote.ModeInterval
 )
 
 //ContextHeaderKey is the unified key of header value in context

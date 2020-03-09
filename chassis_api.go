@@ -32,9 +32,9 @@ import (
 	// aes package handles security related plugins
 	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
 	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
-	//config centers
+	//config servers
 	_ "github.com/go-chassis/go-archaius/source/remote"
-	_ "github.com/go-chassis/go-archaius/source/remote/configcenter"
+	_ "github.com/go-chassis/go-archaius/source/remote/kie"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-mesh/openlogging"
 )

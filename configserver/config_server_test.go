@@ -1,17 +1,17 @@
-package configcenter_test
+package configserver_test
 
 import (
-	_ "github.com/go-chassis/go-chassis/initiator"
+	"testing"
 
-	"github.com/go-chassis/go-chassis/configcenter"
+	"github.com/go-chassis/go-chassis/configserver"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	_ "github.com/go-chassis/go-chassis/initiator"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestGetConfigCenterEndpoint(t *testing.T) {
+func TestGetConfigServerEndpoint(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{
 		Cse: model.CseStruct{
 			Config: model.Config{
@@ -19,6 +19,6 @@ func TestGetConfigCenterEndpoint(t *testing.T) {
 			},
 		},
 	}
-	_, err := configcenter.GetConfigCenterEndpoint()
+	_, err := configserver.GetConfigServerEndpoint()
 	assert.Error(t, err)
 }

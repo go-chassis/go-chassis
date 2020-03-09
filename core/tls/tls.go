@@ -17,7 +17,7 @@ import (
 var errSSLConfigNotExist = errors.New("No SSL config")
 var useDefaultSslTag = sets.NewString(
 	"registry.Consumer.",
-	"configcenter.Consumer.",
+	"configServer.Consumer.",
 	"monitor.Consumer.",
 	"serviceDiscovery.Consumer.",
 	"registrator.Consumer.",
