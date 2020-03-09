@@ -32,7 +32,7 @@ func errNotNil(err error, cb invocation.ResponseCallBack) {
 // Handle is to handle transport related things
 func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 
-	c, err := client.GetClient(i.Protocol, i.MicroServiceName, i.Endpoint)
+	c, err := client.GetClient(i)
 	if err != nil {
 		errNotNil(err, cb)
 		return

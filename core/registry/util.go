@@ -18,35 +18,41 @@ import (
 	"github.com/go-mesh/openlogging"
 )
 
-const protocolSymbol = "://"
+const (
+	protocolSymbol = "://"
+)
 
 //GetProtocolMap returns the protocol map
-func GetProtocolMap(eps []string) (map[string]string, string) {
-	m := make(map[string]string)
+func GetProtocolMap(eps []string) (map[string]*Endpoint, string) {
+	m := make(map[string]*Endpoint)
 	var p string
-	for _, ep := range eps {
-		u, err := url.Parse(ep)
+	for _, addr := range eps {
+		proto := ""
+		ep := ""
+		idx := strings.Index(addr, protocolSymbol)
+		if idx == -1 {
+			ep = addr
+			proto = "unknown"
+		} else {
+			ep = addr[idx+len(protocolSymbol):]
+			proto = addr[:idx]
+		}
+		u, err := NewEndPoint(ep)
 		if err != nil {
-			openlogging.GetLogger().Errorf("Can not parse %s: %s", ep, err.Error())
+			openlogging.GetLogger().Errorf("Can not parse %s, error %s", ep, err)
 			continue
 		}
-		proto := u.Scheme
-		ipPort := u.Host
-		if proto == "" {
-			m["unknown"] = ipPort
-		} else {
-			m[proto] = ipPort
-			p = proto
-		}
+		m[proto] = u
+		p = proto
 	}
 	return m, p
 }
 
 //GetProtocolList returns the protocol list
-func GetProtocolList(m map[string]string) []string {
+func GetProtocolList(m map[string]*Endpoint) []string {
 	eps := []string{}
 	for p, ep := range m {
-		uri := p + protocolSymbol + ep
+		uri := p + protocolSymbol + ep.GenEndpoint()
 		eps = append(eps, uri)
 	}
 	return eps
@@ -71,8 +77,8 @@ func MakeEndpoints(m map[string]model.Protocol) []string {
 }
 
 //MakeEndpointMap returns the endpoints map
-func MakeEndpointMap(m map[string]model.Protocol) (map[string]string, error) {
-	eps := make(map[string]string, 0)
+func MakeEndpointMap(m map[string]model.Protocol) (map[string]*Endpoint, error) {
+	eps := make(map[string]*Endpoint, 0)
 	for name, protocol := range m {
 		ep := protocol.Listen
 		if len(protocol.Advertise) > 0 {
@@ -87,11 +93,14 @@ func MakeEndpointMap(m map[string]model.Protocol) (map[string]string, error) {
 			return nil, fmt.Errorf("listen address is invalid [%s]", protocol.Listen)
 		}
 
-		ip, err := fillUnspecifiedIP(host)
+		_, err = fillUnspecifiedIP(host)
 		if err != nil {
 			return nil, err
 		}
-		eps[name] = net.JoinHostPort(ip, port)
+		if endpoint, err := NewEndPoint(ep); err == nil {
+			eps[name] = endpoint
+		}
+
 	}
 	return eps, nil
 }

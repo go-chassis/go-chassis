@@ -28,6 +28,7 @@ type ResponseCallBack func(*Response) error
 //a protocol server should transfer request to invocation and then back to request
 type Invocation struct {
 	HandlerIndex       int
+	SSLEnable          bool
 	Endpoint           string //service's ip and port, it is decided in load balancing
 	Protocol           string
 	Port               string //Port is the name of a real service port

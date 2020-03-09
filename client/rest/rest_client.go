@@ -44,6 +44,19 @@ func init() {
 
 //NewRestClient is a function
 func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
+	tp := newTransport(opts)
+	rc := &Client{
+		opts: opts,
+
+		c: &http.Client{
+			Timeout:   opts.Timeout,
+			Transport: tp,
+		},
+	}
+	return rc, nil
+}
+
+func newTransport(opts client.Options) *http.Transport {
 	poolSize := DefaultMaxConnsPerHost
 	if opts.PoolSize != 0 {
 		poolSize = opts.PoolSize
@@ -59,16 +72,7 @@ func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 	if opts.TLSConfig != nil {
 		tp.TLSClientConfig = opts.TLSConfig
 	}
-	rc := &Client{
-		opts: opts,
-
-		c: &http.Client{
-			Timeout:   opts.Timeout,
-			Transport: tp,
-		},
-	}
-
-	return rc, nil
+	return tp
 }
 
 // If a request fails, we generate an error.
@@ -151,6 +155,8 @@ func (c *Client) Close() error {
 func (c *Client) ReloadConfigs(opts client.Options) {
 	c.opts = client.EqualOpts(c.opts, opts)
 	c.c.Timeout = c.opts.Timeout
+	tp := newTransport(opts)
+	c.c.Transport = tp
 }
 
 // GetOptions method return opts

@@ -45,9 +45,14 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
-		HostName:     "default",
-		Status:       client.MSInstanceUP,
+		EndpointsMap: map[string]*registry.Endpoint{
+			"rest": {
+				false,
+				"10.146.207.197:8080",
+			},
+		},
+		HostName: "default",
+		Status:   client.MSInstanceUP,
 	}
 	sid, insID, err := scc.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)

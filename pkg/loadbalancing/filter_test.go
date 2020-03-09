@@ -33,13 +33,19 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 	datacenter.Name = config.GlobalDefinition.DataCenter.Name
 	testData := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap:   map[string]string{"rest": "127.0.0.1"},
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
+				false,
+				"127.0.0.1:80",
+			}},
 			Metadata:       map[string]string{"key": "1"},
 			DataCenterInfo: datacenter,
 		},
 		{
-			EndpointsMap: map[string]string{"rest": "127.0.0.1"},
-			Metadata:     map[string]string{"key": "1"},
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
+				false,
+				"127.0.0.1:80",
+			}},
+			Metadata: map[string]string{"key": "1"},
 		},
 	}
 	loadbalancer.InstallFilter(loadbalancer.ZoneAware, loadbalancing.FilterAvailableZoneAffinity)
@@ -50,7 +56,10 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 	datacenter.Region = "default"
 	testData = []*registry.MicroServiceInstance{
 		{
-			EndpointsMap:   map[string]string{"rest": "127.0.0.1"},
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
+				false,
+				"127.0.0.1:80",
+			}},
 			Metadata:       map[string]string{"key": "1"},
 			DataCenterInfo: datacenter,
 		},
@@ -64,7 +73,10 @@ func TestFilterAvailableZoneAffinity(t *testing.T) {
 	datacenter.AvailableZone = "default-df-2"
 	testData = []*registry.MicroServiceInstance{
 		{
-			EndpointsMap:   map[string]string{"rest": "127.0.0.1"},
+			EndpointsMap: map[string]*registry.Endpoint{"rest": {
+				false,
+				"127.0.0.1:80",
+			}},
 			Metadata:       map[string]string{"key": "1"},
 			DataCenterInfo: datacenter,
 		},

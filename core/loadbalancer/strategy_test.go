@@ -15,10 +15,28 @@ func TestRandomStrategy_Pick(t *testing.T) {
 	config.Init()
 	instances := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]string{"rest": "1", "highway": "10.0.0.3:8080"},
+			EndpointsMap: map[string]*registry.Endpoint{
+				"rest": {
+					false,
+					"1",
+				},
+				"highway": {
+					false,
+					"10.0.0.3:8080",
+				},
+			},
 		},
 		{
-			EndpointsMap: map[string]string{"rest": "2", "highway": "10.0.0.3:8080"},
+			EndpointsMap: map[string]*registry.Endpoint{
+				"rest": {
+					false,
+					"2",
+				},
+				"highway": {
+					false,
+					"10.0.0.3:8080",
+				},
+			},
 		},
 	}
 	s := &loadbalancer.RandomStrategy{}
@@ -31,10 +49,10 @@ func TestRandomStrategy_Pick(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		instance, err := s.Pick()
 		assert.NoError(t, err)
-		if last == instance.EndpointsMap["rest"] {
+		if last == instance.EndpointsMap["rest"].GenEndpoint() {
 			count++
 		}
-		last = instance.EndpointsMap["rest"]
+		last = instance.EndpointsMap["rest"].GenEndpoint()
 	}
 	t.Log(count)
 
@@ -44,10 +62,28 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 	config.Init()
 	instances := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]string{"rest": "1", "highway": "10.0.0.3:8080"},
+			EndpointsMap: map[string]*registry.Endpoint{
+				"rest": {
+					false,
+					"1",
+				},
+				"highway": {
+					false,
+					"10.0.0.3:8080",
+				},
+			},
 		},
 		{
-			EndpointsMap: map[string]string{"rest": "2", "highway": "10.0.0.3:8080"},
+			EndpointsMap: map[string]*registry.Endpoint{
+				"rest": {
+					false,
+					"2",
+				},
+				"highway": {
+					false,
+					"10.0.0.3:8080",
+				},
+			},
 		},
 	}
 	s := &loadbalancer.RoundRobinStrategy{}
@@ -56,8 +92,8 @@ func TestRoundRobinStrategy_Pick(t *testing.T) {
 	for i := 0; i < 100000; i++ {
 		instance, err := s.Pick()
 		assert.NoError(t, err)
-		assert.NotEqual(t, last, instance.EndpointsMap["rest"])
-		last = instance.EndpointsMap["rest"]
+		assert.NotEqual(t, last, instance.EndpointsMap["rest"].GenEndpoint())
+		last = instance.EndpointsMap["rest"].GenEndpoint()
 	}
 
 }

@@ -2,7 +2,6 @@ package servicecenter
 
 import (
 	"github.com/go-chassis/go-chassis/core/registry"
-
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 )
@@ -67,8 +66,10 @@ func ToMicroServiceInstance(ins *proto.MicroServiceInstance) *registry.MicroServ
 	}
 	m, p := registry.GetProtocolMap(ins.Endpoints)
 	msi.EndpointsMap = m
-	msi.DefaultEndpoint = m[p]
-	msi.DefaultProtocol = p
+	if len(m) != 0 {
+		msi.DefaultEndpoint = m[p].GenEndpoint()
+		msi.DefaultProtocol = p
+	}
 	if ins.DataCenterInfo != nil {
 		msi.DataCenterInfo = &registry.DataCenterInfo{
 			Name:          ins.DataCenterInfo.Name,

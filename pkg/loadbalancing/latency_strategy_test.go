@@ -22,13 +22,30 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	config.GetLoadBalancing().Strategy["name"] = loadbalancer.StrategyLatency
 	instances := []*registry.MicroServiceInstance{
 		{
-			EndpointsMap: map[string]string{"rest": "127.0.0.1:8080", "highway": "127.0.0.1:9090"},
+			EndpointsMap: map[string]*registry.Endpoint{
+				"rest": {
+					false,
+					"127.0.0.1:8080",
+				},
+				"highway": {
+					false,
+					"127.0.0.1:9090",
+				},
+			},
 		},
 		{
-			EndpointsMap: map[string]string{"rest": "10.0.0.3:8080", "highway": "10.0.0.3:9090"},
+			EndpointsMap: map[string]*registry.Endpoint{
+				"rest": {
+					false,
+					"10.0.0.3:8080",
+				},
+				"highway": {
+					false,
+					"10.0.0.3:9090",
+				},
+			},
 		},
 	}
-
 	defaultTags := utiltags.Tags{}
 	restTags := utiltags.Tags{Label: "app:mesh-app|version:latest"}
 	loadbalancer.SetLatency(2*time.Second, "127.0.0.1:8080", "Server", restTags, common.ProtocolRest)
@@ -60,7 +77,7 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		instance, err := s.Pick()
 		assert.NoError(t, err)
-		if "10.0.0.3:8080" == instance.EndpointsMap["rest"] {
+		if "10.0.0.3:8080" == instance.EndpointsMap["rest"].GenEndpoint() {
 			count++
 		}
 	}
@@ -77,7 +94,7 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		instance, err := s.Pick()
 		assert.NoError(t, err)
-		if "10.0.0.3:9090" == instance.EndpointsMap["highway"] {
+		if "10.0.0.3:9090" == instance.EndpointsMap["highway"].GenEndpoint() {
 			count++
 		}
 

@@ -3,8 +3,6 @@ package endpoint
 import (
 	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
@@ -31,15 +29,10 @@ func GetEndpoint(appID, microService, version string) (string, error) {
 
 	for _, instance := range instances {
 		for _, value := range instance.EndpointsMap {
-			if strings.Contains(value, "?") {
-				separation := strings.Split(value, "?")
-				if separation[1] == "sslEnabled=true" {
-					endpoint = "https://" + separation[0]
-				} else {
-					endpoint = "http://" + separation[0]
-				}
+			if value.IsSSLEnable() {
+				endpoint = "https://" + value.Address
 			} else {
-				endpoint = "https://" + value
+				endpoint = "http://" + value.Address
 			}
 		}
 	}

@@ -21,15 +21,20 @@ func init() {
 	})
 }
 func TestServicecenter_Heartbeat(t *testing.T) {
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	goModuleValue := os.Getenv("GO111MODULE")
+	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
+	if goModuleValue == "on" || goModuleValue == "auto" {
+		rootDir, _ = os.Getwd()
+		rootDir = filepath.Join(rootDir, "..", "..")
+	}
+
+	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	err := config.Init()
 	if err != nil {
 		t.Error(err.Error())
 	}
 	runtime.Init()
-	t.Log(os.Getenv("CHASSIS_HOME"))
 	registry.Enable()
 	registry.DoRegister()
 
@@ -42,9 +47,17 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
-		HostName:     "default",
-		Status:       common.DefaultStatus,
+		EndpointsMap: map[string]*registry.Endpoint{"rest": {
+			Address:    "10.146.207.197:8080",
+			SSLEnabled: false,
+		},
+			"cse": {
+				Address:    "10.146.207.197:8080",
+				SSLEnabled: false,
+			},
+		},
+		HostName: "default",
+		Status:   common.DefaultStatus,
 	}
 
 	sid, insID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
@@ -59,13 +72,17 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 }
 
 func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	goModuleValue := os.Getenv("GO111MODULE")
+	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
+	if goModuleValue == "on" || goModuleValue == "auto" {
+		rootDir, _ = os.Getwd()
+		rootDir = filepath.Join(rootDir, "..", "..")
+	}
+	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
 	t.Log("Test servercenter.go")
 	config.Init()
 	var ins = map[string]string{"type": "test"}
 	config.MicroserviceDefinition.ServiceDescription.InstanceProperties = ins
-	t.Log(os.Getenv("CHASSIS_HOME"))
 	registry.Enable()
 	registry.DoRegister()
 
@@ -78,9 +95,12 @@ func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
-		EndpointsMap: map[string]string{"rest": "10.146.207.197:8080"},
-		HostName:     "default",
-		Status:       common.DefaultStatus,
+		EndpointsMap: map[string]*registry.Endpoint{"rest": {
+			Address:    "10.146.207.197:8080",
+			SSLEnabled: false,
+		}},
+		HostName: "default",
+		Status:   common.DefaultStatus,
 	}
 
 	_, _, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)

@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"strings"
 	"sync"
 
@@ -60,15 +61,17 @@ func GetMaxIdleCon(p string) int {
 }
 
 // CreateClient is for to create client based on protocol and the service name
-func CreateClient(protocol, service, endpoint string) (ProtocolClient, error) {
+func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
 		openlogging.Error(fmt.Sprintf("do not support [%s] client", protocol))
 		return nil, err
 	}
 	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
+	//it will set tls config when provider's endpoint has sslEnable=true suffix or
+	// consumer had set provider tls config
 	if err != nil {
-		if !chassisTLS.IsSSLConfigNotExist(err) {
+		if sslEnable || !chassisTLS.IsSSLConfigNotExist(err) {
 			return nil, err
 		}
 	} else {
@@ -97,16 +100,16 @@ func generateKey(protocol, service, endpoint string) string {
 }
 
 // GetClient is to get the client based on protocol, service,endpoint name
-func GetClient(protocol, service, endpoint string) (ProtocolClient, error) {
+func GetClient(i *invocation.Invocation) (ProtocolClient, error) {
 	var c ProtocolClient
 	var err error
-	key := generateKey(protocol, service, endpoint)
+	key := generateKey(i.Protocol, i.MicroServiceName, i.Endpoint)
 	sl.RLock()
 	c, ok := clients[key]
 	sl.RUnlock()
 	if !ok {
-		openlogging.Info("Create client for " + protocol + ":" + service + ":" + endpoint)
-		c, err = CreateClient(protocol, service, endpoint)
+		openlogging.Info("Create client for " + i.Protocol + ":" + i.MicroServiceName + ":" + i.Endpoint)
+		c, err = CreateClient(i.Protocol, i.MicroServiceName, i.Endpoint, i.SSLEnable)
 		if err != nil {
 			return nil, err
 		}
