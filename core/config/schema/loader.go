@@ -32,8 +32,8 @@ func NewMicroserviceMeta(microserviceName string) *MicroserviceMeta {
 // defaultMicroserviceMetaMgr default micro-service meta-manager
 var defaultMicroserviceMetaMgr map[string]*MicroserviceMeta
 
-// DefaultSchemaIDsMap default schema schema IDs map
-var DefaultSchemaIDsMap map[string]string
+// schemaIDsMap default schema schema IDs map
+var schemaIDsMap map[string]string
 
 // defaultMicroServiceNames default micro-service names
 var defaultMicroServiceNames = make([]string, 0)
@@ -51,6 +51,7 @@ func GetSchemaPath(name string) string {
 }
 
 // LoadSchema to load the schema files and micro-service information under the conf directory
+//path is the conf path
 func LoadSchema(path string) error {
 	/*
 		conf/
@@ -58,9 +59,6 @@ func LoadSchema(path string) error {
 		├── microservice1
 		│   └── schema
 		│       ├── schema1.yaml
-		└── microservice2
-		    └── schema
-		        ├── schema2.yaml
 	*/
 	schemaNames, err := getSchemaNames(path)
 	if err != nil {
@@ -73,7 +71,7 @@ func LoadSchema(path string) error {
 			schemaError  error
 		)
 		p := GetSchemaPath(msName)
-		microsvcMeta, schemaError = loadMicroserviceMeta(GetSchemaPath(msName))
+		microsvcMeta, schemaError = loadSchemaFileContent(GetSchemaPath(msName))
 
 		if schemaError != nil {
 			return schemaError
@@ -135,8 +133,8 @@ func SetMicroServiceNames(confDir string) error {
 	return err
 }
 
-// loadMicroserviceMeta load micro-service meta
-func loadMicroserviceMeta(schemaPath string) (*MicroserviceMeta, error) {
+// loadSchemaFileContent load scheme file content
+func loadSchemaFileContent(schemaPath string) (*MicroserviceMeta, error) {
 	microserviceMeta := NewMicroserviceMeta(filepath.Base(schemaPath))
 	schemaFiles, err := getFiles(schemaPath)
 	if err != nil {
@@ -153,10 +151,15 @@ func loadMicroserviceMeta(schemaPath string) (*MicroserviceMeta, error) {
 
 		schemaID := strings.TrimSuffix(schemaFile, filepath.Ext(schemaFile))
 		microserviceMeta.SchemaIDs = append(microserviceMeta.SchemaIDs, schemaID)
-		DefaultSchemaIDsMap[schemaID] = string(dat)
+		schemaIDsMap[schemaID] = string(dat)
 	}
 
 	return microserviceMeta, nil
+}
+
+//GetContent get schema content by id
+func GetContent(schemaID string) string {
+	return schemaIDsMap[schemaID]
 }
 
 // getFiles get files
@@ -188,15 +191,6 @@ func getFiles(fPath string) ([]string, error) {
 	return files, err
 }
 
-// GetMicroserviceNamesBySchemas get micro-service names by schemas
-func GetMicroserviceNamesBySchemas() []string {
-	names := make([]string, 0)
-	for k := range defaultMicroserviceMetaMgr {
-		names = append(names, k)
-	}
-	return names
-}
-
 // GetMicroserviceNames get micro-service names
 func GetMicroserviceNames() []string {
 	return defaultMicroServiceNames
@@ -215,13 +209,13 @@ func GetSchemaIDs(microserviceName string) ([]string, error) {
 	return schemaIDs, nil
 }
 
-// init is for to initialize the defaultMicroserviceMetaMgr, and DefaultSchemaIDsMap
+// init is for to initialize the defaultMicroserviceMetaMgr, and schemaIDsMap
 func init() {
 	defaultMicroserviceMetaMgr = make(map[string]*MicroserviceMeta)
-	DefaultSchemaIDsMap = make(map[string]string)
+	schemaIDsMap = make(map[string]string)
 }
 
-// SetSchemaInfo is for fill defaultMicroserviceMetaMgr and DefaultSchemaIDsMap
+// SetSchemaInfo is for fill defaultMicroserviceMetaMgr and schemaIDsMap
 func SetSchemaInfo(sws *swagger.SwaggerService) error {
 	schemaInfoList, err := sws.GetSchemaInfoList()
 	if err != nil {
@@ -232,7 +226,7 @@ func SetSchemaInfo(sws *swagger.SwaggerService) error {
 	microsvcMeta.SchemaIDs = append(microsvcMeta.SchemaIDs, runtime.ServiceName)
 	defaultMicroserviceMetaMgr[runtime.ServiceName] = microsvcMeta
 	for _, schemaInfo := range schemaInfoList {
-		DefaultSchemaIDsMap[runtime.ServiceName] = schemaInfo
+		schemaIDsMap[runtime.ServiceName] = schemaInfo
 	}
 	return nil
 }
