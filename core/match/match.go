@@ -20,6 +20,7 @@ package match
 import (
 	"fmt"
 	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
 	"sync"
@@ -37,6 +38,12 @@ var matchPlugin = map[string]Method{
 //Install a strategy
 func Install(name string, m Method) {
 	matchPlugin[name] = m
+}
+
+func mark(inv *invocation.Invocation) {
+	matches.Range(func(k, v interface{}) bool {
+		return false
+	})
 }
 
 //Match compare value and expression
