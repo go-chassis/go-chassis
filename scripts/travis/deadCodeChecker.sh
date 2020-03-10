@@ -1,4 +1,4 @@
-diff -u <(echo -n) <(find . -type d -not -path "./vendor/*" | xargs deadcode)
+find . -type d -not -path "./vendor/*" | xargs deadcode
 if [ $? == 0 ]; then
 	echo "Hurray....all code's are reachable and utilised..."
 	exit 0

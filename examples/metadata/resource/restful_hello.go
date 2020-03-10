@@ -1,17 +1,13 @@
 package resource
 
 import (
-	"net/http"
-
 	"fmt"
-	"math/rand"
+	"net/http"
 
 	rf "github.com/go-chassis/go-chassis/server/restful"
 )
 
-var num = rand.Intn(100)
-
-//RestFulHello is a struct used for implementation of restfull hello program
+//RestFulHello is a struct used for implementation of restful hello program
 type RestFulHello struct {
 }
 

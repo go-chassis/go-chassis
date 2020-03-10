@@ -9,13 +9,11 @@ import (
 
 const (
 	lbPrefix                                 = "cse.loadbalance"
-	propertyStrategyName                     = "strategy.name"
 	propertySessionStickinessRuleTimeout     = "SessionStickinessRule.sessionTimeoutInSeconds"
 	propertySessionStickinessRuleFailedTimes = "SessionStickinessRule.successiveFailedTimes"
 	propertyRetryEnabled                     = "retryEnabled"
 	propertyRetryOnNext                      = "retryOnNext"
 	propertyRetryOnSame                      = "retryOnSame"
-	propertyBackoffKind                      = "backoff.kind"
 	propertyBackoffMinMs                     = "backoff.minMs"
 	propertyBackoffMaxMs                     = "backoff.maxMs"
 
