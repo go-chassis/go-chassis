@@ -107,25 +107,13 @@ func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (
 	return bo, nil
 }
 
-// AddDependencies ： 注册微服务的依赖关系
-func (r *Registrator) AddDependencies(cDep *registry.MicroServiceDependency) error {
-	request := ToSCDependency(cDep)
-	err := r.registryClient.AddDependencies(request)
-	if err != nil {
-		openlogging.GetLogger().Errorf("AddDependencies failed: %s", err)
-		return err
-	}
-	openlogging.GetLogger().Debugf("AddDependencies success.")
-	return nil
-}
-
 // AddSchemas to service center
 func (r *Registrator) AddSchemas(microServiceID, schemaName, schemaInfo string) error {
 	if err := r.registryClient.AddSchemas(microServiceID, schemaName, schemaInfo); err != nil {
-		openlogging.GetLogger().Errorf("AddSchemas failed: %s", err)
+		openlogging.GetLogger().Errorf("add schemas failed: %s", err)
 		return err
 	}
-	openlogging.GetLogger().Debugf("AddSchemas success.")
+	openlogging.Info("add all schemas success.")
 	return nil
 }
 
@@ -543,24 +531,10 @@ func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 		opts:           sco,
 	}
 }
-func newContractDiscovery(options registry.Options) registry.ContractDiscovery {
-	sco := ToSCOptions(options)
-	r := &client.RegistryClient{}
-	if err := r.Initialize(sco); err != nil {
-		openlogging.GetLogger().Errorf("RegistryClient initialization failed: %s", err)
-	}
-
-	return &ContractDiscovery{
-		Name:           ServiceCenter,
-		registryClient: r,
-		opts:           sco,
-	}
-}
 
 // init initialize the plugin of service center registry
 func init() {
 	registry.InstallRegistrator(ServiceCenter, NewRegistrator)
 	registry.InstallServiceDiscovery(ServiceCenter, NewServiceDiscovery)
-	registry.InstallContractDiscovery(ServiceCenter, newContractDiscovery)
 
 }
