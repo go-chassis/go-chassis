@@ -42,6 +42,7 @@ type Returns struct {
 	Code    int // http response code
 	Message string
 	Model   interface{} // response body structure
+	Headers map[string]restful.Header
 }
 
 //Parameters describe parameters in url path or query params
