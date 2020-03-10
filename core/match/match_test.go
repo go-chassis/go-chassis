@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package match
+package match_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/match"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestMatch(t *testing.T) {
-	b, _ := Match("exact", "a", "a")
+	b, _ := match.Match("exact", "a", "a")
 	assert.True(t, b)
 
-	Install("notEq", func(v, e string) bool {
+	match.Install("notEq", func(v, e string) bool {
 		return !(v == e)
 	})
 
-	b, _ = Match("notEq", "a", "a")
+	b, _ = match.Match("notEq", "a", "a")
 	assert.False(t, b)
-}
-
-func TestMark(t *testing.T) {
-	// just call mark() function to escape dead code checking
-	// mark() is a pre-committed function designed in go-chassis 2.0
-	inv := &invocation.Invocation{}
-	mark(inv)
 }
