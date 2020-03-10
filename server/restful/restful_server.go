@@ -162,7 +162,7 @@ func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful
 		rb = rb.Metadata(k, v)
 	}
 	for _, r := range routeSpec.Returns {
-		rb = rb.Returns(r.Code, r.Message, r.Model)
+		rb = rb.ReturnsWithHeaders(r.Code, r.Message, r.Model, r.Headers)
 	}
 	if routeSpec.Read != nil {
 		rb = rb.Reads(routeSpec.Read)
