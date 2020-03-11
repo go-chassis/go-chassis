@@ -1,6 +1,12 @@
-package handler_test
+package ratelimiter_test
 
 import (
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
@@ -8,10 +14,11 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/middleware/ratelimiter"
+	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"os"
-	"testing"
+
+	_ "github.com/go-chassis/go-chassis/control/archaius"
 )
 
 func init() {
@@ -20,6 +27,44 @@ func init() {
 		RollingPolicy: "size",
 	})
 }
+func prepareConfDir(t *testing.T) string {
+	wd, _ := fileutil.GetWorkDir()
+	os.Setenv("CHASSIS_HOME", wd)
+	defer os.Unsetenv("CHASSIS_HOME")
+	chassisConf := filepath.Join(wd, "conf")
+	logConf := filepath.Join(wd, "log")
+	err := os.MkdirAll(chassisConf, 0700)
+	assert.NoError(t, err)
+	err = os.MkdirAll(logConf, 0700)
+	assert.NoError(t, err)
+	return chassisConf
+}
+func prepareTestFile(t *testing.T, confDir, file, content string) {
+	fullPath := filepath.Join(confDir, file)
+	err := os.Remove(fullPath)
+	f, err := os.Create(fullPath)
+	assert.NoError(t, err)
+	_, err = io.WriteString(f, content)
+	assert.NoError(t, err)
+}
+func TestCBInit(t *testing.T) {
+	f := prepareConfDir(t)
+	microContent := `---
+service_description:
+  name: Client
+  version: 0.1`
+
+	prepareTestFile(t, f, "chassis.yaml", "")
+	prepareTestFile(t, f, "microservice.yaml", microContent)
+	err := config.Init()
+	assert.NoError(t, err)
+	opts := control.Options{
+		Infra: config.GlobalDefinition.Panel.Infra,
+	}
+	err = control.Init(opts)
+	assert.NoError(t, err)
+}
+
 func TestConsumerRateLimiterDisable(t *testing.T) {
 	t.Log("testing consumerratelimiter handler with qps enabled as false")
 	gopath := os.Getenv("GOPATH")
@@ -33,7 +78,7 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 	err := control.Init(opts)
 	assert.NoError(t, err)
 	c := handler.Chain{}
-	c.AddHandler(&handler.ConsumerRateLimiterHandler{})
+	c.AddHandler(&ratelimiter.ConsumerRateLimiterHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.FlowControl.Consumer.QPS.Enabled = false
@@ -62,7 +107,7 @@ func TestConsumerRateLimiterHandler_Handle(t *testing.T) {
 	config.Init()
 
 	c := handler.Chain{}
-	c.AddHandler(&handler.ConsumerRateLimiterHandler{})
+	c.AddHandler(&ratelimiter.ConsumerRateLimiterHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.FlowControl.Consumer.QPS.Enabled = true
@@ -78,11 +123,4 @@ func TestConsumerRateLimiterHandler_Handle(t *testing.T) {
 		log.Println(r.Result)
 		return r.Err
 	})
-}
-
-func TestConsumerRateLimiterHandler_Name(t *testing.T) {
-	r1 := &handler.ConsumerRateLimiterHandler{}
-	name := r1.Name()
-	assert.Equal(t, "consumerratelimiter", name)
-
 }

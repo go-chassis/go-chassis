@@ -1,11 +1,11 @@
-package qps_test
+package rate_test
 
 import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/qps"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/pkg/rate"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,7 +20,7 @@ func init() {
 }
 
 func TestProcessQpsTokenReq(t *testing.T) {
-	qps := qps.GetRateLimiters()
+	qps := rate.GetRateLimiters()
 	b := qps.TryAccept("serviceName", 100)
 	assert.True(t, b)
 	b = qps.TryAccept("serviceName.Schema1.op1", 10)
@@ -34,9 +34,9 @@ func TestGetQpsRateWithPriority(t *testing.T) {
 		OperationID:      "SayHello",
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
-	opMeta := qps.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+	opMeta := rate.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
 
-	l := qps.GetRateLimiters()
+	l := rate.GetRateLimiters()
 	rate, key := l.GetQPSRateWithPriority(opMeta.OperationQualifiedName, opMeta.SchemaQualifiedName, opMeta.MicroServiceName)
 	t.Log("rate is :", rate)
 	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1", key)
@@ -50,12 +50,12 @@ func TestGetQpsRateWithPriority(t *testing.T) {
 }
 
 func TestUpdateRateLimit(t *testing.T) {
-	l := qps.GetRateLimiters()
+	l := rate.GetRateLimiters()
 	l.UpdateRateLimit("cse.flowcontrol.Consumer.l.limit.Server.Employee", 200)
 	l.UpdateRateLimit("cse.flowcontrol.Provider.l.limit.Server", 100)
 }
 
 func TestDeleteRateLimit(t *testing.T) {
-	qps := qps.GetRateLimiters()
+	qps := rate.GetRateLimiters()
 	qps.DeleteRateLimiter("cse.flowcontrol.Consumer.qps.limit.Server.Employee")
 }

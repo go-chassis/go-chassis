@@ -61,6 +61,7 @@ func GetAPM() model.APMStruct {
 
 // readFromArchaius unmarshal configurations to expected pointer
 func readFromArchaius() error {
+	openlogging.Debug("read from archaius")
 	err := ReadGlobalConfigFromArchaius()
 	if err != nil {
 		return err

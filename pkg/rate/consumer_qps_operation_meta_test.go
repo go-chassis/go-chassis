@@ -1,10 +1,10 @@
-package qps_test
+package rate_test
 
 import (
 	//"fmt"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/qps"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/pkg/rate"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -17,7 +17,7 @@ func TestGetConsumerKey(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	opMeta := qps.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+	opMeta := rate.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
 	t.Log("initializing schemaoperation from invocation object, ConsumerKeys = ", *opMeta)
 	sName := opMeta.MicroServiceName
 	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1", sName)
@@ -38,7 +38,7 @@ func TestGetConsumerKey2(t *testing.T) {
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	opMeta := qps.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+	opMeta := rate.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
 	t.Log("initializing schemaoperation from invocation object with sourceMicroserviceName, ConsumerKeys = ", *opMeta)
 	sName := opMeta.GetMicroServiceName()
 	assert.Equal(t, "cse.flowcontrol.client:1.1:sock.Consumer.qps.limit.service1", sName)

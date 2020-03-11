@@ -1,17 +1,18 @@
-package handler
+package ratelimiter
 
 import (
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/qps"
+	"github.com/go-chassis/go-chassis/pkg/rate"
 )
 
 // ProviderRateLimiterHandler provider rate limiter handler
 type ProviderRateLimiterHandler struct{}
 
 // Handle is to handle provider rateLimiter things
-func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+func (rl *ProviderRateLimiterHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	rlc := control.DefaultPanel.GetRateLimiting(*i, common.Provider)
 	if !rlc.Enabled {
 		chain.Next(i, cb)
@@ -24,7 +25,7 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 		cb(r)
 		return
 	}
-	if qps.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate) {
+	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate) {
 		chain.Next(i, cb)
 	} else {
 		r := newErrResponse(i, rlc)
@@ -33,7 +34,7 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 	return
 }
 
-func newProviderRateLimiterHandler() Handler {
+func newProviderRateLimiterHandler() handler.Handler {
 	return &ProviderRateLimiterHandler{}
 }
 

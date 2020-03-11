@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-package qps
+package rate
 
 //TODO rate limiting

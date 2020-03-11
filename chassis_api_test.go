@@ -69,7 +69,7 @@ cse:
   handler:
     chain:
       Consumer:
-        rest: bizkeeper-consumer, loadbalance, ratelimiter-consumer
+        rest: bizkeeper-consumer, loadbalance
       Provider:
         rest: bizkeeper-provider
 ssl:

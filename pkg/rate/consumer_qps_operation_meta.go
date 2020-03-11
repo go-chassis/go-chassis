@@ -1,4 +1,4 @@
-package qps
+package rate
 
 import (
 	"github.com/go-chassis/go-chassis/core/common"
