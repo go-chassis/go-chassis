@@ -1,13 +1,12 @@
 package rate_test
 
 import (
+	"testing"
+
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/go-chassis/go-chassis/pkg/rate"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func init() {
@@ -25,28 +24,6 @@ func TestProcessQpsTokenReq(t *testing.T) {
 	assert.True(t, b)
 	b = qps.TryAccept("serviceName.Schema1.op1", 10)
 	assert.True(t, b)
-}
-
-func TestGetQpsRateWithPriority(t *testing.T) {
-	i := &invocation.Invocation{
-		MicroServiceName: "service1",
-		SchemaID:         "schema1",
-		OperationID:      "SayHello",
-		Args:             &helloworld.HelloRequest{Name: "peter"},
-	}
-	opMeta := rate.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
-
-	l := rate.GetRateLimiters()
-	rate, key := l.GetQPSRateWithPriority(opMeta.OperationQualifiedName, opMeta.SchemaQualifiedName, opMeta.MicroServiceName)
-	t.Log("rate is :", rate)
-	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1", key)
-
-	i = &invocation.Invocation{
-		MicroServiceName: "service1",
-	}
-	keys := qps.GetProviderKey(i.SourceMicroService)
-	rate, key = l.GetQPSRateWithPriority(keys.ServiceOriented, keys.Global)
-	assert.Equal(t, "cse.flowcontrol.Provider.qps.global.limit", key)
 }
 
 func TestUpdateRateLimit(t *testing.T) {

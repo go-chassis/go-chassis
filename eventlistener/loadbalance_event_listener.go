@@ -2,7 +2,7 @@ package eventlistener
 
 import (
 	"github.com/go-chassis/go-archaius/event"
-	"github.com/go-chassis/go-chassis/control/archaius"
+	"github.com/go-chassis/go-chassis/control/servicecomb"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-mesh/openlogging"
 )
@@ -24,5 +24,5 @@ func (e *LoadbalancingEventListener) Event(evt *event.Event) {
 	if err := config.ReadLBFromArchaius(); err != nil {
 		openlogging.GetLogger().Error("can not unmarshal new lb config: " + err.Error())
 	}
-	archaius.SaveToLBCache(config.GetLoadBalancing())
+	servicecomb.SaveToLBCache(config.GetLoadBalancing())
 }

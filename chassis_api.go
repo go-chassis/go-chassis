@@ -22,7 +22,7 @@ import (
 	//router
 	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 	//control panel
-	_ "github.com/go-chassis/go-chassis/control/archaius"
+	_ "github.com/go-chassis/go-chassis/control/servicecomb"
 	// registry
 	_ "github.com/go-chassis/go-chassis/core/registry/file"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"

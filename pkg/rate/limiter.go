@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-mesh/openlogging"
 	"k8s.io/client-go/util/flowcontrol"
 )
@@ -67,33 +66,6 @@ func (qpsL *Limiters) addLimiter(key string, qps int) bool {
 	qpsL.m[key] = r
 	qpsL.Unlock()
 	return r.TryAccept()
-}
-
-// GetQPSRate get qps rate
-func GetQPSRate(rateConfig string) (int, bool) {
-	qpsRate := archaius.GetInt(rateConfig, DefaultRate)
-	if qpsRate == DefaultRate {
-		return qpsRate, false
-	}
-
-	return qpsRate, true
-}
-
-// GetQPSRateWithPriority get qps rate with priority
-func (qpsL *Limiters) GetQPSRateWithPriority(cmd ...string) (int, string) {
-	var (
-		qpsVal      int
-		configExist bool
-	)
-	for _, c := range cmd {
-		qpsVal, configExist = GetQPSRate(c)
-		if configExist {
-			return qpsVal, c
-		}
-	}
-
-	return DefaultRate, cmd[len(cmd)-1]
-
 }
 
 // UpdateRateLimit will update the old limiters

@@ -19,6 +19,7 @@ package governance
 
 import (
 	"github.com/go-chassis/go-chassis/core/match"
+	"github.com/go-chassis/go-chassis/pkg/rate"
 	"github.com/go-mesh/openlogging"
 	"strings"
 )

@@ -18,7 +18,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 
-	_ "github.com/go-chassis/go-chassis/control/archaius"
+	_ "github.com/go-chassis/go-chassis/control/servicecomb"
 )
 
 func init() {
