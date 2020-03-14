@@ -21,8 +21,11 @@ import (
 	"fmt"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
+	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -32,17 +35,88 @@ var matches sync.Map
 type Method func(value, expression string) bool
 
 var matchPlugin = map[string]Method{
-	"exact": exact,
+	"exact":    exact,
+	"contains": contains,
+	"regex":    regex,
 }
 
 //Install a strategy
 func Install(name string, m Method) {
 	matchPlugin[name] = m
 }
+
 func mark(inv *invocation.Invocation) {
+	matchName := ""
 	matches.Range(func(k, v interface{}) bool {
-		return false
+		mp, ok := v.(*config.MatchPolicy)
+		if ok {
+			if isMatch(inv, mp) {
+				if name, ok := k.(string); ok {
+					matchName = name
+					openlogging.Info("match mark Policy: " + name)
+					return false
+				}
+			}
+		}
+		return true
 	})
+	if matchName != "" {
+		openlogging.GetLogger().Infof("the invocation math policy %s", matchName)
+		inv.Mark(matchName)
+	}
+}
+
+func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
+	if !headsMatch(inv.Headers(), matchPolicy.Headers) {
+		return false
+	}
+
+	req, err := httputil.HTTPRequest(inv)
+	if err != nil {
+		openlogging.Warn("get request error: " + err.Error())
+		return false
+	}
+
+	if len(matchPolicy.ApiPath) != 0 && !apiMatch(req.URL.Path, matchPolicy.ApiPath) {
+		openlogging.GetLogger().Debugf("check api path %s false", req.URL.Path)
+		return false
+	}
+
+	if matchPolicy.Method != "" && strings.ToUpper(matchPolicy.Method) != req.Method {
+		openlogging.GetLogger().Debugf("check reguest method %s - %s false", matchPolicy.Method, req.Method)
+		return false
+	}
+	return true
+}
+
+func apiMatch(apiPath string, apiPolicy map[string]string) bool {
+
+	for strategy, exp := range apiPolicy {
+		if ok, err := Match(strategy, apiPath, exp); err != nil || !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func headsMatch(headers map[string]string, headPolicy map[string]map[string]string) bool {
+	openlogging.GetLogger().Debugf("check header %v", headers)
+
+	for key, policy := range headPolicy {
+		val := headers[key]
+		if val == "" {
+			openlogging.GetLogger().Debugf("check header %s but no this header", key)
+			return false
+		}
+		for strategy, exp := range policy {
+			if o, err := Match(strategy, val, exp); err != nil || !o {
+				openlogging.GetLogger().Debugf("check header %s strategy %s exp %s false", key, strategy, exp)
+				return false
+			}
+		}
+	}
+	openlogging.Debug("check header success")
+	return true
 }
 
 //Match compare value and expression
@@ -53,8 +127,21 @@ func Match(strategy, value, expression string) (bool, error) {
 	}
 	return f(value, expression), nil
 }
+
 func exact(value, express string) bool {
 	return value == express
+}
+
+func contains(value, express string) bool {
+	return strings.Contains(value, express)
+}
+
+func regex(value, express string) bool {
+	reg := regexp.MustCompilePOSIX(express)
+	if !reg.Match([]byte(value)) {
+		return false
+	}
+	return true
 }
 
 //SaveMatchPolicy saves Match policy
@@ -63,6 +150,8 @@ func SaveMatchPolicy(value string, k string, name string) {
 	err := yaml.Unmarshal([]byte(value), m)
 	if err != nil {
 		openlogging.Warn("invalid policy:" + k)
+		return
 	}
+	openlogging.GetLogger().Debugf("get policy %s %v", name, m)
 	matches.Store(name, m)
 }

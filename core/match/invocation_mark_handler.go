@@ -17,7 +17,38 @@
 
 package match
 
+import (
+	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-mesh/openlogging"
+)
+
+const (
+	Name = "mark-invocation"
+)
+
 //Handler can be registered in chain
 //it compares the Match rule with invocation and mark this invocation
-type Handler struct {
+type MarkHandler struct {
+}
+
+//Name return the handler name
+func (m *MarkHandler) Name() string {
+	return Name
+}
+
+// Handle to handle the mart invocation
+func (m *MarkHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	mark(i)
+	chain.Next(i, cb)
+}
+
+func newMarkHandler() handler.Handler {
+	return &MarkHandler{}
+}
+
+func init() {
+	if err := handler.RegisterHandler(Name, newMarkHandler); err != nil {
+		openlogging.GetLogger().Errorf("register mark invocation handler failed, %s", err)
+	}
 }

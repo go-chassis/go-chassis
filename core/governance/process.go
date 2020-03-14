@@ -21,6 +21,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/match"
 	"github.com/go-chassis/go-chassis/core/qps"
 	"github.com/go-mesh/openlogging"
+	"gopkg.in/yaml.v2"
 	"strings"
 )
 
@@ -30,9 +31,15 @@ func ProcessMatch(key string, value string) {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {
 		openlogging.Warn("invalid key:" + key)
+		return
 	}
 	name := s[2]
 	match.SaveMatchPolicy(value, key, name)
+}
+
+type limiterPolicy struct {
+	Matcher string `json:"match"`
+	Quota   int    `json:"quota"`
 }
 
 //ProcessLimiter saves limiter, after a invocation is marked,
@@ -41,8 +48,15 @@ func ProcessLimiter(key string, value string) {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {
 		openlogging.Warn("invalid key:" + key)
+		return
 	}
-	//TODO update limiters, key is match rule name
+	m := &limiterPolicy{}
+	err := yaml.Unmarshal([]byte(value), m)
+	if err != nil {
+		openlogging.Error("invalid limiter: " + key)
+		return
+	}
+
 	//key is match rule name, value is qps
-	qps.GetRateLimiters().UpdateRateLimit("", nil)
+	qps.GetRateLimiters().UpdateRateLimit(m.Matcher, m.Quota)
 }

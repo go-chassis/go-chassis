@@ -34,3 +34,19 @@ func TestMatch(t *testing.T) {
 	b, _ = match.Match("notEq", "a", "a")
 	assert.False(t, b)
 }
+
+func TestMark(t *testing.T) {
+	testName := "match-user-json"
+	testMatchPolic := `
+        headers:
+          cookie:
+            regex: "^(.*?;)?(user=jason)(;.*)?$"
+          user:
+            equal: jason
+        apiPath:
+          contains: "some/api"
+        method: GET
+	`
+	match.SaveMatchPolicy(testMatchPolic, "servicecomb.match."+testName, testName)
+
+}
