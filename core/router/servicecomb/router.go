@@ -30,6 +30,17 @@ func (r *Router) FetchRouteRuleByServiceName(service string) []*config.RouteRule
 	return r.routeRule[service]
 }
 
+//ListRouteRule get rules for all service
+func (r *Router) ListRouteRule() map[string][]*config.RouteRule {
+	r.lock.RLock()
+	defer r.lock.RUnlock()
+	rr := make(map[string][]*config.RouteRule, len(r.routeRule))
+	for k, v := range r.routeRule {
+		rr[k] = v
+	}
+	return rr
+}
+
 //Init init router config
 func (r *Router) Init(o router.Options) error {
 	archaius.RegisterListener(&routeRuleEventListener{}, DarkLaunchKey, DarkLaunchKeyV2)

@@ -23,6 +23,7 @@ type Router interface {
 	Init(Options) error
 	SetRouteRule(map[string][]*config.RouteRule)
 	FetchRouteRuleByServiceName(service string) []*config.RouteRule
+	ListRouteRule() map[string][]*config.RouteRule
 }
 
 // ErrNoExist means if there is no router implementation

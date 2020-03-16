@@ -45,25 +45,25 @@ type Router struct {
 
 // RouteRule is having route rule parameters
 type RouteRule struct {
-	Precedence int         `yaml:"precedence"`
-	Routes     []*RouteTag `yaml:"route"`
-	Match      Match       `yaml:"match"`
+	Precedence int         `json:"precedence" yaml:"precedence"`
+	Routes     []*RouteTag `json:"route" yaml:"route"`
+	Match      Match       `json:"match" yaml:"match"`
 }
 
 // RouteTag gives route tag information
 type RouteTag struct {
-	Tags   map[string]string `yaml:"tags"`
-	Weight int               `yaml:"weight"`
+	Tags   map[string]string `json:"tags" yaml:"tags"`
+	Weight int               `json:"weight" yaml:"weight"`
 	Label  string
 }
 
 // Match is checking source, source tags, and http headers
 type Match struct {
-	Refer       string                       `yaml:"refer"`
-	Source      string                       `yaml:"source"`
-	SourceTags  map[string]string            `yaml:"sourceTags"`
-	HTTPHeaders map[string]map[string]string `yaml:"httpHeaders"`
-	Headers     map[string]map[string]string `yaml:"headers"`
+	Refer       string                       `json:"refer" yaml:"refer"`
+	Source      string                       `json:"source" yaml:"source"`
+	SourceTags  map[string]string            `json:"sourceTags" yaml:"sourceTags"`
+	HTTPHeaders map[string]map[string]string `json:"httpHeaders" yaml:"httpHeaders"`
+	Headers     map[string]map[string]string `json:"headers" yaml:"headers"`
 }
 
 //DarkLaunchRule dark launch rule
