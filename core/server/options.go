@@ -2,6 +2,7 @@ package server
 
 import (
 	"crypto/tls"
+	"time"
 
 	"github.com/go-chassis/go-chassis/core/provider"
 )
@@ -14,6 +15,8 @@ type Options struct {
 	Provider           provider.Provider
 	TLSConfig          *tls.Config
 	BodyLimit          int64
+	HeaderLimit        int
+	Timeout            time.Duration
 }
 
 //RegisterOptions is options when you register a schema to chassis
