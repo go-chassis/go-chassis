@@ -231,6 +231,7 @@ func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.Strin
 	for old := range oldProviders {
 		if !newProviders.Has(old) { //provider is outdated, delete it
 			registry.MicroserviceInstanceIndex.Delete(old)
+			openlogging.GetLogger().Infof("Delete the service [%s] in the cache", old)
 		}
 	}
 }
@@ -329,7 +330,7 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
 	microServiceInstances = append(microServiceInstances, msi)
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	openlogging.GetLogger().Debugf("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
+	openlogging.GetLogger().Infof("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
 }
 
 // deleteAction delete micro-service instance
@@ -387,5 +388,5 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 		openlogging.GetLogger().Warnf("updateAction error, iid:%s", response.Instance.InstanceId)
 	}
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	openlogging.GetLogger().Debugf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
+	openlogging.GetLogger().Infof("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
 }

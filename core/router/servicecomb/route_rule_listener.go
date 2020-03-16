@@ -63,10 +63,6 @@ func (r *routeRuleEventListener) Event(e *event.Event) {
 		SaveRouteRule(service, raw, isV2)
 	case common.Delete:
 		cseRouter.DeleteRouteRuleByKey(service)
-		openlogging.Info("route rule is removed", openlogging.WithTags(
-			openlogging.Tags{
-				"key": e.Key,
-			}))
 	}
 
 }
@@ -100,10 +96,5 @@ func validateAndUpdate(routeRules []*config.RouteRule, service string) {
 	if router.ValidateRule(map[string][]*config.RouteRule{service: routeRules}) {
 		cseRouter.SetRouteRuleByKey(service, routeRules)
 		wp.GetPool().Reset(service)
-		openlogging.Info("update route rule success", openlogging.WithTags(
-			openlogging.Tags{
-				"service": service,
-				"rule":    routeRules,
-			}))
 	}
 }

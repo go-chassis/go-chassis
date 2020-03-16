@@ -55,7 +55,7 @@ func (r *Router) LoadRules() error {
 
 	if router.ValidateRule(configs) {
 		r.routeRule = configs
-		openlogging.Debug("load route rule", openlogging.WithTags(openlogging.Tags{
+		openlogging.Info("load route rule", openlogging.WithTags(openlogging.Tags{
 			"rule": r.routeRule,
 		}))
 	}
@@ -65,15 +65,24 @@ func (r *Router) LoadRules() error {
 // SetRouteRuleByKey set route rule by key
 func (r *Router) SetRouteRuleByKey(k string, rr []*config.RouteRule) {
 	r.lock.Lock()
+	defer r.lock.Unlock()
 	r.routeRule[k] = rr
-	r.lock.Unlock()
+	openlogging.Info("update route rule success", openlogging.WithTags(
+		openlogging.Tags{
+			"service": k,
+			"rule":    rr,
+		}))
 }
 
 // DeleteRouteRuleByKey set route rule by key
 func (r *Router) DeleteRouteRuleByKey(k string) {
 	r.lock.Lock()
+	defer r.lock.Unlock()
 	delete(r.routeRule, k)
-	r.lock.Unlock()
+	openlogging.Info("route rule is removed", openlogging.WithTags(
+		openlogging.Tags{
+			"service": k,
+		}))
 }
 
 func init() {
