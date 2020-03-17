@@ -23,6 +23,7 @@ User guides
    user-guides/transport
    user-guides/tracing
    user-guides/metrics
+   user-guides/profile
    user-guides/log
    user-guides/tls
    user-guides/contract

@@ -10,8 +10,8 @@ const (
 
 // Endpoint struct having full info about micro-service instance endpoint
 type Endpoint struct {
-	SSLEnabled bool
-	Address    string
+	SSLEnabled bool   `json:"sslEnabled"`
+	Address    string `json:"address"`
 }
 
 // NewEndPoint return a Endpoint object what parse from url

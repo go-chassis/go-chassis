@@ -35,15 +35,15 @@ type Framework struct {
 
 // MicroServiceInstance struct having full info about micro-service instance
 type MicroServiceInstance struct {
-	InstanceID      string
-	HostName        string
-	ServiceID       string
-	DefaultProtocol string
-	DefaultEndpoint string
-	Status          string
-	EndpointsMap    map[string]*Endpoint
-	Metadata        map[string]string
-	DataCenterInfo  *DataCenterInfo
+	InstanceID      string               `json:"instanceID"`
+	HostName        string               `json:"hostName"`
+	ServiceID       string               `json:"serviceID"`
+	DefaultProtocol string               `json:"defaultProtocol"`
+	DefaultEndpoint string               `json:"defaultEndpoint"`
+	Status          string               `json:"status"`
+	EndpointsMap    map[string]*Endpoint `json:"endpointsMap"`
+	Metadata        map[string]string    `json:"metadata"`
+	DataCenterInfo  *DataCenterInfo      `json:"dataCenterInfo"`
 }
 
 func (m *MicroServiceInstance) appID() string   { return m.Metadata[common.BuildinTagApp] }
@@ -84,9 +84,9 @@ type MicroServiceDependency struct {
 
 // DataCenterInfo represents micro-service data center info
 type DataCenterInfo struct {
-	Name          string
-	Region        string
-	AvailableZone string
+	Name          string `json:"name"`
+	Region        string `json:"region"`
+	AvailableZone string `json:"availableZone"`
 }
 
 // SourceInfo represent the consumer service name and metadata.

@@ -21,6 +21,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
+	"github.com/go-chassis/go-chassis/pkg/profile"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
@@ -30,10 +31,13 @@ import (
 // constants for metric path and name
 const (
 	//Name is a variable of type string which indicates the protocol being used
-	Name              = "rest"
-	DefaultMetricPath = "metrics"
-	MimeFile          = "application/octet-stream"
-	MimeMult          = "multipart/form-data"
+	Name                    = "rest"
+	DefaultMetricPath       = "metrics"
+	DefaultProfilePath      = "profile"
+	ProfileRouteRuleSubPath = "route-rule"
+	ProfileDiscoverySubPath = "discovery"
+	MimeFile                = "application/octet-stream"
+	MimeMult                = "multipart/form-data"
 )
 
 const openTLS = "?sslEnabled=true"
@@ -62,11 +66,33 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 		openlogging.Info("Enabled metrics API on " + metricPath)
 		ws.Route(ws.GET(metricPath).To(metrics.HTTPHandleFunc))
 	}
+	addProfileRoutes(ws)
 	return &restfulServer{
 		opts:      opts,
 		container: restful.NewContainer(),
 		ws:        ws,
 	}
+}
+
+func addProfileRoutes(ws *restful.WebService) {
+	if !archaius.GetBool("cse.profile.enable", false) {
+		return
+	}
+	profilePath := archaius.GetString("cse.profile.apiPath", DefaultProfilePath)
+	if !strings.HasPrefix(profilePath, "/") {
+		profilePath = "/" + profilePath
+	}
+
+	openlogging.Info("Enabled profile API on " + profilePath)
+	ws.Route(ws.GET(profilePath).To(profile.HTTPHandleProfileFunc))
+
+	profileRouteRulePath := profilePath + "/" + ProfileRouteRuleSubPath
+	openlogging.Info("Enabled profile route-rule API on " + profileRouteRulePath)
+	ws.Route(ws.GET(profileRouteRulePath).To(profile.HTTPHandleRouteRuleFunc))
+
+	profileDiscoveryPath := profilePath + "/" + ProfileDiscoverySubPath
+	openlogging.Info("Enabled profile discovery API on " + profileDiscoveryPath)
+	ws.Route(ws.GET(profileDiscoveryPath).To(profile.HTTPHandleDiscoveryFunc))
 }
 
 // HTTPRequest2Invocation convert http request to uniform invocation data format
