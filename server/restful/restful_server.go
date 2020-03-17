@@ -238,11 +238,19 @@ func (r *restfulServer) Start() error {
 	r.mux.Unlock()
 	r.container.Add(r.ws)
 	sslFlag := ""
+	r.server = &http.Server{
+		Addr:         config.Address,
+		Handler:      r.container,
+		ReadTimeout:  r.opts.Timeout,
+		WriteTimeout: r.opts.Timeout,
+		IdleTimeout:  r.opts.Timeout,
+	}
+	if r.opts.HeaderLimit > 0 {
+		r.server.MaxHeaderBytes = r.opts.HeaderLimit
+	}
 	if r.opts.TLSConfig != nil {
-		r.server = &http.Server{Addr: config.Address, Handler: r.container, TLSConfig: r.opts.TLSConfig}
+		r.server.TLSConfig = r.opts.TLSConfig
 		sslFlag = openTLS
-	} else {
-		r.server = &http.Server{Addr: config.Address, Handler: r.container}
 	}
 	// create schema
 	err = r.CreateLocalSchema(config)
