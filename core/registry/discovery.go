@@ -10,6 +10,8 @@ import (
 
 var sdFunc = make(map[string]func(opts Options) ServiceDiscovery)
 
+var cdFunc = make(map[string]func(opts Options) ContractDiscovery)
+
 //InstallServiceDiscovery install service discovery client
 func InstallServiceDiscovery(name string, f func(opts Options) ServiceDiscovery) {
 	sdFunc[name] = f
@@ -25,6 +27,12 @@ func NewDiscovery(name string, opts Options) (ServiceDiscovery, error) {
 	return f(opts), nil
 }
 
+//InstallContractDiscovery install contract service client
+func InstallContractDiscovery(name string, f func(opts Options) ContractDiscovery) {
+	cdFunc[name] = f
+	openlogging.Info("Installed contract discovery plugin: " + name)
+}
+
 //ServiceDiscovery fetch service and instances from remote or local
 type ServiceDiscovery interface {
 	GetMicroService(microServiceID string) (*MicroService, error)
@@ -35,6 +43,17 @@ type ServiceDiscovery interface {
 
 //DefaultServiceDiscoveryService supplies service discovery
 var DefaultServiceDiscoveryService ServiceDiscovery
+
+// DefaultContractDiscoveryService supplies contract discovery
+var DefaultContractDiscoveryService ContractDiscovery
+
+//ContractDiscovery fetch schema content from remote or local
+type ContractDiscovery interface {
+	GetMicroServicesByInterface(interfaceName string) (microservices []*MicroService)
+	GetSchemaContentByInterface(interfaceName string) SchemaContent
+	GetSchemaContentByServiceName(svcName, version, appID, env string) []*SchemaContent
+	Close() error
+}
 
 func enableServiceDiscovery(opts Options) error {
 	if config.GetServiceDiscoveryDisable() {
@@ -60,4 +79,22 @@ func enableServiceDiscovery(opts Options) error {
 
 	openlogging.GetLogger().Infof("Enable %s service discovery.", t)
 	return nil
+}
+
+func enableContractDiscovery(opts Options) {
+	if config.GetContractDiscoveryDisable() {
+		return
+	}
+
+	t := config.GetContractDiscoveryType()
+	if t == "" {
+		t = DefaultContractDiscoveryPlugin
+	}
+	f := cdFunc[t]
+	if f == nil {
+		openlogging.GetLogger().Warn("No contract discovery plugin")
+		return
+	}
+	DefaultContractDiscoveryService = f(opts)
+	openlogging.GetLogger().Infof("Enable %s contract discovery.", t)
 }
