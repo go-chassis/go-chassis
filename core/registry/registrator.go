@@ -93,7 +93,7 @@ func NewRegistrator(name string, opts Options) (Registrator, error) {
 	}
 	return f(opts), nil
 }
-func getSpecifiedOptions() (oR, oSD Options, err error) {
+func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 	hostsR, schemeR, err := URIs2Hosts(strings.Split(config.GetRegistratorAddress(), ","))
 	if err != nil {
 		return
@@ -123,6 +123,20 @@ func getSpecifiedOptions() (oR, oSD Options, err error) {
 	if oSD.TLSConfig != nil {
 		oSD.EnableSSL = true
 	}
+	hostsCD, schemeCD, err := URIs2Hosts(strings.Split(config.GetContractDiscoveryAddress(), ","))
+	if err != nil {
+		return
+	}
+	oCD.Addrs = hostsCD
+	oCD.Tenant = config.GetContractDiscoveryTenant()
+	oCD.Version = config.GetContractDiscoveryAPIVersion()
+	oCD.TLSConfig, err = getTLSConfig(schemeCD, CDTag)
+	if err != nil {
+		return
+	}
+	if oCD.TLSConfig != nil {
+		oCD.EnableSSL = true
+	}
 	return
 }
 
@@ -134,8 +148,8 @@ func Enable() (err error) {
 		return
 	}
 
-	var oR, oSD Options
-	if oR, oSD, err = getSpecifiedOptions(); err != nil {
+	var oR, oSD, oCD Options
+	if oR, oSD, oCD, err = getSpecifiedOptions(); err != nil {
 		return err
 	}
 
@@ -146,6 +160,7 @@ func Enable() (err error) {
 	if err := enableServiceDiscovery(oSD); err != nil {
 		return err
 	}
+	enableContractDiscovery(oCD)
 
 	openlogging.Info("Enabled Registry")
 	IsEnabled = true

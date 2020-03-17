@@ -531,10 +531,24 @@ func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 		opts:           sco,
 	}
 }
+func newContractDiscovery(options registry.Options) registry.ContractDiscovery {
+	sco := ToSCOptions(options)
+	r := &client.RegistryClient{}
+	if err := r.Initialize(sco); err != nil {
+		openlogging.GetLogger().Errorf("RegistryClient initialization failed: %s", err)
+	}
+
+	return &ContractDiscovery{
+		Name:           ServiceCenter,
+		registryClient: r,
+		opts:           sco,
+	}
+}
 
 // init initialize the plugin of service center registry
 func init() {
 	registry.InstallRegistrator(ServiceCenter, NewRegistrator)
 	registry.InstallServiceDiscovery(ServiceCenter, NewServiceDiscovery)
+	registry.InstallContractDiscovery(ServiceCenter, newContractDiscovery)
 
 }
