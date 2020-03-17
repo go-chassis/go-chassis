@@ -9,10 +9,10 @@ It allows users to easily locate issues of route and service discovery.
 
 **cse.profile.enable**
 > *(optional, bool)* If it is true, 
-a new http API defined in "cse.profile.apipath" will serve for client.
+a new http API defined in "cse.profile.apiPath" will serve for client.
 Default is *false*.
 
-**cse.profile.apipath**
+**cse.profile.apiPath**
 > *(optional, string)* It's the root path of the profile interface,
 default is */profile*.
 The specific profile path will be under this root path.
