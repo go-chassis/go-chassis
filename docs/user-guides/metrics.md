@@ -10,10 +10,10 @@ user can custom metrics plugin to replace prometheus.
 
 **cse.metrics.enable**
 > *(optional, bool)* if it is true, 
-a new http API defined in "cse.metrics.apipath" will serve for client
+a new http API defined in "cse.metrics.apiPath" will serve for client
 default is *false*
 
-**cse.metrics.apipath**
+**cse.metrics.apiPath**
 > *(optional, string)* metrics接口，默认为*/metrics*
 
 **cse.metrics.enableGoRuntimeMetrics**
