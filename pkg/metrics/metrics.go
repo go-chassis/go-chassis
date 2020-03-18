@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-archaius"
 	"github.com/prometheus/client_golang/prometheus"
 	"time"
 )
@@ -100,7 +101,8 @@ type HistogramOpts struct {
 
 //Options control config
 type Options struct {
-	FlushInterval time.Duration
+	FlushInterval          time.Duration
+	EnableGoRuntimeMetrics bool
 }
 
 //InstallPlugin install metrics registry
@@ -118,7 +120,8 @@ func Init() error {
 		return fmt.Errorf("can not init metrics registry [%s]", name)
 	}
 	defaultRegistry = f(Options{
-		FlushInterval: 10 * time.Second,
+		FlushInterval:          10 * time.Second,
+		EnableGoRuntimeMetrics: archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", true),
 	})
 	return nil
 }

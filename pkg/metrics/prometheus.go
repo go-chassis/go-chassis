@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-mesh/openlogging"
 	"github.com/prometheus/client_golang/prometheus"
 	"sync"
@@ -25,7 +24,7 @@ type PrometheusExporter struct {
 
 //NewPrometheusExporter create a prometheus exporter
 func NewPrometheusExporter(options Options) Registry {
-	if archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", true) {
+	if options.EnableGoRuntimeMetrics {
 		onceEnable.Do(func() {
 			EnableRunTimeMetrics()
 			openlogging.Info("go runtime metrics is exported")
