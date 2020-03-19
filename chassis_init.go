@@ -107,7 +107,9 @@ func (c *chassis) initialize() error {
 	if err := runtime.Init(); err != nil {
 		return err
 	}
-
+	if err := metrics.Init(); err != nil {
+		return err
+	}
 	err := c.initHandler()
 	if err != nil {
 		openlogging.GetLogger().Errorf("handler init failed: %s", err)
@@ -148,9 +150,6 @@ func (c *chassis) initialize() error {
 	}
 
 	if err = tracing.Init(); err != nil {
-		return err
-	}
-	if err = metrics.Init(); err != nil {
 		return err
 	}
 
