@@ -39,13 +39,7 @@ const (
 
 var labels = []string{"service", "instance", "version", "app", "env"}
 var labels4Resp = []string{"service", "instance", "version", "app", "env", "code"}
-var labelMap = map[string]string{
-	"service":  runtime.ServiceName,
-	"instance": runtime.InstanceID,
-	"version":  runtime.Version,
-	"app":      runtime.App,
-	"env":      runtime.Environment,
-}
+var labelMap map[string]string
 
 //Handler monitor server side metrics, the key metrics is latency, QPS, Errors, do not use it in consumer chain
 type Handler struct {
@@ -83,7 +77,7 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 			metrics.CounterAdd(MetricsErrors, 1, m)
 		}
 		duration := time.Since(start)
-		metrics.HistogramObserve(MetricsLatency, float64(duration.Milliseconds()), labelMap)
+		metrics.SummaryObserve(MetricsLatency, float64(duration.Milliseconds()), labelMap)
 		return resp.Err
 	})
 
@@ -93,15 +87,22 @@ func newHandler() handler.Handler {
 		Name:   MetricsRequest,
 		Labels: labels,
 	})
-	metrics.CreateHistogram(metrics.HistogramOpts{
-		Name:    MetricsLatency,
-		Labels:  labels,
-		Buckets: []float64{0.05, 0.25, 0.5, 0.75, 0.90, 0.99, 0.995},
+	metrics.CreateSummary(metrics.SummaryOpts{
+		Name:       MetricsLatency,
+		Labels:     labels,
+		Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
 	})
 	metrics.CreateCounter(metrics.CounterOpts{
 		Name:   MetricsErrors,
 		Labels: labels4Resp,
 	})
+	labelMap = map[string]string{
+		"service":  runtime.ServiceName,
+		"instance": runtime.InstanceID,
+		"version":  runtime.Version,
+		"app":      runtime.App,
+		"env":      runtime.Environment,
+	}
 	return &Handler{}
 }
 
