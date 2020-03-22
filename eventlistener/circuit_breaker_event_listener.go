@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/control/archaius"
+	"github.com/go-chassis/go-chassis/control/servicecomb"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
@@ -36,7 +36,7 @@ func (el *CircuitBreakerEventListener) Event(e *event.Event) {
 	if err := config.ReadHystrixFromArchaius(); err != nil {
 		openlogging.Error("can not unmarshal new cb config: " + err.Error())
 	}
-	archaius.SaveToCBCache(config.GetHystrixConfig())
+	servicecomb.SaveToCBCache(config.GetHystrixConfig())
 	switch e.EventType {
 	case common.Update:
 		FlushCircuitByKey(e.Key)

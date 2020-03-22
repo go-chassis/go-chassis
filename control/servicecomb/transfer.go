@@ -1,4 +1,4 @@
-package archaius
+package servicecomb
 
 import (
 	"errors"

@@ -1,8 +1,9 @@
-package qps
+package servicecomb
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
 	"strings"
+
+	"github.com/go-chassis/go-chassis/core/common"
 )
 
 // ConsumerKeys contain consumer keys

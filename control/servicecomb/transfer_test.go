@@ -1,11 +1,11 @@
-package archaius_test
+package servicecomb_test
 
 import (
 	"os"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/control/archaius"
+	"github.com/go-chassis/go-chassis/control/servicecomb"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestSaveToLBCache(t *testing.T) {
-	archaius.SaveToLBCache(&model.LoadBalancing{
+	servicecomb.SaveToLBCache(&model.LoadBalancing{
 		Strategy: map[string]string{
 			"name": loadbalancer.StrategyRoundRobin,
 		},
@@ -27,7 +27,7 @@ func TestSaveToLBCache(t *testing.T) {
 			},
 		},
 	})
-	c, _ := archaius.LBConfigCache.Get("test")
+	c, _ := servicecomb.LBConfigCache.Get("test")
 	assert.Equal(t, loadbalancer.StrategyRoundRobin, c.(control.LoadBalancingConfig).Strategy)
 }
 func init() {
@@ -38,7 +38,7 @@ func init() {
 }
 func TestSaveDefaultToLBCache(t *testing.T) {
 	t.Log("==delete outdated key")
-	archaius.SaveToLBCache(&model.LoadBalancing{
+	servicecomb.SaveToLBCache(&model.LoadBalancing{
 		Strategy: map[string]string{
 			"name": loadbalancer.StrategyRoundRobin,
 		},
@@ -50,10 +50,10 @@ func TestSaveDefaultToLBCache(t *testing.T) {
 			},
 		},
 	})
-	_, ok := archaius.LBConfigCache.Get("test")
+	_, ok := servicecomb.LBConfigCache.Get("test")
 	assert.True(t, ok)
-	archaius.SaveToLBCache(&model.LoadBalancing{})
-	_, ok = archaius.LBConfigCache.Get("test")
+	servicecomb.SaveToLBCache(&model.LoadBalancing{})
+	_, ok = servicecomb.LBConfigCache.Get("test")
 	assert.False(t, ok)
 }
 
@@ -72,7 +72,7 @@ func TestSaveToCBCache(t *testing.T) {
 		Address: config.GlobalDefinition.Panel.Settings["address"],
 	}
 	err = control.Init(opts)
-	archaius.SaveToCBCache(config.GetHystrixConfig())
-	c, _ := archaius.CBConfigCache.Get("Consumer")
+	servicecomb.SaveToCBCache(config.GetHystrixConfig())
+	c, _ := servicecomb.CBConfigCache.Get("Consumer")
 	assert.Equal(t, 100, c.(hystrix.CommandConfig).MaxConcurrentRequests)
 }

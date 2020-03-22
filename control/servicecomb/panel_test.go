@@ -1,10 +1,10 @@
-package archaius_test
+package servicecomb_test
 
 import (
 	_ "github.com/go-chassis/go-chassis/initiator"
 
 	"github.com/go-chassis/go-chassis/control"
-	_ "github.com/go-chassis/go-chassis/control/archaius"
+	_ "github.com/go-chassis/go-chassis/control/servicecomb"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -14,17 +14,17 @@ import (
 	"testing"
 )
 
-func TestPanel_GetLoadBalancing(t *testing.T) {
+func init() {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
-	err := config.Init()
-	assert.NoError(t, err)
-	config.GlobalDefinition.Panel.Infra = "archaius"
+	config.Init()
+}
+func TestPanel_GetLoadBalancing(t *testing.T) {
+
 	opts := control.Options{
-		Infra:   config.GlobalDefinition.Panel.Infra,
-		Address: config.GlobalDefinition.Panel.Settings["address"],
+		Infra: "archaius",
 	}
-	err = control.Init(opts)
+	err := control.Init(opts)
 	assert.NoError(t, err)
 
 	t.Log("lb")

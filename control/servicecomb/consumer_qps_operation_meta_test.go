@@ -1,14 +1,21 @@
-package qps_test
+package servicecomb_test
 
 import (
-	//"fmt"
+	"os"
+	"testing"
+
+	arhcaiusPanel "github.com/go-chassis/go-chassis/control/servicecomb"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/qps"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
+func init() {
+	gopath := os.Getenv("GOPATH")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	config.Init()
+}
 func TestGetConsumerKey(t *testing.T) {
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
@@ -17,7 +24,7 @@ func TestGetConsumerKey(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	opMeta := qps.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+	opMeta := arhcaiusPanel.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
 	t.Log("initializing schemaoperation from invocation object, ConsumerKeys = ", *opMeta)
 	sName := opMeta.MicroServiceName
 	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1", sName)
@@ -38,7 +45,7 @@ func TestGetConsumerKey2(t *testing.T) {
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	opMeta := qps.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+	opMeta := arhcaiusPanel.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
 	t.Log("initializing schemaoperation from invocation object with sourceMicroserviceName, ConsumerKeys = ", *opMeta)
 	sName := opMeta.GetMicroServiceName()
 	assert.Equal(t, "cse.flowcontrol.client:1.1:sock.Consumer.qps.limit.service1", sName)
@@ -49,4 +56,24 @@ func TestGetConsumerKey2(t *testing.T) {
 	schemaName := opMeta.GetSchemaQualifiedName()
 	assert.Equal(t, "cse.flowcontrol.client:1.1:sock.Consumer.qps.limit.service1.schema1", schemaName)
 
+}
+func TestGetQpsRateWithPriority(t *testing.T) {
+	i := &invocation.Invocation{
+		MicroServiceName: "service1",
+		SchemaID:         "schema1",
+		OperationID:      "SayHello",
+		Args:             &helloworld.HelloRequest{Name: "peter"},
+	}
+	opMeta := arhcaiusPanel.GetConsumerKey(i.SourceMicroService, i.MicroServiceName, i.SchemaID, i.OperationID)
+
+	rate, key := arhcaiusPanel.GetQPSRateWithPriority(opMeta.OperationQualifiedName, opMeta.SchemaQualifiedName, opMeta.MicroServiceName)
+	t.Log("rate is :", rate)
+	assert.Equal(t, "cse.flowcontrol.Consumer.qps.limit.service1", key)
+
+	i = &invocation.Invocation{
+		MicroServiceName: "service1",
+	}
+	keys := arhcaiusPanel.GetProviderKey(i.SourceMicroService)
+	rate, key = arhcaiusPanel.GetQPSRateWithPriority(keys.ServiceOriented, keys.Global)
+	assert.Equal(t, "cse.flowcontrol.Provider.qps.global.limit", key)
 }

@@ -1,4 +1,4 @@
-package archaius
+package servicecomb
 
 import (
 	"github.com/go-chassis/go-archaius"
@@ -7,7 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/qps"
+	"github.com/go-chassis/go-chassis/pkg/rate"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 
@@ -55,12 +55,12 @@ func (p *Panel) GetRateLimiting(inv invocation.Invocation, serviceType string) c
 	rl := control.RateLimitingConfig{}
 	rl.Enabled = archaius.GetBool("cse.flowcontrol."+serviceType+".qps.enabled", true)
 	if serviceType == common.Consumer {
-		keys := qps.GetConsumerKey(inv.SourceMicroService, inv.MicroServiceName, inv.SchemaID, inv.OperationID)
-		rl.Rate, rl.Key = qps.GetRateLimiters().GetQPSRateWithPriority(
+		keys := GetConsumerKey(inv.SourceMicroService, inv.MicroServiceName, inv.SchemaID, inv.OperationID)
+		rl.Rate, rl.Key = GetQPSRateWithPriority(
 			keys.OperationQualifiedName, keys.SchemaQualifiedName, keys.MicroServiceName)
 	} else {
-		keys := qps.GetProviderKey(inv.SourceMicroService)
-		rl.Rate, rl.Key = qps.GetRateLimiters().GetQPSRateWithPriority(
+		keys := GetProviderKey(inv.SourceMicroService)
+		rl.Rate, rl.Key = GetQPSRateWithPriority(
 			keys.ServiceOriented, keys.Global)
 	}
 
@@ -80,4 +80,31 @@ func (p *Panel) GetEgressRule() []control.EgressConfig {
 
 func init() {
 	control.InstallPlugin("archaius", newPanel)
+}
+
+// GetQPSRateWithPriority get qps rate with priority
+func GetQPSRateWithPriority(cmd ...string) (int, string) {
+	var (
+		qpsVal      int
+		configExist bool
+	)
+	for _, c := range cmd {
+		qpsVal, configExist = GetQPSRate(c)
+		if configExist {
+			return qpsVal, c
+		}
+	}
+
+	return rate.DefaultRate, cmd[len(cmd)-1]
+
+}
+
+// GetQPSRate get qps rate
+func GetQPSRate(rateConfig string) (int, bool) {
+	qpsRate := archaius.GetInt(rateConfig, rate.DefaultRate)
+	if qpsRate == rate.DefaultRate {
+		return qpsRate, false
+	}
+
+	return qpsRate, true
 }

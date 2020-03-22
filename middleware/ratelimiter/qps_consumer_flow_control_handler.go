@@ -1,19 +1,27 @@
-package handler
+package ratelimiter
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/qps"
-	"net/http"
+	"github.com/go-chassis/go-chassis/pkg/rate"
+)
+
+// names
+const (
+	Consumer = "ratelimiter-consumer"
+	Provider = "ratelimiter-provider"
 )
 
 // ConsumerRateLimiterHandler consumer rate limiter handler
 type ConsumerRateLimiterHandler struct{}
 
 // Handle is handles the consumer rate limiter APIs
-func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+func (rl *ConsumerRateLimiterHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	rlc := control.DefaultPanel.GetRateLimiting(*i, common.Consumer)
 	if !rlc.Enabled {
 		chain.Next(i, cb)
@@ -27,7 +35,7 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *Chain, i *invocation.Invocat
 		return
 	}
 	//get operation meta info ms.schema, ms.schema.operation, ms
-	if qps.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate) {
+	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate) {
 		chain.Next(i, cb)
 	} else {
 		r := newErrResponse(i, rlc)
@@ -49,11 +57,15 @@ func newErrResponse(i *invocation.Invocation, rlc control.RateLimitingConfig) *i
 	return r
 }
 
-func newConsumerRateLimiterHandler() Handler {
+func newConsumerRateLimiterHandler() handler.Handler {
 	return &ConsumerRateLimiterHandler{}
 }
 
 // Name returns name
 func (rl *ConsumerRateLimiterHandler) Name() string {
-	return "consumerratelimiter"
+	return "ratelimiter-consumer"
+}
+func init() {
+	handler.RegisterHandler(Consumer, newConsumerRateLimiterHandler)
+	handler.RegisterHandler(Provider, newProviderRateLimiterHandler)
 }

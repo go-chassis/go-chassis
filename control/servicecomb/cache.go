@@ -1,4 +1,4 @@
-package archaius
+package servicecomb
 
 import (
 	"github.com/go-chassis/go-chassis/control"

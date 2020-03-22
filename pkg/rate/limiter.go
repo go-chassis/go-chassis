@@ -1,12 +1,11 @@
-//Package qps supply functionality about QPS
+//Package rate supply functionality about QPS
 //for example rate limiting
-package qps
+package rate
 
 import (
 	"strconv"
 	"sync"
 
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-mesh/openlogging"
 	"k8s.io/client-go/util/flowcontrol"
 )
@@ -16,8 +15,9 @@ const (
 	DefaultRate = 2147483647
 )
 
-// RateLimiters qps limiter map struct
-type RateLimiters struct {
+//Limiters manages all rate limiter
+//it create new limiters and try to limit processes
+type Limiters struct {
 	sync.RWMutex
 	m map[string]flowcontrol.RateLimiter
 }
@@ -25,19 +25,19 @@ type RateLimiters struct {
 // variables of qps limiter and mutex variable
 var (
 	once       = new(sync.Once)
-	qpsLimiter *RateLimiters
+	qpsLimiter *Limiters
 )
 
 // GetRateLimiters get qps rate limiters
-func GetRateLimiters() *RateLimiters {
+func GetRateLimiters() *Limiters {
 	once.Do(func() {
-		qpsLimiter = &RateLimiters{m: make(map[string]flowcontrol.RateLimiter)}
+		qpsLimiter = &Limiters{m: make(map[string]flowcontrol.RateLimiter)}
 	})
 	return qpsLimiter
 }
 
-// TryAccept process qps token request
-func (qpsL *RateLimiters) TryAccept(key string, qpsRate int) bool {
+//TryAccept process request, if it can not process a request, it returns false
+func (qpsL *Limiters) TryAccept(key string, qpsRate int) bool {
 	qpsL.RLock()
 	limiter, ok := qpsL.m[key]
 	if !ok {
@@ -50,13 +50,13 @@ func (qpsL *RateLimiters) TryAccept(key string, qpsRate int) bool {
 
 }
 
-// addLimiter process default rate pps token request
-func (qpsL *RateLimiters) addLimiter(key string, qpsRate int) bool {
+// addLimiter process create a new limiter and add it to limiter map
+func (qpsL *Limiters) addLimiter(key string, qps int) bool {
 	var bucketSize int
 	// add a limiter object for the newly found operation in the Default Hash map
 	// so that the default rate will be applied to subsequent token requests to this new operation
-	if qpsRate >= 1 {
-		bucketSize = qpsRate
+	if qps >= 1 {
+		bucketSize = qps
 	} else {
 		bucketSize = DefaultRate
 	}
@@ -68,35 +68,8 @@ func (qpsL *RateLimiters) addLimiter(key string, qpsRate int) bool {
 	return r.TryAccept()
 }
 
-// GetQPSRate get qps rate
-func GetQPSRate(rateConfig string) (int, bool) {
-	qpsRate := archaius.GetInt(rateConfig, DefaultRate)
-	if qpsRate == DefaultRate {
-		return qpsRate, false
-	}
-
-	return qpsRate, true
-}
-
-// GetQPSRateWithPriority get qps rate with priority
-func (qpsL *RateLimiters) GetQPSRateWithPriority(cmd ...string) (int, string) {
-	var (
-		qpsVal      int
-		configExist bool
-	)
-	for _, c := range cmd {
-		qpsVal, configExist = GetQPSRate(c)
-		if configExist {
-			return qpsVal, c
-		}
-	}
-
-	return DefaultRate, cmd[len(cmd)-1]
-
-}
-
-// UpdateRateLimit update or add rate limiter
-func (qpsL *RateLimiters) UpdateRateLimit(key string, value interface{}) {
+// UpdateRateLimit will update the old limiters
+func (qpsL *Limiters) UpdateRateLimit(key string, value interface{}) {
 	switch v := value.(type) {
 	case int:
 		qpsL.addLimiter(key, value.(int))
@@ -113,7 +86,7 @@ func (qpsL *RateLimiters) UpdateRateLimit(key string, value interface{}) {
 }
 
 // DeleteRateLimiter delete rate limiter
-func (qpsL *RateLimiters) DeleteRateLimiter(key string) {
+func (qpsL *Limiters) DeleteRateLimiter(key string) {
 	qpsL.Lock()
 	delete(qpsL.m, key)
 	qpsL.Unlock()
