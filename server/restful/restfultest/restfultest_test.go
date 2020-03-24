@@ -66,8 +66,7 @@ type FakeHandler struct {
 
 func (fh *FakeHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	i.SetHeader("test", "chain")
-	r := &invocation.Response{}
-	cb(r)
+	chain.Next(i, cb)
 }
 
 func (fh *FakeHandler) Name() string {
@@ -118,6 +117,7 @@ func TestNewWithChain(t *testing.T) {
 	resp := httptest.NewRecorder()
 	c.ServeHTTP(resp, r)
 	body, err := ioutil.ReadAll(resp.Body)
+	t.Log(resp)
 	assert.NoError(t, err)
 	assert.Equal(t, "some_user", string(body))
 	assert.Equal(t, "chain", r.Header.Get("test"))

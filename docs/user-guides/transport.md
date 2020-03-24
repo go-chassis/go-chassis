@@ -21,6 +21,13 @@ across all hosts. Zero means no limit. it only works for rest protocol
 > *(optional, int, (bytes))* maxBodyBytes controls the maximum number of request body size , 
  Zero means no limit. it only works for rest protocol.
 
+**transport.maxHeaderBytes.{protocol_name}**
+> *(optional, int, (bytes))* maxHeaderBytes controls the maximum number of request header keys/values, including the 
+request line. Zero means no limit. It only works for rest protocol.
+
+**transport.timeout.{protocol_name}**
+> *(optional, string)* timeout controls the timeout of the server. Use Golang duration string.
+
 ## Example
 The cases of http_500,http_502 are considered as unsuccessful attempts
 ```
@@ -32,4 +39,8 @@ cse:
       rest: 1024
     maxBodyBytes:
       rest: 1
+    maxHeaderBytes:
+      rest: 1
+    timeout:
+      rest: 30s
 ```

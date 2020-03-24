@@ -42,6 +42,7 @@ type Returns struct {
 	Code    int // http response code
 	Message string
 	Model   interface{} // response body structure
+	Headers map[string]restful.Header
 }
 
 //Parameters describe parameters in url path or query params
@@ -106,16 +107,19 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 				}
 			}
 		}()
-
-		originChain, err := handler.GetChain(common.Provider, opts.ChainName)
-		if err != nil {
-			openlogging.Error("handler chain init err.", openlogging.WithTags(openlogging.Tags{
-				"err": err.Error(),
-			}))
-			resp.AddHeader("Content-Type", "text/plain")
-			resp.WriteErrorString(http.StatusInternalServerError, err.Error())
-			return
+		originChain := &handler.Chain{}
+		if opts.ChainName != "" {
+			originChain, err = handler.GetChain(common.Provider, opts.ChainName)
+			if err != nil {
+				openlogging.Error("handler chain init err.", openlogging.WithTags(openlogging.Tags{
+					"err": err.Error(),
+				}))
+				resp.AddHeader("Content-Type", "text/plain")
+				resp.WriteErrorString(http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
+
 		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName, resp)
 		if err != nil {
 			openlogging.Error("transfer http request to invocation failed.", openlogging.WithTags(openlogging.Tags{

@@ -22,7 +22,7 @@ import (
 	//router
 	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 	//control panel
-	_ "github.com/go-chassis/go-chassis/control/archaius"
+	_ "github.com/go-chassis/go-chassis/control/servicecomb"
 	// registry
 	_ "github.com/go-chassis/go-chassis/core/registry/file"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
@@ -115,7 +115,6 @@ func waitingSignal() {
 func Init() error {
 	if goChassis.DefaultConsumerChainNames == nil {
 		defaultChain := strings.Join([]string{
-			handler.RateLimiterConsumer,
 			handler.Router,
 			handler.Loadbalance,
 			handler.TracingConsumer,
@@ -127,7 +126,6 @@ func Init() error {
 	}
 	if goChassis.DefaultProviderChainNames == nil {
 		defaultChain := strings.Join([]string{
-			handler.RateLimiterProvider,
 			handler.TracingProvider,
 		}, ",")
 		goChassis.DefaultProviderChainNames = map[string]string{

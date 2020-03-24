@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/go-chassis/go-chassis"
 	_ "github.com/go-chassis/go-chassis/bootstrap"
-	_ "github.com/go-chassis/go-chassis/configserver"
 	"github.com/go-chassis/go-chassis/examples/schemas"
 	_ "github.com/go-chassis/go-chassis/healthz/provider"
+	_ "github.com/go-chassis/go-chassis/middleware/monitoring"
 	"github.com/go-mesh/openlogging"
 )
 

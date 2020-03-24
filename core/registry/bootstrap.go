@@ -20,13 +20,11 @@ func RegisterService() error {
 	service := config.MicroserviceDefinition
 	if e := service.ServiceDescription.Environment; e != "" {
 		openlogging.GetLogger().Infof("Microservice environment: [%s]", e)
-	} else {
-		openlogging.Debug("No microservice environment defined")
 	}
 	var err error
-	runtime.Schemas, err = schema.GetSchemaIDs(service.ServiceDescription.Name)
+	runtime.Schemas, err = schema.GetSchemaIDs(runtime.ServiceName)
 	if err != nil {
-		openlogging.GetLogger().Warnf("No schemas file for microservice [%s].", service.ServiceDescription.Name)
+		openlogging.GetLogger().Warnf("no schemas file for microservice [%s].", runtime.ServiceName)
 		runtime.Schemas = make([]string, 0)
 	}
 	if service.ServiceDescription.Level == "" {
@@ -105,7 +103,7 @@ func RegisterServiceInstances() error {
 	service := config.MicroserviceDefinition
 	runtime.Schemas, err = schema.GetSchemaIDs(service.ServiceDescription.Name)
 	for _, schemaID := range runtime.Schemas {
-		schemaInfo := schema.DefaultSchemaIDsMap[schemaID]
+		schemaInfo := schema.GetContent(schemaID)
 		err := DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
 		if err != nil {
 			openlogging.Warn("upload contract to registry failed: " + err.Error())

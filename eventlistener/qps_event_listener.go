@@ -2,10 +2,11 @@ package eventlistener
 
 import (
 	"github.com/go-chassis/go-archaius/event"
+	"github.com/go-chassis/go-chassis/pkg/rate"
+
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/qps"
 )
 
 const (
@@ -21,7 +22,7 @@ type QPSEventListener struct {
 
 //Event is a method for QPS event listening
 func (el *QPSEventListener) Event(e *event.Event) {
-	qpsLimiter := qps.GetRateLimiters()
+	qpsLimiter := rate.GetRateLimiters()
 
 	if strings.Contains(e.Key, "enabled") {
 		return

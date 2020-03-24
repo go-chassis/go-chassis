@@ -171,6 +171,7 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 	if !ok || c == nil {
 		// if full new instances or at less one instance, then refresh simpleCache immediately
 		MicroserviceInstanceIndex.Set(service, ups)
+		openlogging.GetLogger().Debugf("Cached [%d] Instances of service [%s]", len(ups), service)
 		return
 	}
 
@@ -230,9 +231,10 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 	if len(lefts) == 0 {
 		//todo remove this when the simpleCache struct can delete the key if the input is an empty slice
 		MicroserviceInstanceIndex.Delete(service)
-	} else {
-		MicroserviceInstanceIndex.Set(service, lefts)
+		openlogging.GetLogger().Infof("Delete the service [%s] in the cache", service)
+		return
 	}
 
+	MicroserviceInstanceIndex.Set(service, lefts)
 	openlogging.GetLogger().Debugf("Cached [%d] Instances of service [%s]", len(lefts), service)
 }

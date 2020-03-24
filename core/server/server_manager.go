@@ -1,8 +1,10 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -133,7 +135,19 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 		ProtocolServerName: name,
 		ChainName:          chainName,
 		TLSConfig:          tlsConfig,
-		BodyLimit:          config.GlobalDefinition.Cse.Transport.MaxBodyBytes["rest"],
+		BodyLimit:          config.GlobalDefinition.Cse.Transport.MaxBodyBytes[protocolName],
+		HeaderLimit:        config.GlobalDefinition.Cse.Transport.MaxHeaderBytes[protocolName],
+	}
+	if t := config.GlobalDefinition.Cse.Transport.Timeout[protocolName]; len(t) > 0 {
+		timeout, err := time.ParseDuration(t)
+		if err != nil {
+			openlogging.GetLogger().Errorf("parse timeout failed: %s", err)
+			return err
+		}
+		if timeout < 0 {
+			return errors.New("timeout should be positive, but get: " + t)
+		}
+		o.Timeout = timeout
 	}
 	s = f(o)
 	servers[name] = s

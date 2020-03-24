@@ -11,7 +11,6 @@ var providerPlugins = make(map[string]func(string) Provider)
 
 // microservice name and schemas map
 var providers = make(map[string]Provider)
-var defaultProviderFunc = NewProvider
 
 //TODO locks
 
@@ -50,7 +49,7 @@ func RegisterCustomProvider(microserviceName string, p Provider) {
 func GetProvider(microserviceName string) (Provider, error) {
 	p, exist := providers[microserviceName]
 	if !exist {
-		return nil, fmt.Errorf("Service [%s] doesn't have provider", microserviceName)
+		return nil, fmt.Errorf("service [%s] doesn't have provider", microserviceName)
 	}
 	return p, nil
 }
@@ -77,7 +76,7 @@ func RegisterSchema(microserviceName string, schema interface{}) (string, error)
 func GetOperation(microserviceName string, schemaID string, operationID string) (Operation, error) {
 	p, ok := providers[microserviceName]
 	if !ok {
-		return nil, fmt.Errorf("MicroService [%s] doesn't exist", microserviceName)
+		return nil, fmt.Errorf("microservice [%s] doesn't exist", microserviceName)
 	}
 	return p.GetOperation(schemaID, operationID)
 }

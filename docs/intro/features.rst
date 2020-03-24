@@ -13,6 +13,7 @@ Features
  - Pluggable Cipher: Able to custom your own cipher for AKSK and TLS certs
  - Handler Chain: Able to add your own code during service calling for client and server side
  - Metrics: Able to expose Prometheus metric API automatically and custom metrics reporter
+ - Profile: You can inquire route rules and discovered microservice instance information in the current program cache when the program is running
  - Tracing: Use opentracing-go as standard library, easy to integrate tracing impl
  - Logger: You can custom your own writer to sink log, by default support file and stdout
  - Hot-reconfiguraion: A lot of configuration can be reload in runtime, like loadbalancing, circuit breaker, rate limiting

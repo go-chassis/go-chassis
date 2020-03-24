@@ -3,21 +3,18 @@ package resource
 import (
 	"errors"
 	"net/http"
-
-	"math/rand"
 	"sync"
 
 	rf "github.com/go-chassis/go-chassis/server/restful"
 )
 
-var num = rand.Intn(100)
 var l sync.Mutex
 
 //RestFulMessage is a struct used to implement restful message
 type RestFulMessage struct {
 }
 
-//Saymessage is used to reply user with his name
+//DeadLock is used to simulate deadlock
 func (r *RestFulMessage) DeadLock(b *rf.Context) {
 	l.Lock()
 	b.Write([]byte("hello world"))
@@ -31,7 +28,7 @@ func (r *RestFulMessage) Sayhi(b *rf.Context) {
 
 //Sayerror is a method used to reply request user with error
 func (r *RestFulMessage) Sayerror(b *rf.Context) {
-	b.WriteError(http.StatusInternalServerError, errors.New("test hystric"))
+	_ = b.WriteError(http.StatusInternalServerError, errors.New("test hystric"))
 	return
 }
 

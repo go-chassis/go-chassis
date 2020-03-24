@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -9,8 +8,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-mesh/openlogging"
 )
-
-var errEmptyChain = errors.New("chain can not be empty")
 
 // ChainMap just concurrent read
 var ChainMap = make(map[string]*Chain)

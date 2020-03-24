@@ -19,7 +19,7 @@ package governance
 
 import (
 	"github.com/go-chassis/go-chassis/core/match"
-	"github.com/go-chassis/go-chassis/core/qps"
+	"github.com/go-chassis/go-chassis/pkg/rate"
 	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
 	"strings"
@@ -58,5 +58,5 @@ func ProcessLimiter(key string, value string) {
 	}
 
 	//key is match rule name, value is qps
-	qps.GetRateLimiters().UpdateRateLimit(m.Matcher, m.Quota)
+	rate.GetRateLimiters().UpdateRateLimit(m.Matcher, m.Quota)
 }
