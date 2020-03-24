@@ -21,8 +21,6 @@ import (
 const (
 	//Name is a variable of type string
 	Name = "configcenter"
-	//DefaultConfigCenter is config center
-	DefaultConfigCenter = "config_center"
 )
 
 //ErrRefreshMode means config is mis used
@@ -52,17 +50,12 @@ func Init() error {
 		enableSSL = true
 	}
 
-	TenantName := config.GetConfigCenterConf().TenantName
-	if TenantName == "" {
-		TenantName = common.DefaultTenant
-	}
 	interval := config.GetConfigCenterConf().RefreshInterval
 	if interval == 0 {
 		interval = 30
 	}
 
-	err = initConfigCenter(configCenterURL, TenantName,
-		enableSSL, tlsConfig, interval)
+	err = initConfigCenter(configCenterURL, enableSSL, tlsConfig, interval)
 	if err != nil {
 		openlogging.Error("failed to init config center" + err.Error())
 		return err
@@ -120,19 +113,12 @@ func getTLSForClient(configCenterURL string) (*tls.Config, error) {
 	return tlsConfig, nil
 }
 
-func initConfigCenter(ccEndpoint, tenantName string,
-	enableSSL bool, tlsConfig *tls.Config, interval int) error {
+func initConfigCenter(ccEndpoint string, enableSSL bool, tlsConfig *tls.Config, interval int) error {
 
 	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
-	if refreshMode != 0 && refreshMode != 1 {
+	if refreshMode != remote.ModeWatch && refreshMode != remote.ModeInterval {
 		openlogging.Error(ErrRefreshMode.Error())
 		return ErrRefreshMode
-	}
-
-	clientType := config.GlobalDefinition.Cse.Config.Client.Type
-	if clientType == "" {
-		clientType = DefaultConfigCenter
-
 	}
 
 	var ccObj = &archaius.RemoteInfo{
@@ -143,18 +129,16 @@ func initConfigCenter(ccEndpoint, tenantName string,
 			remote.LabelEnvironment: runtime.Environment,
 		},
 		URL:             ccEndpoint,
-		TenantName:      tenantName,
 		EnableSSL:       enableSSL,
 		TLSConfig:       tlsConfig,
 		RefreshMode:     refreshMode,
 		RefreshInterval: interval,
 		AutoDiscovery:   config.GetConfigCenterConf().Autodiscovery,
-		ClientType:      clientType,
 		APIVersion:      config.GetConfigCenterConf().APIVersion.Version,
 		RefreshPort:     config.GetConfigCenterConf().RefreshPort,
 	}
 
-	err := archaius.EnableRemoteSource("config-center", ccObj)
+	err := archaius.EnableRemoteSource(archaius.ConfigCenterSource, ccObj)
 
 	if err != nil {
 		return err
