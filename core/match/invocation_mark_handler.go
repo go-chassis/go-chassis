@@ -23,21 +23,21 @@ import (
 	"github.com/go-mesh/openlogging"
 )
 
+//ConsumerMark
 const (
-	Name = "mark-invocation"
+	ConsumerMark = "mark-invocation"
 )
 
-//Handler can be registered in chain
-//it compares the Match rule with invocation and mark this invocation
+//MarkHandler compares the Match rule with invocation and mark this invocation
 type MarkHandler struct {
 }
 
 //Name return the handler name
 func (m *MarkHandler) Name() string {
-	return Name
+	return ConsumerMark
 }
 
-// Handle to handle the mart invocation
+//Handle to handle the mart invocation
 func (m *MarkHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	mark(i)
 	chain.Next(i, cb)
@@ -48,7 +48,7 @@ func newMarkHandler() handler.Handler {
 }
 
 func init() {
-	if err := handler.RegisterHandler(Name, newMarkHandler); err != nil {
+	if err := handler.RegisterHandler(ConsumerMark, newMarkHandler); err != nil {
 		openlogging.GetLogger().Errorf("register mark invocation handler failed, %s", err)
 	}
 }

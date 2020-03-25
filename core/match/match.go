@@ -77,7 +77,7 @@ func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
 		return false
 	}
 
-	if len(matchPolicy.ApiPath) != 0 && !apiMatch(req.URL.Path, matchPolicy.ApiPath) {
+	if len(matchPolicy.APIPaths) != 0 && !apiMatch(req.URL.Path, matchPolicy.APIPaths) {
 		openlogging.GetLogger().Debugf("check api path %s false", req.URL.Path)
 		return false
 	}
@@ -92,11 +92,11 @@ func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
 func apiMatch(apiPath string, apiPolicy map[string]string) bool {
 
 	for strategy, exp := range apiPolicy {
-		if ok, err := Match(strategy, apiPath, exp); err != nil || !ok {
-			return false
+		if ok, _ := Match(strategy, apiPath, exp); ok {
+			return true
 		}
 	}
-	return true
+	return false
 }
 
 func headsMatch(headers map[string]string, headPolicy map[string]map[string]string) bool {

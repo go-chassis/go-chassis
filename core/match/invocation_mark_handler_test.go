@@ -24,7 +24,7 @@ func TestMarkHandler_Handle(t *testing.T) {
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[match.Name] = match.Name
+	config.GlobalDefinition.Cse.Handler.Chain.Consumer[match.ConsumerMark] = match.ConsumerMark
 	t.Run("test no match policy", func(t *testing.T) {
 		i := invocation.New(context.Background())
 		i.Metadata = make(map[string]interface{})
@@ -46,6 +46,7 @@ headers:
     exact: jason
 apiPath:
   contains: "path/test"
+  exact: "/test2"
 method: GET
 `
 	archaius.Set(strings.Join([]string{governance.KindMatchPrefix, "match-user-json"}, "."), yamlContent)
@@ -86,6 +87,19 @@ method: GET
 			return r.Err
 		})
 		assert.Equal(t, "", i.GetMark())
+	})
+
+	t.Run("test request path exact match", func(t *testing.T) {
+		i := invocation.New(context.Background())
+		i.Metadata = make(map[string]interface{})
+		i.SetHeader("user", "jason")
+		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
+		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test2", nil)
+		c.Next(i, func(r *invocation.Response) error {
+			assert.NoError(t, r.Err)
+			return r.Err
+		})
+		assert.Equal(t, "match-user-json", i.GetMark())
 	})
 
 }
