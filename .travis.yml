@@ -22,10 +22,6 @@ jobs:
       script: 
         - go get -u github.com/client9/misspell/cmd/misspell
         - bash scripts/travis/misspellChecker.sh
-    - stage: GoConst Checker
-      script:
-        - go get -u github.com/jgautheron/goconst/cmd/goconst
-        - bash scripts/travis/goConstChecker.sh
     - stage: GoLint Checker
       script:
         - go get -u golang.org/x/lint/golint
