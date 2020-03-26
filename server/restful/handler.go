@@ -23,6 +23,7 @@ func (h *ResourceHandler) Handle(chain *handler.Chain, inv *invocation.Invocatio
 		h.rc.Req.Request.Body = http.MaxBytesReader(h.rc.Resp, h.rc.Req.Request.Body, h.opts.BodyLimit)
 	}
 
+	h.rc.Ctx = inv.Ctx
 	// call real route func
 	h.handleFunc(h.rc)
 	ir := &invocation.Response{}
