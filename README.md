@@ -29,22 +29,20 @@ you can use Istio configurations to control go chassis.
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
  fit both client side discovery and server side discovery pattern 
- - **Pluggable Protocol**: You can custom your own protocol, by default support http and grpc
+ - **Pluggable Protocol**: You can custom your own protocol, by default support http and grpc, go chassis define standardized [model](https://github.com/go-chassis/go-chassis/blob/master/core/invocation/invocation.go) to makes all request of different protocol lerverage same features
  - **Multiple server management**: you can separate API by protocols and ports
- - **Circuit breaker**: Protect your micro service system in runtime
+  - **Handler Chain**: Able to add your own code during service calling for client and server side
+ - **rich middlewares**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
  - **Route management**: Able to route to different service based on weight and match rule to achieve Canary Release easily
  - **Client side Load balancing**: Able to custom strategy
- - **Rate limiting**: Both client side and server side rate limiting
  - **Pluggable Cipher**: Able to custom your own cipher for AKSK and TLS certs
- - **Handler Chain**: Able to add your own code during service calling for client and server side
  - **Metrics**: Able to expose Prometheus metric API automatically and custom metrics reporter
- - **Tracing**:Use opentracing-go as standard library, easy to integrate tracing impl
+ - **Tracing**:Use opentracing-go as standard library, easy to integrate tracing system
  - **Logger**: You can custom your own writer to sink log, by default support file and stdout
- - **Hot-reconfiguraion**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting
- - **Dynamic Configuration framework**: Powered by go-archaius, developer is able to develop a service which has hot-reconfiguration feature easily
+ - **Hot reconfiguraion**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting, developer is also able to develop a service which has hot-reconfiguration feature easily. [see](https://go-chassis.readthedocs.io/en/latest/user-guides/dynamic-conf.html#)
  - **Fault Injection**: In consumer side, you can inject faults to bring chaos testing into your system
  - **API gateway and service mesh solution**: powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
- - **Open API 2.0 support** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
+ - **Open API 2.0 native support** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
 
 You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
 
