@@ -3,7 +3,7 @@ package client
 import (
 	"errors"
 	"math/rand"
-	"sync"
+	"sync/atomic"
 )
 
 // ErrNoneAvailable create a new error with Message No available
@@ -12,19 +12,16 @@ var ErrNoneAvailable = errors.New("No available")
 // Next gives the next object in the list
 type Next func() (string, error)
 
-var i = rand.Int()
+var i = rand.Int31()
 
 // RoundRobin Gives the next object in sequence
 func RoundRobin(eps []string) Next {
-	var mtx sync.Mutex
 	return func() (string, error) {
 		if len(eps) == 0 {
 			return "", ErrNoneAvailable
 		}
-		mtx.Lock()
-		node := eps[i%len(eps)]
-		i++
-		mtx.Unlock()
+		node := eps[int(atomic.LoadInt32(&i))%len(eps)]
+		atomic.AddInt32(&i, 1)
 		return node, nil
 	}
 }
