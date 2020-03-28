@@ -45,16 +45,17 @@ func Init(opts Options) error {
 	if opts.Plugin == "" {
 		return nil
 	}
-	var err error
+
 	f, ok := plugins[opts.Plugin]
 	if !ok {
 		return fmt.Errorf("not supported [%s]", opts.Plugin)
 	}
+	var err error
 	DefaultManager, err = f(opts)
 	if err != nil {
 		return err
 	}
-	openlogging.Info("quota management system enabled")
+	openlogging.Info(fmt.Sprintf("quota management system [%s@%s] enabled", opts.Plugin, opts.Endpoint))
 	return nil
 }
 
@@ -81,6 +82,7 @@ type Manager interface {
 func PreCreate(service, domain, resource string, number int64) error {
 	qs, err := DefaultManager.GetQuotas(service, domain)
 	if err != nil {
+		openlogging.Error(err.Error())
 		return ErrGetFailed
 	}
 	var resourceQuota *Quota
