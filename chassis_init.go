@@ -34,6 +34,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/go-chassis/go-chassis/core/tracing"
 	"github.com/go-chassis/go-chassis/eventlistener"
+	"github.com/go-chassis/go-chassis/pkg/backends/quota"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-mesh/openlogging"
@@ -154,10 +155,22 @@ func (c *chassis) initialize() error {
 	}
 
 	eventlistener.Init()
+	if err := initBackendPlugins(); err != nil {
+		return err
+	}
 	c.Initialized = true
 	return nil
 }
 
+func initBackendPlugins() error {
+	if err := quota.Init(quota.Options{
+		Plugin:   archaius.GetString("servicecomb.service.quota.plugin", ""),
+		Endpoint: archaius.GetString("servicecomb.service.quota.endpoint", ""),
+	}); err != nil {
+		return err
+	}
+	return nil
+}
 func (c *chassis) registerSchema(serverName string, structPtr interface{}, opts ...server.RegisterOption) {
 	schema := &Schema{
 		serverName: serverName,

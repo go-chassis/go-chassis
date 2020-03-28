@@ -5,11 +5,4 @@ Development guides
     :maxdepth: 4
     :glob:
 
-    dev-guides/how-to-implement-handler
-    dev-guides/circuit
-    dev-guides/archaius
-    dev-guides/archaius-config-source-plugin
-    dev-guides/how-to-write-cipher
-    dev-guides/how-to-extend-protocol
-    dev-guides/bootstrap
-    dev-guides/restful
+    dev-guides/*
