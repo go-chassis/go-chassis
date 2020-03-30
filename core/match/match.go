@@ -87,6 +87,10 @@ func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
 }
 
 func apiMatch(apiPath string, apiPolicy map[string]string) bool {
+	if len(apiPolicy) == 0 {
+		return true
+	}
+
 	for strategy, exp := range apiPolicy {
 		if ok, _ := Match(strategy, apiPath, exp); ok {
 			return true
