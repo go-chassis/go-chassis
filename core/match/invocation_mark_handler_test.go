@@ -24,7 +24,7 @@ func TestMarkHandler_Handle(t *testing.T) {
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[match.ConsumerMark] = match.ConsumerMark
+	config.GlobalDefinition.Cse.Handler.Chain.Consumer[match.TrafficMarker] = match.TrafficMarker
 	t.Run("test no match policy", func(t *testing.T) {
 		i := invocation.New(context.Background())
 		i.Metadata = make(map[string]interface{})

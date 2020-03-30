@@ -50,13 +50,13 @@ func ProcessLimiter(key string, value string) {
 		openlogging.Warn("invalid key:" + key)
 		return
 	}
-	m := &limiterPolicy{}
-	err := yaml.Unmarshal([]byte(value), m)
+	policy := &limiterPolicy{}
+	err := yaml.Unmarshal([]byte(value), policy)
 	if err != nil {
 		openlogging.Error("invalid limiter: " + key)
 		return
 	}
 
 	//key is match rule name, value is qps
-	rate.GetRateLimiters().UpdateRateLimit(m.Matcher, m.Quota)
+	rate.GetRateLimiters().UpdateRateLimit(policy.Matcher, policy.Quota)
 }

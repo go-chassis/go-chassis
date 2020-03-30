@@ -23,9 +23,9 @@ import (
 	"github.com/go-mesh/openlogging"
 )
 
-//ConsumerMark
+//TrafficMarker
 const (
-	ConsumerMark = "mark-invocation"
+	TrafficMarker = "traffic-marker"
 )
 
 //MarkHandler compares the Match rule with invocation and mark this invocation
@@ -34,7 +34,7 @@ type MarkHandler struct {
 
 //Name return the handler name
 func (m *MarkHandler) Name() string {
-	return ConsumerMark
+	return TrafficMarker
 }
 
 //Handle to handle the mart invocation
@@ -48,7 +48,7 @@ func newMarkHandler() handler.Handler {
 }
 
 func init() {
-	if err := handler.RegisterHandler(ConsumerMark, newMarkHandler); err != nil {
+	if err := handler.RegisterHandler(TrafficMarker, newMarkHandler); err != nil {
 		openlogging.GetLogger().Errorf("register mark invocation handler failed, %s", err)
 	}
 }

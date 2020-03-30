@@ -53,7 +53,6 @@ func mark(inv *invocation.Invocation) {
 			if isMatch(inv, mp) {
 				if name, ok := k.(string); ok {
 					matchName = name
-					openlogging.Info("match mark Policy: " + name)
 					return false
 				}
 			}
@@ -61,7 +60,7 @@ func mark(inv *invocation.Invocation) {
 		return true
 	})
 	if matchName != "" {
-		openlogging.GetLogger().Infof("the invocation math policy %s", matchName)
+		//openlogging.GetLogger().Infof("the invocation math policy %s", matchName)
 		inv.Mark(matchName)
 	}
 }
@@ -78,19 +77,16 @@ func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
 	}
 
 	if len(matchPolicy.APIPaths) != 0 && !apiMatch(req.URL.Path, matchPolicy.APIPaths) {
-		openlogging.GetLogger().Debugf("check api path %s false", req.URL.Path)
 		return false
 	}
 
 	if matchPolicy.Method != "" && strings.ToUpper(matchPolicy.Method) != req.Method {
-		openlogging.GetLogger().Debugf("check reguest method %s - %s false", matchPolicy.Method, req.Method)
 		return false
 	}
 	return true
 }
 
 func apiMatch(apiPath string, apiPolicy map[string]string) bool {
-
 	for strategy, exp := range apiPolicy {
 		if ok, _ := Match(strategy, apiPath, exp); ok {
 			return true
@@ -100,22 +96,18 @@ func apiMatch(apiPath string, apiPolicy map[string]string) bool {
 }
 
 func headsMatch(headers map[string]string, headPolicy map[string]map[string]string) bool {
-	openlogging.GetLogger().Debugf("check header %v", headers)
 
 	for key, policy := range headPolicy {
 		val := headers[key]
 		if val == "" {
-			openlogging.GetLogger().Debugf("check header %s but no this header", key)
 			return false
 		}
 		for strategy, exp := range policy {
 			if o, err := Match(strategy, val, exp); err != nil || !o {
-				openlogging.GetLogger().Debugf("check header %s strategy %s exp %s false", key, strategy, exp)
 				return false
 			}
 		}
 	}
-	openlogging.Debug("check header success")
 	return true
 }
 
