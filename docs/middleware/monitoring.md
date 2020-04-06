@@ -2,7 +2,7 @@
 
 ## **Introduction**
 monitoring handler aim to monitor traffics of server side microservice
-see how to export metrics to prometheus [observable](https://docs.go-chassis.com/user-guides/metrics.html)
+see how to export metrics to prometheus [observable](https://go-chassis.readthedocs.io/en/latest/user-guides/metrics.html)
 
 it records 3 different metrics:
 - request_count
