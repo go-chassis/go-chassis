@@ -144,6 +144,7 @@ func TestRPCRoute(t *testing.T) {
 	if err := yaml.Unmarshal([]byte(rpcfile), c); err != nil {
 		t.Error(err)
 	}
+	router.BuildRouter("cse")
 	router.DefaultRouter.SetRouteRule(c.Destinations)
 	router.Templates = c.SourceTemplates
 
@@ -173,6 +174,7 @@ func TestRoute(t *testing.T) {
 	if err := yaml.Unmarshal([]byte(file), c); err != nil {
 		t.Error(err)
 	}
+	router.BuildRouter("cse")
 	router.DefaultRouter.SetRouteRule(c.Destinations)
 	router.Templates = c.SourceTemplates
 
@@ -211,6 +213,7 @@ func TestRoute2(t *testing.T) {
 	if err := yaml.Unmarshal([]byte(file2), c); err != nil {
 		t.Error(err)
 	}
+	router.BuildRouter("cse")
 	router.DefaultRouter.SetRouteRule(c.Destinations)
 
 	header := map[string]string{}
@@ -281,6 +284,7 @@ func fit() {
 }
 
 func TestSortRules(t *testing.T) {
+	router.BuildRouter("cse")
 	router.DefaultRouter.SetRouteRule(InitDests())
 	assert.Equal(t, 20, router.SortRules("test")[3].Precedence)
 }

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package match
+package mark
 
 import (
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/core/match"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -39,7 +40,7 @@ func (m *MarkHandler) Name() string {
 
 //Handle to handle the mart invocation
 func (m *MarkHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	mark(i)
+	match.Mark(i)
 	chain.Next(i, cb)
 }
 
