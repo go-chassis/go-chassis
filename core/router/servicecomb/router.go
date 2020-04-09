@@ -97,5 +97,5 @@ func (r *Router) DeleteRouteRuleByKey(k string) {
 }
 
 func init() {
-	router.InstallRouterService("cse", newRouter)
+	router.InstallRouterPlugin("cse", newRouter)
 }

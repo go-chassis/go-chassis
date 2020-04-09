@@ -29,10 +29,6 @@ var MicroserviceDefinition *model.MicroserviceCfg
 //MonitorCfgDef has monitor info, including zipkin and apm.
 var MonitorCfgDef *model.MonitorCfg
 
-//OldRouterDefinition is route rule config
-//Deprecated
-var OldRouterDefinition *RouterConfig
-
 //HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystrixConfig *model.HystrixConfigWrapper
 
@@ -215,31 +211,6 @@ func ReadMonitorFromFile() error {
 	return nil
 }
 
-type pathError struct {
-	Path string
-	Err  error
-}
-
-func (e *pathError) Error() string { return e.Path + ": " + e.Err.Error() }
-
-// parseRouterConfig is unmarshal the router configuration file(router.yaml)
-func parseRouterConfig(file string) error {
-	OldRouterDefinition = &RouterConfig{}
-	err := unmarshalYamlFile(file, OldRouterDefinition)
-	if err != nil && !os.IsNotExist(err) {
-		return &pathError{Path: file, Err: err}
-	}
-	return err
-}
-
-func unmarshalYamlFile(file string, target interface{}) error {
-	content, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-	return yaml.Unmarshal(content, target)
-}
-
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
 func ReadHystrixFromArchaius() error {
 	cbMutex.RLock()
@@ -335,13 +306,6 @@ func GetHystrixConfig() *model.HystrixConfig {
 
 // Init is initialize the configuration directory, archaius, route rule, and schema
 func Init() error {
-	if err := parseRouterConfig(fileutil.RouterConfigPath()); err != nil {
-		if os.IsNotExist(err) {
-			openlogging.GetLogger().Infof("[%s] not exist", fileutil.RouterConfigPath())
-		} else {
-			return err
-		}
-	}
 	err := InitArchaius()
 	if err != nil {
 		return err

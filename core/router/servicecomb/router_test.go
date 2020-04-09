@@ -31,29 +31,27 @@ func TestRouter(t *testing.T) {
 `)
 	archaius.Set(DarkLaunchPrefix+"order", string(json))
 	archaius.Set(DarkLaunchPrefixV2+"web", string(yaml))
-	config.OldRouterDefinition = &config.RouterConfig{
-		Destinations: map[string][]*config.RouteRule{
-			"payment": {{
-				Precedence: 2,
-				Routes: []*config.RouteTag{{
-					Tags: map[string]string{
-						"version": "0.2",
-					},
-					Weight: 100,
-				}},
-			}, {
-				Precedence: 1,
-				Routes: []*config.RouteTag{{
-					Tags: map[string]string{
-						"version": "0.1",
-					},
-					Weight: 100,
-				}},
+	routeconf := map[string][]*config.RouteRule{
+		"payment": {{
+			Precedence: 2,
+			Routes: []*config.RouteTag{{
+				Tags: map[string]string{
+					"version": "0.2",
+				},
+				Weight: 100,
 			}},
-		},
-		SourceTemplates: nil,
+		}, {
+			Precedence: 1,
+			Routes: []*config.RouteTag{{
+				Tags: map[string]string{
+					"version": "0.1",
+				},
+				Weight: 100,
+			}},
+		}},
 	}
 	r, err := newRouter()
+	r.SetRouteRule(routeconf)
 	assert.NoError(t, err)
 	err = r.Init(router.Options{})
 	assert.NoError(t, err)

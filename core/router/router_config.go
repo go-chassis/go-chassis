@@ -18,18 +18,11 @@ const RouterTLS = "router"
 //Init initialize router config in local file
 //then is create the router component
 func Init() error {
-	OldRouteRule := config.OldRouterDefinition // compatible with old local configs, it is read from old config format
 	err := BuildRouter(config.GetRouterType())
 	if err != nil {
 		openlogging.Error("can not init router [" + config.GetRouterType() + "]: " + err.Error())
 		return err
 	}
-	if OldRouteRule != nil {
-		if OldRouteRule.SourceTemplates != nil {
-			Templates = OldRouteRule.SourceTemplates
-		}
-	}
-
 	op, err := getSpecifiedOptions()
 	if err != nil {
 		return fmt.Errorf("router options error: %v", err)
