@@ -32,8 +32,8 @@ var routerServices = make(map[string]func() (Router, error))
 // DefaultRouter is current router implementation
 var DefaultRouter Router
 
-// InstallRouterService install router service for developer
-func InstallRouterService(name string, f func() (Router, error)) {
+// InstallRouterPlugin install router plugin
+func InstallRouterPlugin(name string, f func() (Router, error)) {
 	openlogging.Info("install route rule plugin: " + name)
 	routerServices[name] = f
 }
@@ -155,6 +155,9 @@ func valueToUpper(b, value string) string {
 
 // SortRules sort route rules
 func SortRules(name string) []*config.RouteRule {
+	if DefaultRouter == nil {
+		openlogging.Debug("router not available")
+	}
 	slice := DefaultRouter.FetchRouteRuleByServiceName(name)
 	return QuickSort(0, len(slice)-1, slice)
 }

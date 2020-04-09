@@ -43,19 +43,20 @@ service_description:
   name: Client
   version: 0.1`
 	var routerContent = `
-routeRule:
-  service1:  
-    - precedence: 1 # 优先级，数字越大优先级越高
-      route: #路由规则列表
-      - tags:
-          version: 1.0
-          project: x
-        weight: 100 #全重 50%到这里
-      match:
-        headers:
-          os:
-            regex: ios
- `
+servicecomb:
+  routeRule:
+    service1: |
+      - precedence: 1 # 优先级，数字越大优先级越高
+        route: 
+          - tags:
+              version: 1.0
+              project: x
+            weight: 100
+        match:
+          headers:
+            os:
+              regex: ios
+`
 
 	chassisConf := prepareConfDir(t)
 	prepareTestFile(t, chassisConf, "chassis.yaml", "")

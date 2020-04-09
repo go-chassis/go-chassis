@@ -1,17 +1,16 @@
 package config
 
+import "github.com/go-chassis/go-archaius"
+
 //DefaultRouterType set the default router type
 const DefaultRouterType = "cse"
 
 // GetRouterType returns the type of router
 func GetRouterType() string {
-	if OldRouterDefinition.Router.Infra != "" {
-		return OldRouterDefinition.Router.Infra
-	}
-	return DefaultRouterType
+	return archaius.GetString("servicecomb.service.router.infra", DefaultRouterType)
 }
 
 // GetRouterEndpoints returns the router address
 func GetRouterEndpoints() string {
-	return OldRouterDefinition.Router.Address
+	return archaius.GetString("servicecomb.service.router.address", "")
 }
