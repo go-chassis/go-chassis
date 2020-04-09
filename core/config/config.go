@@ -302,7 +302,7 @@ func unmarshalConfig() (microserviceCfg *model.MicroserviceCfg, err error) {
 // deal MicroserviceDefinition.ServiceDescription.ServicePaths specially
 func selectMicroserviceConfigFromArchaius() {
 	microserviceCfg, err := unmarshalConfig()
-	if err == nil  && microserviceCfg != nil {
+	if err == nil && microserviceCfg != nil {
 		microserviceCfg.ServiceDescription.ServicePaths = MicroserviceDefinition.ServiceDescription.ServicePaths
 		MicroserviceDefinition = microserviceCfg
 	}
