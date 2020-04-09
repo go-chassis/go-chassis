@@ -278,7 +278,34 @@ func readMicroServiceSpecFiles() error {
 		}
 		return nil
 	}
-	return ReadMicroserviceConfigFromBytes(data)
+	if err = ReadMicroserviceConfigFromBytes(data); err != nil {
+		return err
+	}
+	selectMicroserviceConfigFromArchaius()
+	return nil
+}
+
+// unmarshal config from archaius
+func unmarshalConfig() (microserviceCfg *model.MicroserviceCfg, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			openlogging.GetLogger().Infof(r.(error).Error())
+		}
+	}()
+
+	microserviceCfg = &model.MicroserviceCfg{}
+	err = archaius.UnmarshalConfig(microserviceCfg)
+	return
+}
+
+// cause archaius.UnmarshalConfig() can't support struct'slice,
+// deal MicroserviceDefinition.ServiceDescription.ServicePaths specially
+func selectMicroserviceConfigFromArchaius() {
+	microserviceCfg, err := unmarshalConfig()
+	if err == nil  && microserviceCfg != nil {
+		microserviceCfg.ServiceDescription.ServicePaths = MicroserviceDefinition.ServiceDescription.ServicePaths
+		MicroserviceDefinition = microserviceCfg
+	}
 }
 
 // ReadMicroserviceConfigFromBytes read micro service configurations from bytes
