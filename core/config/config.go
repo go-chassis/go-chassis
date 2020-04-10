@@ -287,12 +287,6 @@ func readMicroServiceSpecFiles() error {
 
 // unmarshal config from archaius
 func unmarshalConfig() (microserviceCfg *model.MicroserviceCfg, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			openlogging.GetLogger().Infof(r.(error).Error())
-		}
-	}()
-
 	microserviceCfg = &model.MicroserviceCfg{}
 	err = archaius.UnmarshalConfig(microserviceCfg)
 	return
