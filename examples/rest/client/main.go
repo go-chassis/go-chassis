@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	"github.com/go-mesh/openlogging"
 
 	"github.com/go-chassis/go-chassis"
 	_ "github.com/go-chassis/go-chassis/bootstrap"
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core"
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 )
 
@@ -16,13 +16,13 @@ import (
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed." + err.Error())
+		openlogging.Error("Init failed." + err.Error())
 		return
 	}
 
 	req, err := rest.NewRequest("GET", "http://RESTServer/sayhello/world", nil)
 	if err != nil {
-		lager.Logger.Error("new request failed.")
+		openlogging.Error("new request failed.")
 		return
 	}
 
@@ -31,9 +31,9 @@ func main() {
 	})
 	resp, err := core.NewRestInvoker().ContextDo(ctx, req)
 	if err != nil {
-		lager.Logger.Error("do request failed.")
+		openlogging.Error("do request failed.")
 		return
 	}
 	defer resp.Body.Close()
-	lager.Logger.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
+	openlogging.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 }
