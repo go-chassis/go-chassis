@@ -44,6 +44,7 @@ func init() {
 	HandlerFuncMap[TracingConsumer] = newTracingConsumerHandler
 	HandlerFuncMap[Router] = newRouterHandler
 	HandlerFuncMap[FaultInject] = newFaultHandler
+	HandlerFuncMap[TrafficMarker] = newMarkHandler
 }
 
 // Handler interface for handlers

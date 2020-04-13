@@ -30,10 +30,10 @@ import (
 
 var matches sync.Map
 
-//Operator decide value Match expression or not
-type Operator func(value, expression string) bool
+//Operate decide value Match expression or not
+type Operate func(value, expression string) bool
 
-var operatorPlugin = map[string]Operator{
+var operatorPlugin = map[string]Operate{
 	"exact":     exact,
 	"contains":  contains,
 	"regex":     regex,
@@ -45,7 +45,7 @@ var operatorPlugin = map[string]Operator{
 }
 
 //Install a strategy
-func Install(name string, m Operator) {
+func Install(name string, m Operate) {
 	operatorPlugin[name] = m
 }
 

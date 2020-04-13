@@ -1,4 +1,4 @@
-package mark_test
+package handler_test
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/governance"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/middleware/mark"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"strings"
@@ -20,11 +19,11 @@ func TestMarkHandler_Handle(t *testing.T) {
 	t.Log("testing mark handler")
 
 	c := handler.Chain{}
-	c.AddHandler(&mark.MarkHandler{})
+	c.AddHandler(&handler.MarkHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[mark.TrafficMarker] = mark.TrafficMarker
+	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
 	t.Run("test no match policy", func(t *testing.T) {
 		i := invocation.New(context.Background())
 		i.Metadata = make(map[string]interface{})
@@ -108,11 +107,11 @@ func TestMarkHandler_Handle2(t *testing.T) {
 	t.Log("testing mark handler")
 
 	c := handler.Chain{}
-	c.AddHandler(&mark.MarkHandler{})
+	c.AddHandler(&handler.MarkHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[mark.TrafficMarker] = mark.TrafficMarker
+	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
 	archaius.Init(archaius.WithMemorySource())
 	var yamlContent = `
 method: GET
@@ -150,11 +149,11 @@ func TestMarkHandler_HandleMutilePolicy(t *testing.T) {
 	t.Log("testing mark handler")
 
 	c := handler.Chain{}
-	c.AddHandler(&mark.MarkHandler{})
+	c.AddHandler(&handler.MarkHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[mark.TrafficMarker] = mark.TrafficMarker
+	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
 
 	archaius.Init(archaius.WithMemorySource())
 	var yamlContent = `
