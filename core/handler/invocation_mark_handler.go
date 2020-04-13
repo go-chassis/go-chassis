@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package match
+package handler
 
 import (
-	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/core/match"
 )
 
 //TrafficMarker
@@ -38,17 +37,11 @@ func (m *MarkHandler) Name() string {
 }
 
 //Handle to handle the mart invocation
-func (m *MarkHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	mark(i)
+func (m *MarkHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	match.Mark(i)
 	chain.Next(i, cb)
 }
 
-func newMarkHandler() handler.Handler {
+func newMarkHandler() Handler {
 	return &MarkHandler{}
-}
-
-func init() {
-	if err := handler.RegisterHandler(TrafficMarker, newMarkHandler); err != nil {
-		openlogging.GetLogger().Errorf("register mark invocation handler failed, %s", err)
-	}
 }

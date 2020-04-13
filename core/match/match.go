@@ -24,28 +24,33 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
-	"regexp"
 	"strings"
 	"sync"
 )
 
 var matches sync.Map
 
-//Method decide value Match expression oor not
-type Method func(value, expression string) bool
+//Operate decide value Match expression or not
+type Operate func(value, expression string) bool
 
-var matchPlugin = map[string]Method{
-	"exact":    exact,
-	"contains": contains,
-	"regex":    regex,
+var operatorPlugin = map[string]Operate{
+	"exact":     exact,
+	"contains":  contains,
+	"regex":     regex,
+	"noEqu":     noEqu,
+	"less":      less,
+	"noLess":    noLess,
+	"greater":   greater,
+	"noGreater": noGreater,
 }
 
 //Install a strategy
-func Install(name string, m Method) {
-	matchPlugin[name] = m
+func Install(name string, m Operate) {
+	operatorPlugin[name] = m
 }
 
-func mark(inv *invocation.Invocation) {
+//Mark mark an invocation with matchName by match policy
+func Mark(inv *invocation.Invocation) {
 	matchName := ""
 	matches.Range(func(k, v interface{}) bool {
 		mp, ok := v.(*config.MatchPolicy)
@@ -117,27 +122,11 @@ func headsMatch(headers map[string]string, headPolicy map[string]map[string]stri
 
 //Match compare value and expression
 func Match(strategy, value, expression string) (bool, error) {
-	f, ok := matchPlugin[strategy]
+	f, ok := operatorPlugin[strategy]
 	if !ok {
 		return false, fmt.Errorf("invalid Match method")
 	}
 	return f(value, expression), nil
-}
-
-func exact(value, express string) bool {
-	return value == express
-}
-
-func contains(value, express string) bool {
-	return strings.Contains(value, express)
-}
-
-func regex(value, express string) bool {
-	reg := regexp.MustCompilePOSIX(express)
-	if !reg.Match([]byte(value)) {
-		return false
-	}
-	return true
 }
 
 //SaveMatchPolicy saves Match policy
