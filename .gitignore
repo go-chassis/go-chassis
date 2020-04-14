@@ -19,6 +19,7 @@ glide.lock
 vendor/**
 !vendor/manifest
 docs/_build
+examples/**/*.yaml
 benchmark/**/*.csv
 benchmark/**/*.txt
 benchmark/client/client

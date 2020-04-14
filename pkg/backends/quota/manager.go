@@ -27,7 +27,7 @@ import (
 
 //errors
 var (
-	ErrReached   = errors.New("reached maximum allowed resource")
+	ErrReached   = errors.New("reached maximum allowed quota")
 	ErrGetFailed = errors.New("get quota failed")
 )
 
@@ -51,7 +51,7 @@ func Init(opts Options) error {
 		return fmt.Errorf("not supported [%s]", opts.Plugin)
 	}
 	var err error
-	DefaultManager, err = f(opts)
+	defaultManager, err = f(opts)
 	if err != nil {
 		return err
 	}
@@ -59,8 +59,8 @@ func Init(opts Options) error {
 	return nil
 }
 
-//DefaultManager is manage quotas
-var DefaultManager Manager
+//defaultManager is manage quotas
+var defaultManager Manager
 
 // Quota describe quota infos
 type Quota struct {
@@ -80,7 +80,11 @@ type Manager interface {
 //PreCreate only check quota usage before creating a resource for a domain/tenant.
 //is will not increase resource usage number after check, you have to increase after resource actually created
 func PreCreate(service, domain, resource string, number int64) error {
-	qs, err := DefaultManager.GetQuotas(service, domain)
+	if defaultManager == nil {
+		openlogging.Debug("quota management not available")
+		return nil
+	}
+	qs, err := defaultManager.GetQuotas(service, domain)
 	if err != nil {
 		openlogging.Error(err.Error())
 		return ErrGetFailed
