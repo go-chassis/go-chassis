@@ -41,6 +41,15 @@ func (im *inMemory) GetQuotas(service, domain string) ([]*quota.Quota, error) {
 func TestInit(t *testing.T) {
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("servicecomb.service.quota.plugin", "mock")
+	t.Run("circuit qms plugin", func(t *testing.T) {
+		err := quota.Init(quota.Options{
+			Endpoint: "",
+			Plugin:   "",
+		})
+		assert.NoError(t, err)
+		err = quota.PreCreate("", "", "some", 1)
+		assert.NoError(t, err)
+	})
 	t.Run("install and init", func(t *testing.T) {
 		quota.Install("mock", func(options quota.Options) (quota.Manager, error) {
 			return &inMemory{}, nil
@@ -63,4 +72,5 @@ func TestInit(t *testing.T) {
 		err := quota.PreCreate("", "", "other", 12)
 		assert.NoError(t, err)
 	})
+
 }
