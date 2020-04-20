@@ -243,7 +243,7 @@ func SetInterfacesMap(interfaces []string) {
 	}
 }
 
-//
+// setSchemaInfoForInterfaces is to initialize schema data
 func setSchemaInfoForInterfaces() error {
 	interfaces := make([]string, 0)
 	for k := range interfacesMap {
