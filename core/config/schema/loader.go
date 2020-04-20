@@ -236,7 +236,7 @@ func SetSchemaInfo(sws *swagger.SwaggerService) error {
 	return nil
 }
 
-// setInterfacesmap is for to initialize the  interfaceMap
+// SetInterfacesMap is for to initialize the  interfaceMap
 func SetInterfacesMap(interfaces []string) {
 	for _, v := range interfaces {
 		interfacesMap[v] = v
