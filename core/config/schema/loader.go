@@ -246,8 +246,11 @@ func SetInterfacesMap(interfaces []string) {
 //
 func setSchemaInfoForInterfaces() error {
 	interfaces := make([]string, 0)
-	for k, _ := range interfacesMap {
+	for k := range interfacesMap {
 		interfaces = append(interfaces, k)
+	}
+	if len(interfaces) == 0 {
+		return nil
 	}
 	microsvcMata := NewMicroserviceMeta(runtime.ServiceName)
 	for _, inter := range interfaces {
