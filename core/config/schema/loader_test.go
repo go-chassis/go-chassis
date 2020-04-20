@@ -80,3 +80,7 @@ func TestSetSchemaIDs(t *testing.T) {
 	assert.Error(t, e)
 	assert.Equal(t, 0, len(s))
 }
+
+func TestSetInterfacesMap(t *testing.T) {
+	schema.SetInterfacesMap([]string{"interfaces1", "interfaces2", "interfaces3"})
+}

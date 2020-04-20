@@ -120,10 +120,11 @@ type ReferencesStruct struct {
 
 // Protocol protocol structure
 type Protocol struct {
-	Listen       string `yaml:"listenAddress"`
-	Advertise    string `yaml:"advertiseAddress"`
-	WorkerNumber int    `yaml:"workerNumber"`
-	Transport    string `yaml:"transport"`
+	Listen       string   `yaml:"listenAddress"`
+	Advertise    string   `yaml:"advertiseAddress"`
+	WorkerNumber int      `yaml:"workerNumber"`
+	Transport    string   `yaml:"transport"`
+	Interfaces   []string `yaml:"interfaces"`
 }
 
 // MicroserviceCfg microservice.yaml 配置项

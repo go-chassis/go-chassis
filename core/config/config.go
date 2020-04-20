@@ -371,6 +371,11 @@ func Init() error {
 		return err
 	}
 
+	// load schema form yaml interfaces
+	for _, protocol := range GlobalDefinition.Cse.Protocols {
+		schema.SetInterfacesMap(protocol.Interfaces)
+	}
+
 	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
 	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
 	runtime.Environment = MicroserviceDefinition.ServiceDescription.Environment

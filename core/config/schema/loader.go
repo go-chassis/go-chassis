@@ -8,6 +8,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-mesh/openlogging"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -37,6 +38,9 @@ var schemaIDsMap map[string]string
 
 // defaultMicroServiceNames default micro-service names
 var defaultMicroServiceNames = make([]string, 0)
+
+// interfacesMap schema ids map
+var interfacesMap = make(map[string]string, 0)
 
 //GetSchemaPath calculate the schema root path and return
 func GetSchemaPath(name string) string {
@@ -198,6 +202,7 @@ func GetMicroserviceNames() []string {
 
 // GetSchemaIDs get schema IDs
 func GetSchemaIDs(microserviceName string) ([]string, error) {
+	setSchemaInfoForInterfaces()
 	microsvcMeta, ok := defaultMicroserviceMetaMgr[microserviceName]
 	if !ok {
 		return nil, fmt.Errorf("microservice %s not found", microserviceName)
@@ -228,5 +233,48 @@ func SetSchemaInfo(sws *swagger.SwaggerService) error {
 	for _, schemaInfo := range schemaInfoList {
 		schemaIDsMap[runtime.ServiceName] = schemaInfo
 	}
+	return nil
+}
+
+// setInterfacesmap is for to initialize the  interfaceMap
+func SetInterfacesMap(interfaces []string) {
+	for _, v := range interfaces {
+		interfacesMap[v] = v
+	}
+}
+
+//
+func setSchemaInfoForInterfaces() error {
+	interfaces := make([]string, 0)
+	for k, _ := range interfacesMap {
+		interfaces = append(interfaces, k)
+	}
+	microsvcMata := NewMicroserviceMeta(runtime.ServiceName)
+	for _, inter := range interfaces {
+		if len(inter) == 0 {
+			openlogging.GetLogger().Warnf("interfaces is empty")
+			continue
+		}
+		schemaContent := struct {
+			Swagger string            `yaml:"swagger"`
+			Info    map[string]string `yaml:"info"`
+		}{
+			Swagger: "2.0",
+			Info: map[string]string{
+				"version":          "1.0.0",
+				"title":            fmt.Sprintf("swagger definition for %s", inter),
+				"x-java-interface": inter,
+			},
+		}
+
+		b, err := yaml.Marshal(&schemaContent)
+		if err != nil {
+			continue
+		}
+		microsvcMata.SchemaIDs = append(microsvcMata.SchemaIDs, inter)
+		schemaIDsMap[inter] = string(b)
+	}
+	defaultMicroserviceMetaMgr[runtime.ServiceName] = microsvcMata
+
 	return nil
 }
