@@ -1,13 +1,14 @@
-package schema_test
+package schema
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -49,15 +50,15 @@ func TestLoadSchema(t *testing.T) {
 		file.Close()
 	}
 
-	err = schema.LoadSchema(fileutil.GetConfDir())
+	err = LoadSchema(fileutil.GetConfDir())
 	assert.Nil(t, err)
 
-	schemaIDs, err := schema.GetSchemaIDs(microserviceName1)
+	schemaIDs, err := GetSchemaIDs(microserviceName1)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(schemaIDs))
 	assert.Equal(t, schemaID1_1, schemaIDs[0], schemaID1_2, schemaIDs[1])
 
-	assert.Equal(t, "test", schema.GetContent(schemaID1_1))
+	assert.Equal(t, "test", GetContent(schemaID1_1))
 
 	err = os.RemoveAll(fileutil.GetConfDir())
 	assert.Nil(t, err)
@@ -74,13 +75,40 @@ func TestSetSchemaIDs(t *testing.T) {
 	config.Info.Description = "This is a sample server Book server"
 	config.Info.Title = "swagger Book"
 	sws := swagger.RegisterSwaggerService(config, restful.DefaultContainer)
-	err := schema.SetSchemaInfo(sws)
+	err := SetSchemaInfo(sws)
 	assert.NoError(t, err)
-	s, e := schema.GetSchemaIDs("aaa")
+	s, e := GetSchemaIDs("aaa")
 	assert.Error(t, e)
 	assert.Equal(t, 0, len(s))
 }
 
 func TestSetInterfacesMap(t *testing.T) {
-	schema.SetInterfacesMap([]string{"interfaces1", "interfaces2", "interfaces3"})
+	SetInterfacesMap([]string{"interfaces1", "interfaces2", "interfaces3"})
+}
+
+func TestSetSchemaInfoForInterfaces(t *testing.T) {
+	// case empty
+	setSchemaInfoForInterfaces()
+
+	// case interfacse item=""
+	SetInterfacesMap([]string{"", "interfaces2", "interfaces3"})
+	setSchemaInfoForInterfaces()
+
+	SetInterfacesMap([]string{"interfaces1", "interfaces2", "interfaces3"})
+	setSchemaInfoForInterfaces()
+}
+
+func TestGetMicroserviceNames(t *testing.T) {
+	GetMicroserviceNames()
+}
+
+func TestGetSchemaPath(t *testing.T) {
+	// From conf/serviceName/schema
+	p := GetSchemaPath("Name")
+	assert.True(t, strings.Contains(p, filepath.Dir("conf/Name/schema")))
+
+	// case set env SCHEMA_ROOT
+	os.Setenv(common.EnvSchemaRoot, "/test/path")
+	p = GetSchemaPath("serviceName")
+	assert.Equal(t, filepath.Dir("/test/path/serviceName/schema/"), p)
 }
