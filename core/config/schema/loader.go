@@ -245,15 +245,11 @@ func SetInterfacesMap(interfaces []string) {
 
 // setSchemaInfoForInterfaces is to initialize schema data
 func setSchemaInfoForInterfaces() error {
-	interfaces := make([]string, 0)
-	for k := range interfacesMap {
-		interfaces = append(interfaces, k)
-	}
-	if len(interfaces) == 0 {
+	if len(interfacesMap) == 0 {
 		return nil
 	}
 	microsvcMata := NewMicroserviceMeta(runtime.ServiceName)
-	for _, inter := range interfaces {
+	for inter := range interfacesMap {
 		if len(inter) == 0 {
 			openlogging.GetLogger().Warnf("interfaces is empty")
 			continue
