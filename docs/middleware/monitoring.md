@@ -6,8 +6,8 @@ see how to export metrics to prometheus [observable](https://go-chassis.readthed
 
 it records 3 different metrics:
 - request_count
-- request_latency
-- request_errors
+- request_process_duration
+- error_response_count
 
 ## **Usage**
 
@@ -33,22 +33,14 @@ metrics API response looks like below：
 ```text
 # HELP request_count 
 # TYPE request_count counter
-request_count{app="",env="",instance="",service="",version=""} 4
-# HELP request_errors_count 
-# TYPE request_errors_count counter
-request_errors_count{app="",code="Ǵ",env="",instance="",service="",version=""} 2
-# HELP request_latency 
-# TYPE request_latency histogram
-request_latency_bucket{app="",env="",instance="",service="",version="",le="0.05"} 4
-request_latency_bucket{app="",env="",instance="",service="",version="",le="0.25"} 4
-request_latency_bucket{app="",env="",instance="",service="",version="",le="0.5"} 4
-request_latency_bucket{app="",env="",instance="",service="",version="",le="0.75"} 4
-request_latency_bucket{app="",env="",instance="",service="",version="",le="0.9"} 4
-request_latency_bucket{app="",env="",instance="",service="",version="",le="0.99"} 4
-request_latency_bucket{app="",env="",instance="",service="",version="",le="0.995"} 4
-request_latency_bucket{app="",env="",instance="",service="",version="",le="+Inf"} 4
-request_latency_sum{app="",env="",instance="",service="",version=""} 0
-request_latency_count{app="",env="",instance="",service="",version=""} 4
+request_count{app="default",env="",instance="",service="servicecomb-kie",version="0.1.0"} 14
+# HELP request_process_duration 
+# TYPE request_process_duration summary
+request_process_duration{app="default",env="",instance="",service="servicecomb-kie",version="0.1.0",quantile="0.5"} 3
+request_process_duration{app="default",env="",instance="",service="servicecomb-kie",version="0.1.0",quantile="0.9"} 80
+request_process_duration{app="default",env="",instance="",service="servicecomb-kie",version="0.1.0",quantile="0.99"} 80
+request_process_duration_sum{app="default",env="",instance="",service="servicecomb-kie",version="0.1.0"} 315
+request_process_duration_count{app="default",env="",instance="",service="servicecomb-kie",version="0.1.0"} 14
 ```
 
 
