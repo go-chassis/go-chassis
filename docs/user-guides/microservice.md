@@ -34,6 +34,9 @@ you can consider a project as an micro service, after compile, build and run, it
 **paths**
 > *(optional, array)* micro service API paths, will be registered with servicecenter
 
+**schemas**
+>*(optional, array)* schema id, which will be registered with servicecenter
+
 ## Example
 
 ```yaml
@@ -48,4 +51,8 @@ service_description:
   - path: /rest/demoservice
     property:
       checksession: true
+  schemas:
+  - "schema"
+  - "schema1"
+  - "schema2"
 ```

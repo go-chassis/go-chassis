@@ -1,8 +1,8 @@
-package schema_test
+package schema
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/config/schema"
+	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/stretchr/testify/assert"
@@ -49,15 +49,15 @@ func TestLoadSchema(t *testing.T) {
 		file.Close()
 	}
 
-	err = schema.LoadSchema(fileutil.GetConfDir())
+	err = LoadSchema(fileutil.GetConfDir())
 	assert.Nil(t, err)
 
-	schemaIDs, err := schema.GetSchemaIDs(microserviceName1)
+	schemaIDs, err := GetSchemaIDs(microserviceName1)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(schemaIDs))
 	assert.Equal(t, schemaID1_1, schemaIDs[0], schemaID1_2, schemaIDs[1])
 
-	assert.Equal(t, "test", schema.GetContent(schemaID1_1))
+	assert.Equal(t, "test", GetContent(schemaID1_1))
 
 	err = os.RemoveAll(fileutil.GetConfDir())
 	assert.Nil(t, err)
@@ -74,9 +74,30 @@ func TestSetSchemaIDs(t *testing.T) {
 	config.Info.Description = "This is a sample server Book server"
 	config.Info.Title = "swagger Book"
 	sws := swagger.RegisterSwaggerService(config, restful.DefaultContainer)
-	err := schema.SetSchemaInfo(sws)
+	err := SetSchemaInfo(sws)
 	assert.NoError(t, err)
-	s, e := schema.GetSchemaIDs("aaa")
+	s, e := GetSchemaIDs("aaa")
 	assert.Error(t, e)
 	assert.Equal(t, 0, len(s))
+}
+
+func TestSetSchemaInfoByMap(t *testing.T) {
+	// init
+	runtime.ServiceName = "ServiceName"
+	m := make(map[string]string, 0)
+	// case m is empty
+	SetSchemaInfoByMap(m)
+	_, err := GetSchemaIDs(runtime.ServiceName)
+	assert.Error(t, err)
+
+	// case m has value
+	m["id1"] = "schemaInfo1"
+	m["id2"] = "schemaInfo2"
+	m["id3"] = "schemaInfo3"
+	SetSchemaInfoByMap(m)
+
+	ids, err1 := GetSchemaIDs(runtime.ServiceName)
+	assert.NoError(t, err1)
+	assert.Equal(t, 3, len(ids))
+
 }
