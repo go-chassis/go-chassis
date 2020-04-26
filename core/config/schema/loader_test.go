@@ -86,11 +86,11 @@ func TestSetSchemaInfoByMap(t *testing.T) {
 	runtime.ServiceName = "ServiceName"
 	m := make(map[string]string, 0)
 	// case m is empty
-	//SetSchemaInfoByMap(m)
-	//_, err := GetSchemaIDs(runtime.ServiceName)
-	//assert.Error(t, err)
-	//assert.Equal(t, 0, len(schemaIDsMap))
-	//assert.Equal(t, 0, len(defaultMicroserviceMetaMgr))
+	SetSchemaInfoByMap(m)
+	_, err := GetSchemaIDs(runtime.ServiceName)
+	assert.Error(t, err)
+	assert.Equal(t, 0, len(schemaIDsMap))
+	assert.Equal(t, 0, len(defaultMicroserviceMetaMgr))
 
 	// case m has value
 	m["id1"] = "schemaInfo1"
