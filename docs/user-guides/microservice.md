@@ -51,8 +51,8 @@ service_description:
   - path: /rest/demoservice
     property:
       checksession: true
-   schemas:
-   - "schema"
-   - "schema1"
-   - "schema2"
+  schemas:
+  - "schema"
+  - "schema1"
+  - "schema2"
 ```
