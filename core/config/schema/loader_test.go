@@ -100,4 +100,7 @@ func TestSetSchemaInfoByMap(t *testing.T) {
 	assert.NoError(t, err1)
 	assert.Equal(t, 3, len(ids))
 
+	// case already read from conf/ServiceName dir
+	SetSchemaInfoByMap(m)
+
 }
