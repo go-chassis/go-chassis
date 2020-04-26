@@ -144,6 +144,7 @@ type MicServiceStruct struct {
 	InstanceProperties map[string]string   `yaml:"instance_properties"`
 	ServicePaths       []ServicePathStruct `yaml:"paths"`
 	ServicesStatus     string              `yaml:"status"`
+	Schemas            []string            `yaml:"schemas"`
 }
 
 // ServicePathStruct having info about service path and property

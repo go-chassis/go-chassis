@@ -23,9 +23,13 @@ func RegisterService() error {
 	}
 	var err error
 	runtime.Schemas, err = schema.GetSchemaIDs(runtime.ServiceName)
-	if err != nil {
+	if err != nil || len(runtime.Schemas) == 0 {
 		openlogging.GetLogger().Warnf("no schemas file for microservice [%s].", runtime.ServiceName)
 		runtime.Schemas = make([]string, 0)
+		// from yaml setting
+		if len(service.ServiceDescription.Schemas) != 0 {
+			runtime.Schemas = service.ServiceDescription.Schemas
+		}
 	}
 	if service.ServiceDescription.Level == "" {
 		service.ServiceDescription.Level = common.DefaultLevel

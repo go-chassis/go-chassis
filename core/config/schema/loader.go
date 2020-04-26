@@ -230,3 +230,17 @@ func SetSchemaInfo(sws *swagger.SwaggerService) error {
 	}
 	return nil
 }
+
+// SetSchemaInfoByMap is for fill defaultMicroserviceMetaMgr and schemaIDsMap
+func SetSchemaInfoByMap(schemaMap map[string]string) error {
+	if len(schemaMap) == 0 {
+		return nil
+	}
+	microsvcMeta := NewMicroserviceMeta(runtime.ServiceName)
+	for id, schemaInfo := range schemaMap {
+		microsvcMeta.SchemaIDs = append(microsvcMeta.SchemaIDs, id)
+		schemaIDsMap[id] = schemaInfo
+	}
+	defaultMicroserviceMetaMgr[runtime.ServiceName] = microsvcMeta
+	return nil
+}
