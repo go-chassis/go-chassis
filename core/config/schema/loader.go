@@ -241,6 +241,11 @@ func SetSchemaInfoByMap(schemaMap map[string]string) error {
 		microsvcMeta.SchemaIDs = append(microsvcMeta.SchemaIDs, id)
 		schemaIDsMap[id] = schemaInfo
 	}
-	defaultMicroserviceMetaMgr[runtime.ServiceName] = microsvcMeta
+
+	// already read from conf/ServiceName dir
+	if _, ok := defaultMicroserviceMetaMgr[runtime.ServiceName]; !ok {
+		defaultMicroserviceMetaMgr[runtime.ServiceName] = microsvcMeta
+	}
+
 	return nil
 }
