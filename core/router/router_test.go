@@ -1,10 +1,11 @@
 package router_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/lager"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/core/lager"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -13,7 +14,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/router"
 	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
 )
 
 func init() {
@@ -22,104 +22,6 @@ func init() {
 		RollingPolicy: "size",
 	})
 }
-
-var file = []byte(`
-sourceTemplate:
-  vmall-with-special-header:
-    source: vmall
-    sourceTags:
-      version: v2 #这里也可以通过 k8s api 或者sc得到
-    httpHeaders:
-      cookie: #多个规则的语义是与
-        regex: "^(.*?;)?(user=jason)(;.*)?$"
-      X-Age: #多个规则的语义是与
-        exact: "18"
-routeRule:
-  server: #这里就是请求里的host,一般来说推荐直接为sc里的service name，或者k8s的serviceName.namespace.dnsSuffix
-    - precedence: 2 #优先权 越大优先级越高
-      route:
-      - tags:
-          version: 1.2 #对接sc如果不填就自动为0.1
-          app: HelloWorld #对接sc如果不填就自动为default
-        weight: 80 #全重 80%到这里
-      - tags:
-          version: 2.0
-          app: HelloWorld
-        weight: 20 #全重 20%到这里
-      match:
-        source: reviews.default.svc.cluster.local
-        httpHeaders:
-          test: #多个规则的语义是与
-            regex: "user"
-  ShoppingCart: #这里就是请求里的host,一般来说推荐直接为sc里的service name，或者k8s的serviceName.namespace.dnsSuffix
-    - precedence: 2 #优先权 越大优先级越高
-      route:
-      - tags:
-          version: 1.2 #对接sc如果不填就自动为0.1
-          app: HelloWorld #对接sc如果不填就自动为default
-        weight: 80 #全重 80%到这里
-      - tags:
-          version: 2.0
-          app: HelloWorld
-        weight: 20 #全重 20%到这里
-      match:
-        refer: vmall-with-special-header
-        source: reviews.default.svc.cluster.local
-        sourceTags:
-          version: v2 #这里也可以通过 k8s api 或者sc得到
-        httpHeaders:
-          cookie: #多个规则的语义是与
-            regex: "^(.*?;)?(user=jason)(;.*)?$"
-    - precedence: 1 #这个语义表示，
-      route:
-      - tags:
-          version: v3
-          app: HelloWorld
-        weight: 100
- `)
-var file2 = []byte(`
-routeRule:
-  catalogue:
-    - precedence: 2
-      route:
-      - tags:
-          version: 0.0.1
-          app: sockshop
-        weight: 100
-  orders:
-    - precedence: 2
-      route:
-      - tags:
-          version: 0.0.1
-          app: sockshop
-        weight: 100
-  carts:
-    - precedence: 2
-      route:
-      - tags:
-          version: 0.0.1
-          app: sockshop
-        weight: 100
-  `)
-
-var rpcfile = []byte(`
-routeRule:
-  RPCServer: #这里就是请求里的host,一般来说推荐直接为sc里的service name，或者k8s的serviceName.namespace.dnsSuffix
-    - precedence: 2 #优先权 越大优先级越高
-      route:
-      - tags:
-          version: v2 #对接sc如果不填就自动为0.1
-        weight: 100 #全重 100%到这里
-      match:
-        headers:
-          test: #多个规则的语义是与
-            exact: "user"
-    - precedence: 1 #优先权 越大优先级越高
-      route:
-      - tags:
-          version: v3
-        weight: 100
- `)
 
 func TestBuildRouter(t *testing.T) {
 	path := os.Getenv("GOPATH")
@@ -140,13 +42,29 @@ func TestRPCRoute(t *testing.T) {
 	}
 	si.Tags[common.BuildinTagVersion] = "v2"
 
-	c := &config.RouterConfig{}
-	if err := yaml.Unmarshal([]byte(rpcfile), c); err != nil {
-		t.Error(err)
+	d := map[string][]*config.RouteRule{
+		"RPCServer": {
+			{
+				Precedence: 2,
+				Match: config.Match{
+					Headers: map[string]map[string]string{
+						"test": {"exact": "user"},
+					},
+				},
+				Routes: []*config.RouteTag{
+					{Weight: 100, Tags: map[string]string{"version": "v2"}},
+				},
+			},
+			{
+				Precedence: 1,
+				Routes: []*config.RouteTag{
+					{Weight: 100, Tags: map[string]string{"version": "v3"}},
+				},
+			},
+		},
 	}
 	router.BuildRouter("cse")
-	router.DefaultRouter.SetRouteRule(c.Destinations)
-	router.Templates = c.SourceTemplates
+	router.DefaultRouter.SetRouteRule(d)
 
 	header := map[string]string{
 		"cookie": "user=jason",
@@ -169,14 +87,43 @@ func TestRoute(t *testing.T) {
 	si.Name = "vmall"
 	si.Tags[common.BuildinTagApp] = "HelloWorld"
 	si.Tags[common.BuildinTagVersion] = "v2"
-
-	c := &config.RouterConfig{}
-	if err := yaml.Unmarshal([]byte(file), c); err != nil {
-		t.Error(err)
+	d := map[string][]*config.RouteRule{
+		"server": {
+			{
+				Precedence: 2,
+				Match: config.Match{
+					Headers: map[string]map[string]string{
+						"test": {"regex": "user"},
+					},
+				},
+				Routes: []*config.RouteTag{
+					{Weight: 80, Tags: map[string]string{"version": "1.2", "app": "HelloWorld"}},
+					{Weight: 20, Tags: map[string]string{"version": "2.0", "app": "HelloWorld"}},
+				},
+			},
+		},
+		"ShoppingCart": {
+			{
+				Precedence: 2,
+				Match: config.Match{
+					Headers: map[string]map[string]string{
+						"cookie": {"regex": "^(.*?;)?(user=jason)(;.*)?$"},
+					},
+				},
+				Routes: []*config.RouteTag{
+					{Weight: 80, Tags: map[string]string{"version": "1.2", "app": "HelloWorld"}},
+					{Weight: 20, Tags: map[string]string{"version": "2.0", "app": "HelloWorld"}},
+				},
+			}, {
+				Precedence: 1,
+				Routes: []*config.RouteTag{
+					{Weight: 100, Tags: map[string]string{"version": "v3", "app": "HelloWorld"}},
+				},
+			},
+		},
 	}
 	router.BuildRouter("cse")
-	router.DefaultRouter.SetRouteRule(c.Destinations)
-	router.Templates = c.SourceTemplates
+	router.DefaultRouter.SetRouteRule(d)
 
 	header := map[string]string{
 		"cookie": "user=jason",
@@ -192,11 +139,6 @@ func TestRoute(t *testing.T) {
 	assert.Equal(t, "1.2", inv.RouteTags.Version())
 	assert.Equal(t, "ShoppingCart", inv.MicroServiceName)
 
-	si.Name = "source"
-	err = router.Route(header, si, inv)
-	assert.Equal(t, "v3", inv.RouteTags.Version())
-	assert.Equal(t, "HelloWorld", inv.RouteTags.AppID())
-
 	inv.MicroServiceName = "server"
 	header["test"] = "test"
 	si.Name = "reviews.default.svc.cluster.local"
@@ -209,12 +151,35 @@ func TestRoute(t *testing.T) {
 }
 
 func TestRoute2(t *testing.T) {
-	c := &config.RouterConfig{}
-	if err := yaml.Unmarshal([]byte(file2), c); err != nil {
-		t.Error(err)
+
+	d := map[string][]*config.RouteRule{
+		"catalogue": {
+			{
+				Precedence: 2,
+				Routes: []*config.RouteTag{
+					{Weight: 100, Tags: map[string]string{"version": "0.0.1", "app": "sockshop"}},
+				},
+			},
+		},
+		"orders": {
+			{
+				Precedence: 2,
+				Routes: []*config.RouteTag{
+					{Weight: 100, Tags: map[string]string{"version": "0.0.1", "app": "sockshop"}},
+				},
+			},
+		},
+		"carts": {
+			{
+				Precedence: 2,
+				Routes: []*config.RouteTag{
+					{Weight: 100, Tags: map[string]string{"version": "0.0.1", "app": "sockshop"}},
+				},
+			},
+		},
 	}
 	router.BuildRouter("cse")
-	router.DefaultRouter.SetRouteRule(c.Destinations)
+	router.DefaultRouter.SetRouteRule(d)
 
 	header := map[string]string{}
 	inv := new(invocation.Invocation)

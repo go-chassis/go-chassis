@@ -71,10 +71,6 @@ func init() {
 	})
 }
 
-func initRouterDefinition() {
-	config.OldRouterDefinition = &config.RouterConfig{Router: config.Router{}}
-}
-
 func TestRouter_Init(t *testing.T) {
 
 }
