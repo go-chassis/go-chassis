@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package basicauth
+package jwt
 
 import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/security/token"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
 type fakeHandler struct{}
 
 func (h *fakeHandler) Name() string {
-
 	return "fake"
 }
 
@@ -42,34 +44,40 @@ func (h *fakeHandler) Handle(*handler.Chain, *invocation.Invocation, invocation.
 func new() handler.Handler {
 	return &fakeHandler{}
 }
-func TestUseBasicAuth(t *testing.T) {
-	Use(&BasicAuth{
-		Realm: "test-realm",
-		Authenticate: func(u, p string) error {
-			return nil
+func TestUse(t *testing.T) {
+	Use(&Auth{
+		MustAuth: func(req *http.Request) bool {
+			if strings.Contains(req.URL.Path, "/login") {
+				return false
+			}
+			return true
 		},
+		Realm:     "test-realm",
+		SecretKey: []byte("my_secret"),
 	})
 
-	handler.RegisterHandler("basicAuth", newBasicAuth)
+	handler.RegisterHandler("jwt", newHandler)
 	handler.RegisterHandler("fake", new)
-
-	c, err := handler.CreateChain(common.Provider, "default", []string{"basicAuth", "fake"}...)
-	t.Run("Invalid", func(t *testing.T) {
+	to, _ := token.DefaultManager.GetToken(map[string]interface{}{
+		"username": "peter",
+	}, []byte("my_secret"))
+	t.Log(to)
+	c, err := handler.CreateChain(common.Provider, "default", []string{"jwt", "fake"}...)
+	t.Run("success", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api", nil)
-		req.Header.Add("Authorization", "QWxhZGRpbjpvcGVuIHNlc2FtZQ==")
+		req.Header.Add("Authorization", "Bearer "+to)
 		inv := &invocation.Invocation{
 			Args: req,
 		}
 		c.Next(inv, func(ir *invocation.Response) error {
 			err = ir.Err
-			assert.Error(t, err)
+			assert.NoError(t, err)
 			return err
 		})
 	})
-
-	t.Run("normal", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/api", nil)
-		req.Header.Add("Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==")
+	t.Run("skip auth", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/login", nil)
+		req.Header.Add("Authorization", "Bearer "+to)
 		inv := &invocation.Invocation{
 			Args: req,
 		}

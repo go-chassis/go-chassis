@@ -9,8 +9,6 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	secCommon "github.com/go-chassis/go-chassis/security/common"
-
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -38,7 +36,7 @@ func hasDefaultSslTag(tag string) bool {
 
 func getDefaultSslConfigMap() map[string]string {
 	cipherSuits := []string{}
-	for k := range secCommon.TLSCipherSuiteMap {
+	for k := range TLSCipherSuiteMap {
 		cipherSuits = append(cipherSuits, k)
 	}
 
@@ -89,8 +87,8 @@ func getSSLConfigMap(tag string) map[string]string {
 	return result
 }
 
-func parseSSLConfig(sslConfigMap map[string]string) (*secCommon.SSLConfig, error) {
-	sslConfig := &secCommon.SSLConfig{}
+func parseSSLConfig(sslConfigMap map[string]string) (*SSLConfig, error) {
+	sslConfig := &SSLConfig{}
 	var err error
 
 	sslConfig.CipherPlugin = sslConfigMap[common.SslCipherPluginKey]
@@ -100,7 +98,7 @@ func parseSSLConfig(sslConfigMap map[string]string) (*secCommon.SSLConfig, error
 		return nil, err
 	}
 
-	sslConfig.CipherSuites, err = secCommon.ParseSSLCipherSuites(sslConfigMap[common.SslCipherSuitsKey])
+	sslConfig.CipherSuites, err = ParseSSLCipherSuites(sslConfigMap[common.SslCipherSuitsKey])
 	if err != nil {
 		return nil, err
 	}
@@ -108,11 +106,11 @@ func parseSSLConfig(sslConfigMap map[string]string) (*secCommon.SSLConfig, error
 		return nil, fmt.Errorf("no valid cipher")
 	}
 
-	sslConfig.MinVersion, err = secCommon.ParseSSLProtocol(sslConfigMap[common.SslProtocolKey])
+	sslConfig.MinVersion, err = ParseSSLProtocol(sslConfigMap[common.SslProtocolKey])
 	if err != nil {
 		return nil, err
 	}
-	sslConfig.MaxVersion = secCommon.TLSVersionMap["TLSv1.2"]
+	sslConfig.MaxVersion = TLSVersionMap["TLSv1.2"]
 	sslConfig.CAFile = sslConfigMap[common.SslCaFileKey]
 	sslConfig.CertFile = sslConfigMap[common.SslCertFileKey]
 	sslConfig.KeyFile = sslConfigMap[common.SslKeyFileKey]
@@ -122,7 +120,7 @@ func parseSSLConfig(sslConfigMap map[string]string) (*secCommon.SSLConfig, error
 }
 
 // GetSSLConfigByService get ssl configurations based on service
-func GetSSLConfigByService(svcName, protocol, svcType string) (*secCommon.SSLConfig, error) {
+func GetSSLConfigByService(svcName, protocol, svcType string) (*SSLConfig, error) {
 	tag, err := generateSSLTag(svcName, protocol, svcType)
 	if err != nil {
 		return nil, err
@@ -141,7 +139,7 @@ func GetSSLConfigByService(svcName, protocol, svcType string) (*secCommon.SSLCon
 }
 
 // GetDefaultSSLConfig get default ssl configurations
-func GetDefaultSSLConfig() *secCommon.SSLConfig {
+func GetDefaultSSLConfig() *SSLConfig {
 	sslConfigMap := getDefaultSslConfigMap()
 	sslConfig, _ := parseSSLConfig(sslConfigMap)
 	return sslConfig
@@ -172,7 +170,7 @@ func generateSSLTag(svcName, protocol, svcType string) (string, error) {
 }
 
 // GetTLSConfigByService get tls configurations based on service
-func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *secCommon.SSLConfig, error) {
+func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *SSLConfig, error) {
 	sslConfig, err := GetSSLConfigByService(svcName, protocol, svcType)
 	if err != nil {
 		return nil, nil, err
@@ -181,9 +179,9 @@ func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *sec
 	var tlsConfig *tls.Config
 	switch svcType {
 	case common.Provider:
-		tlsConfig, err = secCommon.GetServerTLSConfig(sslConfig)
+		tlsConfig, err = GetServerTLSConfig(sslConfig)
 	case common.Consumer:
-		tlsConfig, err = secCommon.GetClientTLSConfig(sslConfig)
+		tlsConfig, err = GetClientTLSConfig(sslConfig)
 	default:
 		err = fmt.Errorf("service type not support: %s, must be: %s|%s",
 			svcType, common.Provider, common.Consumer)

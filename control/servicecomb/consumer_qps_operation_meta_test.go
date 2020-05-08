@@ -1,21 +1,14 @@
 package servicecomb_test
 
 import (
-	"os"
 	"testing"
 
 	arhcaiusPanel "github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
-	config.Init()
-}
 func TestGetConsumerKey(t *testing.T) {
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",

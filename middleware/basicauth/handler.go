@@ -20,6 +20,8 @@ package basicauth
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
+	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/status"
@@ -44,29 +46,36 @@ type Handler struct {
 
 // Handle pre process raw data in handler
 func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	if req, ok := i.Args.(*http.Request); ok {
-		subject := req.Header.Get(HeaderAuth)
-		if subject == "" {
-			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
-			return
-		}
-		u, p, err := decode(subject)
+	var req *http.Request
+	if r, ok := i.Args.(*http.Request); ok {
+		req = r
+	} else if r, ok := i.Args.(*restful.Request); ok {
+		req = r.Request
+	} else {
+		openlogging.Error(fmt.Sprintf("this handler only works for http protocol, wrong type: %t", i.Args))
+		return
+	}
+	subject := req.Header.Get(HeaderAuth)
+	if subject == "" {
+		handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
+		return
+	}
+	u, p, err := decode(subject)
+	if err != nil {
+		openlogging.Error("can not decode base 64:" + err.Error())
+		handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
+		return
+	}
+	err = auth.Authenticate(u, p)
+	if err != nil {
+		handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
+		return
+	}
+	if auth.Authorize != nil {
+		err = auth.Authorize(u, req)
 		if err != nil {
-			openlogging.Error("can not decode base 64:" + err.Error())
 			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 			return
-		}
-		err = auth.Authorize(u, p)
-		if err != nil {
-			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
-			return
-		}
-		if auth.Authenticate != nil {
-			err = auth.Authenticate(u, req)
-			if err != nil {
-				handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
-				return
-			}
 		}
 	}
 	chain.Next(i, cb)

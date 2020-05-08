@@ -8,7 +8,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
@@ -17,7 +16,6 @@ func TestInstallPlugin(t *testing.T) {
 
 }
 func TestInit(t *testing.T) {
-
 	lager.Init(&lager.Options{
 		LoggerLevel:   "INFO",
 		RollingPolicy: "size",
@@ -27,15 +25,11 @@ func TestInit(t *testing.T) {
 			Infra: "",
 		},
 	}
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
-	err := config.Init()
-	assert.NoError(t, err)
 	opts := control.Options{
 		Infra:   config.GlobalDefinition.Panel.Infra,
 		Address: config.GlobalDefinition.Panel.Settings["address"],
 	}
-	err = control.Init(opts)
+	err := control.Init(opts)
 	assert.NoError(t, err)
 	opts.Infra = "xxx"
 	err = control.Init(opts)

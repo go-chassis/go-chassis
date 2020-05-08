@@ -30,8 +30,8 @@ import (
 	// prometheus reporter for circuit breaker metrics
 	_ "github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/reporter"
 	// aes package handles security related plugins
-	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/aes"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 	//config servers
 	_ "github.com/go-chassis/go-archaius/source/remote"
 	_ "github.com/go-chassis/go-archaius/source/remote/kie"

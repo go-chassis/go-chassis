@@ -1,7 +1,6 @@
 package servicecomb_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/control"
@@ -40,7 +39,7 @@ func TestSaveDefaultToLBCache(t *testing.T) {
 	t.Log("==delete outdated key")
 	servicecomb.SaveToLBCache(&model.LoadBalancing{
 		Strategy: map[string]string{
-			"name": loadbalancer.StrategyRoundRobin,
+			"name": loadbalancer.StrategyLatency,
 		},
 		AnyService: map[string]model.LoadBalancingSpec{
 			"test": {
@@ -63,15 +62,11 @@ func TestSaveToCBCache(t *testing.T) {
 			Infra: "",
 		},
 	}
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
-	err := config.Init()
-	assert.NoError(t, err)
 	opts := control.Options{
 		Infra:   config.GlobalDefinition.Panel.Infra,
 		Address: config.GlobalDefinition.Panel.Settings["address"],
 	}
-	err = control.Init(opts)
+	control.Init(opts)
 	servicecomb.SaveToCBCache(config.GetHystrixConfig())
 	c, _ := servicecomb.CBConfigCache.Get("Consumer")
 	assert.Equal(t, 100, c.(hystrix.CommandConfig).MaxConcurrentRequests)

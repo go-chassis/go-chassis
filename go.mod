@@ -2,6 +2,7 @@ module github.com/go-chassis/go-chassis
 
 require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emicklei/go-restful v2.12.0+incompatible
 	github.com/go-chassis/foundation v0.1.1-0.20191113114104-2b05871e9ec4
 	github.com/go-chassis/go-archaius v1.3.0

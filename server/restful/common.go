@@ -15,29 +15,7 @@
  * limitations under the License.
  */
 
-//Package basicauth supply basicAuth middleware abstraction
-package basicauth
+package restful
 
-import (
-	"github.com/go-chassis/go-chassis/core/handler"
-	"net/http"
-)
-
-var auth *BasicAuth
-
-//BasicAuth should implement basic auth server side logic
-//it is singleton
-type BasicAuth struct {
-	Realm string //required
-
-	Authenticate func(user, pwd string) error               //required
-	Authorize    func(user string, req *http.Request) error //optional
-
-}
-
-//Use put a custom basic auth logic
-//then register handler to chassis
-func Use(middleware *BasicAuth) {
-	auth = middleware
-	handler.RegisterHandler("basicAuth", newBasicAuth)
-}
+//HeaderAuth is const
+const HeaderAuth = "Authorization"

@@ -1,10 +1,10 @@
-package security_test
+package cipher_test
 
 import (
 	security2 "github.com/go-chassis/foundation/security"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/security"
-	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
+	"github.com/go-chassis/go-chassis/security/cipher"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/aes"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -14,7 +14,7 @@ type DefaultCipher struct {
 }
 
 func init() {
-	security.InstallCipherPlugin("default", new)
+	cipher.InstallCipherPlugin("default", new)
 }
 func new() security2.Cipher {
 
@@ -33,16 +33,16 @@ func (c *DefaultCipher) Decrypt(src string) (string, error) {
 
 func TestInstallCipherPlugin(t *testing.T) {
 
-	security.InstallCipherPlugin("test", new)
-	f, err := security.GetCipherNewFunc("test")
+	cipher.InstallCipherPlugin("test", new)
+	f, err := cipher.GetCipherNewFunc("test")
 	assert.NoError(t, err)
 	c := f()
 	r, _ := c.Encrypt("test")
 	assert.Equal(t, "test", r)
-	_, err = security.GetCipherNewFunc("asd")
+	_, err = cipher.GetCipherNewFunc("asd")
 	assert.Error(t, err)
 
-	_, err = security.GetCipherNewFunc("aes")
+	_, err = cipher.GetCipherNewFunc("aes")
 	assert.NoError(t, err)
 }
 func init() {
