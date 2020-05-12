@@ -1,4 +1,4 @@
-package common
+package tls
 
 import (
 	"crypto/tls"
@@ -6,15 +6,15 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-chassis/security/cipher"
 	"io/ioutil"
 	"strings"
 
 	security2 "github.com/go-chassis/foundation/security"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/string"
-	"github.com/go-chassis/go-chassis/security"
 	//this import used for plain cipher
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 )
 
 //SSLConfig struct stores the necessary info for SSL configuration
@@ -132,7 +132,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	var certs []tls.Certificate
 	if !(role == common.Client && sslConfig.KeyFile == "" && sslConfig.CertFile == "") {
 		var cipherPlugin security2.Cipher
-		if f, err := security.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
+		if f, err := cipher.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
 			return nil, fmt.Errorf("get cipher plugin [%s] failed, %v", sslConfig.CipherPlugin, err)
 		} else if cipherPlugin = f(); cipherPlugin == nil {
 			return nil, errors.New("invalid cipher plugin")

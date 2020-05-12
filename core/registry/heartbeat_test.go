@@ -7,7 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"

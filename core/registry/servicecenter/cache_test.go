@@ -13,7 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/util/rand"

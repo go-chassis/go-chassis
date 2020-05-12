@@ -173,13 +173,11 @@ func ReadGlobalConfigFromArchaius() error {
 func ReadLBFromArchaius() error {
 	lbMutex.Lock()
 	defer lbMutex.Unlock()
-	lbDef := model.LBWrapper{}
-	err := archaius.UnmarshalConfig(&lbDef)
+	lbConfig = &model.LBWrapper{}
+	err := archaius.UnmarshalConfig(lbConfig)
 	if err != nil {
 		return err
 	}
-	lbConfig = &lbDef
-
 	return nil
 }
 
@@ -194,33 +192,15 @@ func ReadMonitorFromArchaius() error {
 	return nil
 }
 
-//ReadMonitorFromFile read monitor config from local file  conf/monitoring.yaml
-func ReadMonitorFromFile() error {
-	defPath := fileutil.MonitoringConfigPath()
-	data, err := ioutil.ReadFile(defPath)
-	if err != nil {
-		openlogging.Error("Get monitor config from file failed. " + err.Error())
-		return err
-	}
-	MonitorCfgDef = &model.MonitorCfg{}
-	err = yaml.Unmarshal(data, &MonitorCfgDef)
-	if err != nil {
-		openlogging.Error("Get monitor config from file failed. " + err.Error())
-		return err
-	}
-	return nil
-}
-
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
 func ReadHystrixFromArchaius() error {
 	cbMutex.RLock()
 	defer cbMutex.RUnlock()
-	hystrixCnf := model.HystrixConfigWrapper{}
-	err := archaius.UnmarshalConfig(&hystrixCnf)
+	HystrixConfig = &model.HystrixConfigWrapper{}
+	err := archaius.UnmarshalConfig(&HystrixConfig)
 	if err != nil {
 		return err
 	}
-	HystrixConfig = &hystrixCnf
 	return nil
 }
 
@@ -301,7 +281,10 @@ func GetLoadBalancing() *model.LoadBalancing {
 
 //GetHystrixConfig return cb config
 func GetHystrixConfig() *model.HystrixConfig {
-	return HystrixConfig.HystrixConfig
+	if HystrixConfig != nil {
+		return HystrixConfig.HystrixConfig
+	}
+	return nil
 }
 
 // Init is initialize the configuration directory, archaius, route rule, and schema

@@ -4,7 +4,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	client "github.com/go-chassis/go-chassis/pkg/scclient"
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 	"github.com/stretchr/testify/assert"
 	"net/url"
 	"os"

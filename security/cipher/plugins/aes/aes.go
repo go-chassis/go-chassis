@@ -1,11 +1,11 @@
 package aes
 
 import (
+	"github.com/go-chassis/go-chassis/security/cipher"
 	"os"
 
 	security2 "github.com/go-chassis/foundation/security"
 	"github.com/go-chassis/go-chassis/pkg/goplugin"
-	"github.com/go-chassis/go-chassis/security"
 	"github.com/go-mesh/openlogging"
 )
 
@@ -30,7 +30,7 @@ func init() {
 			openlogging.Warn("can not set env for cipher: " + err.Error())
 		}
 	}
-	security.InstallCipherPlugin("aes", new)
+	cipher.InstallCipherPlugin("aes", new)
 }
 
 func new() security2.Cipher {
