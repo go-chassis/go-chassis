@@ -76,28 +76,26 @@ func Run() error {
 			return err
 		}
 	}
-	gracefulShutdown()
+	if !config.GetRegistratorDisableShutDown() {
+		waitingSignal()
+	}
 	return nil
 }
 
-func gracefulShutdown() {
-	//The user captures the signal himself
-	if !config.GetRegistratorDisableShutDown() {
-		c := make(chan os.Signal)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
-		select {
-		case s := <-c:
-			openlogging.Info("got os signal " + s.String())
-		case err := <-server.ErrRuntime:
-			openlogging.Info("got server error " + err.Error())
-		}
-	} else {
-		select {
-		case err := <-server.ErrRuntime:
-			openlogging.Info("got server error " + err.Error())
-		}
+func waitingSignal() {
+	c := make(chan os.Signal)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
+	select {
+	case s := <-c:
+		openlogging.Info("got os signal " + s.String())
+	case err := <-server.ErrRuntime:
+		openlogging.Info("got server error " + err.Error())
 	}
+	GracefulShutdown()
+}
 
+//GracefulShutdown
+func GracefulShutdown() {
 	if !config.GetRegistratorDisable() {
 		registry.HBService.Stop()
 		openlogging.Info("unregister servers ...")
