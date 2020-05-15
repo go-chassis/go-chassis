@@ -76,19 +76,26 @@ func Run() error {
 			return err
 		}
 	}
-	waitingSignal()
+	GracefulShutdown()
 	return nil
 }
 
-func waitingSignal() {
-	//Graceful shutdown
-	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
-	select {
-	case s := <-c:
-		openlogging.Info("got os signal " + s.String())
-	case err := <-server.ErrRuntime:
-		openlogging.Info("got server error " + err.Error())
+func GracefulShutdown() {
+	//The user captures the signal himself
+	if !config.GetRegistratorDisableShutDown() {
+		c := make(chan os.Signal)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
+		select {
+		case s := <-c:
+			openlogging.Info("got os signal " + s.String())
+		case err := <-server.ErrRuntime:
+			openlogging.Info("got server error " + err.Error())
+		}
+	} else {
+		select {
+		case err := <-server.ErrRuntime:
+			openlogging.Info("got server error " + err.Error())
+		}
 	}
 
 	if !config.GetRegistratorDisable() {
