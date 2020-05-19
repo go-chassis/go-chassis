@@ -67,7 +67,7 @@ func HackSignal(sigs ...os.Signal) {
 }
 
 //InstalPreShutdown instal what you want to achieve before graceful shutdown
-func InstalPreShutdown(name string, f func()){
+func InstalPreShutdown(name string, f func()) {
 	// lazy init
 	if goChassis.preShutDownFuncs == nil {
 		goChassis.preShutDownFuncs = make(map[string]func())
@@ -76,7 +76,7 @@ func InstalPreShutdown(name string, f func()){
 }
 
 //InstalPreShutdown instal what you want to achieve after graceful shutdown
-func InstalPostShutdown(name string, f func()){
+func InstalPostShutdown(name string, f func()) {
 	// lazy init
 	if goChassis.postShutDownFuncs == nil {
 		goChassis.postShutDownFuncs = make(map[string]func())
@@ -85,7 +85,7 @@ func InstalPostShutdown(name string, f func()){
 }
 
 //HackGracefulShutdown reset GracefulShutdown
-func HackGracefulShutdown(f func()){
+func HackGracefulShutdown(f func()) {
 	goChassis.hackGracefulShutdown = f
 }
 
@@ -124,7 +124,7 @@ func waitingSignal() {
 		openlogging.Info("got server error " + err.Error())
 	}
 
-	if goChassis.hackGracefulShutdown == nil{
+	if goChassis.hackGracefulShutdown == nil {
 		if goChassis.preShutDownFuncs != nil {
 			for _, v := range goChassis.preShutDownFuncs {
 				v()
@@ -136,7 +136,7 @@ func waitingSignal() {
 				v()
 			}
 		}
-	}else{
+	} else {
 		goChassis.hackGracefulShutdown()
 	}
 }
