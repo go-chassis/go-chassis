@@ -61,6 +61,34 @@ func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
+//HackSignal set signals that want to hack.
+func HackSignal(sigs ...os.Signal) {
+	goChassis.sigs = sigs
+}
+
+//InstalPreShutdown instal what you want to achieve before graceful shutdown
+func InstalPreShutdown(name string, f func()){
+	// lazy init
+	if goChassis.preShutDownFuncs == nil {
+		goChassis.preShutDownFuncs = make(map[string]func())
+	}
+	goChassis.preShutDownFuncs[name] = f
+}
+
+//InstalPreShutdown instal what you want to achieve after graceful shutdown
+func InstalPostShutdown(name string, f func()){
+	// lazy init
+	if goChassis.postShutDownFuncs == nil {
+		goChassis.postShutDownFuncs = make(map[string]func())
+	}
+	goChassis.postShutDownFuncs[name] = f
+}
+
+//HackGracefulShutdown reset GracefulShutdown
+func HackGracefulShutdown(f func()){
+	goChassis.hackGracefulShutdown = f
+}
+
 //Run bring up the service,it waits for os signal,and shutdown gracefully
 //before all protocol server start successfully, it may return error.
 func Run() error {
@@ -76,25 +104,44 @@ func Run() error {
 			return err
 		}
 	}
-	if !config.GetRegistratorDisableShutDown() {
-		waitingSignal()
-	}
+
+	waitingSignal()
 	return nil
 }
 
 func waitingSignal() {
 	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
+	if len(goChassis.sigs) > 0 {
+		signal.Notify(c, goChassis.sigs...)
+	} else {
+		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
+	}
+
 	select {
 	case s := <-c:
 		openlogging.Info("got os signal " + s.String())
 	case err := <-server.ErrRuntime:
 		openlogging.Info("got server error " + err.Error())
 	}
-	GracefulShutdown()
+
+	if goChassis.hackGracefulShutdown == nil{
+		if goChassis.preShutDownFuncs != nil {
+			for _, v := range goChassis.preShutDownFuncs {
+				v()
+			}
+		}
+		GracefulShutdown()
+		if goChassis.postShutDownFuncs != nil {
+			for _, v := range goChassis.postShutDownFuncs {
+				v()
+			}
+		}
+	}else{
+		goChassis.hackGracefulShutdown()
+	}
 }
 
-//GracefulShutdown
+//GracefulShutdown graceful shut down api
 func GracefulShutdown() {
 	if !config.GetRegistratorDisable() {
 		registry.HBService.Stop()

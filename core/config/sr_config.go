@@ -60,8 +60,3 @@ func GetRegistratorDisable() bool {
 	}
 	return archaius.GetBool("cse.service.registry.disabled", false)
 }
-
-// GetRegistratorDisableShutDown returns disable shut down
-func GetRegistratorDisableShutDown() bool {
-	return GlobalDefinition.Cse.Service.Registry.DisableShutDown
-}

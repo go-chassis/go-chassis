@@ -19,6 +19,7 @@ package chassis
 
 import (
 	"fmt"
+	"os"
 	"sync"
 
 	"github.com/go-chassis/go-archaius"
@@ -48,6 +49,11 @@ type chassis struct {
 
 	DefaultConsumerChainNames map[string]string
 	DefaultProviderChainNames map[string]string
+
+	sigs                 []os.Signal
+	preShutDownFuncs     map[string]func()
+	postShutDownFuncs    map[string]func()
+	hackGracefulShutdown func()
 }
 
 // Schema struct for to represent schema info

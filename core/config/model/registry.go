@@ -20,7 +20,6 @@ type RegistryStruct struct {
 	Tenant          string                   `yaml:"tenant"`
 	AutoRegister    string                   `yaml:"register"`
 	APIVersion      RegistryAPIVersionStruct `yaml:"api"`
-	DisableShutDown bool                     `yaml:"disableShutDown"`
 
 	// Use Registrator ServiceDiscovery and ContractDiscovery
 	// to define information about service registry
