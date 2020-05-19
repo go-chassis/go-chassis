@@ -75,7 +75,7 @@ func InstalPreShutdown(name string, f func()) {
 	goChassis.preShutDownFuncs[name] = f
 }
 
-//InstalPreShutdown instal what you want to achieve after graceful shutdown
+//InstalPostShutdown instal what you want to achieve after graceful shutdown
 func InstalPostShutdown(name string, f func()) {
 	// lazy init
 	if goChassis.postShutDownFuncs == nil {
