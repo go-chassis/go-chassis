@@ -117,7 +117,7 @@ func waitingSignal() {
 		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
 	}
 
-	var s syscall.Signal
+	var s os.Signal
 	select {
 	case s = <-c:
 		openlogging.Info("got os signal " + s.String())
