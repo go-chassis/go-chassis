@@ -153,7 +153,7 @@ func Enable() (err error) {
 		return err
 	}
 
-	enableRegistryCache()
+	EnableRegistryCache()
 	if err := enableRegistrator(oR); err != nil {
 		return err
 	}

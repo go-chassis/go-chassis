@@ -4,13 +4,10 @@ import (
 	"github.com/go-chassis/go-archaius/event"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/eventlistener"
 )
 
 func TestLagerEventListener_Event(t *testing.T) {
-	preTest()
-	config.Init()
 	t.Log("Test lager_event_listener_test.go")
 	eventlistener.Init()
 	eventListen := &eventlistener.LagerEventListener{}

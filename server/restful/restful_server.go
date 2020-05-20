@@ -284,12 +284,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
 		return errors.New("schema path is empty")
 	}
-	if err := os.RemoveAll(path); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
-	if err := os.MkdirAll(path, 0760); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
+
 	swagger.LogInfo = func(format string, v ...interface{}) {
 		openlogging.GetLogger().Infof(format, v...)
 	}
@@ -305,6 +300,12 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema {
 		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 	} else {
+		if err := os.RemoveAll(path); err != nil {
+			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+		}
+		if err := os.MkdirAll(path, 0600); err != nil {
+			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+		}
 		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
 	}
 	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)

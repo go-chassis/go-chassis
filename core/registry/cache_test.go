@@ -1,6 +1,7 @@
-package registry
+package registry_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/registry"
 	"testing"
 
 	"strings"
@@ -12,24 +13,24 @@ import (
 )
 
 func TestSetIPIndex(t *testing.T) {
-	enableRegistryCache()
-	SetIPIndex("10.1.0.1", &SourceInfo{
+	registry.EnableRegistryCache()
+	registry.SetIPIndex("10.1.0.1", &registry.SourceInfo{
 		Name: "ServerA",
 	})
-	si := GetIPIndex("10.1.0.1")
+	si := registry.GetIPIndex("10.1.0.1")
 	assert.Equal(t, "ServerA", si.Name)
 
-	si = GetIPIndex("10.1.1.1")
+	si = registry.GetIPIndex("10.1.1.1")
 	assert.Nil(t, si)
 }
 func TestGetProvidersFromCache(t *testing.T) {
-	enableRegistryCache()
+	registry.EnableRegistryCache()
 
-	AddProviderToCache("SERVER0", "default")
-	AddProviderToCache("SERVER1", "default")
-	AddProviderToCache("SERVER2", "default")
+	registry.AddProviderToCache("SERVER0", "default")
+	registry.AddProviderToCache("SERVER1", "default")
+	registry.AddProviderToCache("SERVER2", "default")
 
-	services := GetProvidersFromCache()
+	services := registry.GetProvidersFromCache()
 	assert.Equal(t, len(services), 3)
 
 	serverNames := []string{}
@@ -43,17 +44,17 @@ func TestGetProvidersFromCache(t *testing.T) {
 	}
 }
 func TestAddProviderToCache(t *testing.T) {
-	enableRegistryCache()
+	registry.EnableRegistryCache()
 	testMap := map[string]string{"SERVER1": "default", "SERVER2": "default", "SERVER3": "default"}
 	for key, value := range testMap {
-		AddProviderToCache(key, value)
+		registry.AddProviderToCache(key, value)
 	}
 
 	for key, value := range testMap {
-		v, ok := ProvidersMicroServiceCache.Get(strings.Join([]string{key, value}, "|"))
+		v, ok := registry.ProvidersMicroServiceCache.Get(strings.Join([]string{key, value}, "|"))
 		assert.Equal(t, ok, true)
 
-		microService := v.(MicroService)
+		microService := v.(registry.MicroService)
 		assert.Equal(t, key, microService.ServiceName)
 		assert.Equal(t, value, microService.AppID)
 	}

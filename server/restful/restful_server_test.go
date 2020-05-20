@@ -1,16 +1,14 @@
 package restful
 
 import (
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"testing"
 
 	rf "github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/server"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,29 +18,20 @@ var addrHighway1 = "127.0.0.1:2330"
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.noRefreshSchema", true)
+	config.ReadGlobalConfigFromArchaius()
 }
 func initEnv() {
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	log.Println(os.Getenv("CHASSIS_HOME"))
-	os.Setenv("GO_CHASSIS_SWAGGERFILEPATH", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	log.Println(os.Getenv("GO_CHASSIS_SWAGGERFILEPATH"))
-	config.Init()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
-
-	config.GlobalDefinition = &model.GlobalCfg{}
 }
 
 func TestRestStart(t *testing.T) {
-	t.Log("Testing restful server start function")
 	initEnv()
 	schema := "schema1"
-
-	//trClient := tcp.NewTransport()
 
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -140,22 +129,6 @@ func (r *TestSchema) URLPatterns() []Route {
 		{Method: http.MethodPut, Path: "/hi", ResourceFunc: r.Put,
 			Returns: []*Returns{{Code: 200}}},
 	}
-}
-
-func TestNoRefreshSchemaConfig(t *testing.T) {
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	log.Println(os.Getenv("CHASSIS_HOME"))
-	config.Init()
-	assert.Equal(t, false, config.GlobalDefinition.Cse.NoRefreshSchema)
-	config.GlobalDefinition = &model.GlobalCfg{}
-}
-
-type Data struct {
-	ID         string `json:"priceID"`
-	Category   string `json:"type"`
-	Value      string `json:"value"`
-	CreateTime string `json:"-"`
 }
 
 func TestFillParam(t *testing.T) {

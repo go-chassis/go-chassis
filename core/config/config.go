@@ -255,19 +255,18 @@ func selectMicroserviceConfigFromArchaius() {
 
 // ReadMicroserviceConfigFromBytes read micro service configurations from bytes
 func ReadMicroserviceConfigFromBytes(data []byte) error {
-	microserviceDef := model.MicroserviceCfg{}
-	err := yaml.Unmarshal([]byte(data), &microserviceDef)
+	MicroserviceDefinition := &model.MicroserviceCfg{}
+	err := yaml.Unmarshal(data, MicroserviceDefinition)
 	if err != nil {
 		return err
 	}
-	if microserviceDef.ServiceDescription.Name == "" {
+	if MicroserviceDefinition.ServiceDescription.Name == "" {
 		return ErrNoName
 	}
-	if microserviceDef.ServiceDescription.Version == "" {
-		microserviceDef.ServiceDescription.Version = common.DefaultVersion
+	if MicroserviceDefinition.ServiceDescription.Version == "" {
+		MicroserviceDefinition.ServiceDescription.Version = common.DefaultVersion
 	}
 
-	MicroserviceDefinition = &microserviceDef
 	return nil
 }
 

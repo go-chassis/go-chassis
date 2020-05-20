@@ -58,7 +58,7 @@ func (ic *IndexCache) Set(k string, instances []*MicroServiceInstance) {
 	////TODO update indexed cache
 	//ic.muxCriteria.RLock()
 	//for _, criteria := range ic.CriteriaStore {
-	//	indexKey := ic.getIndexedCacheKey(k, criteria)
+	//	indexKey := ic.GetIndexedCacheKey(k, criteria)
 	//	result := make([]*MicroServiceInstance, 0)
 	//	for _, instance := range instances {
 	//		if instance.Has(criteria) {
@@ -86,7 +86,7 @@ func (ic *IndexCache) Get(k string, tags map[string]string) ([]*MicroServiceInst
 	//if version is latest, then set it to real version
 	ic.setTagsBeforeQuery(k, tags)
 	//find from indexed cache first
-	indexKey := getIndexedCacheKey(k, tags)
+	indexKey := GetIndexedCacheKey(k, tags)
 	savedResult, ok := ic.indexedCache.Get(indexKey)
 	if !ok {
 		//no result, then find it and save result
@@ -119,8 +119,8 @@ func (ic *IndexCache) setTagsBeforeQuery(k string, tags map[string]string) {
 	ic.muxLatestV.RUnlock()
 }
 
-//must combine keys in order, use sets to return sorted list
-func getIndexedCacheKey(service string, tags map[string]string) (ss string) {
+//GetIndexedCacheKey combine keys in order, use sets to return sorted list
+func GetIndexedCacheKey(service string, tags map[string]string) (ss string) {
 	ss = "service:" + service
 	keys := sets.NewString()
 	for k := range tags {

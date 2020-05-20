@@ -26,4 +26,4 @@ paths:
           description: ""
   /metrics:
     get:
-      operationId: HTTPHandleFunc
+      operationId: PrometheusHandleFunc
