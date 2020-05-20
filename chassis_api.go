@@ -67,25 +67,25 @@ func HackSignal(sigs ...os.Signal) {
 }
 
 //InstalPreShutdown instal what you want to achieve before graceful shutdown
-func InstalPreShutdown(name string, f func()) {
+func InstalPreShutdown(name string, f func(os.Signal)) {
 	// lazy init
 	if goChassis.preShutDownFuncs == nil {
-		goChassis.preShutDownFuncs = make(map[string]func())
+		goChassis.preShutDownFuncs = make(map[string]func(os.Signal))
 	}
 	goChassis.preShutDownFuncs[name] = f
 }
 
 //InstalPostShutdown instal what you want to achieve after graceful shutdown
-func InstalPostShutdown(name string, f func()) {
+func InstalPostShutdown(name string, f func(os.Signal)) {
 	// lazy init
 	if goChassis.postShutDownFuncs == nil {
-		goChassis.postShutDownFuncs = make(map[string]func())
+		goChassis.postShutDownFuncs = make(map[string]func(os.Signal))
 	}
 	goChassis.postShutDownFuncs[name] = f
 }
 
 //HackGracefulShutdown reset GracefulShutdown
-func HackGracefulShutdown(f func()) {
+func HackGracefulShutdown(f func(os.Signal)) {
 	goChassis.hackGracefulShutdown = f
 }
 
@@ -117,32 +117,31 @@ func waitingSignal() {
 		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
 	}
 
+	var s syscall.Signal
 	select {
-	case s := <-c:
+	case s = <-c:
 		openlogging.Info("got os signal " + s.String())
 	case err := <-server.ErrRuntime:
 		openlogging.Info("got server error " + err.Error())
 	}
 
-	if goChassis.hackGracefulShutdown == nil {
-		if goChassis.preShutDownFuncs != nil {
-			for _, v := range goChassis.preShutDownFuncs {
-				v()
-			}
+	if goChassis.preShutDownFuncs != nil {
+		for k, v := range goChassis.preShutDownFuncs {
+			openlogging.GetLogger().Infof("Exec PreShutDownFuncs %s", k)
+			v(s)
 		}
-		GracefulShutdown()
-		if goChassis.postShutDownFuncs != nil {
-			for _, v := range goChassis.postShutDownFuncs {
-				v()
-			}
+	}
+	GracefulShutdown(s)
+	if goChassis.postShutDownFuncs != nil {
+		for k, v := range goChassis.postShutDownFuncs {
+			openlogging.GetLogger().Infof("Exec PostShutDownFuncs %s", k)
+			v(s)
 		}
-	} else {
-		goChassis.hackGracefulShutdown()
 	}
 }
 
 //GracefulShutdown graceful shut down api
-func GracefulShutdown() {
+func GracefulShutdown(s os.Signal) {
 	if !config.GetRegistratorDisable() {
 		registry.HBService.Stop()
 		openlogging.Info("unregister servers ...")
@@ -184,6 +183,7 @@ func Init() error {
 			common.DefaultKey: defaultChain,
 		}
 	}
+	goChassis.hackGracefulShutdown = GracefulShutdown
 	if err := goChassis.initialize(); err != nil {
 		log.Println("init chassis fail:", err)
 		return err

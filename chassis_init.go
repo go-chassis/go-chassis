@@ -51,9 +51,9 @@ type chassis struct {
 	DefaultProviderChainNames map[string]string
 
 	sigs                 []os.Signal
-	preShutDownFuncs     map[string]func()
-	postShutDownFuncs    map[string]func()
-	hackGracefulShutdown func()
+	preShutDownFuncs     map[string]func(os.Signal)
+	postShutDownFuncs    map[string]func(os.Signal)
+	hackGracefulShutdown func(os.Signal)
 }
 
 // Schema struct for to represent schema info

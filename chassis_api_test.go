@@ -117,11 +117,11 @@ service_description:
 
 	chassis.HackSignal(sigs...)
 
-	chassis.InstalPreShutdown("pre_test", func() {
+	chassis.InstalPreShutdown("pre_test", func(os.Signal) {
 		t.Log("pre_shutdown_test")
 	})
 
-	chassis.InstalPostShutdown("pre_test", func() {
+	chassis.InstalPostShutdown("pre_test", func(os.Signal) {
 		t.Log("post_shutdown_test")
 	})
 
