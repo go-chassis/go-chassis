@@ -50,10 +50,10 @@ type chassis struct {
 	DefaultConsumerChainNames map[string]string
 	DefaultProviderChainNames map[string]string
 
-	sigs                 []os.Signal
-	preShutDownFuncs     map[string]func(os.Signal)
-	postShutDownFuncs    map[string]func(os.Signal)
-	hackGracefulShutdown func(os.Signal)
+	sigs                   []os.Signal
+	preShutDownFuncs       map[string]func(os.Signal)
+	postShutDownFuncs      map[string]func(os.Signal)
+	hajackGracefulShutdown func(os.Signal)
 }
 
 // Schema struct for to represent schema info

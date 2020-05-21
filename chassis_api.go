@@ -61,8 +61,8 @@ func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
-//HackSignal set signals that want to hack.
-func HackSignal(sigs ...os.Signal) {
+//HajackSignal set signals that want to hajack.
+func HajackSignal(sigs ...os.Signal) {
 	goChassis.sigs = sigs
 }
 
@@ -84,9 +84,9 @@ func InstalPostShutdown(name string, f func(os.Signal)) {
 	goChassis.postShutDownFuncs[name] = f
 }
 
-//HackGracefulShutdown reset GracefulShutdown
-func HackGracefulShutdown(f func(os.Signal)) {
-	goChassis.hackGracefulShutdown = f
+//HajackGracefulShutdown reset GracefulShutdown
+func HajackGracefulShutdown(f func(os.Signal)) {
+	goChassis.hajackGracefulShutdown = f
 }
 
 //Run bring up the service,it waits for os signal,and shutdown gracefully
@@ -131,7 +131,7 @@ func waitingSignal() {
 			v(s)
 		}
 	}
-	GracefulShutdown(s)
+	goChassis.hajackGracefulShutdown(s)
 	if goChassis.postShutDownFuncs != nil {
 		for k, v := range goChassis.postShutDownFuncs {
 			openlogging.GetLogger().Infof("Exec PostShutDownFuncs %s", k)
@@ -183,7 +183,7 @@ func Init() error {
 			common.DefaultKey: defaultChain,
 		}
 	}
-	goChassis.hackGracefulShutdown = GracefulShutdown
+	goChassis.hajackGracefulShutdown = GracefulShutdown
 	if err := goChassis.initialize(); err != nil {
 		log.Println("init chassis fail:", err)
 		return err

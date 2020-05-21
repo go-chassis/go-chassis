@@ -115,17 +115,17 @@ service_description:
 
 	sigs := []os.Signal{syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT}
 
-	chassis.HackSignal(sigs...)
+	chassis.HajackSignal(sigs...)
 
 	chassis.InstalPreShutdown("pre_test", func(os.Signal) {
 		t.Log("pre_shutdown_test")
 	})
 
-	chassis.InstalPostShutdown("pre_test", func(os.Signal) {
+	chassis.InstalPostShutdown("post_test", func(os.Signal) {
 		t.Log("post_shutdown_test")
 	})
 
-	chassis.HackGracefulShutdown(chassis.GracefulShutdown)
+	chassis.HajackGracefulShutdown(chassis.GracefulShutdown)
 
 	err = chassis.Init()
 	assert.NoError(t, err)
