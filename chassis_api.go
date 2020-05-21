@@ -127,14 +127,14 @@ func waitingSignal() {
 
 	if goChassis.preShutDownFuncs != nil {
 		for k, v := range goChassis.preShutDownFuncs {
-			openlogging.GetLogger().Infof("Exec PreShutDownFuncs %s", k)
+			openlogging.GetLogger().Infof("exec pre shutdownfuncs %s", k)
 			v(s)
 		}
 	}
 	goChassis.hajackGracefulShutdown(s)
 	if goChassis.postShutDownFuncs != nil {
 		for k, v := range goChassis.postShutDownFuncs {
-			openlogging.GetLogger().Infof("Exec PostShutDownFuncs %s", k)
+			openlogging.GetLogger().Infof("exec post shutdownfuncs %s", k)
 			v(s)
 		}
 	}
