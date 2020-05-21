@@ -1,13 +1,14 @@
-package registry
+package registry_test
 
 import (
+	"github.com/go-chassis/go-chassis/core/registry"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/stretchr/testify/assert"
 )
 
-var microServiceInstances = []*MicroServiceInstance{
+var microServiceInstances = []*registry.MicroServiceInstance{
 	{InstanceID: "09", Metadata: map[string]string{"version": "0.0.1", "project": "dev"}},
 	{InstanceID: "08", Metadata: map[string]string{"version": "0.0.1", "project": "test"}},
 	{InstanceID: "07", Metadata: map[string]string{"version": "0.0.2", "project": "dev"}},
@@ -21,16 +22,15 @@ var microServiceInstances = []*MicroServiceInstance{
 }
 
 func TestNoIndexCache(t *testing.T) {
-	cache := NewIndexCache()
+	cache := registry.NewIndexCache()
 	cache.Set("TestServer", microServiceInstances)
 	instance, _ := cache.Get("TestServer", nil)
 	assert.Equal(t, len(microServiceInstances), len(instance))
 }
 
 func TestIndexCache(t *testing.T) {
-	cache := NewIndexCache()
+	cache := registry.NewIndexCache()
 	cache.Set("TestServer", microServiceInstances)
-	//tag2 := map[string]string{"version": "latest", "project": "dev"}
 
 	x, _ := cache.Get("TestServer", map[string]string{"version": "0.0.2", "project": "dev"})
 	assert.Equal(t, 1, len(x))
@@ -43,7 +43,7 @@ func TestIndexCache(t *testing.T) {
 	assert.Equal(t, "0.0.1", x[1].Metadata[common.BuildinTagVersion])
 
 	microServiceInstances = append(microServiceInstances,
-		&MicroServiceInstance{Metadata: map[string]string{"version": "0.0.1", "project": "dev"}})
+		&registry.MicroServiceInstance{Metadata: map[string]string{"version": "0.0.1", "project": "dev"}})
 	cache.Set("TestServer", microServiceInstances)
 	x, _ = cache.Get("TestServer", map[string]string{"version": "0.0.1"})
 	for _, i := range x {
@@ -58,11 +58,11 @@ func TestIndexCache(t *testing.T) {
 	cache.Delete("TestServer")
 }
 func TestIndexCache_Get(t *testing.T) {
-	k1 := getIndexedCacheKey("service1", map[string]string{
+	k1 := registry.GetIndexedCacheKey("service1", map[string]string{
 		"a": "b",
 		"c": "d",
 	})
-	k2 := getIndexedCacheKey("service1", map[string]string{
+	k2 := registry.GetIndexedCacheKey("service1", map[string]string{
 		"c": "d",
 		"a": "b",
 	})
@@ -70,7 +70,7 @@ func TestIndexCache_Get(t *testing.T) {
 	assert.Equal(t, k2, k1)
 }
 func BenchmarkNoIndexGet(b *testing.B) {
-	cache := NewIndexCache()
+	cache := registry.NewIndexCache()
 	cache.Set("TestServer", microServiceInstances)
 	tag := map[string]string{}
 
@@ -82,7 +82,7 @@ func BenchmarkNoIndexGet(b *testing.B) {
 }
 
 func BenchmarkIndexCacheGet(b *testing.B) {
-	cache := NewIndexCache()
+	cache := registry.NewIndexCache()
 	cache.Set("TestServer", microServiceInstances)
 
 	tag := map[string]string{"version": "0.0.3", "project": "dev"}

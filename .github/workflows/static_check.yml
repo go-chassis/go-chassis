@@ -1,0 +1,41 @@
+name: Merge check
+on: [push, pull_request]
+jobs:
+  build:
+    name: Merge check
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Build
+      run: go build -v .
+
+    - name: Fmt
+      run: |
+        bash scripts/travis/formatChecker.sh
+    - name: Misspell
+      run: |
+        go get -u github.com/client9/misspell/cmd/misspell
+        bash scripts/travis/formatChecker.sh
+    - name: Lint
+      run: |
+        go get -u golang.org/x/lint/golint
+        bash scripts/travis/goLintChecker.sh
+    - name: Cyclo
+      run: |
+        go get github.com/fzipp/gocyclo
+        bash scripts/travis/goCycloChecker.sh
+    - name: UT
+      run: |
+        bash scripts/travis/start_latest_sc.sh
+        go get github.com/stretchr/testify
+        go get golang.org/x/tools/cmd/cover
+        bash scripts/travis/unit_test.sh

@@ -8,17 +8,12 @@ import (
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/eventlistener"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
 func TestLbEventError(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
-	config.Init()
 	eventlistener.Init()
-	archaius.Set("cse.loadbalance.strategy.name", "SessionStickiness")
 	lbEventListener := &eventlistener.LoadbalancingEventListener{}
 	e := &event.Event{EventType: "UPDATE", Key: "cse.loadbalance.strategy.name", Value: "SessionStickiness"}
 	lbEventListener.Event(e)
@@ -32,10 +27,7 @@ func TestLbEventError(t *testing.T) {
 }
 
 func TestLbEvent(t *testing.T) {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
 
-	config.Init()
 	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	eventlistener.Init()
 	archaius.Set("cse.loadbalance.strategy.name", "SessionStickiness")
@@ -55,4 +47,7 @@ func init() {
 		LoggerLevel:   "INFO",
 		RollingPolicy: "size",
 	})
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.loadbalance.strategy.name", "SessionStickiness")
+	config.ReadLBFromArchaius()
 }

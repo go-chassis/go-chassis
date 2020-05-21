@@ -114,7 +114,9 @@ it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/con
 - [KubeEdge](https://github.com/kubeedge/kubeedge): Kubernetes Native Edge Computing Framework (project under CNCF) https://kubeedge.io
 
 # Known Users
-![趣头条](https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=61fc74acb212c8fcb4f3f1cbc438f578/d8f9d72a6059252dc75d1b883f9b033b5ab5b9f7.jpg)
+To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
+ 
+ ![image](assets/logos/qutoutiao.PNG)
 
 # To start developing go chassis
 

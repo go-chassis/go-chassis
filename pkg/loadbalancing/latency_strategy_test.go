@@ -18,7 +18,8 @@ import (
 )
 
 func TestWeightedResponseStrategy_Pick(t *testing.T) {
-	config.Init()
+	archaius.Init(archaius.WithMemorySource())
+	config.ReadLBFromArchaius()
 	config.GetLoadBalancing().Strategy["name"] = loadbalancer.StrategyLatency
 	instances := []*registry.MicroServiceInstance{
 		{

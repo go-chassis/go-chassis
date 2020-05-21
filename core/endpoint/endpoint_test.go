@@ -1,45 +1,35 @@
 package endpoint_test
 
 import (
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/endpoint"
-	_ "github.com/go-chassis/go-chassis/initiator"
-	"path/filepath"
-
-	"github.com/go-chassis/go-chassis"
 	"github.com/go-chassis/go-chassis/core/registry"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/go-chassis/go-chassis/core/common"
-	"os"
 	"testing"
 	"time"
 )
 
+func init() {
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.service.registry.address", "http://127.0.0.1:30100")
+	archaius.Set("service_description.name", "Client")
+	config.ReadGlobalConfigFromArchaius()
+	config.MicroserviceDefinition = &model.MicroserviceCfg{}
+	archaius.UnmarshalConfig(config.MicroserviceDefinition)
+
+}
 func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {
 	t.Log("Testing GetEndpoint function")
-	goModuleValue := os.Getenv("GO111MODULE")
-	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" || goModuleValue == "auto" {
-		rootDir, _ = os.Getwd()
-		rootDir = filepath.Join(rootDir, "..", "..")
-	}
-	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
-	chassis.Init()
 	registry.Enable()
 	_, err := endpoint.GetEndpoint("default", "test", "0.1")
 	assert.NotNil(t, err)
 }
 
 func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
-	goModuleValue := os.Getenv("GO111MODULE")
-	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" || goModuleValue == "auto" {
-		rootDir, _ = os.Getwd()
-		rootDir = filepath.Join(rootDir, "..", "..")
-	}
-	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
-	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
 		ServiceName: "FtestAppThreeZero",
@@ -57,14 +47,6 @@ func TestGetEndpointFromServiceCenterForZeroInstance(t *testing.T) {
 }
 
 func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
-	goModuleValue := os.Getenv("GO111MODULE")
-	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" || goModuleValue == "auto" {
-		rootDir, _ = os.Getwd()
-		rootDir = filepath.Join(rootDir, "..", "..")
-	}
-	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
-	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
 		ServiceName: "FtestAppThree",
@@ -91,14 +73,6 @@ func TestGetEndpointFromServiceCenterValidScenario(t *testing.T) {
 }
 
 func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
-	goModuleValue := os.Getenv("GO111MODULE")
-	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" || goModuleValue == "auto" {
-		rootDir, _ = os.Getwd()
-		rootDir = filepath.Join(rootDir, "..", "..")
-	}
-	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
-	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
 		ServiceName: "FtestAppTwo",
@@ -125,14 +99,6 @@ func TestGetEndpointFromServiceCenterValidScenarioForEnabled(t *testing.T) {
 }
 
 func TestGetEndpointFromServiceCenterValidScenarioForDisabled(t *testing.T) {
-	goModuleValue := os.Getenv("GO111MODULE")
-	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" || goModuleValue == "auto" {
-		rootDir, _ = os.Getwd()
-		rootDir = filepath.Join(rootDir, "..", "..")
-	}
-	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
-	chassis.Init()
 	microservice := &registry.MicroService{
 		AppID:       "default",
 		ServiceName: "FtestAppOne",

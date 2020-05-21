@@ -32,7 +32,8 @@ var ProvidersMicroServiceCache *cache.Cache
 
 func initCache() *cache.Cache { return cache.New(DefaultExpireTime, 0) }
 
-func enableRegistryCache() {
+//EnableRegistryCache init caches
+func EnableRegistryCache() {
 	MicroserviceInstanceIndex = NewIndexCache()
 	ipIndexedCache = initCache()
 	SchemaServiceIndexedCache = initCache()

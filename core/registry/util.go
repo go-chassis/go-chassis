@@ -93,7 +93,7 @@ func MakeEndpointMap(m map[string]model.Protocol) (map[string]*Endpoint, error) 
 			return nil, fmt.Errorf("listen address is invalid [%s]", protocol.Listen)
 		}
 
-		_, err = fillUnspecifiedIP(host)
+		_, err = FillUnspecifiedIP(host)
 		if err != nil {
 			return nil, err
 		}
@@ -105,8 +105,8 @@ func MakeEndpointMap(m map[string]model.Protocol) (map[string]*Endpoint, error) 
 	return eps, nil
 }
 
-// fillUnspecifiedIP replace 0.0.0.0 or :: IPv4 and IPv6 unspecified IP address with local NIC IP.
-func fillUnspecifiedIP(host string) (string, error) {
+// FillUnspecifiedIP replace 0.0.0.0 or :: IPv4 and IPv6 unspecified IP address with local NIC IP.
+func FillUnspecifiedIP(host string) (string, error) {
 	var addr string
 	ip := net.ParseIP(host)
 	if ip == nil {
