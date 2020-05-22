@@ -20,22 +20,22 @@ jobs:
 
     - name: Fmt
       run: |
-        bash scripts/travis/formatChecker.sh
+        bash scripts/ci/formatChecker.sh
     - name: Misspell
       run: |
         go get -u github.com/client9/misspell/cmd/misspell
-        bash scripts/travis/formatChecker.sh
+        bash scripts/ci/formatChecker.sh
     - name: Lint
       run: |
         go get -u golang.org/x/lint/golint
-        bash scripts/travis/goLintChecker.sh
+        bash scripts/ci/goLintChecker.sh
     - name: Cyclo
       run: |
         go get github.com/fzipp/gocyclo
-        bash scripts/travis/goCycloChecker.sh
+        bash scripts/ci/goCycloChecker.sh
     - name: UT
       run: |
-        bash scripts/travis/start_latest_sc.sh
+        bash scripts/ci/start_latest_sc.sh
         go get github.com/stretchr/testify
         go get golang.org/x/tools/cmd/cover
-        bash scripts/travis/unit_test.sh
+        bash scripts/ci/unit_test.sh
