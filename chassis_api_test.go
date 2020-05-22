@@ -113,6 +113,20 @@ service_description:
 	chassis.SetDefaultConsumerChains(nil)
 	chassis.SetDefaultProviderChains(nil)
 
+	sigs := []os.Signal{syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT}
+
+	chassis.HajackSignal(sigs...)
+
+	chassis.InstalPreShutdown("pre_test", func(os.Signal) {
+		t.Log("pre_shutdown_test")
+	})
+
+	chassis.InstalPostShutdown("post_test", func(os.Signal) {
+		t.Log("post_shutdown_test")
+	})
+
+	chassis.HajackGracefulShutdown(chassis.GracefulShutdown)
+
 	err = chassis.Init()
 	assert.NoError(t, err)
 
@@ -126,6 +140,7 @@ service_description:
 	opts := reflect.Indirect(v).FieldByName("opts")
 	chainName := opts.FieldByName("ChainName")
 	assert.Equal(t, "rest", chainName.String())
+
 }
 
 func TestInitError(t *testing.T) {
