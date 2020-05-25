@@ -13,9 +13,6 @@
 **flowcontrol.qps.global.limit**
 > *(optional, int)* 每秒允许的请求数，默认2147483647max int）
 
-**flowcontrol.qps.limit.{service}**
-> *(optional, string)* 针对某微服务每秒允许的请求数 ，默认2147483647max int）
-
 引入middleware
 ```go
 import _ github.com/go-chassis/go-chassis/middleware/ratelimiter
@@ -43,26 +40,3 @@ cse:
         limit:
           Client: 100  # rate limit for request from a consumer
 ```
-
-#### Consumer示例
-
-在consumer端需要添加ratelimiter-consumer这个handler。同时在rate\_limiting.yaml中配置具体的请求数。
-
-```yaml
-cse:
-  handler:
-    chain:
-      Consumer:
-        default: ratelimiter-consumer
-```
-
-```yaml
-cse:
-  flowcontrol:
-    Consumer:
-      qps:
-        enabled: true  # enable rate limiting or not
-        limit:
-          Server: 100  # rate limit for request to a provider
-```
-
