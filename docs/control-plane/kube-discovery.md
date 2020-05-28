@@ -8,7 +8,7 @@ which leads go-chassis to do service discovery in kubernetes cluster according t
 kube discovery is a service discovery plugin that should import in your application code explicitly.
 
 ```go
-import _ "github.com/go-chassis/go-chassis-plugins/registry/kube"
+import _ "github.com/go-chassis/go-chassis-extension/registry/kubernetes"
 ```
 
 ## Configurations
