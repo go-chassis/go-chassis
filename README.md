@@ -43,7 +43,7 @@ you can use Istio configurations to control go chassis.
  - **API gateway and service mesh solution**: powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
  - **Open API 2.0 native support** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
 
-You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
+You can check [plugins](https://github.com/go-chassis/go-chassis-extension) to see more features
 
 # Get started 
 1.Generate go mod

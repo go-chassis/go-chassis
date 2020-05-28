@@ -27,7 +27,7 @@ Go-Chassis 是一个go语言的微服务开发框架，帮助你快速开发微�
  - **API gateway与service mesh方案**: 由 [servicecomb-mesher](https://github.com/apache/servicecomb-mesher)提供. 
  - **Open API 2.0支持** go chassis会自动生成 Open API 2.0 文档并把它注册到Apache ServiceComb的service center. 你可以在统一的服务查看微服务文档。
 
-go chassis插件库 [plugins](https://github.com/go-chassis/go-chassis-plugins) 可以查看目前的插件
+go chassis插件库 [plugins](https://github.com/go-chassis/go-chassis-extension) 可以查看目前的插件
 
 # Get started 
 1.生成 go mod

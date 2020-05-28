@@ -5,7 +5,7 @@ Zipkin tracer is a plugin of go chassis, it reports tracing data to zipkin serve
 ## Configurations
 you must import tracing plugin pkg in main.go
 ```go
-import _ "github.com/go-chassis/go-chassis-plugins/tracing/zipkin"
+import _ "github.com/go-chassis/go-chassis-extension/tracing/zipkin"
 ```
 
 **tracing.settings.URI**
