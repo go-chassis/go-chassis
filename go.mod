@@ -5,7 +5,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emicklei/go-restful v2.12.0+incompatible
 	github.com/go-chassis/foundation v0.1.1-0.20191113114104-2b05871e9ec4
-	github.com/go-chassis/go-archaius v1.3.0
+	github.com/go-chassis/go-archaius v1.3.1
 	github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f
 	github.com/go-chassis/paas-lager v1.1.1
 	github.com/go-mesh/openlogging v1.0.1
