@@ -2,8 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/go-chassis/go-archaius"
@@ -14,7 +12,6 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/go-mesh/openlogging"
-	"gopkg.in/yaml.v2"
 )
 
 // GlobalDefinition is having the information about region, load balancing, service center, config server,
@@ -204,70 +201,10 @@ func ReadHystrixFromArchaius() error {
 	return nil
 }
 
-// readMicroServiceSpecFiles read micro service configuration file
+// readMicroServiceSpecFiles read micro service configuration file by archaius
 func readMicroServiceSpecFiles() error {
 	MicroserviceDefinition = &model.MicroserviceCfg{}
-	//find only one microservice yaml
-	microserviceNames := schema.GetMicroserviceNames()
-	defPath := fileutil.MicroServiceConfigPath()
-	data, err := ioutil.ReadFile(defPath)
-	if err != nil {
-		openlogging.GetLogger().Errorf(fmt.Sprintf("WARN: Missing microservice description file: %s", err.Error()))
-		if len(microserviceNames) == 0 {
-			return errors.New("missing microservice description file")
-		}
-		msName := microserviceNames[0]
-		msDefPath := fileutil.MicroserviceDefinition(msName)
-		openlogging.GetLogger().Warnf(fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
-		data, err := ioutil.ReadFile(msDefPath)
-		if err != nil {
-			return fmt.Errorf("missing microservice description file: %s", err.Error())
-		}
-		err = ReadMicroserviceConfigFromBytes(data)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-	if err = ReadMicroserviceConfigFromBytes(data); err != nil {
-		return err
-	}
-	selectMicroserviceConfigFromArchaius()
-	return nil
-}
-
-// unmarshal config from archaius
-func unmarshalConfig() (microserviceCfg *model.MicroserviceCfg, err error) {
-	microserviceCfg = &model.MicroserviceCfg{}
-	err = archaius.UnmarshalConfig(microserviceCfg)
-	return
-}
-
-// cause archaius.UnmarshalConfig() can't support struct'slice,
-// deal MicroserviceDefinition.ServiceDescription.ServicePaths specially
-func selectMicroserviceConfigFromArchaius() {
-	microserviceCfg, err := unmarshalConfig()
-	if err == nil && microserviceCfg != nil {
-		microserviceCfg.ServiceDescription.ServicePaths = MicroserviceDefinition.ServiceDescription.ServicePaths
-		MicroserviceDefinition = microserviceCfg
-	}
-}
-
-// ReadMicroserviceConfigFromBytes read micro service configurations from bytes
-func ReadMicroserviceConfigFromBytes(data []byte) error {
-	MicroserviceDefinition := &model.MicroserviceCfg{}
-	err := yaml.Unmarshal(data, MicroserviceDefinition)
-	if err != nil {
-		return err
-	}
-	if MicroserviceDefinition.ServiceDescription.Name == "" {
-		return ErrNoName
-	}
-	if MicroserviceDefinition.ServiceDescription.Version == "" {
-		MicroserviceDefinition.ServiceDescription.Version = common.DefaultVersion
-	}
-
-	return nil
+	return archaius.UnmarshalConfig(MicroserviceDefinition)
 }
 
 //GetLoadBalancing return lb config
