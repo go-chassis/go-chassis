@@ -2,6 +2,7 @@ package restful
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-chassis/pkg/tool"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -94,7 +95,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 	restHandler := func(req *restful.Request, resp *restful.Response) {
 		defer func() {
 			if r := recover(); r != nil {
-				var stacktrace = GetTrace()
+				var stacktrace = tool.GetStackTrace(3)
 				openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
 					"path":  route.Path,
 					"panic": r,
@@ -206,6 +207,7 @@ func GetTrace() string {
 			break
 		}
 		stacktrace += fmt.Sprintf("%s:%d\n", f, l)
+		fmt.Println(stacktrace)
 	}
 	return stacktrace
 }
