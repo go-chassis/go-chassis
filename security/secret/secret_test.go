@@ -15,31 +15,15 @@
  * limitations under the License.
  */
 
-package token_test
+package secret
 
 import (
-	"github.com/go-chassis/go-chassis/security/secret"
-	"github.com/go-chassis/go-chassis/security/token"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestJWTTokenManager_GetToken(t *testing.T) {
-	s, err := secret.GenSecretKey(4096)
+func TestGenSecretKey(t *testing.T) {
+	s, err := GenSecretKey(4096)
 	assert.NoError(t, err)
-	to, err := token.DefaultManager.GetToken(map[string]interface{}{
-		"username": "peter",
-	}, s)
-	assert.NoError(t, err)
-	t.Log(to)
-	m, err := token.DefaultManager.ParseToken(to, s)
-	assert.NoError(t, err)
-	assert.Equal(t, "peter", m["username"])
-	t.Run("with exp", func(t *testing.T) {
-		to, err := token.DefaultManager.GetToken(map[string]interface{}{
-			"username": "peter",
-		}, []byte("my secret"), token.WithExpTime("1s"))
-		assert.NoError(t, err)
-		t.Log(to)
-	})
+	t.Log(s)
 }
