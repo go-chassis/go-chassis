@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package token_test
+package secret
 
 import (
-	"github.com/go-chassis/go-chassis/security/secret"
-	"github.com/go-chassis/go-chassis/security/token"
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 )
 
-func TestJWTTokenManager_GetToken(t *testing.T) {
-	s, err := secret.GenSecretKey(4096)
-	assert.NoError(t, err)
-	to, err := token.DefaultManager.GetToken(map[string]interface{}{
-		"username": "peter",
-	}, s)
-	assert.NoError(t, err)
-	t.Log(to)
-	m, err := token.DefaultManager.ParseToken(to, s)
-	assert.NoError(t, err)
-	assert.Equal(t, "peter", m["username"])
-	t.Run("with exp", func(t *testing.T) {
-		to, err := token.DefaultManager.GetToken(map[string]interface{}{
-			"username": "peter",
-		}, []byte("my secret"), token.WithExpTime("1s"))
-		assert.NoError(t, err)
-		t.Log(to)
-	})
+//GenSecretKey generate a secret key, now only support private key as secret key
+func GenSecretKey(bits int) ([]byte, error) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+	if err != nil {
+		return nil, err
+	}
+	derStream := x509.MarshalPKCS1PrivateKey(privateKey)
+	block := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: derStream,
+	}
+	bufferPrivate := new(bytes.Buffer)
+	err = pem.Encode(bufferPrivate, block)
+	if err != nil {
+		return nil, err
+	}
+	b := bufferPrivate.Bytes()
+	return b, nil
 }
