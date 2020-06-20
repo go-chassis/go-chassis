@@ -20,6 +20,7 @@
 package authr
 
 import (
+	"context"
 	"errors"
 	"fmt"
 )
@@ -42,18 +43,18 @@ func Install(name string, f newFunc) {
 
 //Authenticator can sign a token and authenticate that token
 type Authenticator interface {
-	Login(user string, password string) (string, error)
-	Authenticate(token string) (interface{}, error)
+	Login(ctx context.Context, user string, password string) (string, error)
+	Authenticate(ctx context.Context, token string) (interface{}, error)
 }
 
 //Login verify a user info and return a token
-func Login(user string, password string) (string, error) {
-	return defaultAuthenticator.Login(user, password)
+func Login(ctx context.Context, user string, password string) (string, error) {
+	return defaultAuthenticator.Login(ctx, user, password)
 }
 
 //Authenticate parse a token and return the claims in that token
-func Authenticate(token string) (interface{}, error) {
-	return defaultAuthenticator.Authenticate(token)
+func Authenticate(ctx context.Context, token string) (interface{}, error) {
+	return defaultAuthenticator.Authenticate(ctx, token)
 }
 
 //Init initiate this module
