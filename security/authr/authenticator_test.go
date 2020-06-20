@@ -18,6 +18,7 @@
 package authr_test
 
 import (
+	"context"
 	"errors"
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/security/authr"
@@ -31,25 +32,26 @@ type insecureAuthenticator struct {
 func newInsecureAuth(opts authr.Options) (authr.Authenticator, error) {
 	return &insecureAuthenticator{}, nil
 }
-func (a *insecureAuthenticator) Login(user string, password string) (string, error) {
+func (a *insecureAuthenticator) Login(ctx context.Context, user string, password string) (string, error) {
 	if user == archaius.GetString("username", "") && password == archaius.GetString("password", "") {
 		return "token", nil
 	}
 	return "", errors.New("wrong credential")
 }
-func (a *insecureAuthenticator) Authenticate(token string) (interface{}, error) {
+func (a *insecureAuthenticator) Authenticate(ctx context.Context, token string) (interface{}, error) {
 	return archaius.GetString("username", ""), nil
 }
 
 func TestLogin(t *testing.T) {
+	ctx := context.Background()
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("username", "admin")
 	archaius.Set("password", "admin")
 	authr.Install("default", newInsecureAuth)
 	authr.Init(authr.Options{})
-	token, _ := authr.Login("admin", "admin")
+	token, _ := authr.Login(ctx, "admin", "admin")
 	assert.Equal(t, "token", token)
-	claims, _ := authr.Authenticate("token")
+	claims, _ := authr.Authenticate(ctx, "token")
 	assert.Equal(t, "admin", claims)
 
 }
