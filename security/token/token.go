@@ -40,6 +40,16 @@ const (
 	JWTClaimsSub = "sub"
 )
 
+//GetToken gen token
+func GetToken(claims map[string]interface{}, secret []byte, opts ...Option) (string, error) {
+	return DefaultManager.GetToken(claims, secret, opts...)
+}
+
+//ParseToken return claims
+func ParseToken(tokenString string, secret []byte) (map[string]interface{}, error) {
+	return DefaultManager.ParseToken(tokenString, secret)
+}
+
 //Manager manages token
 type Manager interface {
 	GetToken(claims map[string]interface{}, secret []byte, option ...Option) (string, error)
