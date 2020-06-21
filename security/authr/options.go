@@ -19,5 +19,15 @@ package authr
 
 // Options is a struct to stores options
 type Options struct {
-	plugin string
+	Plugin string
+}
+
+//Option is option
+type Option func(options *Options)
+
+//WithPlugin specify plugin name
+func WithPlugin(p string) Option {
+	return func(options *Options) {
+		options.Plugin = p
+	}
 }

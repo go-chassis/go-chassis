@@ -32,11 +32,11 @@ var (
 	ErrNoImpl = errors.New("no implementation")
 )
 
-type newFunc func(opts Options) (Authenticator, error)
+type newFunc func(opts *Options) (Authenticator, error)
 
 var plugins = make(map[string]newFunc)
 
-//Install install a plugin
+//Install install a Plugin
 func Install(name string, f newFunc) {
 	plugins[name] = f
 }
@@ -58,15 +58,19 @@ func Authenticate(ctx context.Context, token string) (interface{}, error) {
 }
 
 //Init initiate this module
-func Init(opts Options) error {
-	if opts.plugin == "" {
-		opts.plugin = "default"
+func Init(opts ...Option) error {
+	o := &Options{}
+	for _, opt := range opts {
+		opt(o)
 	}
-	f, ok := plugins[opts.plugin]
+	if o.Plugin == "" {
+		o.Plugin = "default"
+	}
+	f, ok := plugins[o.Plugin]
 	if !ok {
-		return fmt.Errorf("plugin is no registered: %s", opts.plugin)
+		return fmt.Errorf("plugin is no installed: %s", o.Plugin)
 	}
 	var err error
-	defaultAuthenticator, err = f(opts)
+	defaultAuthenticator, err = f(o)
 	return err
 }

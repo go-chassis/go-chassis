@@ -29,7 +29,7 @@ import (
 type insecureAuthenticator struct {
 }
 
-func newInsecureAuth(opts authr.Options) (authr.Authenticator, error) {
+func newInsecureAuth(opts *authr.Options) (authr.Authenticator, error) {
 	return &insecureAuthenticator{}, nil
 }
 func (a *insecureAuthenticator) Login(ctx context.Context, user string, password string) (string, error) {
@@ -48,7 +48,7 @@ func TestLogin(t *testing.T) {
 	archaius.Set("username", "admin")
 	archaius.Set("password", "admin")
 	authr.Install("default", newInsecureAuth)
-	authr.Init(authr.Options{})
+	authr.Init()
 	token, _ := authr.Login(ctx, "admin", "admin")
 	assert.Equal(t, "token", token)
 	claims, _ := authr.Authenticate(ctx, "token")
