@@ -23,9 +23,10 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 )
 
-//GenRSAPrivateKey generate a secret key, now only support private key as secret key
+//GenRSAPrivateKey generate a rsa private key
 func GenRSAPrivateKey(bits int) ([]byte, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
@@ -44,7 +45,9 @@ func GenRSAPrivateKey(bits int) ([]byte, error) {
 	b := bufferPrivate.Bytes()
 	return b, nil
 }
-func GenerateRSAKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
+
+//GenRSAKeyPair create rsa key pair
+func GenRSAKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	private, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
 		return nil, nil, err
@@ -53,7 +56,9 @@ func GenerateRSAKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	public := &private.PublicKey
 	return private, public, nil
 }
-func GetRSAPrivate(privateKey *rsa.PrivateKey) ([]byte, error) {
+
+//RSAPrivate2Bytes expose bytes of private key
+func RSAPrivate2Bytes(privateKey *rsa.PrivateKey) ([]byte, error) {
 	k := x509.MarshalPKCS1PrivateKey(privateKey)
 	block := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
@@ -67,7 +72,9 @@ func GetRSAPrivate(privateKey *rsa.PrivateKey) ([]byte, error) {
 	b := bufferPrivate.Bytes()
 	return b, nil
 }
-func GetPublicKey(publicKey *rsa.PublicKey) ([]byte, error) {
+
+//RSAPublicKey2Bytes expose bytes of public key
+func RSAPublicKey2Bytes(publicKey *rsa.PublicKey) ([]byte, error) {
 	k, err := x509.MarshalPKIXPublicKey(publicKey)
 	if err != nil {
 		return nil, err
@@ -80,4 +87,38 @@ func GetPublicKey(publicKey *rsa.PublicKey) ([]byte, error) {
 
 	b := pem.EncodeToMemory(block)
 	return b, nil
+}
+
+//ParseRSAPrivateKey convert string to private key
+func ParseRSAPrivateKey(key string) (*rsa.PrivateKey, error) {
+	block, _ := pem.Decode([]byte(key))
+	if block == nil {
+		return nil, errors.New("failed to parse private key")
+	}
+
+	p, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}
+
+//ParseRSAPPublicKey convert string to pub key
+func ParseRSAPPublicKey(key string) (*rsa.PublicKey, error) {
+	block, _ := pem.Decode([]byte(key))
+	if block == nil {
+		return nil, errors.New("failed to parse public key")
+	}
+
+	p, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	pub, ok := p.(*rsa.PublicKey)
+	if !ok {
+		return nil, errors.New("key is not RSA")
+	}
+	return pub, nil
 }

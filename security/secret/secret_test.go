@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package secret
+package secret_test
 
 import (
+	"github.com/go-chassis/go-chassis/security/secret"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGenSecretKey(t *testing.T) {
-	s, err := GenRSAPrivateKey(4096)
+	s, err := secret.GenRSAPrivateKey(4096)
 	assert.NoError(t, err)
 	t.Log(s)
 }
 func TestGenerateKeys(t *testing.T) {
-	private, public, err := GenerateRSAKeyPair(2048)
+	private, public, err := secret.GenRSAKeyPair(2048)
 	assert.NoError(t, err)
 	t.Log(private)
 	t.Log(public)
 
-	b, err := GetRSAPrivate(private)
+	b, err := secret.RSAPrivate2Bytes(private)
 	assert.NoError(t, err)
 	t.Log(string(b))
-	b, err = GetPublicKey(public)
+	_, err = secret.ParseRSAPrivateKey(string(b))
+	assert.NoError(t, err)
+	b, err = secret.RSAPublicKey2Bytes(public)
 	assert.NoError(t, err)
 	t.Log(string(b))
+	_, err = secret.ParseRSAPPublicKey(string(b))
+	assert.NoError(t, err)
 }
