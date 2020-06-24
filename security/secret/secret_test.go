@@ -23,7 +23,20 @@ import (
 )
 
 func TestGenSecretKey(t *testing.T) {
-	s, err := GenSecretKey(4096)
+	s, err := GenRSAPrivateKey(4096)
 	assert.NoError(t, err)
 	t.Log(s)
+}
+func TestGenerateKeys(t *testing.T) {
+	private, public, err := GenerateRSAKeyPair(2048)
+	assert.NoError(t, err)
+	t.Log(private)
+	t.Log(public)
+
+	b, err := GetRSAPrivate(private)
+	assert.NoError(t, err)
+	t.Log(string(b))
+	b, err = GetPublicKey(public)
+	assert.NoError(t, err)
+	t.Log(string(b))
 }

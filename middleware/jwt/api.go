@@ -19,6 +19,7 @@ package jwt
 
 import (
 	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-chassis/go-chassis/security/token"
 	"github.com/go-mesh/openlogging"
 	"net/http"
 	"time"
@@ -29,9 +30,9 @@ var auth *Auth
 //Auth should implement auth logic
 //it is singleton
 type Auth struct {
-	SecretKey []byte //required
-	Expire    time.Duration
-	Realm     string //required
+	SecretFunc token.SecretFunc //required
+	Expire     time.Duration
+	Realm      string //required
 
 	//optional. Authorize check whether this request could access some resource or API based on json claims.
 	//Typically, this method should communicate with a RBAC, ABAC system

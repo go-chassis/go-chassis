@@ -52,13 +52,15 @@ func TestUse(t *testing.T) {
 			}
 			return true
 		},
-		Realm:     "test-realm",
-		SecretKey: []byte("my_secret"),
+		Realm: "test-realm",
+		SecretFunc: func(claims interface{}, method token.SigningMethod) (interface{}, error) {
+			return []byte("my_secret"), nil
+		},
 	})
 
 	handler.RegisterHandler("jwt", newHandler)
 	handler.RegisterHandler("fake", new)
-	to, _ := token.DefaultManager.GetToken(map[string]interface{}{
+	to, _ := token.DefaultManager.Sign(map[string]interface{}{
 		"username": "peter",
 	}, []byte("my_secret"))
 	t.Log(to)

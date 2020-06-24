@@ -23,8 +23,10 @@ func main() {
 			}
 			return true
 		},
-		Realm:     "test-realm",
-		SecretKey: []byte("my_secret"),
+		Realm: "test-realm",
+		SecretFunc: func(claims interface{}, method token.SigningMethod) (interface{}, error) {
+			return []byte("my_secret"), nil
+		},
 	})
 	//start all server you register in server/schemas.
 	if err := chassis.Init(); err != nil {
@@ -48,7 +50,7 @@ func (r *HelloAuth) Login(b *rf.Context) {
 		return
 	}
 	if u.Name == "admin" && u.Pwd == "admin" {
-		to, err := token.DefaultManager.GetToken(map[string]interface{}{
+		to, err := token.DefaultManager.Sign(map[string]interface{}{
 			"user": u.Name,
 			"pwd":  u.Pwd,
 		}, []byte("my_secret"))

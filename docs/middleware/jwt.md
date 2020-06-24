@@ -15,7 +15,7 @@ func (r *HelloAuth) Login(b *rf.Context) {
 		return
 	}
 	if u.Name == "admin" && u.Pwd == "admin" {
-		to, err := token.DefaultManager.GetToken(map[string]interface{}{
+		to, err := token.DefaultManager.Sign(map[string]interface{}{
 			"user": u.Name,
 			"pwd":  u.Pwd,
 		}, []byte("my_secret"))
@@ -40,7 +40,9 @@ func (r *HelloAuth) Login(b *rf.Context) {
 			return true
 		},
 		Realm: "test-realm",
-		SecretKey: []byte("my_secret"),
+	    SecretFunc: func(claims interface{}, method token.SigningMethod) (interface{}, error) {
+                   			return []byte("my_secret"), nil
+                   		},
 	})
 ```
 更改配置文件, 将basicAuth handler添加到chain中，注意作为认证鉴权，一般说的都是服务端功能，所以要放到provider chain中
