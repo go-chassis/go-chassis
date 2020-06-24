@@ -25,8 +25,8 @@ import (
 	"encoding/pem"
 )
 
-//GenSecretKey generate a secret key, now only support private key as secret key
-func GenSecretKey(bits int) ([]byte, error) {
+//GenRSAPrivateKey generate a secret key, now only support private key as secret key
+func GenRSAPrivateKey(bits int) ([]byte, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
 		return nil, err
@@ -42,5 +42,42 @@ func GenSecretKey(bits int) ([]byte, error) {
 		return nil, err
 	}
 	b := bufferPrivate.Bytes()
+	return b, nil
+}
+func GenerateRSAKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
+	private, err := rsa.GenerateKey(rand.Reader, bits)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	public := &private.PublicKey
+	return private, public, nil
+}
+func GetRSAPrivate(privateKey *rsa.PrivateKey) ([]byte, error) {
+	k := x509.MarshalPKCS1PrivateKey(privateKey)
+	block := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: k,
+	}
+	bufferPrivate := new(bytes.Buffer)
+	err := pem.Encode(bufferPrivate, block)
+	if err != nil {
+		return nil, err
+	}
+	b := bufferPrivate.Bytes()
+	return b, nil
+}
+func GetPublicKey(publicKey *rsa.PublicKey) ([]byte, error) {
+	k, err := x509.MarshalPKIXPublicKey(publicKey)
+	if err != nil {
+		return nil, err
+	}
+
+	block := &pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: k,
+	}
+
+	b := pem.EncodeToMemory(block)
 	return b, nil
 }

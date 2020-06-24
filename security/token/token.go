@@ -19,7 +19,6 @@ package token
 
 import (
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-mesh/openlogging"
 	"time"
@@ -40,26 +39,32 @@ const (
 	JWTClaimsSub = "sub"
 )
 
-//GetToken gen token
-func GetToken(claims map[string]interface{}, secret []byte, opts ...Option) (string, error) {
-	return DefaultManager.GetToken(claims, secret, opts...)
+// SecretFunc is a callback function to supply
+// the key for verification.  The function receives the parsed,
+// but unverified claims in Token.  This allows you to use properties in the
+// claims of the token (such as `username`) to identify which key to use.
+type SecretFunc func(claims interface{}, method SigningMethod) (interface{}, error)
+
+//Sign gen token
+func Sign(claims map[string]interface{}, secret interface{}, opts ...Option) (string, error) {
+	return DefaultManager.Sign(claims, secret, opts...)
 }
 
-//ParseToken return claims
-func ParseToken(tokenString string, secret []byte) (map[string]interface{}, error) {
-	return DefaultManager.ParseToken(tokenString, secret)
+//Verify return claims
+func Verify(tokenString string, f SecretFunc, opts ...Option) (map[string]interface{}, error) {
+	return DefaultManager.Verify(tokenString, f, opts...)
 }
 
 //Manager manages token
 type Manager interface {
-	GetToken(claims map[string]interface{}, secret []byte, option ...Option) (string, error)
-	ParseToken(tokenString string, secret []byte) (map[string]interface{}, error)
+	Sign(claims map[string]interface{}, secret interface{}, option ...Option) (string, error)
+	Verify(tokenString string, f SecretFunc, opts ...Option) (map[string]interface{}, error)
 }
 type jwtTokenManager struct {
 }
 
-//GetToken gen token
-func (f *jwtTokenManager) GetToken(claims map[string]interface{}, secret []byte, opts ...Option) (string, error) {
+//Sign signature a token
+func (j *jwtTokenManager) Sign(claims map[string]interface{}, secret interface{}, opts ...Option) (string, error) {
 	o := &Options{}
 	for _, opt := range opts {
 		opt(o)
@@ -73,22 +78,44 @@ func (f *jwtTokenManager) GetToken(claims map[string]interface{}, secret []byte,
 		}
 		c[JWTClaimsExp] = time.Now().Add(d).Unix()
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
-
-	return token.SignedString(secret)
+	var to *jwt.Token
+	switch o.SigningMethod {
+	case RS256:
+		to = jwt.NewWithClaims(jwt.SigningMethodRS256, c)
+		return to.SignedString(secret)
+	case RS512:
+		to = jwt.NewWithClaims(jwt.SigningMethodRS512, c)
+		return to.SignedString(secret)
+	case HS256:
+		to = jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+		return to.SignedString(secret)
+	default:
+		to = jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+		return to.SignedString(secret)
+	}
 
 }
 
-//ParseToken return claims
-func (f *jwtTokenManager) ParseToken(tokenString string, secret []byte) (map[string]interface{}, error) {
+//Verify return claims
+func (j *jwtTokenManager) Verify(tokenString string, f SecretFunc, opts ...Option) (map[string]interface{}, error) {
+	o := &Options{}
+	for _, opt := range opts {
+		opt(o)
+	}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		sm := HS256
+		if m, ok := token.Method.(*jwt.SigningMethodHMAC); ok {
+			if m.Name == "HS256" {
+				sm = HS256
+			} else if m.Name == "RS512" {
+				sm = RS512
+			} else if m.Name == "RS256" {
+				sm = RS256
+			}
 		}
-		return secret, nil
+		return f(token.Claims, sm)
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims["foo"], claims["nbf"])
 		return claims, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {

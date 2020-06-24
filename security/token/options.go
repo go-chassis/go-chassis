@@ -17,10 +17,19 @@
 
 package token
 
+type SigningMethod int
+
+//const
+const (
+	RS256 SigningMethod = 1
+	RS512 SigningMethod = 2
+	HS256 SigningMethod = 3
+)
+
 //Options is options
 type Options struct {
-	Expire  string
-	Subject string
+	Expire        string
+	SigningMethod SigningMethod
 }
 
 //Option is option
@@ -31,5 +40,12 @@ type Option func(options *Options)
 func WithExpTime(exp string) Option {
 	return func(options *Options) {
 		options.Expire = exp
+	}
+}
+
+//WithSigningMethod specify the sign method
+func WithSigningMethod(m SigningMethod) Option {
+	return func(options *Options) {
+		options.SigningMethod = m
 	}
 }

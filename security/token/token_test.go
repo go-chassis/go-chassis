@@ -25,18 +25,20 @@ import (
 )
 
 func TestJWTTokenManager_GetToken(t *testing.T) {
-	s, err := secret.GenSecretKey(4096)
+	privateKey, public, err := secret.GenerateRSAKeyPair(4096)
 	assert.NoError(t, err)
-	to, err := token.DefaultManager.GetToken(map[string]interface{}{
+	to, err := token.Sign(map[string]interface{}{
 		"username": "peter",
-	}, s)
+	}, privateKey, token.WithSigningMethod(token.RS512))
 	assert.NoError(t, err)
 	t.Log(to)
-	m, err := token.DefaultManager.ParseToken(to, s)
+	m, err := token.Verify(to, func(claims interface{}, method token.SigningMethod) (interface{}, error) {
+		return public, nil
+	})
 	assert.NoError(t, err)
 	assert.Equal(t, "peter", m["username"])
 	t.Run("with exp", func(t *testing.T) {
-		to, err := token.DefaultManager.GetToken(map[string]interface{}{
+		to, err := token.Sign(map[string]interface{}{
 			"username": "peter",
 		}, []byte("my secret"), token.WithExpTime("1s"))
 		assert.NoError(t, err)

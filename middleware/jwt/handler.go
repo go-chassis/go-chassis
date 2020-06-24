@@ -65,7 +65,7 @@ func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invo
 			return
 		}
 		to := s[1]
-		payload, err := token.DefaultManager.ParseToken(to, auth.SecretKey)
+		payload, err := token.DefaultManager.Verify(to, auth.SecretFunc)
 		if err != nil {
 			openlogging.Error("can not parse jwt:" + err.Error())
 			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
