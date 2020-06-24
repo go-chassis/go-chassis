@@ -25,7 +25,7 @@ import (
 )
 
 func TestJWTTokenManager_GetToken(t *testing.T) {
-	privateKey, public, err := secret.GenerateRSAKeyPair(4096)
+	privateKey, public, err := secret.GenRSAKeyPair(4096)
 	assert.NoError(t, err)
 	to, err := token.Sign(map[string]interface{}{
 		"username": "peter",
