@@ -1,8 +1,6 @@
 package provider_test
 
 import (
-	_ "github.com/go-chassis/go-chassis/initiator"
-
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/lager"

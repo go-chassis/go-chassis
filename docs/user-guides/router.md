@@ -1,9 +1,12 @@
 # Router
 ## 概述
 
-路由策略可应用于AB测试场景和新版本的灰度升级，主要通过路由规则来根据请求的来源、目标服务、Http Header及权重将服务访问请求分发到不同版本的微服务实例中。
+路由规则可应用于AB测试，金丝雀发布，甚至是蓝绿发布等场景，
+主要通过路由规则来根据请求的来源、目标服务、Http Header及权重将服务访问请求分发到不同版本的微服务实例中。
 
-比如通过路由管理你可以简单的实现新老版本服务切换
+go chassis遵循路由规则进行流量管理，用户也可以通过定制[插件](../dev-guides/router.md)来控制路由规则的来源。
+默认路由来自于[archaius](https://github.com/go-chassis/go-archaius)运行时。
+通过定制你甚至可以将它对接到Istio
 
 ## 配置
 
@@ -156,13 +159,15 @@ match:
 
 **headers**
 > *(optional, string)* 匹配headers。
-如果配置了多条Header 字段校验规则，则需要同时满足所有规则才可完成路由规则匹配。
-匹配方式有以下几种：精确匹配（exact）：header必须等于配置; 正则（regex）：按正则匹配header内容;  
-不等于（noEqu）：header不等于配置值;  
-大于等于（noLess）： header不小于配置值;  
-小于等于（noGreater）：header不大于配置值;   
-大于（greater）：header大于配置值;    
-小于（less）： header小于配置值
+如果配置了多条Header 字段校验规则，则需要同时满足所有规则才可完成路由规则匹配。用户可以自定义匹配方式，也可以使用框架默认匹配方式。
+默认的匹配方式有以下几种：
+ - 精确匹配（exact）：header必须等于配置; 
+ - 正则（regex）：按正则匹配header内容;  
+ - 不等于（noEqu）：header不等于配置值;  
+ - 大于等于（noLess）： header不小于配置值;  
+ - 小于等于（noGreater）：header不大于配置值;   
+ - 大于（greater）：header大于配置值;    
+ - 小于（less）： header小于配置值
 
 
 示例：
@@ -177,7 +182,29 @@ match:
 
 仅适用于来自vmall，header中的“cookie”字段包含“user=jason"的服务访问请求。
 
-#### 分发规则
+##### 自定义匹配方式
+用户可以自行定义路由匹配方式，实现业务相关的匹配算法。 如下为一个range算子的例子：
+- 实现算子
+```
+import github.com/go-chassis/go-chassis/core/match
+
+func Range(value, expression string) bool {
+    #check value is satisfy expression or not
+}
+
+func init() {
+    match.Install("range", Range)
+}
+```
+- 在配置中使用
+```yaml
+match:
+  source: vmall
+  headers:
+    cookie:
+      range: "0-100"
+```
+##### 分发规则
 
 每个路由规则中都会定义一个或多个具有权重标识的后端服务，这些后端服务对应于用标签标识的不同版本的目标服务的实例。如果某个标签对应的注册服务实例有多个，则指向该标签版本的服务请求会按照用户配置的负责均衡策略进行分发，默认会采用round-robin策略。
 

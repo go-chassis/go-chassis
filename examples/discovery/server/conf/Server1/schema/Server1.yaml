@@ -16,7 +16,7 @@ paths:
           description: ""
   /metrics:
     get:
-      operationId: HTTPHandleFunc
+      operationId: PrometheusHandleFunc
   /sayhello/{userid}:
     get:
       operationId: Sayhello

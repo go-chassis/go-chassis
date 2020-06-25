@@ -30,8 +30,8 @@ import (
 	// prometheus reporter for circuit breaker metrics
 	_ "github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/reporter"
 	// aes package handles security related plugins
-	_ "github.com/go-chassis/go-chassis/security/plugins/aes"
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/aes"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 	//config servers
 	_ "github.com/go-chassis/go-archaius/source/remote"
 	_ "github.com/go-chassis/go-archaius/source/remote/kie"
@@ -61,6 +61,34 @@ func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
+//HajackSignal set signals that want to hajack.
+func HajackSignal(sigs ...os.Signal) {
+	goChassis.sigs = sigs
+}
+
+//InstalPreShutdown instal what you want to achieve before graceful shutdown
+func InstalPreShutdown(name string, f func(os.Signal)) {
+	// lazy init
+	if goChassis.preShutDownFuncs == nil {
+		goChassis.preShutDownFuncs = make(map[string]func(os.Signal))
+	}
+	goChassis.preShutDownFuncs[name] = f
+}
+
+//InstalPostShutdown instal what you want to achieve after graceful shutdown
+func InstalPostShutdown(name string, f func(os.Signal)) {
+	// lazy init
+	if goChassis.postShutDownFuncs == nil {
+		goChassis.postShutDownFuncs = make(map[string]func(os.Signal))
+	}
+	goChassis.postShutDownFuncs[name] = f
+}
+
+//HajackGracefulShutdown reset GracefulShutdown
+func HajackGracefulShutdown(f func(os.Signal)) {
+	goChassis.hajackGracefulShutdown = f
+}
+
 //Run bring up the service,it waits for os signal,and shutdown gracefully
 //before all protocol server start successfully, it may return error.
 func Run() error {
@@ -76,21 +104,44 @@ func Run() error {
 			return err
 		}
 	}
+
 	waitingSignal()
 	return nil
 }
 
 func waitingSignal() {
-	//Graceful shutdown
 	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
+	if len(goChassis.sigs) > 0 {
+		signal.Notify(c, goChassis.sigs...)
+	} else {
+		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
+	}
+
+	var s os.Signal
 	select {
-	case s := <-c:
+	case s = <-c:
 		openlogging.Info("got os signal " + s.String())
 	case err := <-server.ErrRuntime:
 		openlogging.Info("got server error " + err.Error())
 	}
 
+	if goChassis.preShutDownFuncs != nil {
+		for k, v := range goChassis.preShutDownFuncs {
+			openlogging.GetLogger().Infof("exec pre shutdownfuncs %s", k)
+			v(s)
+		}
+	}
+	goChassis.hajackGracefulShutdown(s)
+	if goChassis.postShutDownFuncs != nil {
+		for k, v := range goChassis.postShutDownFuncs {
+			openlogging.GetLogger().Infof("exec post shutdownfuncs %s", k)
+			v(s)
+		}
+	}
+}
+
+//GracefulShutdown graceful shut down api
+func GracefulShutdown(s os.Signal) {
 	if !config.GetRegistratorDisable() {
 		registry.HBService.Stop()
 		openlogging.Info("unregister servers ...")
@@ -132,6 +183,7 @@ func Init() error {
 			common.DefaultKey: defaultChain,
 		}
 	}
+	goChassis.hajackGracefulShutdown = GracefulShutdown
 	if err := goChassis.initialize(); err != nil {
 		log.Println("init chassis fail:", err)
 		return err

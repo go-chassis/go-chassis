@@ -1,34 +1,25 @@
 package eventlistener_test
 
 import (
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/event"
+	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"os"
-	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/eventlistener"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
-
 	"github.com/stretchr/testify/assert"
 )
 
-func preTest() {
-	os.Setenv(fileutil.ChassisHome,
-		filepath.Join(os.Getenv("GOPATH"),
-			"src",
-			"github.com",
-			"go-chassis",
-			"go-chassis",
-			"examples",
-			"discovery",
-			"server"))
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel: "INFO",
+	})
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.loadbalance.strategy.name", "SessionStickiness")
+	config.ReadHystrixFromArchaius()
 }
-
 func TestCircuitBreakerEventListener_Event(t *testing.T) {
-	preTest()
-	config.Init()
 	t.Log("Test circuit_breaker_event_listener.go")
 	eventlistener.Init()
 	eventListen := &eventlistener.CircuitBreakerEventListener{}
@@ -44,8 +35,6 @@ func TestCircuitBreakerEventListener_Event(t *testing.T) {
 
 }
 func TestGetNames(t *testing.T) {
-	preTest()
-	config.Init()
 	t.Log("verifying configuration keys by GetNames method")
 	sourceName, serviceName := eventlistener.GetNames("cse.isolation.Web.Consumer.carts.timeout.enabled")
 	assert.Equal(t, "Web", sourceName)
@@ -70,10 +59,4 @@ func TestGetNames(t *testing.T) {
 	assert.Equal(t, "carts.interface.get", serviceName)
 	n = eventlistener.GetCircuitName(sourceName, serviceName)
 	assert.Equal(t, "Consumer.carts.interface.get", n)
-}
-func init() {
-	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
-	})
 }

@@ -6,7 +6,7 @@ go chassis提供高级别通用中间件抽象层，其中的一个抽象是Basi
 ```go
 	basicauth.Use(&basicauth.BasicAuth{
 		Realm: "test-realm",
-		Authorize: func(user, password string) error {
+		Authenticate: func(user, password string) error {
 		    //check your user name and password
 		    return nil
 		},

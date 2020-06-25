@@ -22,10 +22,6 @@ const (
 //including local file,memory and config server
 func MergeLocalAndRemoteConfig() (map[string][]*config.RouteRule, error) {
 	destinations := make(map[string][]*config.RouteRule, 0)
-	//set config from file first
-	for k, v := range config.OldRouterDefinition.Destinations {
-		destinations[k] = v
-	}
 	//then get config from archaius and simply overwrite rule from file
 	ruleV1Map := make(map[string]interface{})
 	ruleV2Map := make(map[string]interface{})
@@ -84,6 +80,7 @@ func prepareRule(configMap map[string]interface{}, ruleV1Map map[string]interfac
 			continue
 		}
 		if strings.HasPrefix(k, DarkLaunchPrefixV2) {
+			openlogging.Debug("get one route rule:" + k)
 			ruleV2Map[k] = v
 			continue
 		}

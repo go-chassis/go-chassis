@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-chassis/server/restful/api"
 	"net"
 	"net/http"
 	"os"
@@ -20,7 +21,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/profile"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
@@ -64,7 +64,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 			metricPath = "/" + metricPath
 		}
 		openlogging.Info("Enabled metrics API on " + metricPath)
-		ws.Route(ws.GET(metricPath).To(metrics.HTTPHandleFunc))
+		ws.Route(ws.GET(metricPath).To(api.PrometheusHandleFunc))
 	}
 	addProfileRoutes(ws)
 	return &restfulServer{
@@ -284,12 +284,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {
 		return errors.New("schema path is empty")
 	}
-	if err := os.RemoveAll(path); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
-	if err := os.MkdirAll(path, 0760); err != nil {
-		return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
-	}
+
 	swagger.LogInfo = func(format string, v ...interface{}) {
 		openlogging.GetLogger().Infof(format, v...)
 	}
@@ -305,6 +300,12 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema {
 		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 	} else {
+		if err := os.RemoveAll(path); err != nil {
+			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+		}
+		if err := os.MkdirAll(path, 0600); err != nil {
+			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+		}
 		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
 	}
 	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)

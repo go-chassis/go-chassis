@@ -129,7 +129,6 @@ type Protocol struct {
 // MicroserviceCfg microservice.yaml 配置项
 type MicroserviceCfg struct {
 	AppID              string           `yaml:"APPLICATION_ID"`
-	Provider           string           `yaml:"Provider"`
 	ServiceDescription MicServiceStruct `yaml:"service_description"`
 }
 
@@ -144,6 +143,7 @@ type MicServiceStruct struct {
 	InstanceProperties map[string]string   `yaml:"instance_properties"`
 	ServicePaths       []ServicePathStruct `yaml:"paths"`
 	ServicesStatus     string              `yaml:"status"`
+	Schemas            []string            `yaml:"schemas"`
 }
 
 // ServicePathStruct having info about service path and property

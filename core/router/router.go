@@ -4,8 +4,7 @@ package router
 import (
 	"errors"
 	"github.com/go-chassis/go-chassis/core/config"
-	"regexp"
-	"strconv"
+	mr "github.com/go-chassis/go-chassis/core/match"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
@@ -33,8 +32,8 @@ var routerServices = make(map[string]func() (Router, error))
 // DefaultRouter is current router implementation
 var DefaultRouter Router
 
-// InstallRouterService install router service for developer
-func InstallRouterService(name string, f func() (Router, error)) {
+// InstallRouterPlugin install router plugin
+func InstallRouterPlugin(name string, f func() (Router, error)) {
 	openlogging.Info("install route rule plugin: " + name)
 	routerServices[name] = f
 }
@@ -135,61 +134,17 @@ func SourceMatch(match *config.Match, headers map[string]string, source *registr
 // isMatch check the route rule
 func isMatch(headers map[string]string, k string, v map[string]string) bool {
 	header := valueToUpper(v["caseInsensitive"], headers[k])
-
-	if regex, ok := v["regex"]; ok {
-		reg := regexp.MustCompilePOSIX(valueToUpper(v["caseInsensitive"], regex))
-		if !reg.Match([]byte(header)) {
-			return false
+	for op, exp := range v {
+		if op == "caseInsensitive" {
+			continue
 		}
-		return true
-
-	}
-	if exact, ok := v["exact"]; ok {
-		if valueToUpper(v["caseInsensitive"], exact) != header {
-			return false
-		}
-		return true
-	}
-	if noEqu, ok := v["noEqu"]; ok {
-		if valueToUpper(v["caseInsensitive"], noEqu) == header {
-			return false
-		}
-		return true
-	}
-
-	headerInt, err := strconv.Atoi(header)
-	if err != nil {
-		return false
-	}
-	if noLess, ok := v["noLess"]; ok {
-		head, _ := strconv.Atoi(noLess)
-		if head > headerInt {
-			return false
-		}
-		return true
-	}
-	if noGreater, ok := v["noGreater"]; ok {
-		head, _ := strconv.Atoi(noGreater)
-		if head < headerInt {
-			return false
-		}
-		return true
-	}
-	if greater, ok := v["greater"]; ok {
-		head, _ := strconv.Atoi(greater)
-		if head >= headerInt {
-			return false
-		}
-		return true
-	}
-	if less, ok := v["less"]; ok {
-		head, _ := strconv.Atoi(less)
-		if head <= headerInt {
+		if ok, err := mr.Match(op, header, valueToUpper(v["caseInsensitive"], exp)); !ok || err != nil {
 			return false
 		}
 	}
 	return true
 }
+
 func valueToUpper(b, value string) string {
 	if b == common.TRUE {
 		value = strings.ToUpper(value)
@@ -200,6 +155,9 @@ func valueToUpper(b, value string) string {
 
 // SortRules sort route rules
 func SortRules(name string) []*config.RouteRule {
+	if DefaultRouter == nil {
+		openlogging.Debug("router not available")
+	}
 	slice := DefaultRouter.FetchRouteRuleByServiceName(name)
 	return QuickSort(0, len(slice)-1, slice)
 }

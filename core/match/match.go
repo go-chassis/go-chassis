@@ -24,25 +24,100 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
-	"regexp"
 	"strings"
 	"sync"
 )
 
 var matches sync.Map
 
-//Method decide value Match expression oor not
-type Method func(value, expression string) bool
+//Operate decide value Match expression or not
+type Operate func(value, expression string) bool
 
-var matchPlugin = map[string]Method{
-	"exact":    exact,
-	"contains": contains,
-	"regex":    regex,
+var operatorPlugin = map[string]Operate{
+	"exact":     exact,
+	"contains":  contains,
+	"regex":     regex,
+	"noEqu":     noEqu,
+	"less":      less,
+	"noLess":    noLess,
+	"greater":   greater,
+	"noGreater": noGreater,
 }
 
 //Install a strategy
-func Install(name string, m Method) {
-	matchPlugin[name] = m
+func Install(name string, m Operate) {
+	operatorPlugin[name] = m
+}
+
+//Mark mark an invocation with matchName by match policy
+func Mark(inv *invocation.Invocation) {
+	matchName := ""
+	matches.Range(func(k, v interface{}) bool {
+		mp, ok := v.(*config.MatchPolicy)
+		if ok {
+			if isMatch(inv, mp) {
+				if name, ok := k.(string); ok {
+					matchName = name
+					return false
+				}
+			}
+		}
+		return true
+	})
+	if matchName != "" {
+		//openlogging.GetLogger().Infof("the invocation math policy %s", matchName)
+		inv.Mark(matchName)
+	}
+}
+
+func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
+	if !headsMatch(inv.Headers(), matchPolicy.Headers) {
+		return false
+	}
+
+	req, err := httputil.HTTPRequest(inv)
+	if err != nil {
+		openlogging.Warn("get request error: " + err.Error())
+		return false
+	}
+
+	if len(matchPolicy.APIPaths) != 0 && !apiMatch(req.URL.Path, matchPolicy.APIPaths) {
+		return false
+	}
+
+	if matchPolicy.Method != "" && strings.ToUpper(matchPolicy.Method) != req.Method {
+		return false
+	}
+	return true
+}
+
+func apiMatch(apiPath string, apiPolicy map[string]string) bool {
+	if len(apiPolicy) == 0 {
+		return true
+	}
+
+	for strategy, exp := range apiPolicy {
+		if ok, _ := Match(strategy, apiPath, exp); ok {
+			return true
+		}
+	}
+	return false
+}
+
+func headsMatch(headers map[string]string, headPolicy map[string]map[string]string) bool {
+
+	for key, policy := range headPolicy {
+		val := headers[key]
+		if val == "" {
+			return false
+		}
+		for strategy, exp := range policy {
+			if o, err := Match(strategy, val, exp); err != nil || !o {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func mark(inv *invocation.Invocation) {
@@ -117,15 +192,11 @@ func headsMatch(headers map[string]string, headPolicy map[string]map[string]stri
 
 //Match compare value and expression
 func Match(strategy, value, expression string) (bool, error) {
-	f, ok := matchPlugin[strategy]
+	f, ok := operatorPlugin[strategy]
 	if !ok {
 		return false, fmt.Errorf("invalid Match method")
 	}
 	return f(value, expression), nil
-}
-
-func exact(value, express string) bool {
-	return value == express
 }
 
 func contains(value, express string) bool {

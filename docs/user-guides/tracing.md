@@ -22,7 +22,7 @@ it use map to define options, so that developers can freely custom options for t
 
 you must import tracing plugin pkg in main.go, below use zipkin for tracing
 ```go
-import _ "github.com/go-chassis/go-chassis-plugins/tracing/zipkin"
+import _ "github.com/go-chassis/go-chassis-extension/tracing/zipkin"
 ```
 
 this config means send data to zipkin, tracing-provider must to be added in handler chain

@@ -109,7 +109,7 @@ service_description:
 ```
 5.In main.go import grpc server to enable grpc protocol and start go chassis
 ```go
-import _ "github.com/go-chassis/go-chassis-protocol/server/grpc"
+import _ "github.com/go-chassis/go-chassis-extension/grpc/server"
 ```
 
 ```go
@@ -148,7 +148,7 @@ service_description:
 
 3.5.In main.go import grpc client to enable grpc protocol.
 ```go
-import _ "github.com/go-chassis/go-chassis-protocol/client/grpc"
+import _ "github.com/go-chassis/go-chassis-extension/grpc/client"
 ```
 
 Use invoker to call remote function

@@ -1,20 +1,17 @@
 # Rate limiting
 ## 概述
 
-用户可以通过配置限流策略限制provider端或consumer端的请求频率，使每秒请求数限制在最大请求量的大小。其中provider端的配置可限制接收处理请求的频率，consumer端的配置可限制发往指定微服务的请求的频率。
+用户可以通过配置限流策略限制provider端的请求频率，使每秒请求数限制在最大请求量的大小。配置可限制接收处理请求的频率
 
 ## 配置
 
-限流配置在rate_limiting.yaml中，同时需要在chassis.yaml的handler chain中添加handler。其中qps.limit.\[service\] 是指限制从service 发来的请求的处理频率，若该项未配置则global.limit生效。Consumer端不支持global全局配置，其他配置项与Provider端一致。
+限流配置在rate_limiting.yaml中，同时需要在chassis.yaml的handler chain中添加handler。
 
-**flowcontrol.qps.enabled**
+**cse.flowcontrol.Provider.qps.enabled**
 > *(optional, bool)* 是否开启限流，默认true
 
-**flowcontrol.qps.global.limit**
+**cse.flowcontrol.Provider.qps.global.limit**
 > *(optional, int)* 每秒允许的请求数，默认2147483647max int）
-
-**flowcontrol.qps.limit.{service}**
-> *(optional, string)* 针对某微服务每秒允许的请求数 ，默认2147483647max int）
 
 引入middleware
 ```go
@@ -39,30 +36,5 @@ cse:
       qps:
         enabled: true  # enable rate limiting or not
         global:
-          limit: 100   # default limit of provider
-        limit:
-          Client: 100  # rate limit for request from a consumer
+          limit: 100 
 ```
-
-#### Consumer示例
-
-在consumer端需要添加ratelimiter-consumer这个handler。同时在rate\_limiting.yaml中配置具体的请求数。
-
-```yaml
-cse:
-  handler:
-    chain:
-      Consumer:
-        default: ratelimiter-consumer
-```
-
-```yaml
-cse:
-  flowcontrol:
-    Consumer:
-      qps:
-        enabled: true  # enable rate limiting or not
-        limit:
-          Server: 100  # rate limit for request to a provider
-```
-

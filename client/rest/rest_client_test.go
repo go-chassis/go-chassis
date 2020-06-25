@@ -2,15 +2,13 @@ package rest_test
 
 import (
 	"context"
+	"github.com/go-chassis/go-archaius"
 	"log"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/lager"
 	_ "github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/server"
@@ -32,19 +30,15 @@ import (
 var addrRest = "127.0.0.1:8039"
 
 func initEnv() {
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	log.Println(os.Getenv("CHASSIS_HOME"))
-
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
-	config.Init()
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.noRefreshSchema", true)
+	config.ReadGlobalConfigFromArchaius()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition = &model.GlobalCfg{}
 }
 
 func TestNewRestClient_Call(t *testing.T) {
@@ -59,7 +53,6 @@ func TestNewRestClient_Call(t *testing.T) {
 	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
 	strategyRule := make(map[string]string)
 	strategyRule["sessionTimeoutInSeconds"] = "30"
-	config.GetLoadBalancing().Strategy = strategyRule
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)

@@ -7,33 +7,17 @@ import (
 	"github.com/go-chassis/go-chassis/core/registry"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
 	"testing"
 )
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestServicecenter_Heartbeat(t *testing.T) {
-	goModuleValue := os.Getenv("GO111MODULE")
-	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" || goModuleValue == "auto" {
-		rootDir, _ = os.Getwd()
-		rootDir = filepath.Join(rootDir, "..", "..")
-	}
-
-	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
-	t.Log("Test servercenter.go")
-	err := config.Init()
-	if err != nil {
-		t.Error(err.Error())
-	}
 	runtime.Init()
 	registry.Enable()
 	registry.DoRegister()
@@ -72,14 +56,6 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 }
 
 func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
-	goModuleValue := os.Getenv("GO111MODULE")
-	rootDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis")
-	if goModuleValue == "on" || goModuleValue == "auto" {
-		rootDir, _ = os.Getwd()
-		rootDir = filepath.Join(rootDir, "..", "..")
-	}
-	os.Setenv("CHASSIS_HOME", filepath.Join(rootDir, "examples", "discovery", "server"))
-	t.Log("Test servercenter.go")
 	config.Init()
 	var ins = map[string]string{"type": "test"}
 	config.MicroserviceDefinition.ServiceDescription.InstanceProperties = ins

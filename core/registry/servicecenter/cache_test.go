@@ -1,19 +1,19 @@
 package servicecenter_test
 
 import (
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-chassis/core/config/model"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	_ "github.com/go-chassis/go-chassis/security/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/util/rand"
@@ -24,13 +24,18 @@ func init() {
 		LoggerLevel:   "INFO",
 		RollingPolicy: "size",
 	})
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.service.registry.address", "http://127.0.0.1:30100")
+	archaius.Set("cse.service.registry.autoSchemaIndex", true)
+	config.ReadGlobalConfigFromArchaius()
+
+	archaius.Set("service_description.name", "Server")
+	archaius.Set("service_description.hostname", "localhost")
+	config.MicroserviceDefinition = &model.MicroserviceCfg{}
+	archaius.UnmarshalConfig(config.MicroserviceDefinition)
+	os.Setenv("HTTP_DEBUG", "1")
 }
 func TestCacheManager_AutoSync(t *testing.T) {
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	t.Log("Test cache.go")
-
-	config.Init()
 	registry.Enable()
 	registry.DoRegister()
 	t.Log("持有id", runtime.ServiceID)
@@ -147,10 +152,7 @@ func TestCacheManager_MakeSchemaIndex(t *testing.T) {
 		3. Start a microservice
 		4. Check the status of Cache
 	*/
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	config.Init()
-	archaius.Set("cse.service.registry.autoSchemaIndex", true)
+
 	config.GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.RefreshInterval = "1"
 	registry.Enable()
 	registry.DoRegister()

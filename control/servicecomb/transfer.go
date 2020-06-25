@@ -63,6 +63,7 @@ func saveEachLB(k string, raw model.LoadBalancingSpec) string { // return update
 		SessionTimeoutInSeconds: raw.SessionStickinessRule.SessionTimeoutInSeconds,
 		SuccessiveFailedTimes:   raw.SessionStickinessRule.SuccessiveFailedTimes,
 	}
+	openlogging.Info(fmt.Sprintf("save lb config [%s] [%v]", k, raw))
 	setDefaultLBValue(&c)
 	LBConfigCache.Set(k, c, 0)
 	return k

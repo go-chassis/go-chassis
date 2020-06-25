@@ -2,8 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/go-chassis/go-archaius"
@@ -14,7 +12,6 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	"github.com/go-mesh/openlogging"
-	"gopkg.in/yaml.v2"
 )
 
 // GlobalDefinition is having the information about region, load balancing, service center, config server,
@@ -28,10 +25,6 @@ var MicroserviceDefinition *model.MicroserviceCfg
 
 //MonitorCfgDef has monitor info, including zipkin and apm.
 var MonitorCfgDef *model.MonitorCfg
-
-//OldRouterDefinition is route rule config
-//Deprecated
-var OldRouterDefinition *RouterConfig
 
 //HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystrixConfig *model.HystrixConfigWrapper
@@ -177,13 +170,11 @@ func ReadGlobalConfigFromArchaius() error {
 func ReadLBFromArchaius() error {
 	lbMutex.Lock()
 	defer lbMutex.Unlock()
-	lbDef := model.LBWrapper{}
-	err := archaius.UnmarshalConfig(&lbDef)
+	lbConfig = &model.LBWrapper{}
+	err := archaius.UnmarshalConfig(lbConfig)
 	if err != nil {
 		return err
 	}
-	lbConfig = &lbDef
-
 	return nil
 }
 
@@ -198,105 +189,22 @@ func ReadMonitorFromArchaius() error {
 	return nil
 }
 
-//ReadMonitorFromFile read monitor config from local file  conf/monitoring.yaml
-func ReadMonitorFromFile() error {
-	defPath := fileutil.MonitoringConfigPath()
-	data, err := ioutil.ReadFile(defPath)
-	if err != nil {
-		openlogging.Error("Get monitor config from file failed. " + err.Error())
-		return err
-	}
-	MonitorCfgDef = &model.MonitorCfg{}
-	err = yaml.Unmarshal(data, &MonitorCfgDef)
-	if err != nil {
-		openlogging.Error("Get monitor config from file failed. " + err.Error())
-		return err
-	}
-	return nil
-}
-
-type pathError struct {
-	Path string
-	Err  error
-}
-
-func (e *pathError) Error() string { return e.Path + ": " + e.Err.Error() }
-
-// parseRouterConfig is unmarshal the router configuration file(router.yaml)
-func parseRouterConfig(file string) error {
-	OldRouterDefinition = &RouterConfig{}
-	err := unmarshalYamlFile(file, OldRouterDefinition)
-	if err != nil && !os.IsNotExist(err) {
-		return &pathError{Path: file, Err: err}
-	}
-	return err
-}
-
-func unmarshalYamlFile(file string, target interface{}) error {
-	content, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-	return yaml.Unmarshal(content, target)
-}
-
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
 func ReadHystrixFromArchaius() error {
 	cbMutex.RLock()
 	defer cbMutex.RUnlock()
-	hystrixCnf := model.HystrixConfigWrapper{}
-	err := archaius.UnmarshalConfig(&hystrixCnf)
+	HystrixConfig = &model.HystrixConfigWrapper{}
+	err := archaius.UnmarshalConfig(&HystrixConfig)
 	if err != nil {
 		return err
 	}
-	HystrixConfig = &hystrixCnf
 	return nil
 }
 
-// readMicroServiceSpecFiles read micro service configuration file
+// readMicroServiceSpecFiles read micro service configuration file by archaius
 func readMicroServiceSpecFiles() error {
 	MicroserviceDefinition = &model.MicroserviceCfg{}
-	//find only one microservice yaml
-	microserviceNames := schema.GetMicroserviceNames()
-	defPath := fileutil.MicroServiceConfigPath()
-	data, err := ioutil.ReadFile(defPath)
-	if err != nil {
-		openlogging.GetLogger().Errorf(fmt.Sprintf("WARN: Missing microservice description file: %s", err.Error()))
-		if len(microserviceNames) == 0 {
-			return errors.New("missing microservice description file")
-		}
-		msName := microserviceNames[0]
-		msDefPath := fileutil.MicroserviceDefinition(msName)
-		openlogging.GetLogger().Warnf(fmt.Sprintf("Try to find microservice description file in [%s]", msDefPath))
-		data, err := ioutil.ReadFile(msDefPath)
-		if err != nil {
-			return fmt.Errorf("missing microservice description file: %s", err.Error())
-		}
-		err = ReadMicroserviceConfigFromBytes(data)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-	return ReadMicroserviceConfigFromBytes(data)
-}
-
-// ReadMicroserviceConfigFromBytes read micro service configurations from bytes
-func ReadMicroserviceConfigFromBytes(data []byte) error {
-	microserviceDef := model.MicroserviceCfg{}
-	err := yaml.Unmarshal([]byte(data), &microserviceDef)
-	if err != nil {
-		return err
-	}
-	if microserviceDef.ServiceDescription.Name == "" {
-		return ErrNoName
-	}
-	if microserviceDef.ServiceDescription.Version == "" {
-		microserviceDef.ServiceDescription.Version = common.DefaultVersion
-	}
-
-	MicroserviceDefinition = &microserviceDef
-	return nil
+	return archaius.UnmarshalConfig(MicroserviceDefinition)
 }
 
 //GetLoadBalancing return lb config
@@ -309,18 +217,14 @@ func GetLoadBalancing() *model.LoadBalancing {
 
 //GetHystrixConfig return cb config
 func GetHystrixConfig() *model.HystrixConfig {
-	return HystrixConfig.HystrixConfig
+	if HystrixConfig != nil {
+		return HystrixConfig.HystrixConfig
+	}
+	return nil
 }
 
 // Init is initialize the configuration directory, archaius, route rule, and schema
 func Init() error {
-	if err := parseRouterConfig(fileutil.RouterConfigPath()); err != nil {
-		if os.IsNotExist(err) {
-			openlogging.GetLogger().Infof("[%s] not exist", fileutil.RouterConfigPath())
-		} else {
-			return err
-		}
-	}
 	err := InitArchaius()
 	if err != nil {
 		return err

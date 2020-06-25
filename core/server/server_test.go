@@ -1,8 +1,8 @@
 package server_test
 
 import (
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/lager"
-	_ "github.com/go-chassis/go-chassis/initiator"
 
 	"errors"
 	"github.com/go-chassis/go-chassis/core/config"
@@ -12,22 +12,25 @@ import (
 	"github.com/go-chassis/go-chassis/core/server"
 	_ "github.com/go-chassis/go-chassis/server/restful"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
-func TestWithOptions(t *testing.T) {
-	t.Log("setting various parameter to Server Option ")
+func init() {
+	lager.Init(&lager.Options{
+		LoggerLevel:   "INFO",
+		RollingPolicy: "size",
+	})
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.noRefreshSchema", true)
+	config.ReadGlobalConfigFromArchaius()
+}
 
+func TestWithOptions(t *testing.T) {
 	var o = new(server.Options)
 	o.ChainName = "fakechain"
-
 	var md = make(map[string]string)
 	md["abc"] = "abc"
-
-	t.Log("setting various parameter to server register Option")
 	var rego = new(server.RegisterOptions)
-
 	c2 := server.WithSchemaID("schemaid")
 	c2(rego)
 	assert.Equal(t, "schemaid", rego.SchemaID)
@@ -39,13 +42,6 @@ const MockError = "movk error"
 // TestSrcMgr Test for server_manager.go
 func TestSrcMgr(t *testing.T) {
 
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-	//config.Init()
-
-	err := config.Init()
-	assert.NoError(t, err)
-
 	testRegistryObj := new(mock.RegistratorMock)
 	registry.DefaultRegistrator = testRegistryObj
 	testRegistryObj.On("UnRegisterMicroServiceInstance", "microServiceID", "microServiceInstanceID").Return(nil)
@@ -55,8 +51,6 @@ func TestSrcMgr(t *testing.T) {
 	defaultChain["default1"] = ""
 
 	var mp model.Protocol
-	//mp.Listen = "127.0.0.1:30100"
-	// use random port
 	mp.Listen = "127.0.0.1:0"
 	mp.Advertise = "127.0.0.1:8080"
 	mp.WorkerNumber = 10
@@ -73,19 +67,14 @@ func TestSrcMgr(t *testing.T) {
 
 	srv := server.GetServers()
 	assert.NotNil(t, srv)
-	//fmt.Println("SSSSSSSSSss",srv)
-	err = server.UnRegistrySelfInstances()
+	err := server.UnRegistrySelfInstances()
 	assert.NoError(t, err)
-	//fmt.Println("err",err)
 	err = server.StartServer()
 	assert.NoError(t, err)
-	//fmt.Println("err@@@@@@@",err)
 
 	sr, err := server.GetServer("rest")
 	assert.NotNil(t, sr)
 	assert.NoError(t, err)
-	//fmt.Println("Sr",sr)
-	//fmt.Println("err",err)
 
 	srv1, err := server.GetServerFunc("abc")
 	assert.Nil(t, srv1)
@@ -96,17 +85,8 @@ func TestSrcMgr(t *testing.T) {
 
 }
 func TestSrcMgrErr(t *testing.T) {
-
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
-	//config.Init()
-
-	err := config.Init()
-	assert.NoError(t, err)
-
 	testRegistryObj := new(mock.RegistratorMock)
 	registry.DefaultRegistrator = testRegistryObj
-	//testRegistryObj.On("UnregisterMicroServiceInstance","microServiceID", "microServiceInstanceID").Return(nil)
 	testRegistryObj.On("Unregister instance", "microServiceID", "microServiceInstanceID").Return(errors.New(MockError))
 
 	defaultChain := make(map[string]string)
@@ -114,11 +94,11 @@ func TestSrcMgrErr(t *testing.T) {
 
 	var mp model.Protocol
 	//mp.Listen="127.0.0.1:30101"
-	mp.Advertise = "127.0.0.1:8081"
+	mp.Advertise = "127.0.0.1:8091"
 	mp.WorkerNumber = 10
 	mp.Transport = "abc"
 
-	var cseproto map[string]model.Protocol = make(map[string]model.Protocol)
+	var cseproto = make(map[string]model.Protocol)
 
 	cseproto["rest"] = mp
 
@@ -129,20 +109,14 @@ func TestSrcMgrErr(t *testing.T) {
 
 	srv := server.GetServers()
 	assert.NotNil(t, srv)
-	//fmt.Println("SSSSSSSSSss",srv)
-	err = server.UnRegistrySelfInstances()
+	err := server.UnRegistrySelfInstances()
 	assert.NoError(t, err)
-	//fmt.Println("err",err)
 	err = server.StartServer()
 	assert.NoError(t, err)
-
-	//fmt.Println("err@@@@@@@",err)
 
 	sr, err := server.GetServer("rest")
 	assert.NotNil(t, sr)
 	assert.NoError(t, err)
-	//fmt.Println("Sr",sr)
-	//fmt.Println("err",err)
 
 	srv1, err := server.GetServerFunc("abc")
 	assert.Nil(t, srv1)
@@ -152,10 +126,4 @@ func TestSrcMgrErr(t *testing.T) {
 	assert.Nil(t, srv2)
 	assert.Error(t, err)
 
-}
-func init() {
-	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
-	})
 }

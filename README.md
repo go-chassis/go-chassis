@@ -1,8 +1,7 @@
 ![](logo.png)
 
-[![Build Status](https://travis-ci.com/go-chassis/go-chassis.svg?branch=master)](https://travis-ci.com/go-chassis/go-chassis)
 [![Coverage Status](https://coveralls.io/repos/github/go-chassis/go-chassis/badge.svg)](https://coveralls.io/github/go-chassis/go-chassis) [![Go Report Card](https://goreportcard.com/badge/github.com/go-chassis/go-chassis)](https://goreportcard.com/report/github.com/go-chassis/go-chassis) [![GoDoc](https://godoc.org/github.com/go-chassis/go-chassis?status.svg)](https://godoc.org/github.com/go-chassis/go-chassis) [![HitCount](http://hits.dwyl.io/go-chassis/go-chassis.svg)](http://hits.dwyl.io/go-chassis/go-chassis)  [![Join Slack](https://img.shields.io/badge/Join-Slack-orange.svg)](https://join.slack.com/t/go-chassis/shared_invite/enQtMzk0MzAyMjEzNzEyLTRjOWE3NzNmN2IzOGZhMzZkZDFjODM1MDc5ZWI0YjcxYjM1ODNkY2RkNmIxZDdlOWI3NmQ0MTg3NzBkNGExZGU)      
-
+[![goproxy.cn](https://goproxy.cn/stats/github.com/go-chassis/go-chassis/badges/download-count.svg)](https://goproxy.cn)
 [中文版README](README_cn.md)
 
 Go-Chassis is a microservice framework for rapid development of microservices in Go
@@ -29,24 +28,22 @@ you can use Istio configurations to control go chassis.
 # Features
  - **Pluggable registrator and discovery service**: Support Service center, istio pilot, kubernetes and file based registry, 
  fit both client side discovery and server side discovery pattern 
- - **Pluggable Protocol**: You can custom your own protocol, by default support http and grpc
+ - **Pluggable Protocol**: You can custom your own protocol, by default support http and grpc, go chassis define standardized [model](https://github.com/go-chassis/go-chassis/blob/master/core/invocation/invocation.go) to makes all request of different protocol lerverage same features
  - **Multiple server management**: you can separate API by protocols and ports
- - **Circuit breaker**: Protect your micro service system in runtime
+  - **Handler Chain**: Able to add your own code during service calling for client and server side
+ - **rich middlewares**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
  - **Route management**: Able to route to different service based on weight and match rule to achieve Canary Release easily
  - **Client side Load balancing**: Able to custom strategy
- - **Rate limiting**: Both client side and server side rate limiting
  - **Pluggable Cipher**: Able to custom your own cipher for AKSK and TLS certs
- - **Handler Chain**: Able to add your own code during service calling for client and server side
  - **Metrics**: Able to expose Prometheus metric API automatically and custom metrics reporter
- - **Tracing**:Use opentracing-go as standard library, easy to integrate tracing impl
+ - **Tracing**:Use opentracing-go as standard library, easy to integrate tracing system
  - **Logger**: You can custom your own writer to sink log, by default support file and stdout
- - **Hot-reconfiguraion**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting
- - **Dynamic Configuration framework**: Powered by go-archaius, developer is able to develop a service which has hot-reconfiguration feature easily
+ - **Hot reconfiguraion**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting, developer is also able to develop a service which has hot-reconfiguration feature easily. [see](https://go-chassis.readthedocs.io/en/latest/user-guides/dynamic-conf.html#)
  - **Fault Injection**: In consumer side, you can inject faults to bring chaos testing into your system
  - **API gateway and service mesh solution**: powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
- - **Open API 2.0 support** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
+ - **Open API 2.0 native support** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
 
-You can check [plugins](https://github.com/go-chassis/go-chassis-plugins) to see more features
+You can check [plugins](https://github.com/go-chassis/go-chassis-extension) to see more features
 
 # Get started 
 1.Generate go mod
@@ -116,7 +113,9 @@ it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/con
 - [KubeEdge](https://github.com/kubeedge/kubeedge): Kubernetes Native Edge Computing Framework (project under CNCF) https://kubeedge.io
 
 # Known Users
-![趣头条](https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=61fc74acb212c8fcb4f3f1cbc438f578/d8f9d72a6059252dc75d1b883f9b033b5ab5b9f7.jpg)
+To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
+ 
+ ![image](assets/logos/qutoutiao.PNG)
 
 # To start developing go chassis
 

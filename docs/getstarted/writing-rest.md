@@ -67,7 +67,7 @@ service_description:
 func main() {
     //start all server you register in server/schemas.
     if err := chassis.Init(); err != nil {
-        lager.Logger.Error("Init failed.", err)
+        openlogging.Error("Init failed.", err)
         return
     }
     chassis.Run()
@@ -103,20 +103,23 @@ service_description:
 3.in main.go call your service
 ```go
 func main() {
-    //Init framework
-    if err := chassis.Init(); err != nil {
-        lager.Logger.Error("Init failed.", err)
-        return
-    }
-    req, _ := rest.NewRequest("GET", "http://RESTServer/sayhello/world")
-    defer req.Close()
-    resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
-    if err != nil {
-        lager.Logger.Error("error", err)
-        return
-    }
-    defer resp.Close()
-    lager.Logger.Info(string(resp.ReadBody()))
+	//Init framework
+	if err := chassis.Init(); err != nil {
+		openlogging.Error("Init failed." + err.Error())
+		return
+	}
+	req, err := rest.NewRequest("GET", "http://RESTServer/sayhello/world", nil)
+	if err != nil {
+		openlogging.Error("new request failed.")
+		return
+	}
+	resp, err := core.NewRestInvoker().ContextDo(ctx, req)
+	if err != nil {
+		openlogging.Error("do request failed.")
+		return
+	}
+	defer resp.Body.Close()
+	openlogging.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 }
 ```
 

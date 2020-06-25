@@ -28,9 +28,11 @@ var auth *BasicAuth
 //BasicAuth should implement basic auth server side logic
 //it is singleton
 type BasicAuth struct {
-	Realm        string                                     //required
-	Authorize    func(user, pwd string) error               //required
-	Authenticate func(user string, req *http.Request) error //optional
+	Realm string //required
+
+	Authenticate func(user, pwd string) error               //required
+	Authorize    func(user string, req *http.Request) error //optional
+
 }
 
 //Use put a custom basic auth logic

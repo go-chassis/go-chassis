@@ -4,8 +4,9 @@ import (
 	"strings"
 )
 
+//const
 const (
-	ssLEnabledQuery = "sslEnabled=true"
+	SSLEnabledQuery = "sslEnabled=true"
 )
 
 // Endpoint struct having full info about micro-service instance endpoint
@@ -22,7 +23,7 @@ func NewEndPoint(schema string) (*Endpoint, error) {
 //GenEndpoint return the endpoint string which it contain the sslEnabled=true query arg or not
 func (e *Endpoint) GenEndpoint() string {
 	if e.SSLEnabled {
-		return e.Address + "?" + ssLEnabledQuery
+		return e.Address + "?" + SSLEnabledQuery
 	}
 	return e.Address
 }
@@ -45,7 +46,7 @@ func parseAddress(address string) (*Endpoint, error) {
 	ep := Endpoint{}
 	idx := strings.Index(address, "?")
 	if idx != -1 {
-		if strings.Contains(address, ssLEnabledQuery) {
+		if strings.Contains(address, SSLEnabledQuery) {
 			ep.SSLEnabled = true
 		}
 		address = address[:idx]

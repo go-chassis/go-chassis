@@ -3,6 +3,7 @@ package loadbalancer_test
 // Forked from github.com/micro/go-micro
 // Some parts of this file have been modified to make it functional in this package
 import (
+	"github.com/go-chassis/go-chassis/core/config/model"
 	"os"
 	"path/filepath"
 	"testing"
@@ -25,13 +26,18 @@ func init() {
 		LoggerLevel:   "INFO",
 		RollingPolicy: "size",
 	})
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.service.registry.address", "http://127.0.0.1:30100")
+	runtime.App = "default"
+	archaius.Set("cse.loadbalance.strategy.name", loadbalancer.StrategyRoundRobin)
+	config.ReadGlobalConfigFromArchaius()
+	archaius.Set("service_description.name", "Client")
+	archaius.Set("service_description.hostname", "localhost")
+	config.MicroserviceDefinition = &model.MicroserviceCfg{}
+	archaius.UnmarshalConfig(config.MicroserviceDefinition)
+	config.ReadLBFromArchaius()
 }
 func TestEnable(t *testing.T) {
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
-	t.Log(os.Getenv("CHASSIS_HOME"))
-	config.Init()
-
 	LBstr := make(map[string]string)
 
 	LBstr["name"] = "RoundRobin"
@@ -90,10 +96,7 @@ func TestBuildStrategy(t *testing.T) {
 			},
 		},
 	}
-
-	p := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
-	config.Init()
+	os.Setenv("HTTP_DEBUG", "1")
 	registry.Enable()
 	registry.DoRegister()
 	t.Log("System init finished")
@@ -141,16 +144,9 @@ func TestBuildStrategy(t *testing.T) {
 		"127.0.0.1", "service",
 		utiltags.NewDefaultTag("1.0", "app"), "rest")
 }
-func init() {
-	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
-	})
-}
 func BenchmarkDefaultSelector_Select(b *testing.B) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
-	config.Init()
 	registry.Enable()
 	registry.DoRegister()
 	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))

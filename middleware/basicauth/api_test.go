@@ -45,7 +45,7 @@ func new() handler.Handler {
 func TestUseBasicAuth(t *testing.T) {
 	Use(&BasicAuth{
 		Realm: "test-realm",
-		Authorize: func(u, p string) error {
+		Authenticate: func(u, p string) error {
 			return nil
 		},
 	})

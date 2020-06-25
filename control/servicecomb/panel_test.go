@@ -1,39 +1,47 @@
 package servicecomb_test
 
 import (
-	_ "github.com/go-chassis/go-chassis/initiator"
-
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
 	_ "github.com/go-chassis/go-chassis/control/servicecomb"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	_ "github.com/go-chassis/go-chassis/initiator"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
 func init() {
-	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
-	config.Init()
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.loadbalance.strategy.name", loadbalancer.StrategyRandom)
+	archaius.Set("cse.loadbalance.strategy.Server.name", loadbalancer.StrategyLatency)
+	archaius.Set("cse.loadbalance.strategy.name", loadbalancer.StrategyLatency)
+	archaius.Set("cse.flowcontrol.Consumer.qps.limit.Server", 100)
+	archaius.Set("cse.isolation.Consumer.maxConcurrentRequests", 100)
+	err := config.ReadLBFromArchaius()
+	if err != nil {
+		panic(err)
+	}
+	err = config.ReadHystrixFromArchaius()
+	if err != nil {
+		panic(err)
+	}
 }
 func TestPanel_GetLoadBalancing(t *testing.T) {
-
 	opts := control.Options{
 		Infra: "archaius",
 	}
 	err := control.Init(opts)
 	assert.NoError(t, err)
 
-	t.Log("lb")
 	inv := invocation.Invocation{
-		SourceMicroService: "",
-		MicroServiceName:   "Server",
+		MicroServiceName: "Server",
 	}
 	c := control.DefaultPanel.GetLoadBalancing(inv)
-	assert.Equal(t, loadbalancer.StrategyRandom, c.Strategy)
+	assert.Equal(t, loadbalancer.StrategyLatency, c.Strategy)
 
 	inv = invocation.Invocation{
 		SourceMicroService: "",
@@ -49,11 +57,9 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 	c = control.DefaultPanel.GetLoadBalancing(inv)
 	assert.Equal(t, loadbalancer.StrategyLatency, c.Strategy)
 
-	t.Log("cb ")
 	command, cb := control.DefaultPanel.GetCircuitBreaker(inv, common.Consumer)
 	assert.Equal(t, "Consumer.fake", command)
 	assert.Equal(t, 100, cb.MaxConcurrentRequests)
-	t.Log("rl ")
 	inv.MicroServiceName = "Server"
 	rl := control.DefaultPanel.GetRateLimiting(inv, common.Consumer)
 	assert.Equal(t, 100, rl.Rate)

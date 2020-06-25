@@ -73,14 +73,6 @@ type DarkLaunchRule struct {
 	Items []*RuleItem `json:"ruleItems"`
 }
 
-//RouterConfig is the struct having info about route rule destinations, source templates
-//Deprecated
-type RouterConfig struct {
-	Router          Router                  `yaml:"router"`
-	Destinations    map[string][]*RouteRule `yaml:"routeRule"`
-	SourceTemplates map[string]*Match       `yaml:"sourceTemplate"`
-}
-
 //RuleItem rule item
 //Deprecated
 type RuleItem struct {

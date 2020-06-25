@@ -1,16 +1,17 @@
 package handler_test
 
 import (
+	"github.com/go-chassis/go-archaius"
 	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
 
+	"testing"
+
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/router"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 type normalAfter struct {
@@ -38,32 +39,22 @@ func TestRouterHandler_Handle(t *testing.T) {
 		})
 	})
 
-	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
 	var routerContent = `
-routeRule:
-  service1:  
-    - precedence: 1 # 优先级，数字越大优先级越高
-      route: #路由规则列表
-      - tags:
-          version: 1.0
-          project: x
-        weight: 100 #全重 50%到这里
-      match:
-        headers:
-          os:
-            regex: ios
- `
+      - precedence: 1 # 优先级，数字越大优先级越高
+        route: 
+          - tags:
+              version: 1.0
+              project: x
+            weight: 100
+        match:
+          headers:
+            Os:
+              regex: ios
+`
 
-	chassisConf := prepareConfDir(t)
-	prepareTestFile(t, chassisConf, "chassis.yaml", "")
-	prepareTestFile(t, chassisConf, "microservice.yaml", microContent)
-	prepareTestFile(t, chassisConf, "router.yaml", routerContent)
-
-	err := config.Init()
+	err := archaius.Init(archaius.WithMemorySource())
 	assert.NoError(t, err)
+	archaius.Set("servicecomb.routeRule.service1", string(routerContent))
 	err = router.Init()
 	assert.NoError(t, err)
 
@@ -75,7 +66,7 @@ routeRule:
 		i := &invocation.Invocation{
 			MicroServiceName: "service1",
 			Ctx: common.NewContext(map[string]string{
-				"os": "ios",
+				"Os": "ios",
 			}),
 		}
 		c.Next(i, func(r *invocation.Response) error {
