@@ -21,7 +21,7 @@ type Response struct {
 }
 
 // ResponseCallBack process invocation response
-type ResponseCallBack func(*Response) error
+type ResponseCallBack func(*Response)
 
 //Invocation is the basic struct that used in go chassis to make client and transport layer transparent .
 //developer should implements a client which is able to transfer invocation to there own request

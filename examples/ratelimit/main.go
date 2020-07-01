@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-chassis/go-chassis"
 	"github.com/go-chassis/go-chassis/core/lager"
+	_ "github.com/go-chassis/go-chassis/middleware/ratelimiter"
 	"github.com/go-chassis/go-chassis/server/restful"
 	"net/http"
 )

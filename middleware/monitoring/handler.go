@@ -64,7 +64,7 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 		chain.Next(i, cb)
 		return
 	}
-	chain.Next(i, func(resp *invocation.Response) error {
+	chain.Next(i, func(resp *invocation.Response) {
 		if resp.Status >= status.Status(i.Protocol, status.InternalServerError) {
 			m := map[string]string{
 				"service":  runtime.ServiceName,
@@ -74,28 +74,42 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 				"env":      runtime.Environment,
 				"code":     string(resp.Status),
 			}
-			metrics.CounterAdd(MetricsErrors, 1, m)
+			err := metrics.CounterAdd(MetricsErrors, 1, m)
+			if err != nil {
+				openlogging.Fatal(err.Error())
+			}
 		}
 		duration := time.Since(start)
-		metrics.SummaryObserve(MetricsLatency, float64(duration.Milliseconds()), labelMap)
-		return resp.Err
+		err := metrics.SummaryObserve(MetricsLatency, float64(duration.Milliseconds()), labelMap)
+		if err != nil {
+			openlogging.Fatal(err.Error())
+		}
 	})
 
 }
 func newHandler() handler.Handler {
-	metrics.CreateCounter(metrics.CounterOpts{
+	err := metrics.CreateCounter(metrics.CounterOpts{
 		Name:   MetricsRequest,
 		Labels: labels,
 	})
-	metrics.CreateSummary(metrics.SummaryOpts{
+	if err != nil {
+		openlogging.Fatal(err.Error())
+	}
+	err = metrics.CreateSummary(metrics.SummaryOpts{
 		Name:       MetricsLatency,
 		Labels:     labels,
 		Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
 	})
-	metrics.CreateCounter(metrics.CounterOpts{
+	if err != nil {
+		openlogging.Fatal(err.Error())
+	}
+	err = metrics.CreateCounter(metrics.CounterOpts{
 		Name:   MetricsErrors,
 		Labels: labels4Resp,
 	})
+	if err != nil {
+		openlogging.Fatal(err.Error())
+	}
 	labelMap = map[string]string{
 		"service":  runtime.ServiceName,
 		"instance": runtime.InstanceID,
@@ -111,5 +125,8 @@ func (ph *Handler) Name() string {
 	return Name
 }
 func init() {
-	handler.RegisterHandler(Name, newHandler)
+	err := handler.RegisterHandler(Name, newHandler)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
 }

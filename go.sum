@@ -45,6 +45,7 @@ github.com/go-chassis/foundation v0.1.1-0.20191113114104-2b05871e9ec4 h1:wx8JXvg
 github.com/go-chassis/foundation v0.1.1-0.20191113114104-2b05871e9ec4/go.mod h1:21/ajGtgJlWTCeM0TxGJdRhO8bJkKirWyV8Stlh6g6c=
 github.com/go-chassis/go-archaius v1.3.1 h1:+KkQBJ4OyYDIIX5NRs20IXkwHhbfA2P/5pY/YKw0lgg=
 github.com/go-chassis/go-archaius v1.3.1/go.mod h1:nzRL1sSodtgeCZMzCNu0y2LPH5zz7chp8uaQ0GS0x6I=
+github.com/go-chassis/go-archaius v1.3.2 h1:b52voYtSL+fukmvg/rsn/quw/hgDWtV945adl0VV8Lg=
 github.com/go-chassis/go-archaius v1.3.2/go.mod h1:nzRL1sSodtgeCZMzCNu0y2LPH5zz7chp8uaQ0GS0x6I=
 github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f h1:5QmmNpVcGqIc6tuKNe5EAI4PA8Yn2EL9Oee7YdcJ4PE=
 github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f/go.mod h1:eW62fYuzlNFDvIacB6AV8bhUDCTy4myfTCv0bT9Gbb0=

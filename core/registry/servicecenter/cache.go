@@ -239,9 +239,9 @@ func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.Strin
 // getServiceSet regroup the providers by service name
 func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.String) {
 	//get Provider's instances
-	serviceNameSet := sets.NewString()                        // key is serviceName
-	serviceNameAppIDKeySet := make(map[string]sets.String, 0) // key is "serviceName" value is app sets
-	if exist == nil || len(exist) == 0 {
+	serviceNameSet := sets.NewString()                     // key is serviceName
+	serviceNameAppIDKeySet := make(map[string]sets.String) // key is "serviceName" value is app sets
+	if len(exist) == 0 {
 		return serviceNameSet, serviceNameAppIDKeySet
 	}
 	for _, service := range exist {
@@ -269,7 +269,7 @@ func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.Str
 //set instance to cache by service name
 func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
 	//append instances from different app and same service name into one unified slice
-	downs := make(map[string]struct{}, 0)
+	downs := make(map[string]struct{})
 	for serviceName, instances := range providerInstances {
 		up := make([]*registry.MicroServiceInstance, 0)
 		for _, ins := range instances {
@@ -299,16 +299,12 @@ func watch(response *client.MicroServiceInstanceChangedEvent) {
 	switch response.Action {
 	case client.EventCreate:
 		createAction(response)
-		break
 	case client.EventDelete:
 		deleteAction(response)
-		break
 	case client.EventUpdate:
 		updateAction(response)
-		break
 	case client.EventError:
 		openlogging.GetLogger().Warnf("MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %s", response)
-		break
 	default:
 		openlogging.GetLogger().Warnf("Do not support this Action = %s", response.Action)
 		return
@@ -380,10 +376,8 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 	switch iidExist {
 	case InstanceIDIsExist:
 		microServiceInstances[arrayNum] = msi
-		break
 	case InstanceIDIsNotExist:
 		microServiceInstances = append(microServiceInstances, msi)
-		break
 	default:
 		openlogging.GetLogger().Warnf("updateAction error, iid:%s", response.Instance.InstanceId)
 	}

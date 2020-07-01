@@ -68,9 +68,7 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 		return
 	}
 
-	chain.Next(inv, func(r *invocation.Response) error {
-		return cb(r)
-	})
+	chain.Next(inv, cb)
 }
 
 // GetFaultConfig get faultconfig

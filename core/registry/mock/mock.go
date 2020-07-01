@@ -110,7 +110,6 @@ func (m *DiscoveryMock) FindMicroServiceInstances(consumerID, microServiceName s
 
 // WatchMicroService watch micro-service
 func (m *DiscoveryMock) WatchMicroService(selfMicroServiceID string, callback func(*client.MicroServiceInstanceChangedEvent)) {
-	return
 }
 
 // AutoSync auto sync

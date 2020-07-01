@@ -31,9 +31,7 @@ func init() {
 	cookieMap = make(map[string]string)
 }
 func initCache() *cache.Cache {
-	var value *cache.Cache
-
-	value = cache.New(3e+10, time.Second*30)
+	value := cache.New(3e+10, time.Second*30)
 	return value
 }
 

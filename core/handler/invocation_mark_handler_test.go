@@ -29,9 +29,8 @@ func TestMarkHandler_Handle(t *testing.T) {
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "", i.GetMark())
 	})
@@ -55,9 +54,8 @@ method: GET
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.NotEqual(t, "match-user-json", i.GetMark())
 	})
@@ -68,9 +66,8 @@ method: GET
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "match-user-json", i.GetMark())
 	})
@@ -81,9 +78,8 @@ method: GET
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "", i.GetMark())
 	})
@@ -94,9 +90,8 @@ method: GET
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test2", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "match-user-json", i.GetMark())
 	})
@@ -124,9 +119,8 @@ method: GET
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test2", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "match-user-json", i.GetMark())
 	})
@@ -137,9 +131,8 @@ method: GET
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodPost, "cse://127.0.0.1:9992/test2", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "", i.GetMark())
 	})
@@ -178,9 +171,8 @@ method: POST
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "", i.GetMark())
 	})
@@ -191,9 +183,8 @@ method: POST
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "match-user-json", i.GetMark())
 	})
@@ -204,9 +195,8 @@ method: POST
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodPost, "cse://127.0.0.1:9992/test", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "match-user-json-2", i.GetMark())
 	})
@@ -217,9 +207,8 @@ method: POST
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
 		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test2", nil)
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		assert.Equal(t, "match-user-json", i.GetMark())
 	})

@@ -71,10 +71,9 @@ func TestUse(t *testing.T) {
 		inv := &invocation.Invocation{
 			Args: req,
 		}
-		c.Next(inv, func(ir *invocation.Response) error {
+		c.Next(inv, func(ir *invocation.Response) {
 			err = ir.Err
 			assert.NoError(t, err)
-			return err
 		})
 	})
 	t.Run("skip auth", func(t *testing.T) {
@@ -83,10 +82,9 @@ func TestUse(t *testing.T) {
 		inv := &invocation.Invocation{
 			Args: req,
 		}
-		c.Next(inv, func(ir *invocation.Response) error {
+		c.Next(inv, func(ir *invocation.Response) {
 			err = ir.Err
 			assert.NoError(t, err)
-			return err
 		})
 	})
 }

@@ -43,13 +43,16 @@ func (r *Router) ListRouteRule() map[string][]*config.RouteRule {
 
 //Init init router config
 func (r *Router) Init(o router.Options) error {
-	archaius.RegisterListener(&routeRuleEventListener{}, DarkLaunchKey, DarkLaunchKeyV2)
+	err := archaius.RegisterListener(&routeRuleEventListener{}, DarkLaunchKey, DarkLaunchKeyV2)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
 	return r.LoadRules()
 }
 
 func newRouter() (router.Router, error) {
 	cseRouter = &Router{
-		routeRule: make(map[string][]*config.RouteRule, 0),
+		routeRule: make(map[string][]*config.RouteRule),
 		lock:      sync.RWMutex{},
 	}
 	return cseRouter, nil

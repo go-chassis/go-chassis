@@ -91,7 +91,6 @@ func GetDelayPercent(protocol, microServiceName, schema, operation string) int {
 
 // GetFixedDelay get fixed delay
 func GetFixedDelay(protocol, microServiceName, schema, operation string) time.Duration {
-
 	var key string
 	var fixedDelayTime time.Duration
 	var fixedDelay interface{}
@@ -111,12 +110,12 @@ func GetFixedDelay(protocol, microServiceName, schema, operation string) time.Du
 		key = GetFaultInjectionGlobalKey()
 		fixedDelay = archaius.Get(GetFaultFixedDelayKey(key, protocol))
 	}
-	switch fixedDelay.(type) {
+	switch fixedDelay := fixedDelay.(type) {
 	case int:
-		fixedDelayInt := fixedDelay.(int)
+		fixedDelayInt := fixedDelay
 		fixedDelayTime = time.Duration(fixedDelayInt) * time.Millisecond
 	case string:
-		fixedDelayInt, _ := strconv.Atoi(fixedDelay.(string))
+		fixedDelayInt, _ := strconv.Atoi(fixedDelay)
 		fixedDelayTime = time.Duration(fixedDelayInt) * time.Millisecond
 	}
 	return fixedDelayTime

@@ -5,7 +5,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/client"
 	"io"
 	"net/http"
-	"sync"
 )
 
 //NewRequest is a function which creates new request
@@ -34,5 +33,4 @@ func NewResponse() *http.Response {
 type Client struct {
 	c    *http.Client
 	opts client.Options
-	mu   sync.Mutex // protects following
 }

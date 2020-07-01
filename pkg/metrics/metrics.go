@@ -113,8 +113,7 @@ func InstallPlugin(name string, f NewRegistry) {
 //Init load the metrics plugin and initialize it
 func Init() error {
 	//TODO name should be configurable
-	var name string
-	name = "prometheus"
+	name := "prometheus"
 	f, ok := registries[name]
 	if !ok {
 		return fmt.Errorf("can not init metrics registry [%s]", name)

@@ -58,7 +58,6 @@ func removeExceededFiles(path string, baseFileName string,
 	if maxKeptCount < 0 {
 		return
 	}
-	fileList := make([]string, 0, 2*maxKeptCount)
 	var pat string
 	if rotateStage == "rollover" {
 		//rotated file, svc.log.20060102150405000

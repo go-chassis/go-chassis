@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/resilience/retry"
 	"io/ioutil"
 	"net/http"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/status"
-	backoffUtil "github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/pkg/util"
 	"github.com/go-mesh/openlogging"
 )
@@ -112,7 +112,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		}
 	}
 	// get retry func
-	lbBackoff := backoffUtil.GetBackOff(lbConfig.BackOffKind, lbConfig.BackOffMin, lbConfig.BackOffMax)
+	lbBackoff := retry.GetBackOff(lbConfig.BackOffKind, lbConfig.BackOffMin, lbConfig.BackOffMax)
 	callTimes := 0
 
 	ep, err := lb.getEndpoint(i, lbConfig)
@@ -132,13 +132,12 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 			i.Args.(*http.Request).Body = ioutil.NopCloser(bytes.NewBuffer(reqBytes))
 		}
 
-		chain.Next(i, func(r *invocation.Response) error {
+		chain.Next(i, func(r *invocation.Response) {
 			if r != nil {
 				invResp = r
 				respErr = invResp.Err
-				return invResp.Err
+				return
 			}
-			return nil
 		})
 
 		if callTimes >= retryOnSame+1 {

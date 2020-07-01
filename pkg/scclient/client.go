@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-chassis/resilience/retry"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,7 +17,6 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/go-chassis/foundation/httpclient"
-	bo "github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
 	"github.com/go-mesh/openlogging"
@@ -926,7 +926,7 @@ func (c *RegistryClient) WatchMicroService(microServiceID string, callback func(
 			}
 
 			c.conns[microServiceID] = conn
-			go func() error {
+			go func() {
 				for {
 					messageType, message, err := conn.ReadMessage()
 					if err != nil {
@@ -943,11 +943,10 @@ func (c *RegistryClient) WatchMicroService(microServiceID string, callback func(
 				}
 				err = conn.Close()
 				if err != nil {
-					return fmt.Errorf("conn close failed, microServiceID: %s, error: %s", microServiceID, err.Error())
+					openlogging.Error(err.Error())
 				}
 				delete(c.conns, microServiceID)
 				c.startBackOff(microServiceID, callback)
-				return nil
 			}()
 		}
 		c.mutex.Unlock()
@@ -960,7 +959,7 @@ func (c *RegistryClient) getAddress() string {
 }
 
 func (c *RegistryClient) startBackOff(microServiceID string, callback func(*MicroServiceInstanceChangedEvent)) {
-	boff := bo.GetBackOff(bo.BackoffJittered, 1000, 30000)
+	boff := retry.GetBackOff(retry.KindExponential, 1000, 30000)
 	operation := func() error {
 		c.mutex.Lock()
 		c.watchers[microServiceID] = false

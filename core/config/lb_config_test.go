@@ -1,12 +1,12 @@
 package config_test
 
 import (
+	"github.com/go-chassis/go-chassis/resilience/retry"
 	// "github.com/go-chassis/go-chassis/core/common"
 	"testing"
 
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +27,7 @@ func TestGetStrategyName(t *testing.T) {
 
 	t.Run("TestBackOffKind", func(t *testing.T) {
 		s := config.BackOffKind("source", "service")
-		assert.Equal(t, backoff.BackoffConstant, s)
+		assert.Equal(t, retry.KindExponential, s)
 	})
 
 	t.Run("TestBackOffMaxMs", func(t *testing.T) {

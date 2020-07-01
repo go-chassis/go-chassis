@@ -65,7 +65,6 @@ func Init(option *Options) {
 	}
 	openlogging.SetLogger(Logger)
 	openlogging.Debug("logger init success")
-	return
 }
 
 func toLogLevel(option string) (lager.LogLevel, error) {

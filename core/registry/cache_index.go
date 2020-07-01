@@ -19,7 +19,6 @@ type IndexCache struct {
 	indexedCache *cache.Cache
 
 	CriteriaStore []map[string]string //all criteria need to be saved in here so that we can update indexedCache, during Set process
-	muxCriteria   sync.RWMutex
 }
 
 //NewIndexCache create a cache which saves and manage instances

@@ -123,7 +123,6 @@ func (f *Discovery) GetMicroServiceInstances(consumerID, providerID string) ([]*
 
 // WatchMicroService watch micro-service
 func (f *Discovery) WatchMicroService(selfMicroServiceID string, callback func(*client.MicroServiceInstanceChangedEvent)) {
-	return
 }
 
 // AutoSync auto sync

@@ -60,10 +60,9 @@ func TestUseBasicAuth(t *testing.T) {
 		inv := &invocation.Invocation{
 			Args: req,
 		}
-		c.Next(inv, func(ir *invocation.Response) error {
+		c.Next(inv, func(ir *invocation.Response) {
 			err = ir.Err
 			assert.Error(t, err)
-			return err
 		})
 	})
 
@@ -73,10 +72,9 @@ func TestUseBasicAuth(t *testing.T) {
 		inv := &invocation.Invocation{
 			Args: req,
 		}
-		c.Next(inv, func(ir *invocation.Response) error {
+		c.Next(inv, func(ir *invocation.Response) {
 			err = ir.Err
 			assert.NoError(t, err)
-			return err
 		})
 	})
 }

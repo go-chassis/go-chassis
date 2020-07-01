@@ -160,9 +160,8 @@ cse:
 		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 		SourceServiceID:  runtime.ServiceID,
 	}
-	c.Next(i, func(r *invocation.Response) error {
+	c.Next(i, func(r *invocation.Response) {
 		assert.Error(t, r.Err)
-		return r.Err
 	})
 
 	var lbh = new(handler.LBHandler)
@@ -269,9 +268,8 @@ cse:
 		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 		SourceServiceID:  runtime.ServiceID,
 	}
-	c.Next(i, func(r *invocation.Response) error {
+	c.Next(i, func(r *invocation.Response) {
 		assert.Error(t, r.Err)
-		return r.Err
 	})
 
 	var lbh = new(handler.LBHandler)
@@ -357,17 +355,15 @@ cse:
 		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 	}
 	t.Run("invocation without strategy", func(t *testing.T) {
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		i.HandlerIndex = 0
 	})
 
 	i.Strategy = loadbalancer.StrategyRoundRobin
-	c.Next(i, func(r *invocation.Response) error {
+	c.Next(i, func(r *invocation.Response) {
 		assert.NoError(t, r.Err)
-		return r.Err
 	})
 
 	var lbh = new(handler.LBHandler)
@@ -448,9 +444,8 @@ cse:
 			SourceServiceID:  "selfServiceID",
 			RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 		}
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.Error(t, r.Err)
-			return r.Err
 		})
 		i.HandlerIndex = 0
 	})
@@ -465,9 +460,8 @@ cse:
 			SourceServiceID:  "selfServiceID",
 			RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 		}
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.Error(t, r.Err)
-			return r.Err
 		})
 		i.HandlerIndex = 0
 	})
@@ -486,17 +480,15 @@ cse:
 		RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 	}
 	t.Run("invocation without strategy", func(t *testing.T) {
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 		i.HandlerIndex = 0
 	})
 
 	i.Strategy = loadbalancer.StrategyRoundRobin
-	c.Next(i, func(r *invocation.Response) error {
+	c.Next(i, func(r *invocation.Response) {
 		assert.NoError(t, r.Err)
-		return r.Err
 	})
 
 	var lbh = new(handler.LBHandler)
@@ -569,8 +561,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	time.Sleep(1 * time.Second)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Next(iv, func(r *invocation.Response) error {
-			return r.Err
+		c.Next(iv, func(r *invocation.Response) {
 		})
 		iv.HandlerIndex = 0
 	}

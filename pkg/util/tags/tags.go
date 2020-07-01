@@ -49,7 +49,7 @@ func LabelOfTags(t map[string]string) (ret string) {
 	for k := range t {
 		ss = append(ss, k)
 	}
-	sort.Sort(sort.StringSlice(ss))
+	sort.Strings(ss)
 	for i, s := range ss {
 		ret += s + ":" + t[s]
 		if i != len(ss)-1 {

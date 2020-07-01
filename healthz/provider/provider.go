@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"github.com/go-mesh/openlogging"
 	"net/http"
 	"sync"
 
@@ -38,9 +39,11 @@ type HealthCheck struct {
 // RestCheck returns status OK and self serviceName
 func (hc *HealthCheck) RestCheck(ctx *rf.Context) {
 	firstRequest()
-
 	ctx.AddHeader("Content-Type", common.JSON)
-	ctx.Write(checkResult)
+	err := ctx.Write(checkResult)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
 }
 
 // URLPatterns returns HealthCheck's routes
