@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"sync"
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/config"
@@ -25,7 +24,6 @@ type HeartbeatTask struct {
 // HeartbeatService heartbeat service
 type HeartbeatService struct {
 	shutdown bool
-	mux      sync.Mutex
 }
 
 // Start start the heartbeat system

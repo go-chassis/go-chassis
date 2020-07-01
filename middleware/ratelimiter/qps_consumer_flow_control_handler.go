@@ -2,13 +2,14 @@ package ratelimiter
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-chassis/resilience/rate"
+	"github.com/go-mesh/openlogging"
 	"net/http"
 
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/rate"
 )
 
 // names
@@ -35,7 +36,7 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *handler.Chain, i *invocation
 		return
 	}
 	//get operation meta info ms.schema, ms.schema.operation, ms
-	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate) {
+	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate, rlc.Rate/5) {
 		chain.Next(i, cb)
 	} else {
 		r := newErrResponse(i, rlc)
@@ -66,6 +67,12 @@ func (rl *ConsumerRateLimiterHandler) Name() string {
 	return "ratelimiter-consumer"
 }
 func init() {
-	handler.RegisterHandler(Consumer, newConsumerRateLimiterHandler)
-	handler.RegisterHandler(Provider, newProviderRateLimiterHandler)
+	err := handler.RegisterHandler(Consumer, newConsumerRateLimiterHandler)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
+	err = handler.RegisterHandler(Provider, newProviderRateLimiterHandler)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
 }

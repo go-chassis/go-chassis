@@ -5,7 +5,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/rate"
+	"github.com/go-chassis/go-chassis/resilience/rate"
 )
 
 // ProviderRateLimiterHandler provider rate limiter handler
@@ -25,13 +25,12 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *handler.Chain, i *invocation
 		cb(r)
 		return
 	}
-	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate) {
+	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate, rlc.Rate/5) {
 		chain.Next(i, cb)
 	} else {
 		r := newErrResponse(i, rlc)
 		cb(r)
 	}
-	return
 }
 
 func newProviderRateLimiterHandler() handler.Handler {

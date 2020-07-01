@@ -20,6 +20,7 @@ package basicauth
 
 import (
 	"github.com/go-chassis/go-chassis/core/handler"
+	"github.com/go-mesh/openlogging"
 	"net/http"
 )
 
@@ -39,5 +40,8 @@ type BasicAuth struct {
 //then register handler to chassis
 func Use(middleware *BasicAuth) {
 	auth = middleware
-	handler.RegisterHandler("basicAuth", newBasicAuth)
+	err := handler.RegisterHandler("basicAuth", newBasicAuth)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
 }

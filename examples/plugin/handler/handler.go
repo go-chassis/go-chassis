@@ -24,9 +24,7 @@ func (bizkeeperfhandler *BizkeeperFakeHandler) Name() string {
 func (bizkeeperfhandler *BizkeeperFakeHandler) Handle(c *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	// 调用Chain.Next(i *invocation.Invocation, f invocation.ResponseCallBack)方法，
 	// 执行Chain的下一个handler
-	c.Next(i, func(r *invocation.Response) error {
-		return cb(r)
-	})
+	c.Next(i, cb)
 }
 
 // func() Handler方法 实现
@@ -46,9 +44,7 @@ func (lbfakehandler *LoadbalanceHandlerFake) Name() string {
 func (lbfakehandler *LoadbalanceHandlerFake) Handle(c *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	// 调用Chain.Next(i *invocation.Invocation, f invocation.ResponseCallBack)方法，
 	// 执行Chain的下一个handler
-	c.Next(i, func(r *invocation.Response) error {
-		return cb(r)
-	})
+	c.Next(i, cb)
 }
 
 // func() Handler方法 实现

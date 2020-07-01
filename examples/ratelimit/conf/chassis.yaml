@@ -16,6 +16,4 @@ cse:
       qps:
         enabled: true  # enable rate limiting or not
         global:
-          limit: 1   # default limit of provider
-        limit:
-          someConsumerService: 1  # rate limit for request from a consumer
+          limit: 100   # default limit of provider

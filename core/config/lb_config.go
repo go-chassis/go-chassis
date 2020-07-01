@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/pkg/backoff"
+	"github.com/go-chassis/go-chassis/resilience/retry"
 	"strings"
 	"sync"
 )
@@ -110,7 +110,7 @@ func BackOffKind(source, service string) string {
 	if r == "" {
 		r = GetLoadBalancing().Backoff.Kind
 		if r == "" {
-			r = backoff.DefaultBackOffKind
+			r = retry.DefaultBackOffKind
 		}
 	}
 	return r

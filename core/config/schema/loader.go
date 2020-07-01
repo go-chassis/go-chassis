@@ -145,8 +145,7 @@ func loadSchemaFileContent(schemaPath string) (*MicroserviceMeta, error) {
 		schemaFile := filepath.Base(fullPath)
 		dat, err := ioutil.ReadFile(fullPath)
 		if err != nil {
-			e := fmt.Sprintf("The system cannot find the schema file")
-			return nil, errors.New(e)
+			return nil, errors.New("cannot find the schema file")
 		}
 
 		schemaID := strings.TrimSuffix(schemaFile, filepath.Ext(schemaFile))
@@ -203,9 +202,7 @@ func GetSchemaIDs(microserviceName string) ([]string, error) {
 		return nil, fmt.Errorf("microservice %s not found", microserviceName)
 	}
 	schemaIDs := make([]string, 0)
-	for _, v := range microsvcMeta.SchemaIDs {
-		schemaIDs = append(schemaIDs, v)
-	}
+	schemaIDs = append(schemaIDs, microsvcMeta.SchemaIDs...)
 	return schemaIDs, nil
 }
 

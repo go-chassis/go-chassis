@@ -62,11 +62,9 @@ service_description:
 			Protocol:         "unknown",
 		}
 
-		c.Next(inv, func(r *invocation.Response) error {
+		c.Next(inv, func(r *invocation.Response) {
 			t.Log(r.Err)
 			assert.Error(t, r.Err)
-
-			return r.Err
 		})
 
 	})
@@ -84,10 +82,9 @@ service_description:
 			},
 		}
 
-		c.Next(inv, func(r *invocation.Response) error {
+		c.Next(inv, func(r *invocation.Response) {
 			t.Log(r.Err)
 			assert.Error(t, r.Err)
-			return r.Err
 		})
 	})
 	t.Run("rest protocol to other service", func(t *testing.T) {
@@ -104,9 +101,8 @@ service_description:
 			},
 		}
 
-		c.Next(inv, func(r *invocation.Response) error {
+		c.Next(inv, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 	})
 }

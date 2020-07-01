@@ -70,7 +70,6 @@ func ParseCircuitCMD(cmd string) (source string, target string, schema string, o
 	if regSource.MatchString(cmd) {
 		s := regNormal.FindStringSubmatch(cmd)
 		if len(s) > 3 {
-			source = s[1]
 			role = s[2]
 			raw = s[3]
 		}

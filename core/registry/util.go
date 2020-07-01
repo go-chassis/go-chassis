@@ -78,7 +78,7 @@ func MakeEndpoints(m map[string]model.Protocol) []string {
 
 //MakeEndpointMap returns the endpoints map
 func MakeEndpointMap(m map[string]model.Protocol) (map[string]*Endpoint, error) {
-	eps := make(map[string]*Endpoint, 0)
+	eps := make(map[string]*Endpoint)
 	for name, protocol := range m {
 		ep := protocol.Listen
 		if len(protocol.Advertise) > 0 {

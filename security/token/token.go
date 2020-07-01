@@ -69,14 +69,13 @@ func (j *jwtTokenManager) Sign(claims map[string]interface{}, secret interface{}
 	for _, opt := range opts {
 		opt(o)
 	}
-	c := jwt.MapClaims{}
-	c = claims
+	c := jwt.MapClaims(claims)
 	if o.Expire != "" {
 		d, err := time.ParseDuration(o.Expire)
 		if err != nil {
 			return "", ErrInvalidExp
 		}
-		c[JWTClaimsExp] = time.Now().Add(d).Unix()
+		claims[JWTClaimsExp] = time.Now().Add(d).Unix()
 	}
 	var to *jwt.Token
 	switch o.SigningMethod {

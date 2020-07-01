@@ -1,24 +1,23 @@
-package backoff
+package retry
 
 import (
 	"github.com/cenkalti/backoff"
 	"time"
 )
 
-//constant for back off
+//retry kind
 const (
-	BackoffJittered = "jittered"
-	BackoffConstant = "constant"
-	BackoffZero     = "zero"
-	//DefaultBackOffKind is zero
-	DefaultBackOffKind = BackoffZero
+	KindExponential    = "exponential"
+	KindConstant       = "constant"
+	KindZero           = "zero"
+	DefaultBackOffKind = KindExponential
 )
 
 //GetBackOff return the the back off policy
 //min and max unit is million second
 func GetBackOff(kind string, min, max int) backoff.BackOff {
 	switch kind {
-	case BackoffJittered:
+	case KindExponential:
 		return &backoff.ExponentialBackOff{
 			InitialInterval:     time.Duration(min) * time.Millisecond,
 			RandomizationFactor: backoff.DefaultRandomizationFactor,
@@ -27,12 +26,12 @@ func GetBackOff(kind string, min, max int) backoff.BackOff {
 			MaxElapsedTime:      0,
 			Clock:               backoff.SystemClock,
 		}
-	case BackoffConstant:
+	case KindConstant:
 		return backoff.NewConstantBackOff(time.Duration(min) * time.Millisecond)
-	case BackoffZero:
+	case KindZero:
 		return &backoff.ZeroBackOff{}
 	default:
-		return &backoff.ZeroBackOff{}
+		return &backoff.ExponentialBackOff{}
 	}
 
 }

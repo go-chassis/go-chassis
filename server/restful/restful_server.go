@@ -52,7 +52,6 @@ type restfulServer struct {
 	ws               *restful.WebService
 	opts             server.Options
 	mux              sync.RWMutex
-	exit             chan chan error
 	server           *http.Server
 }
 
@@ -111,7 +110,7 @@ func HTTPRequest2Invocation(req *restful.Request, schema, operation string, resp
 		},
 	}
 	//set headers to Ctx, then user do not  need to consider about protocol in handlers
-	m := make(map[string]string, 0)
+	m := make(map[string]string)
 	inv.Ctx = context.WithValue(context.Background(), common.ContextHeaderKey{}, m)
 	for k := range req.Request.Header {
 		m[k] = req.Request.Header.Get(k)

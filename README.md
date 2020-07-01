@@ -7,6 +7,17 @@
 Go-Chassis is a microservice framework for rapid development of microservices in Go
 
 ### Why use Go chassis
+- powerful middleware "handler chain": 
+more than "filter" or "interceptor". 
+each handler in chain is able to get the running result of later handler and your business logic.
+It is very useful in varies of scenario, for example:
+1. a circuit breaker need to check command results
+2. track response status and record it so that to prometheus can collect them
+3. track critical response result, so that you can audit them
+4. distribute tracing, you can complete the end span spec after business logic executed
+
+the commonplace above is helping you decouple common function from business logic. without handler chain. 
+those function will couple with business logic
 
 - go chassis is designed as a protocol-independent framework, any protocol 
 is able to integrate with go chassis and leverage same function like load balancing,
@@ -31,7 +42,7 @@ you can use Istio configurations to control go chassis.
  - **Pluggable Protocol**: You can custom your own protocol, by default support http and grpc, go chassis define standardized [model](https://github.com/go-chassis/go-chassis/blob/master/core/invocation/invocation.go) to makes all request of different protocol lerverage same features
  - **Multiple server management**: you can separate API by protocols and ports
   - **Handler Chain**: Able to add your own code during service calling for client and server side
- - **rich middlewares**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
+ - **rich middleware**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
  - **Route management**: Able to route to different service based on weight and match rule to achieve Canary Release easily
  - **Client side Load balancing**: Able to custom strategy
  - **Pluggable Cipher**: Able to custom your own cipher for AKSK and TLS certs

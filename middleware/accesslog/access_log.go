@@ -73,10 +73,9 @@ type accessLog struct {
 // Handle ...
 func (a *accessLog) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	now := time.Now()
-	chain.Next(i, func(response *invocation.Response) error {
-		err := cb(response)
+	chain.Next(i, func(response *invocation.Response) {
+		cb(response)
 		a.record(now, i)
-		return err
 	})
 }
 
@@ -89,5 +88,5 @@ func restfulRecord(startTime time.Time, i *invocation.Invocation) {
 	req := i.Args.(*restful.Request)
 	resp := i.Reply.(*restful.Response)
 	log.Infof("%s %s from %s %d %dms", req.Request.Method, req.Request.URL.String(),
-		iputil.ClientIP(req.Request), resp.StatusCode(), time.Now().Sub(startTime).Nanoseconds()/1000000)
+		iputil.ClientIP(req.Request), resp.StatusCode(), time.Since(startTime).Nanoseconds()/1000000)
 }

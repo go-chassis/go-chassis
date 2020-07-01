@@ -7,7 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/rate"
+	"github.com/go-chassis/go-chassis/resilience/rate"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 )
 

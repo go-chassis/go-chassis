@@ -16,10 +16,7 @@ func contains(value, express string) bool {
 
 func regex(value, express string) bool {
 	reg := regexp.MustCompilePOSIX(express)
-	if !reg.Match([]byte(value)) {
-		return false
-	}
-	return true
+	return reg.Match([]byte(value))
 }
 
 func noEqu(value, express string) bool {

@@ -88,10 +88,9 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 		OperationID:        "SayHello",
 		Args:               &helloworld.HelloRequest{Name: "peter"},
 	}
-	c.Next(i, func(r *invocation.Response) error {
+	c.Next(i, func(r *invocation.Response) {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
-		return r.Err
 	})
 
 }
@@ -118,9 +117,8 @@ func TestConsumerRateLimiterHandler_Handle(t *testing.T) {
 		Args:             &helloworld.HelloRequest{Name: "peter"},
 	}
 
-	c.Next(i, func(r *invocation.Response) error {
+	c.Next(i, func(r *invocation.Response) {
 		assert.NoError(t, r.Err)
 		log.Println(r.Result)
-		return r.Err
 	})
 }

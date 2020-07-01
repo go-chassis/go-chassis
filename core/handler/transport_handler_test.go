@@ -83,12 +83,11 @@ cse:
 	h := &handler.TransportHandler{}
 	c.Handlers = append(c.Handlers, h)
 
-	c.Next(i, func(r *invocation.Response) error {
+	c.Next(i, func(r *invocation.Response) {
 		t.Log("chain start")
 		t.Logf("%#v", r.Result)
 		t.Logf("%#v", r.Err)
 		assert.Equal(t, nil, r.Result)
-		return r.Err
 	})
 
 }

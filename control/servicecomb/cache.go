@@ -3,7 +3,7 @@ package servicecomb
 import (
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/pkg/backoff"
+	"github.com/go-chassis/go-chassis/resilience/retry"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -22,6 +22,6 @@ var (
 var (
 	DefaultLB = control.LoadBalancingConfig{
 		Strategy:    loadbalancer.StrategyRoundRobin,
-		BackOffKind: backoff.DefaultBackOffKind,
+		BackOffKind: retry.DefaultBackOffKind,
 	}
 )

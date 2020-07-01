@@ -156,7 +156,7 @@ type ContextHeaderKey struct{}
 // NewContext transforms a metadata to context object
 func NewContext(m map[string]string) context.Context {
 	if m == nil {
-		return context.WithValue(context.Background(), ContextHeaderKey{}, make(map[string]string, 0))
+		return context.WithValue(context.Background(), ContextHeaderKey{}, make(map[string]string))
 	}
 	return context.WithValue(context.Background(), ContextHeaderKey{}, m)
 }
@@ -183,11 +183,11 @@ func WithContext(ctx context.Context, key, val string) context.Context {
 // through transport
 func FromContext(ctx context.Context) map[string]string {
 	if ctx == nil {
-		return make(map[string]string, 0)
+		return make(map[string]string)
 	}
 	at, ok := ctx.Value(ContextHeaderKey{}).(map[string]string)
 	if !ok {
-		return make(map[string]string, 0)
+		return make(map[string]string)
 	}
 	return at
 }
