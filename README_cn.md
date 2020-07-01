@@ -1,7 +1,7 @@
 Go-Chassis 是一个go语言的微服务开发框架，帮助你快速开发微服务，完成架构转型
 
 ### 为什么使用 Go chassis
-- 强大的中间件 "handler chain":不同于 "filter" or "interceptor"的设计. 每个handler都可以拿到后面的handler的执行结果，包括软件的业务逻辑执行结果。这在很多场景下都很实用，比如:
+- 强大的中间件 "handler chain":不止拥有 "filter" or "interceptor"的能力. chain中每个handler都可以拿到后面的handler的执行结果，包括业务代码的执行结果。这在很多场景下都很实用，比如:
 
 1.跟踪业务指标，并导出他们让promethues收集。
 
