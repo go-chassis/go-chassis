@@ -76,7 +76,10 @@ func readFromArchaius() error {
 
 	populateConfigServerAddress()
 	populateServiceRegistryAddress()
-	ReadMonitorFromArchaius()
+	err = ReadMonitorFromArchaius()
+	if err != nil {
+		return err
+	}
 
 	populateServiceEnvironment()
 	populateServiceName()

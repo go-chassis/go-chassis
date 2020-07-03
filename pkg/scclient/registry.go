@@ -37,7 +37,6 @@ type MicroServiceKey struct {
 	AppID       string `protobuf:"bytes,3,opt,name=appId" json:"appId,omitempty"`
 	ServiceName string `protobuf:"bytes,4,opt,name=serviceName" json:"serviceName,omitempty"`
 	Version     string `protobuf:"bytes,5,opt,name=version" json:"version,omitempty"`
-	ins         []proto.MicroServiceInstance
 }
 
 // ServicePath is a struct with path and property information

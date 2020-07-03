@@ -9,6 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/status"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-mesh/openlogging"
 )
 
 // constant for bizkeeper-consumer
@@ -33,14 +34,13 @@ func (bk *BizKeeperConsumerHandler) Handle(chain *handler.Chain, i *invocation.I
 		return
 	}
 	err = hystrix.Do(command, func() (err error) {
-		chain.Next(i, func(resp *invocation.Response) error {
+		chain.Next(i, func(resp *invocation.Response) {
 			err = resp.Err
 			select {
 			case finish <- resp:
 			default:
 				// means hystrix error occurred
 			}
-			return err
 		})
 		return
 	}, f)
@@ -87,8 +87,14 @@ func (bk *BizKeeperConsumerHandler) Name() string {
 }
 
 func init() {
-	handler.RegisterHandler(Name, newBizKeeperConsumerHandler)
-	handler.RegisterHandler("bizkeeper-provider", newBizKeeperProviderHandler)
+	err := handler.RegisterHandler(Name, newBizKeeperConsumerHandler)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
+	err = handler.RegisterHandler("bizkeeper-provider", newBizKeeperProviderHandler)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
 	Init()
 	go hystrix.StartReporter()
 }

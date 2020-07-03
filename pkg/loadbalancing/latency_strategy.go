@@ -52,13 +52,10 @@ func CalculateAvgLatency() {
 
 // WeightedResponseStrategy is a strategy plugin
 type WeightedResponseStrategy struct {
-	instances        []*registry.MicroServiceInstance
-	mtx              sync.Mutex
-	serviceName      string
-	protocol         string
-	checkValuesExist bool
-	avgLatencyMap    map[string]time.Duration
-	tags             string
+	instances   []*registry.MicroServiceInstance
+	serviceName string
+	protocol    string
+	tags        string
 }
 
 func init() {

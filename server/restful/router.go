@@ -116,7 +116,10 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 					"err": err.Error(),
 				}))
 				resp.AddHeader("Content-Type", "text/plain")
-				resp.WriteErrorString(http.StatusInternalServerError, err.Error())
+				err := resp.WriteErrorString(http.StatusInternalServerError, err.Error())
+				if err != nil {
+					openlogging.Error(err.Error())
+				}
 				return
 			}
 		}
@@ -136,14 +139,13 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 		*c = *originChain
 		c.AddHandler(newHandler(handleFunc, bs, opts))
 		//give inv.Ctx to user handlers, modules may inject headers in handler chain
-		c.Next(inv, func(ir *invocation.Response) error {
+		c.Next(inv, func(ir *invocation.Response) {
 			if ir.Err != nil {
 				if resp != nil {
 					resp.WriteHeader(ir.Status)
 				}
-				return ir.Err
+				return
 			}
-			return nil
 		})
 
 	}

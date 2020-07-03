@@ -56,7 +56,10 @@ func Use(middleware *Auth) {
 	} else {
 		openlogging.Warn("under some condition, no auth")
 	}
-	handler.RegisterHandler("jwt", newHandler)
+	err := handler.RegisterHandler("jwt", newHandler)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
 }
 
 //SetExpire reset the expire time

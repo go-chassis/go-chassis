@@ -20,10 +20,10 @@ set retryEnabled to true to enable it
 > *(optional, int)* if remote call failed, then call load balancing again to get next instance, default is *0*
 
 **backoff.kind**
-> *(optional, string)* backoff policy: [jittered|constant|zero] default is *zero*
+> *(optional, string)* backoff policy: [exponential|constant|zero] default is *exponential*
 - zero:  do not wait for any time。
 - constant: after each failed retry, wait for constant time. Use backoff.minMs to set the time。
-- jittered: time wil exponential growth after each retry, till this time reach to MaxMs. 
+- exponential: time wil exponential growth after each retry, till this time reach to MaxMs. 
 Use backoff.minMs to set the the first wait time
 
 **backoff.MinMs**
@@ -43,7 +43,7 @@ cse:
     retryOnNext: 2
     retryOnSame: 3
     backoff:
-      kind: jittered
+      kind: exponential
       MinMs: 200
       MaxMs: 400
 ```

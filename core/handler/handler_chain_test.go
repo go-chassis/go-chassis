@@ -77,8 +77,7 @@ func BenchmarkChain_Next(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		c, _ = handler.GetChain(common.Consumer, "default")
-		c.Next(iv, func(r *invocation.Response) error {
-			return r.Err
+		c.Next(iv, func(r *invocation.Response) {
 		})
 		iv.HandlerIndex = 0
 	}

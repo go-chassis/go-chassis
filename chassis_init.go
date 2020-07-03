@@ -42,7 +42,6 @@ import (
 )
 
 type chassis struct {
-	version     string
 	schemas     []*Schema
 	mu          sync.Mutex
 	Initialized bool

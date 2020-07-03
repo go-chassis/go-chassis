@@ -3,6 +3,7 @@ package servicecomb
 import (
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-chassis/resilience/retry"
 	"reflect"
 	"strings"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/pkg/backoff"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/go-mesh/openlogging"
 )
@@ -74,7 +74,7 @@ func setDefaultLBValue(c *control.LoadBalancingConfig) {
 		c.Strategy = loadbalancer.StrategyRoundRobin
 	}
 	if c.BackOffKind == "" {
-		c.BackOffKind = backoff.DefaultBackOffKind
+		c.BackOffKind = retry.DefaultBackOffKind
 	}
 }
 

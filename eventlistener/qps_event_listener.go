@@ -1,8 +1,10 @@
 package eventlistener
 
 import (
+	"fmt"
 	"github.com/go-chassis/go-archaius/event"
-	"github.com/go-chassis/go-chassis/pkg/rate"
+	"github.com/go-chassis/go-chassis/resilience/rate"
+	"github.com/go-mesh/openlogging"
 
 	"strings"
 
@@ -27,12 +29,20 @@ func (el *QPSEventListener) Event(e *event.Event) {
 	if strings.Contains(e.Key, "enabled") {
 		return
 	}
-	//TODO watch new config
+	qps, ok := e.Value.(int)
+	if !ok {
+		openlogging.Error(fmt.Sprintf("invalid qps config %s", e.Value))
+	}
+	openlogging.Info("update rate limiter", openlogging.WithTags(openlogging.Tags{
+		"module": "RateLimiting",
+		"event":  e.EventType,
+		"value":  qps,
+	}))
 	switch e.EventType {
 	case common.Update:
-		qpsLimiter.UpdateRateLimit(e.Key, e.Value)
+		qpsLimiter.UpdateRateLimit(e.Key, qps, qps/5)
 	case common.Create:
-		qpsLimiter.UpdateRateLimit(e.Key, e.Value)
+		qpsLimiter.UpdateRateLimit(e.Key, qps, qps/5)
 	case common.Delete:
 		qpsLimiter.DeleteRateLimiter(e.Key)
 	}

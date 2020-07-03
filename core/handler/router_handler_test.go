@@ -33,9 +33,8 @@ func TestRouterHandler_Handle(t *testing.T) {
 			MicroServiceName: "service1",
 			RouteTags:        utiltags.NewDefaultTag("1.0", "appID"),
 		}
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
-			return r.Err
 		})
 	})
 
@@ -69,11 +68,10 @@ func TestRouterHandler_Handle(t *testing.T) {
 				"Os": "ios",
 			}),
 		}
-		c.Next(i, func(r *invocation.Response) error {
+		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 			assert.Equal(t, "1.0", i.RouteTags.KV["version"])
 			assert.Equal(t, "x", i.RouteTags.KV["project"])
-			return r.Err
 		})
 	})
 

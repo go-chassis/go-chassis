@@ -30,7 +30,7 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		openlogging.GetLogger().Errorf("Extract span failed, err [%s]", err.Error())
 	}
 	wireContext, err = opentracing.GlobalTracer().Extract(opentracing.TextMap, opentracing.TextMapCarrier(i.Headers()))
-	if wireContext == nil {
+	if err != nil {
 		span = opentracing.StartSpan(i.OperationID, ext.RPCServerOption(wireContext))
 	} else {
 		// store span in context
@@ -41,8 +41,8 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	// So the best way is that spans finish in the callback func, not after it.
 	// But server may respond in the callback func too, that we have to remove
 	// span finishing from callback func's inside to outside.
-	chain.Next(i, func(r *invocation.Response) (err error) {
-		err = cb(r)
+	chain.Next(i, func(r *invocation.Response) {
+		cb(r)
 		switch i.Protocol {
 		case common.ProtocolRest:
 			span.SetTag(tracing.HTTPMethod, i.Metadata[common.RestMethod])
@@ -51,7 +51,6 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		default:
 		}
 		span.Finish()
-		return
 	})
 }
 
@@ -99,7 +98,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	// So the best way is that spans finish in the callback func, not after it.
 	// But client may send req in the callback func too, that we have to remove
 	// span finishing from callback func's inside to outside.
-	chain.Next(i, func(r *invocation.Response) (err error) {
+	chain.Next(i, func(r *invocation.Response) {
 		switch i.Protocol {
 		case common.ProtocolRest:
 			span.SetTag(tracing.HTTPMethod, i.Metadata[common.RestMethod])
@@ -109,7 +108,7 @@ func (t *TracingConsumerHandler) Handle(chain *Chain, i *invocation.Invocation, 
 		default:
 		}
 		span.Finish()
-		return cb(r)
+		cb(r)
 	})
 }
 

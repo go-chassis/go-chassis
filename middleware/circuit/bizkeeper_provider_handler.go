@@ -24,14 +24,13 @@ func (bk *BizKeeperProviderHandler) Handle(chain *handler.Chain, i *invocation.I
 
 	var r *invocation.Response
 	err := hystrix.Do(command, func() (err error) {
-		chain.Next(i, func(resp *invocation.Response) error {
+		chain.Next(i, func(resp *invocation.Response) {
 			r = resp
 			if resp == nil {
 				err = errNextChainNoResponse
 			} else {
 				err = resp.Err
 			}
-			return err
 		})
 		return
 	}, nil)

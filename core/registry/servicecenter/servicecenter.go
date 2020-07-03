@@ -62,7 +62,11 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroService, cInstance *registry.MicroServiceInstance) (string, string, error) {
 	microService := ToSCService(cMicroService)
 	instance := ToSCInstance(cInstance)
-	microServiceID, err := r.registryClient.GetMicroServiceID(microService.AppId, microService.ServiceName, microService.Version, microService.Environment)
+	microServiceID, err := r.registryClient.GetMicroServiceID(microService.AppId,
+		microService.ServiceName, microService.Version, microService.Environment)
+	if err != nil {
+		return "", "", err
+	}
 	if microServiceID == "" {
 		microServiceID, err = r.registryClient.RegisterService(microService)
 		if err != nil {
@@ -99,7 +103,7 @@ func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (
 		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
 		return false, err
 	}
-	if bo == false {
+	if !bo {
 		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
 		return bo, err
 	}
@@ -201,12 +205,8 @@ func (r *ServiceDiscovery) GetAllApplications() ([]string, error) {
 		openlogging.GetLogger().Errorf("GetAllApplications failed: %s", err)
 		return nil, err
 	}
-	appArray := []string{}
-	for _, s := range apps {
-		appArray = append(appArray, s)
-	}
 	openlogging.GetLogger().Debugf("GetAllApplications success, Applications: %s", apps)
-	return appArray, nil
+	return apps, nil
 }
 
 // GetMicroService : 根据microServiceID获取对应的微服务信息
@@ -295,7 +295,11 @@ func (r *ServiceDiscovery) GetDependentMicroServiceInstances(appID, consumerMicr
 
 // WatchMicroService : 支持用户自调用主动监听实例变化功能
 func (r *ServiceDiscovery) WatchMicroService(selfMicroServiceID string, callback func(*client.MicroServiceInstanceChangedEvent)) {
-	r.registryClient.WatchMicroService(selfMicroServiceID, callback)
+	err := r.registryClient.WatchMicroService(selfMicroServiceID, callback)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
+
 }
 
 // AutoSync updating the cache manager

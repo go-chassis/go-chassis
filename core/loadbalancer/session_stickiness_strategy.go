@@ -46,7 +46,6 @@ func IncreaseSuccessiveFailureCount(cookieValue string) {
 	}
 	successiveFailureCount[cookieValue] = 1
 	successiveFailureCountMutex.Unlock()
-	return
 }
 
 //GetSuccessiveFailureCount get failure count

@@ -21,7 +21,7 @@ func getProtocolMap(eps []string) map[string]string {
 
 //RegroupInstances organize raw data to better format
 func RegroupInstances(keys []*proto.FindService, response proto.BatchFindInstancesResponse) map[string][]*proto.MicroServiceInstance {
-	instanceMap := make(map[string][]*proto.MicroServiceInstance, 0)
+	instanceMap := make(map[string][]*proto.MicroServiceInstance)
 	if response.Services != nil {
 		for _, result := range response.Services.Updated {
 			if len(result.Instances) == 0 {

@@ -68,7 +68,10 @@ func FallbackNil(inv *invocation.Invocation, finish chan *invocation.Response) f
 				resp.StatusCode = http.StatusOK
 				//make sure body is empty
 				if resp.Body != nil {
-					io.Copy(ioutil.Discard, resp.Body)
+					_, err = io.Copy(ioutil.Discard, resp.Body)
+					if err != nil {
+						openlogging.Error(err.Error())
+					}
 					resp.Body.Close()
 				}
 			}
@@ -117,7 +120,10 @@ func FallbackErr(inv *invocation.Invocation, finish chan *invocation.Response) f
 			resp.StatusCode = http.StatusInternalServerError
 			//make sure body is empty
 			if resp.Body != nil {
-				io.Copy(ioutil.Discard, resp.Body)
+				_, err = io.Copy(ioutil.Discard, resp.Body)
+				if err != nil {
+					openlogging.Error(err.Error())
+				}
 				resp.Body.Close()
 			}
 		}

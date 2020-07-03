@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/client"
@@ -26,7 +27,6 @@ func errNotNil(err error, cb invocation.ResponseCallBack) {
 	}
 	openlogging.Error("GetClient got Error: " + err.Error())
 	cb(r)
-	return
 }
 
 // Handle is to handle transport related things
@@ -97,7 +97,7 @@ func ProcessSuccessiveFailure(i *invocation.Invocation) {
 		if i.Reply != nil && i.Args != nil {
 			reply = i.Reply.(*http.Response)
 		}
-		cookie = session.GetSessionCookie(nil, reply)
+		cookie = session.GetSessionCookie(context.TODO(), reply)
 		if cookie != "" {
 			loadbalancer.IncreaseSuccessiveFailureCount(cookie)
 			errCount := loadbalancer.GetSuccessiveFailureCount(cookie)
