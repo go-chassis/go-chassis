@@ -114,6 +114,9 @@ func (j *jwtTokenManager) Verify(tokenString string, f SecretFunc, opts ...Optio
 		}
 		return f(token.Claims, sm)
 	})
+	if err != nil {
+		return nil, err
+	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
