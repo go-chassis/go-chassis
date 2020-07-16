@@ -34,7 +34,7 @@ import (
 
 //errors
 var (
-	ErrNoHeader    = errors.New("not authorized")
+	ErrNoHeader    = errors.New("no authorization in header")
 	ErrInvalidAuth = errors.New("invalid authentication")
 )
 

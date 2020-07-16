@@ -43,23 +43,6 @@ func (s *SafePool) Reset(key string) {
 	s.Unlock()
 }
 
-/* Weighted Round-Robin Scheduling
-http://zh.linuxvirtualserver.org/node/37
-
-while (true) {
-  i = (i + 1) mod n;
-  if (i == 0) {
-     cw = cw - gcd(S);
-     if (cw <= 0) {
-       cw = max(S);
-       if (cw == 0)
-         return NULL;
-     }
-  }
-  if (W(Si) >= cw)
-    return Si;
-}*/
-
 // Pool defines sets of weighted tags
 type Pool struct {
 	tags []config.RouteTag
