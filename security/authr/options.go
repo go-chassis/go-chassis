@@ -31,3 +31,18 @@ func WithPlugin(p string) Option {
 		options.Plugin = p
 	}
 }
+
+// Options is a struct to stores options
+type LoginOptions struct {
+	ExpireAfter string
+}
+
+//Option is option
+type LoginOption func(options *LoginOptions)
+
+//ExpireAfter specify time duration, for example: 3d, 3m, 1s, 3h
+func ExpireAfter(p string) LoginOption {
+	return func(options *LoginOptions) {
+		options.ExpireAfter = p
+	}
+}

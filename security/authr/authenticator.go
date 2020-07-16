@@ -43,13 +43,13 @@ func Install(name string, f newFunc) {
 
 //Authenticator can sign a token and authenticate that token
 type Authenticator interface {
-	Login(ctx context.Context, user string, password string) (string, error)
+	Login(ctx context.Context, user string, password string, opts ...LoginOption) (string, error)
 	Authenticate(ctx context.Context, token string) (interface{}, error)
 }
 
 //Login verify a user info and return a token
-func Login(ctx context.Context, user string, password string) (string, error) {
-	return defaultAuthenticator.Login(ctx, user, password)
+func Login(ctx context.Context, user string, password string, opts ...LoginOption) (string, error) {
+	return defaultAuthenticator.Login(ctx, user, password, opts...)
 }
 
 //Authenticate parse a token and return the claims in that token

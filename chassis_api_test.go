@@ -33,7 +33,6 @@ func TestInit(t *testing.T) {
 
 	// write some text line-by-line to file
 	_, err = globalDefFile.WriteString(`---
-#APPLICATION_ID: CSE optional
 controlPanel:
   infra: istio
   settings:

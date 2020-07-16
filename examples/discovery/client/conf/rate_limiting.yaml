@@ -1,5 +1,4 @@
 ---
-#APPLICATION_ID: CSE optional
 
 cse:
   flowcontrol:
