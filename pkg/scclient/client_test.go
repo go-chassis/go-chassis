@@ -1,12 +1,12 @@
 package client_test
 
 import (
+	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/paas-lager"
 	"github.com/go-mesh/openlogging"
 	"os"
@@ -54,7 +54,7 @@ func TestClientInitializeHttpErr(t *testing.T) {
 		openlogging.GetLogger().Error("Get hostname failed.")
 		return
 	}
-	microServiceInstance := &proto.MicroServiceInstance{
+	microServiceInstance := &scregistry.MicroServiceInstance{
 		Endpoints: []string{"rest://127.0.0.1:3000"},
 		HostName:  hostname,
 		Status:    client.MSInstanceUP,
@@ -87,24 +87,11 @@ func TestClientInitializeHttpErr(t *testing.T) {
 	err = registryClient.WatchMicroService(MSList[0].ServiceId, f1)
 	assert.NoError(t, err)
 
-	var ms = new(proto.MicroService)
-	var msdepreq = new(client.MircroServiceDependencyRequest)
-	var msdepArr []*client.MicroServiceDependency
-	var msdep1 = new(client.MicroServiceDependency)
-	var msdep2 = new(client.MicroServiceDependency)
-	var dep = new(client.DependencyMicroService)
+	var ms = new(scregistry.MicroService)
 	var m = make(map[string]string)
 
 	m["abc"] = "abc"
 	m["def"] = "def"
-
-	dep.AppID = "AppId"
-
-	msdep1.Consumer = dep
-	msdep2.Consumer = dep
-
-	msdepArr = append(msdepArr, msdep1)
-	msdepArr = append(msdepArr, msdep2)
 
 	ms.AppId = MSList[0].AppId
 	ms.ServiceName = MSList[0].ServiceName
@@ -112,7 +99,6 @@ func TestClientInitializeHttpErr(t *testing.T) {
 	ms.Environment = MSList[0].Environment
 	ms.Properties = m
 
-	msdepreq.Dependencies = msdepArr
 	s1, err := registryClient.RegisterMicroServiceInstance(microServiceInstance)
 	assert.Empty(t, s1)
 	assert.Error(t, err)
@@ -153,7 +139,7 @@ func TestClientInitializeHttpErr(t *testing.T) {
 	assert.Empty(t, str)
 	assert.Error(t, err)
 	t.Run("register service with name only", func(t *testing.T) {
-		sid, err := registryClient.RegisterService(&proto.MicroService{
+		sid, err := registryClient.RegisterService(&scregistry.MicroService{
 			ServiceName: "simpleService",
 		})
 		assert.NotEmpty(t, sid)
@@ -170,7 +156,7 @@ func TestClientInitializeHttpErr(t *testing.T) {
 		assert.Nil(t, s)
 	})
 	t.Run("register service with invalid name", func(t *testing.T) {
-		_, err := registryClient.RegisterService(&proto.MicroService{
+		_, err := registryClient.RegisterService(&scregistry.MicroService{
 			ServiceName: "simple&Service",
 		})
 		t.Log(err)
@@ -185,12 +171,6 @@ func TestClientInitializeHttpErr(t *testing.T) {
 	})
 	ms1, err := registryClient.GetProviders("fakeconsumer")
 	assert.Empty(t, ms1)
-	assert.Error(t, err)
-
-	err = registryClient.AddDependencies(msdepreq)
-	assert.Error(t, err)
-
-	err = registryClient.AddDependencies(nil)
 	assert.Error(t, err)
 
 	getms1, err := registryClient.GetMicroService(MSList[0].ServiceId)
@@ -242,7 +222,7 @@ func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
 		openlogging.GetLogger().Error("Get hostname failed.")
 		return
 	}
-	ms := &proto.MicroService{
+	ms := &scregistry.MicroService{
 		ServiceName: "scUTServer",
 		AppId:       "default",
 		Version:     "0.0.1",
@@ -275,7 +255,7 @@ func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
 		_, err := registryClient.GetSchema("", "schema")
 		assert.Error(t, err)
 	})
-	microServiceInstance := &proto.MicroServiceInstance{
+	microServiceInstance := &scregistry.MicroServiceInstance{
 		ServiceId: sid,
 		Endpoints: []string{"rest://127.0.0.1:3000"},
 		HostName:  hostname,
@@ -317,7 +297,7 @@ func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
 	assert.NoError(t, err)
 
 	t.Log("register new and find")
-	microServiceInstance2 := &proto.MicroServiceInstance{
+	microServiceInstance2 := &scregistry.MicroServiceInstance{
 		ServiceId: sid,
 		Endpoints: []string{"rest://127.0.0.1:3001"},
 		HostName:  hostname + "1",
@@ -338,48 +318,48 @@ func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
 	_, err = registryClient.FindMicroServiceInstances(sid, "AppIdNotExists", "ServerNotExists", "0.0.1")
 	assert.Equal(t, client.ErrMicroServiceNotExists, err)
 
-	f := &proto.FindService{
-		Service: &proto.MicroServiceKey{
+	f := &scregistry.FindService{
+		Service: &scregistry.MicroServiceKey{
 			ServiceName: "scUTServer",
 			AppId:       "default",
 			Version:     "0.0.1",
 		},
 	}
-	fs := []*proto.FindService{f}
+	fs := []*scregistry.FindService{f}
 	instances, err := registryClient.BatchFindInstances(sid, fs)
 	t.Log(instances)
 	assert.NoError(t, err)
 
-	f1 := &proto.FindService{
-		Service: &proto.MicroServiceKey{
+	f1 := &scregistry.FindService{
+		Service: &scregistry.MicroServiceKey{
 			ServiceName: "empty",
 			AppId:       "default",
 			Version:     "0.0.1",
 		},
 	}
-	fs = []*proto.FindService{f1}
+	fs = []*scregistry.FindService{f1}
 	instances, err = registryClient.BatchFindInstances(sid, fs)
 	t.Log(instances)
 	assert.NoError(t, err)
 
-	f2 := &proto.FindService{
-		Service: &proto.MicroServiceKey{
+	f2 := &scregistry.FindService{
+		Service: &scregistry.MicroServiceKey{
 			ServiceName: "empty",
 			AppId:       "default",
 			Version:     "latest",
 		},
 	}
-	fs = []*proto.FindService{f}
+	fs = []*scregistry.FindService{f}
 	instances, err = registryClient.BatchFindInstances(sid, fs)
 	t.Log(instances)
 	assert.NoError(t, err)
 
-	fs = []*proto.FindService{f2, f}
+	fs = []*scregistry.FindService{f2, f}
 	instances, err = registryClient.BatchFindInstances(sid, fs)
 	t.Log(instances)
 	assert.NoError(t, err)
 
-	fs = []*proto.FindService{}
+	fs = []*scregistry.FindService{}
 	instances, err = registryClient.BatchFindInstances(sid, fs)
 	assert.Equal(t, client.ErrEmptyCriteria, err)
 }

@@ -1,13 +1,13 @@
 package servicecenter
 
 import (
+	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 )
 
 // ToMicroService assign sc micro-service to go chassis micro-service
-func ToMicroService(scs *proto.MicroService) *registry.MicroService {
+func ToMicroService(scs *scregistry.MicroService) *registry.MicroService {
 	cs := &registry.MicroService{}
 	cs.ServiceID = scs.ServiceId
 	cs.ServiceName = scs.ServiceName
@@ -27,8 +27,8 @@ func ToMicroService(scs *proto.MicroService) *registry.MicroService {
 }
 
 // ToSCService assign go chassis micro-service to the sc micro-service
-func ToSCService(cs *registry.MicroService) *proto.MicroService {
-	scs := &proto.MicroService{}
+func ToSCService(cs *registry.MicroService) *scregistry.MicroService {
+	scs := &scregistry.MicroService{}
 	scs.ServiceId = cs.ServiceID
 	scs.ServiceName = cs.ServiceName
 	scs.Version = cs.Version
@@ -39,16 +39,16 @@ func ToSCService(cs *registry.MicroService) *proto.MicroService {
 	scs.Level = cs.Level
 	scs.Status = cs.Status
 	svcPaths := cs.Paths
-	regpaths := []*proto.ServicePath{}
+	regpaths := []*scregistry.ServicePath{}
 	for _, svcPath := range svcPaths {
-		var regpath proto.ServicePath
+		var regpath scregistry.ServicePath
 		regpath.Path = svcPath.Path
 		regpath.Property = svcPath.Property
 		regpaths = append(regpaths, &regpath)
 	}
 	scs.Paths = regpaths
 	if cs.Framework != nil {
-		scs.Framework = &proto.FrameWorkProperty{}
+		scs.Framework = &scregistry.FrameWorkProperty{}
 		scs.Framework.Version = cs.Framework.Version
 		scs.Framework.Name = cs.Framework.Name
 	}
@@ -58,11 +58,12 @@ func ToSCService(cs *registry.MicroService) *proto.MicroService {
 }
 
 // ToMicroServiceInstance assign model micro-service instance parameters to registry micro-service instance parameters
-func ToMicroServiceInstance(ins *proto.MicroServiceInstance) *registry.MicroServiceInstance {
+func ToMicroServiceInstance(ins *scregistry.MicroServiceInstance) *registry.MicroServiceInstance {
 	msi := &registry.MicroServiceInstance{
 		InstanceID: ins.InstanceId,
 		Metadata:   ins.Properties,
 		Status:     ins.Status,
+		Version:    ins.Version,
 	}
 	m, p := registry.GetProtocolMap(ins.Endpoints)
 	msi.EndpointsMap = m
@@ -85,8 +86,8 @@ func ToMicroServiceInstance(ins *proto.MicroServiceInstance) *registry.MicroServ
 }
 
 // ToSCInstance assign registry micro-service instance parameters to model micro-service instance parameters
-func ToSCInstance(msi *registry.MicroServiceInstance) *proto.MicroServiceInstance {
-	si := &proto.MicroServiceInstance{}
+func ToSCInstance(msi *registry.MicroServiceInstance) *scregistry.MicroServiceInstance {
+	si := &scregistry.MicroServiceInstance{}
 	eps := registry.GetProtocolList(msi.EndpointsMap)
 	si.InstanceId = msi.InstanceID
 	si.Endpoints = eps
@@ -94,35 +95,13 @@ func ToSCInstance(msi *registry.MicroServiceInstance) *proto.MicroServiceInstanc
 	si.HostName = msi.HostName
 	si.Status = msi.Status
 	if msi.DataCenterInfo != nil {
-		si.DataCenterInfo = &proto.DataCenterInfo{}
+		si.DataCenterInfo = &scregistry.DataCenterInfo{}
 		si.DataCenterInfo.Name = msi.DataCenterInfo.Name
 		si.DataCenterInfo.AvailableZone = msi.DataCenterInfo.AvailableZone
 		si.DataCenterInfo.Region = msi.DataCenterInfo.Region
 	}
 
 	return si
-}
-
-// ToSCDependency assign registry micro-service dependencies to model micro-service dependencies
-func ToSCDependency(dep *registry.MicroServiceDependency) *client.MircroServiceDependencyRequest {
-	scDep := &client.MircroServiceDependencyRequest{
-		Dependencies: make([]*client.MicroServiceDependency, 1),
-	}
-	scDep.Dependencies[0] = &client.MicroServiceDependency{}
-	scDep.Dependencies[0].Consumer = &client.DependencyMicroService{
-		AppID:       dep.Consumer.AppID,
-		ServiceName: dep.Consumer.ServiceName,
-		Version:     dep.Consumer.Version,
-	}
-	for _, p := range dep.Providers {
-		scP := &client.DependencyMicroService{
-			AppID:       p.AppID,
-			ServiceName: p.ServiceName,
-			Version:     p.Version,
-		}
-		scDep.Dependencies[0].Providers = append(scDep.Dependencies[0].Providers, scP)
-	}
-	return scDep
 }
 
 //ToSCOptions convert registry opstions into sc client options

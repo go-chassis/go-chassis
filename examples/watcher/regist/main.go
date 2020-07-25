@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"os"
 	"time"
 )
@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	service := &proto.MicroService{
+	service := &scregistry.MicroService{
 		AppId:       "default",
 		ServiceName: "myserver1",
 		Version:     "0.0.1",
@@ -35,7 +35,7 @@ func main() {
 	}
 	fmt.Printf("sid[%v]\n", sid)
 
-	instance := proto.MicroServiceInstance{
+	instance := scregistry.MicroServiceInstance{
 		ServiceId: sid,
 		HostName:  "insdfsdsdfsdff2233",
 		Status:    common.DefaultStatus,

@@ -35,6 +35,9 @@ type Framework struct {
 
 // MicroServiceInstance struct having full info about micro-service instance
 type MicroServiceInstance struct {
+	App             string
+	ServiceName     string
+	Version         string
 	InstanceID      string               `json:"instanceID"`
 	HostName        string               `json:"hostName"`
 	ServiceID       string               `json:"serviceID"`

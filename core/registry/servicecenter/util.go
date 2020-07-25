@@ -1,11 +1,11 @@
 package servicecenter
 
 import (
+	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
@@ -50,7 +50,7 @@ func unmarshalSchemaContent(content []byte) (*registry.SchemaContent, error) {
 }
 
 // filterInstances filter instances
-func filterInstances(providerInstances []*proto.MicroServiceInstance) []*registry.MicroServiceInstance {
+func filterInstances(providerInstances []*scregistry.MicroServiceInstance) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {
 		if ins.Status != client.MSInstanceUP {
@@ -89,11 +89,11 @@ func wrapTagsForServiceCenter(t utiltags.Tags) utiltags.Tags {
 }
 
 //GetCriteria generate batch find criteria from provider cache
-func GetCriteria() []*proto.FindService {
-	services := make([]*proto.FindService, 0)
+func GetCriteria() []*scregistry.FindService {
+	services := make([]*scregistry.FindService, 0)
 	for _, service := range registry.GetProvidersFromCache() {
-		services = append(services, &proto.FindService{
-			Service: &proto.MicroServiceKey{
+		services = append(services, &scregistry.FindService{
+			Service: &scregistry.MicroServiceKey{
 				ServiceName: service.ServiceName,
 				Version:     service.Version,
 				AppId:       service.AppID,
@@ -104,14 +104,14 @@ func GetCriteria() []*proto.FindService {
 }
 
 //GetCriteriaByService generate batch find criteria from provider cache with same service name and different app
-func GetCriteriaByService(sn string) []*proto.FindService {
-	services := make([]*proto.FindService, 0)
+func GetCriteriaByService(sn string) []*scregistry.FindService {
+	services := make([]*scregistry.FindService, 0)
 	for _, service := range registry.GetProvidersFromCache() {
 		if sn != service.ServiceName {
 			continue
 		}
-		services = append(services, &proto.FindService{
-			Service: &proto.MicroServiceKey{
+		services = append(services, &scregistry.FindService{
+			Service: &scregistry.MicroServiceKey{
 				ServiceName: service.ServiceName,
 				Version:     service.Version,
 				AppId:       service.AppID,

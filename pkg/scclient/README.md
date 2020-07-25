@@ -1,5 +1,4 @@
-### Service-Center Client for Go-Chassis
-[![Build Status](https://travis-ci.org/go-chassis/go-sc-client.svg?branch=master)](https://travis-ci.org/go-chassis/go-sc-client)
+### Service-Center Client 
 This is a service-center client which helps the microservice to interact with Service-Center
 for service-registration, discovery, instance registration and dependency management.
 

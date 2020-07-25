@@ -2,11 +2,11 @@ package servicecenter
 
 import (
 	"fmt"
+	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
 
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
 	"github.com/go-mesh/openlogging"
 )
@@ -134,7 +134,7 @@ func (r *Registrator) UpdateMicroServiceInstanceStatus(microServiceID, microServ
 
 // UpdateMicroServiceProperties 更新微服务properties信息
 func (r *Registrator) UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error {
-	microService := &proto.MicroService{
+	microService := &scregistry.MicroService{
 		Properties: properties,
 	}
 	isSuccess, err := r.registryClient.UpdateMicroServiceProperties(microServiceID, microService)
@@ -148,7 +148,7 @@ func (r *Registrator) UpdateMicroServiceProperties(microServiceID string, proper
 
 // UpdateMicroServiceInstanceProperties : 更新微服务实例properties信息
 func (r *Registrator) UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID string, properties map[string]string) error {
-	microServiceInstance := &proto.MicroServiceInstance{
+	microServiceInstance := &scregistry.MicroServiceInstance{
 		Properties: properties,
 	}
 	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID, microServiceInstance)
@@ -246,10 +246,11 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	if !boo || microServiceInstance == nil {
 		criteria := GetCriteriaByService(microServiceName)
 		openlogging.GetLogger().Warnf("%s Get instances from remote, key: %s:%s:%s", consumerID, appID, microServiceName, tags.Version())
-		providerInstances, err := r.registryClient.BatchFindInstances(consumerID, criteria)
+		providerInstancesResponse, err := r.registryClient.BatchFindInstances(consumerID, criteria)
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", microServiceName, err)
 		}
+		providerInstances := RegroupInstances(criteria, providerInstancesResponse)
 		filter(providerInstances)
 		microServiceInstance, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 		if !boo || microServiceInstance == nil {
@@ -261,36 +262,30 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	return microServiceInstance, nil
 }
 
-// GetDependentMicroServiceInstances : 获取指定微服务所依赖的所有实例
-func (r *ServiceDiscovery) GetDependentMicroServiceInstances(appID, consumerMicroServiceName, version, env string) ([]*proto.MicroServiceInstance, error) {
-	var instancesAll []*proto.MicroServiceInstance
-	microServiceConsumerID, err := r.GetMicroServiceID(appID, consumerMicroServiceName, version, env)
-	if err != nil {
-		openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err)
-		return nil, err
-	}
-	providers, err := r.registryClient.GetProviders(microServiceConsumerID)
-	if err != nil {
-		openlogging.GetLogger().Errorf("Get Provider failed: %s", err)
-		return nil, err
-	}
-	for _, provider := range providers.Services {
-		microServiceProviderID, err := r.GetMicroServiceID(provider.AppId, provider.ServiceName, provider.Version, env)
-		if err != nil {
-			openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err)
-			return nil, err
-		}
-		instances, err := r.GetMicroServiceInstances(microServiceConsumerID, microServiceProviderID)
-		if err != nil {
-			openlogging.GetLogger().Errorf("GetMicroServiceInstances failed: %s", err)
-			return nil, err
-		}
-		for _, value := range instances {
-			instancesAll = append(instancesAll, ToSCInstance(value))
+//RegroupInstances organize raw data to better format
+func RegroupInstances(keys []*scregistry.FindService, response *scregistry.BatchFindInstancesResponse) map[string][]*registry.MicroServiceInstance {
+	instanceMap := make(map[string][]*registry.MicroServiceInstance)
+	if response.Services != nil {
+		for _, result := range response.Services.Updated {
+			if len(result.Instances) == 0 {
+				continue
+			}
+			for _, instance := range result.Instances {
+				ni := ToMicroServiceInstance(instance)
+				ni.App = keys[result.Index].Service.AppId
+				ni.Version = keys[result.Index].Service.Version
+				instances, ok := instanceMap[keys[result.Index].Service.ServiceName]
+				if !ok {
+					instances = []*registry.MicroServiceInstance{ni}
+					instanceMap[keys[result.Index].Service.ServiceName] = instances
+					continue
+				}
+				instanceMap[keys[result.Index].Service.ServiceName] = append(instances, ni)
+			}
+
 		}
 	}
-	openlogging.GetLogger().Debugf("GetDependentMicroServiceInstances success, appID/microServiceName/version: %s/%s/%s", appID, consumerMicroServiceName, version)
-	return instancesAll, nil
+	return instanceMap
 }
 
 // WatchMicroService : 支持用户自调用主动监听实例变化功能
@@ -330,7 +325,7 @@ func (r *ContractDiscovery) GetMicroServicesByInterface(interfaceName string) (m
 		value, _ = registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 	}
 
-	microServiceModel, ok := value.([]*proto.MicroService)
+	microServiceModel, ok := value.([]*scregistry.MicroService)
 
 	if !ok {
 		openlogging.GetLogger().Errorf("GetMicroServicesByInterface failed, Type asserts failed")
@@ -350,7 +345,7 @@ func (r *ContractDiscovery) GetSchemaContentByInterface(interfaceName string) (s
 		return r.fillSchemaInterfaceIndexCache(nil, interfaceName)
 	}
 
-	val, ok := value.([]*proto.MicroService)
+	val, ok := value.([]*scregistry.MicroService)
 
 	if !ok {
 		return schemas
@@ -371,7 +366,7 @@ func (r *ContractDiscovery) GetSchemaContentByServiceName(svcName, version, appI
 		return r.fillSchemaServiceIndexCache(nil, serviceID)
 	}
 
-	val, ok := value.([]*proto.MicroService)
+	val, ok := value.([]*scregistry.MicroService)
 
 	if !ok {
 		return schemas
@@ -382,7 +377,7 @@ func (r *ContractDiscovery) GetSchemaContentByServiceName(svcName, version, appI
 }
 
 // fillSchemaServiceIndexCache fill schema service index cache
-func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*proto.MicroService, serviceID string) (content []*registry.SchemaContent) {
+func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*scregistry.MicroService, serviceID string) (content []*registry.SchemaContent) {
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
@@ -397,7 +392,7 @@ func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*proto.MicroService
 }
 
 // fillCacheAndGetServiceSchemaContent fill cache and get services schema content
-func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList []*proto.MicroService, serviceID string) (schemaContent []*registry.SchemaContent) {
+func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList []*scregistry.MicroService, serviceID string) (schemaContent []*registry.SchemaContent) {
 
 	for _, ms := range microServiceList {
 
@@ -415,7 +410,7 @@ func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList
 				}
 				_, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
 				if !ok {
-					var allServices []*proto.MicroService
+					var allServices []*scregistry.MicroService
 					allServices = append(allServices, ms)
 					registry.SchemaServiceIndexedCache.Set(serviceID, allServices, 0)
 				}
@@ -428,7 +423,7 @@ func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList
 }
 
 // fillSchemaInterfaceIndexCache fill schema interface index cache
-func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*proto.MicroService, interfaceName string) (content registry.SchemaContent) {
+func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*scregistry.MicroService, interfaceName string) (content registry.SchemaContent) {
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
@@ -443,7 +438,7 @@ func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*proto.MicroServi
 }
 
 // fillCacheAndGetInterfaceSchemaContent fill cache and get interface schema content
-func (r *ContractDiscovery) fillCacheAndGetInterfaceSchemaContent(microServiceList []*proto.MicroService, interfaceName string) (schemaContent registry.SchemaContent) {
+func (r *ContractDiscovery) fillCacheAndGetInterfaceSchemaContent(microServiceList []*scregistry.MicroService, interfaceName string) (schemaContent registry.SchemaContent) {
 
 	for _, ms := range microServiceList {
 		serviceID, err := r.registryClient.GetMicroServiceID(ms.AppId, ms.ServiceName, ms.Version, ms.Environment)
@@ -469,11 +464,11 @@ func (r *ContractDiscovery) fillCacheAndGetInterfaceSchemaContent(microServiceLi
 
 			value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 			if !ok {
-				var allServices []*proto.MicroService
+				var allServices []*scregistry.MicroService
 				allServices = append(allServices, ms)
 				registry.SchemaInterfaceIndexedCache.Set(interfaceValue, allServices, 0)
 			} else {
-				val, _ := value.([]*proto.MicroService)
+				val, _ := value.([]*scregistry.MicroService)
 				val = append(val, ms)
 				registry.SchemaInterfaceIndexedCache.Set(interfaceValue, val, 0)
 
