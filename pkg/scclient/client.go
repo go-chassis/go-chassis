@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/resilience/retry"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -15,10 +14,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/apache/servicecomb-service-center/pkg/registry"
 	"github.com/cenkalti/backoff"
 	"github.com/go-chassis/foundation/httpclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-chassis/go-chassis/resilience/retry"
 	"github.com/go-mesh/openlogging"
 	"github.com/gorilla/websocket"
 )
@@ -216,11 +216,11 @@ func (c *RegistryClient) HTTPDo(method string, rawURL string, headers http.Heade
 }
 
 // RegisterService registers the micro-services to Service-Center
-func (c *RegistryClient) RegisterService(microService *proto.MicroService) (string, error) {
+func (c *RegistryClient) RegisterService(microService *registry.MicroService) (string, error) {
 	if microService == nil {
 		return "", errors.New("invalid request MicroService parameter")
 	}
-	request := &MicroServiceRequest{
+	request := registry.CreateServiceRequest{
 		Service: microService,
 	}
 
@@ -242,13 +242,13 @@ func (c *RegistryClient) RegisterService(microService *proto.MicroService) (stri
 		return "", NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response ExistenceIDResponse
+		var response registry.GetExistenceResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return "", NewJSONException(err, string(body))
 		}
-		microService.ServiceId = response.ServiceID
-		return response.ServiceID, nil
+		microService.ServiceId = response.ServiceId
+		return response.ServiceId, nil
 	}
 	if resp.StatusCode == 400 {
 		return "", fmt.Errorf("client seems to have erred, error: %s", body)
@@ -258,7 +258,7 @@ func (c *RegistryClient) RegisterService(microService *proto.MicroService) (stri
 }
 
 // GetProviders gets a list of provider for a particular consumer
-func (c *RegistryClient) GetProviders(consumer string, opts ...CallOption) (*MicroServiceProvideresponse, error) {
+func (c *RegistryClient) GetProviders(consumer string, opts ...CallOption) (*MicroServiceProvideResponse, error) {
 	copts := &CallOptions{}
 	for _, opt := range opts {
 		opt(copts)
@@ -277,7 +277,7 @@ func (c *RegistryClient) GetProviders(consumer string, opts ...CallOption) (*Mic
 		return nil, fmt.Errorf("Get Providers failed, body is empty,  error: %s, MicroServiceid: %s", err, consumer)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		p := &MicroServiceProvideresponse{}
+		p := &MicroServiceProvideResponse{}
 		err = json.Unmarshal(body, p)
 		if err != nil {
 			return nil, err
@@ -286,32 +286,6 @@ func (c *RegistryClient) GetProviders(consumer string, opts ...CallOption) (*Mic
 	}
 	return nil, fmt.Errorf("get Providers failed, MicroServiceid: %s, response StatusCode: %d, response body: %s",
 		consumer, resp.StatusCode, string(body))
-}
-
-// AddDependencies ： 注册微服务的依赖关系
-func (c *RegistryClient) AddDependencies(request *MircroServiceDependencyRequest) error {
-	if request == nil {
-		return errors.New("invalid request parameter")
-	}
-	dependenciesURL := c.formatURL(MSAPIPath+DependencyPath, nil, nil)
-
-	body, err := json.Marshal(request)
-	if err != nil {
-		return NewJSONException(err, string(body))
-	}
-
-	resp, err := c.HTTPDo("PUT", dependenciesURL, nil, body)
-	if err != nil {
-		return err
-	}
-	if resp == nil {
-		return fmt.Errorf("AddDependencies failed, response is empty")
-	}
-	if resp.StatusCode != http.StatusOK {
-		return NewCommonException("add micro service dependencies failed. response StatusCode: %d, response body: %s",
-			resp.StatusCode, string(body))
-	}
-	return nil
 }
 
 // AddSchemas adds a schema contents to the services registered in service-center
@@ -326,8 +300,8 @@ func (c *RegistryClient) AddSchemas(microServiceID, schemaName, schemaInfo strin
 	if err != nil {
 		return err
 	}
-	request := &proto.ModifySchemasRequest{
-		Schemas: []*proto.Schema{{
+	request := &registry.ModifySchemasRequest{
+		Schemas: []*registry.Schema{{
 			SchemaId: schemaName,
 			Schema:   schemaInfo,
 			Summary:  fmt.Sprintf("%x", h.Sum(nil))}},
@@ -409,19 +383,19 @@ func (c *RegistryClient) GetMicroServiceID(appID, microServiceName, version, env
 		return "", NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 500 {
-		var response ExistenceIDResponse
+		var response registry.GetExistenceResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return "", NewJSONException(err, string(body))
 		}
-		return response.ServiceID, nil
+		return response.ServiceId, nil
 	}
 	return "", fmt.Errorf("GetMicroServiceID failed, MicroService: %s@%s#%s, response StatusCode: %d, response body: %s, URL: %s",
 		microServiceName, appID, version, resp.StatusCode, string(body), url)
 }
 
 // GetAllMicroServices gets list of all the microservices registered with Service-Center
-func (c *RegistryClient) GetAllMicroServices(opts ...CallOption) ([]*proto.MicroService, error) {
+func (c *RegistryClient) GetAllMicroServices(opts ...CallOption) ([]*registry.MicroService, error) {
 	copts := &CallOptions{}
 	for _, opt := range opts {
 		opt(copts)
@@ -440,7 +414,7 @@ func (c *RegistryClient) GetAllMicroServices(opts ...CallOption) ([]*proto.Micro
 		return nil, NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response proto.GetServicesResponse
+		var response registry.GetServicesResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
@@ -470,7 +444,7 @@ func (c *RegistryClient) GetAllApplications(opts ...CallOption) ([]string, error
 		return nil, NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response AppsResponse
+		var response registry.GetAppsResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
@@ -481,7 +455,7 @@ func (c *RegistryClient) GetAllApplications(opts ...CallOption) ([]string, error
 }
 
 // GetMicroService returns the microservices by ID
-func (c *RegistryClient) GetMicroService(microServiceID string, opts ...CallOption) (*proto.MicroService, error) {
+func (c *RegistryClient) GetMicroService(microServiceID string, opts ...CallOption) (*registry.MicroService, error) {
 	copts := &CallOptions{}
 	for _, opt := range opts {
 		opt(copts)
@@ -500,7 +474,7 @@ func (c *RegistryClient) GetMicroService(microServiceID string, opts ...CallOpti
 		return nil, NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response proto.GetServiceResponse
+		var response registry.GetServiceResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
@@ -512,7 +486,7 @@ func (c *RegistryClient) GetMicroService(microServiceID string, opts ...CallOpti
 
 //BatchFindInstances fetch instances based on service name, env, app and version
 //finally it return instances grouped by service name
-func (c *RegistryClient) BatchFindInstances(consumerID string, keys []*proto.FindService, opts ...CallOption) (map[string][]*proto.MicroServiceInstance, error) {
+func (c *RegistryClient) BatchFindInstances(consumerID string, keys []*registry.FindService, opts ...CallOption) (*registry.BatchFindInstancesResponse, error) {
 	copts := &CallOptions{Revision: c.revision}
 	for _, opt := range opts {
 		opt(copts)
@@ -523,8 +497,8 @@ func (c *RegistryClient) BatchFindInstances(consumerID string, keys []*proto.Fin
 	url := c.formatURL(MSAPIPath+BatchInstancePath, []URLParameter{
 		{"type": "query"},
 	}, copts)
-	r := &proto.BatchFindInstancesRequest{
-		ConsumerServiceID: consumerID,
+	r := &registry.BatchFindInstancesRequest{
+		ConsumerServiceId: consumerID,
 		Services:          keys,
 	}
 	rBody, err := json.Marshal(r)
@@ -539,21 +513,21 @@ func (c *RegistryClient) BatchFindInstances(consumerID string, keys []*proto.Fin
 		return nil, fmt.Errorf("BatchFindInstances failed, response is empty")
 	}
 	body := httputil.ReadBody(resp)
-	if resp.StatusCode == 200 {
-		var response proto.BatchFindInstancesResponse
+	if resp.StatusCode == http.StatusOK {
+		var response *registry.BatchFindInstancesResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
 		}
-		instanceMap := RegroupInstances(keys, response)
-		return instanceMap, nil
+
+		return response, nil
 	}
 	return nil, fmt.Errorf("batch find failed, status %d, body %s", resp.StatusCode, body)
 }
 
 // FindMicroServiceInstances find microservice instance using consumerID, appID, name and version rule
 func (c *RegistryClient) FindMicroServiceInstances(consumerID, appID, microServiceName,
-	versionRule string, opts ...CallOption) ([]*proto.MicroServiceInstance, error) {
+	versionRule string, opts ...CallOption) ([]*registry.MicroServiceInstance, error) {
 	copts := &CallOptions{Revision: c.revision}
 	for _, opt := range opts {
 		opt(copts)
@@ -577,7 +551,7 @@ func (c *RegistryClient) FindMicroServiceInstances(consumerID, appID, microServi
 		return nil, NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response MicroServiceInstancesResponse
+		var response registry.GetInstancesResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
@@ -603,11 +577,11 @@ func (c *RegistryClient) FindMicroServiceInstances(consumerID, appID, microServi
 }
 
 // RegisterMicroServiceInstance registers the microservice instance to Servive-Center
-func (c *RegistryClient) RegisterMicroServiceInstance(microServiceInstance *proto.MicroServiceInstance) (string, error) {
+func (c *RegistryClient) RegisterMicroServiceInstance(microServiceInstance *registry.MicroServiceInstance) (string, error) {
 	if microServiceInstance == nil {
 		return "", errors.New("invalid request parameter")
 	}
-	request := &MicroServiceInstanceRequest{
+	request := &registry.RegisterInstanceRequest{
 		Instance: microServiceInstance,
 	}
 	microserviceInstanceURL := c.formatURL(fmt.Sprintf("%s%s/%s%s", MSAPIPath, MicroservicePath, microServiceInstance.ServiceId, InstancePath), nil, nil)
@@ -627,19 +601,19 @@ func (c *RegistryClient) RegisterMicroServiceInstance(microServiceInstance *prot
 		return "", NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response ExistenceIDResponse
+		var response *registry.RegisterInstanceResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return "", NewJSONException(err, string(body))
 		}
-		return response.InstanceID, nil
+		return response.InstanceId, nil
 	}
 	return "", fmt.Errorf("register instance failed, MicroServiceId: %s, response StatusCode: %d, response body: %s",
 		microServiceInstance.ServiceId, resp.StatusCode, string(body))
 }
 
 // GetMicroServiceInstances queries the service-center with provider and consumer ID and returns the microservice-instance
-func (c *RegistryClient) GetMicroServiceInstances(consumerID, providerID string, opts ...CallOption) ([]*proto.MicroServiceInstance, error) {
+func (c *RegistryClient) GetMicroServiceInstances(consumerID, providerID string, opts ...CallOption) ([]*registry.MicroServiceInstance, error) {
 	copts := &CallOptions{}
 	for _, opt := range opts {
 		opt(copts)
@@ -660,7 +634,7 @@ func (c *RegistryClient) GetMicroServiceInstances(consumerID, providerID string,
 		return nil, NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response MicroServiceInstancesResponse
+		var response registry.GetInstancesResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
@@ -672,7 +646,7 @@ func (c *RegistryClient) GetMicroServiceInstances(consumerID, providerID string,
 }
 
 // GetAllResources retruns all the list of services, instances, providers, consumers in the service-center
-func (c *RegistryClient) GetAllResources(resource string, opts ...CallOption) ([]*ServiceDetail, error) {
+func (c *RegistryClient) GetAllResources(resource string, opts ...CallOption) ([]*registry.ServiceDetail, error) {
 	copts := &CallOptions{}
 	for _, opt := range opts {
 		opt(copts)
@@ -693,7 +667,7 @@ func (c *RegistryClient) GetAllResources(resource string, opts ...CallOption) ([
 		return nil, NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response GetServicesInfoResponse
+		var response registry.GetServicesInfoResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
@@ -704,7 +678,7 @@ func (c *RegistryClient) GetAllResources(resource string, opts ...CallOption) ([
 }
 
 // Health returns the list of all the endpoints of SC with their status
-func (c *RegistryClient) Health() ([]*proto.MicroServiceInstance, error) {
+func (c *RegistryClient) Health() ([]*registry.MicroServiceInstance, error) {
 	url := ""
 	if c.apiVersion == "v4" {
 		url = c.formatURL(MSAPIPath+"/health", nil, nil)
@@ -725,7 +699,7 @@ func (c *RegistryClient) Health() ([]*proto.MicroServiceInstance, error) {
 		return nil, NewIOException(err)
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var response MicroServiceInstancesResponse
+		var response registry.GetInstancesResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, NewJSONException(err, string(body))
@@ -826,11 +800,11 @@ func (c *RegistryClient) UpdateMicroServiceInstanceStatus(microServiceID, microS
 
 // UpdateMicroServiceInstanceProperties updates the microserviceinstance  prooperties in the service-center
 func (c *RegistryClient) UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID string,
-	microServiceInstance *proto.MicroServiceInstance) (bool, error) {
+	microServiceInstance *registry.MicroServiceInstance) (bool, error) {
 	if microServiceInstance.Properties == nil {
 		return false, errors.New("invalid request parameter")
 	}
-	request := &MicroServiceInstanceRequest{
+	request := registry.RegisterInstanceRequest{
 		Instance: microServiceInstance,
 	}
 	url := c.formatURL(fmt.Sprintf("%s%s/%s%s/%s%s", MSAPIPath, MicroservicePath, microServiceID, InstancePath, microServiceInstanceID, PropertiesPath), nil, nil)
@@ -859,11 +833,11 @@ func (c *RegistryClient) UpdateMicroServiceInstanceProperties(microServiceID, mi
 }
 
 // UpdateMicroServiceProperties updates the microservice properties in the servive-center
-func (c *RegistryClient) UpdateMicroServiceProperties(microServiceID string, microService *proto.MicroService) (bool, error) {
+func (c *RegistryClient) UpdateMicroServiceProperties(microServiceID string, microService *registry.MicroService) (bool, error) {
 	if microService.Properties == nil {
 		return false, errors.New("invalid request parameter")
 	}
-	request := &MicroServiceRequest{
+	request := &registry.CreateServiceRequest{
 		Service: microService,
 	}
 	url := c.formatURL(fmt.Sprintf("%s%s/%s%s", MSAPIPath, MicroservicePath, microServiceID, PropertiesPath), nil, nil)

@@ -7,7 +7,7 @@ import (
 )
 
 // ErrNoneAvailable create a new error with Message No available
-var ErrNoneAvailable = errors.New("No available")
+var ErrNoneAvailable = errors.New("no available")
 
 // Next gives the next object in the list
 type Next func() (string, error)

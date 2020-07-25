@@ -1,6 +1,7 @@
 package servicecenter
 
 import (
+	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
 	"net/url"
 	"time"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
 	"github.com/go-mesh/openlogging"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
@@ -160,12 +160,12 @@ func (c *CacheManager) MakeSchemaIndex() error {
 			if interfaceName != "" {
 				value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 				if !ok {
-					var allMicroServices []*proto.MicroService
+					var allMicroServices []*scregistry.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaInterfaceIndexedCache.Set(interfaceName, allMicroServices, 0)
 					openlogging.GetLogger().Debugf("New Interface added in the Index Cache : %s", interfaceName)
 				} else {
-					val, _ := value.([]*proto.MicroService)
+					val, _ := value.([]*scregistry.MicroService)
 					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaInterfaceIndexedCache.Set(interfaceName, val, 0)
@@ -175,12 +175,12 @@ func (c *CacheManager) MakeSchemaIndex() error {
 
 				svcValue, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
 				if !ok {
-					var allMicroServices []*proto.MicroService
+					var allMicroServices []*scregistry.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaServiceIndexedCache.Set(serviceID, allMicroServices, 0)
 					openlogging.GetLogger().Debugf("New Service added in the Index Cache : %s", serviceID)
 				} else {
-					val, _ := svcValue.([]*proto.MicroService)
+					val, _ := svcValue.([]*scregistry.MicroService)
 					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaServiceIndexedCache.Set(serviceID, val, 0)
@@ -194,7 +194,7 @@ func (c *CacheManager) MakeSchemaIndex() error {
 }
 
 // This functions checks if the microservices exist in the list passed in argument
-func checkIfMicroServiceExistInList(microserviceList []*proto.MicroService, serviceID string) bool {
+func checkIfMicroServiceExistInList(microserviceList []*scregistry.MicroService, serviceID string) bool {
 	msIsPresentInList := false
 	for _, interfaceMicroserviceList := range microserviceList {
 		if interfaceMicroserviceList.ServiceId == serviceID {
@@ -211,9 +211,12 @@ func (c *CacheManager) pullMicroServiceInstance() error {
 	services := GetCriteria()
 	serviceNameSet, _ := getServiceSet(services)
 	c.compareAndDeleteOutdatedProviders(serviceNameSet)
-
+	if len(services) == 0 {
+		openlogging.Info("no providers")
+		return nil
+	}
 	//fetch remote based on app and service
-	instances, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
+	response, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
 	if err != nil {
 		if err == client.ErrNotModified || err == client.ErrEmptyCriteria {
 			openlogging.Debug(err.Error())
@@ -221,6 +224,7 @@ func (c *CacheManager) pullMicroServiceInstance() error {
 			openlogging.Error("Refresh local instance cache failed: " + err.Error())
 		}
 	}
+	instances := RegroupInstances(services, response)
 	filter(instances)
 
 	return nil
@@ -237,7 +241,7 @@ func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.Strin
 }
 
 // getServiceSet regroup the providers by service name
-func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.String) {
+func getServiceSet(exist []*scregistry.FindService) (sets.String, map[string]sets.String) {
 	//get Provider's instances
 	serviceNameSet := sets.NewString()                     // key is serviceName
 	serviceNameAppIDKeySet := make(map[string]sets.String) // key is "serviceName" value is app sets
@@ -267,7 +271,7 @@ func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.Str
 
 //set app into instance metadata, split instances into ups and downs
 //set instance to cache by service name
-func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
+func filter(providerInstances map[string][]*registry.MicroServiceInstance) {
 	//append instances from different app and same service name into one unified slice
 	downs := make(map[string]struct{})
 	for serviceName, instances := range providerInstances {
@@ -278,12 +282,12 @@ func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
 				openlogging.Warn("do not support old service center, plz upgrade")
 				continue
 			case ins.Status != common.DefaultStatus && ins.Status != common.TESTINGStatus:
-				downs[ins.InstanceId] = struct{}{}
+				downs[ins.InstanceID] = struct{}{}
 				openlogging.GetLogger().Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
-					ins.Status, ins.ServiceId, ins.InstanceId)
+					ins.Status, ins.ServiceID, ins.InstanceID)
 				continue
 			default:
-				up = append(up, ToMicroServiceInstance(ins).WithAppID(ins.App))
+				up = append(up, ins.WithAppID(ins.App))
 			}
 		}
 		registry.RefreshCache(serviceName, up, downs) //save cache after get all instances of a service name
@@ -323,7 +327,7 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 		openlogging.GetLogger().Warnf("createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
 		return
 	}
-	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
+	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppId)
 	microServiceInstances = append(microServiceInstances, msi)
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
 	openlogging.GetLogger().Infof("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
@@ -333,7 +337,7 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	openlogging.GetLogger().Debugf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints)
-	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppID, ToMicroServiceInstance(response.Instance)); err == nil {
+	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppId, ToMicroServiceInstance(response.Instance)); err == nil {
 		return
 	}
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
@@ -364,7 +368,7 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 		openlogging.GetLogger().Warnf("updateAction failed, MicroServiceInstance status is not MSI_UP, MicroServiceInstanceChangedEvent = %s", response)
 		return
 	}
-	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
+	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppId)
 	var iidExist = InstanceIDIsNotExist
 	var arrayNum int
 	for k, v := range microServiceInstances {
