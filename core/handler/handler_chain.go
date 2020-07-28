@@ -19,6 +19,19 @@ type Chain struct {
 	Handlers    []Handler
 }
 
+func (c *Chain) Clone() Chain {
+	var clone = Chain{
+		ServiceType: c.ServiceType,
+		Name:        c.Name,
+		Handlers:    make([]Handler, len(c.Handlers)),
+	}
+
+	for i, h := range c.Handlers {
+		clone.Handlers[i] = h
+	}
+	return clone
+}
+
 // AddHandler chain can add a handler
 func (c *Chain) AddHandler(h Handler) {
 	c.Handlers = append(c.Handlers, h)
