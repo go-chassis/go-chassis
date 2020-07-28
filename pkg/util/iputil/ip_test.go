@@ -95,4 +95,9 @@ func TestClientIP(t *testing.T) {
 
 	r.Header.Add("X-Real-Ip", "127.0.0.1")
 	assert.EqualValues(t, "127.0.0.1", iputil.ClientIP(r))
+
+	r.Header = make(http.Header, 1)
+	r.Header.Add("X-Forwarded-For", "127.0.0.1")
+
+	assert.EqualValues(t, "127.0.0.1", iputil.ClientIP(r))
 }
