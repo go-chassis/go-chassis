@@ -60,7 +60,7 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 		u, e := url.Parse(addr)
 		if e != nil {
 			//not uri. but still permitted, like zookeeper,file system
-			hosts = append(hosts, u.Host)
+			openlogging.GetLogger().Warnf("parse address failed, %s", e.Error())
 			continue
 		}
 		if len(u.Host) == 0 {
@@ -137,10 +137,14 @@ func StartListener(listenAddress string, tlsConfig *tls.Config) (listener net.Li
 func ClientIP(r *http.Request) string {
 	ips := ForwardedIPs(r)
 	if len(ips) > 0 {
-		rip, _, err := net.SplitHostPort(ips[0])
+		ip := ips[0]
+		if !strings.Contains(ip, ":") {
+			return ip
+		}
+		rip, _, err := net.SplitHostPort(ip)
 		if err != nil {
 			openlogging.GetLogger().Warnf("get client ip catch a err, %s", err.Error())
-			return ips[0]
+			return ip
 		}
 		return rip
 	}
