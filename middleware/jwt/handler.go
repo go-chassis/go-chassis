@@ -98,3 +98,9 @@ func newHandler() handler.Handler {
 func (h *Handler) Name() string {
 	return "jwt"
 }
+func init() {
+	err := handler.RegisterHandler("jwt", newHandler)
+	if err != nil {
+		openlogging.Error(err.Error())
+	}
+}

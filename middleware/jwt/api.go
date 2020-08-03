@@ -18,7 +18,6 @@
 package jwt
 
 import (
-	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/security/token"
 	"github.com/go-mesh/openlogging"
 	"net/http"
@@ -55,10 +54,6 @@ func Use(middleware *Auth) {
 		openlogging.Info("auth all requests")
 	} else {
 		openlogging.Warn("under some condition, no auth")
-	}
-	err := handler.RegisterHandler("jwt", newHandler)
-	if err != nil {
-		openlogging.Error(err.Error())
 	}
 }
 
