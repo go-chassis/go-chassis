@@ -2,11 +2,12 @@ package main
 
 import (
 	"errors"
+	"github.com/go-chassis/go-chassis/middleware/jwt"
 	"net/http"
 	"strings"
 
 	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/middleware/jwt"
+	_ "github.com/go-chassis/go-chassis/middleware/jwt"
 	"github.com/go-chassis/go-chassis/security/token"
 	rf "github.com/go-chassis/go-chassis/server/restful"
 	"github.com/go-mesh/openlogging"
