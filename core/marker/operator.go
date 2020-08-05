@@ -1,4 +1,4 @@
-package match
+package marker
 
 import (
 	"regexp"

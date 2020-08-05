@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package match_test
+package marker_test
 
 import (
 	"context"
 	"github.com/go-chassis/go-chassis/client/rest"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/match"
+	"github.com/go-chassis/go-chassis/core/marker"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )
 
 func TestMatch(t *testing.T) {
-	b, _ := match.Match("exact", "a", "a")
+	b, _ := marker.Match("exact", "a", "a")
 	assert.True(t, b)
 
-	match.Install("notEq", func(v, e string) bool {
+	marker.Install("notEq", func(v, e string) bool {
 		return !(v == e)
 	})
 
-	b, _ = match.Match("notEq", "a", "a")
+	b, _ = marker.Match("notEq", "a", "a")
 	assert.False(t, b)
 }
 
@@ -51,7 +51,7 @@ func TestSaveMatchPolicy(t *testing.T) {
           contains: "some/api"
         method: GET
 	`
-	match.SaveMatchPolicy(testMatchPolic, "servicecomb.match."+testName, testName)
+	marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
 }
 
 func TestMark(t *testing.T) {
@@ -62,20 +62,20 @@ func TestMark(t *testing.T) {
         headers:
           user:
             exact: jason`
-		match.SaveMatchPolicy(testMatchPolic, "servicecomb.match."+testName, testName)
+		marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
 		i := createInvoker(map[string]string{
 			"user": "jason",
 		}, http.MethodPost, "")
-		match.Mark(i)
+		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())
 	})
 	t.Run("test match method", func(t *testing.T) {
 		testName := "match-user-json-method"
 		testMatchPolic := `
         method: GET`
-		match.SaveMatchPolicy(testMatchPolic, "servicecomb.match."+testName, testName)
+		marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
 		i := createInvoker(nil, http.MethodGet, "")
-		match.Mark(i)
+		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())
 	})
 
@@ -84,9 +84,9 @@ func TestMark(t *testing.T) {
 		testMatchPolic := `
         apiPath: 
           contains: "path/test"`
-		match.SaveMatchPolicy(testMatchPolic, "servicecomb.match."+testName, testName)
+		marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
 		i := createInvoker(nil, http.MethodPost, "cse://127.0.0.1:9992/path/test")
-		match.Mark(i)
+		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())
 	})
 }

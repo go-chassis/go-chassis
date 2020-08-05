@@ -18,7 +18,7 @@
 package governance
 
 import (
-	"github.com/go-chassis/go-chassis/core/match"
+	"github.com/go-chassis/go-chassis/core/marker"
 	"github.com/go-chassis/go-chassis/resilience/rate"
 	"github.com/go-mesh/openlogging"
 	"gopkg.in/yaml.v2"
@@ -34,7 +34,7 @@ func ProcessMatch(key string, value string) {
 		return
 	}
 	name := s[2]
-	match.SaveMatchPolicy(value, key, name)
+	marker.SaveMatchPolicy(value, key, name)
 }
 
 type limiterPolicy struct {

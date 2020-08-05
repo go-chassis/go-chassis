@@ -18,17 +18,16 @@ type DataCenterInfo struct {
 
 //CseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
 type CseStruct struct {
-	Config          Config                      `yaml:"config"`
-	Service         ServiceStruct               `yaml:"service"`
-	Protocols       map[string]Protocol         `yaml:"protocols"`
-	Handler         HandlerStruct               `yaml:"handler"`
-	References      map[string]ReferencesStruct `yaml:"references"` //Deprecated
-	FlowControl     FlowControl                 `yaml:"flowcontrol"`
-	Monitor         MonitorStruct               `yaml:"monitor"`
-	Metrics         MetricsStruct               `yaml:"metrics"`
-	Credentials     CredentialStruct            `yaml:"credentials"`
-	Transport       Transport                   `yaml:"transport"`
-	NoRefreshSchema bool                        `yaml:"noRefreshSchema"`
+	Config          Config              `yaml:"config"`
+	Service         ServiceStruct       `yaml:"service"`
+	Protocols       map[string]Protocol `yaml:"protocols"`
+	Handler         HandlerStruct       `yaml:"handler"`
+	FlowControl     FlowControl         `yaml:"flowcontrol"`
+	Monitor         MonitorStruct       `yaml:"monitor"`
+	Metrics         MetricsStruct       `yaml:"metrics"`
+	Credentials     CredentialStruct    `yaml:"credentials"`
+	Transport       Transport           `yaml:"transport"`
+	NoRefreshSchema bool                `yaml:"noRefreshSchema"`
 }
 
 //Transport defines failure
@@ -97,11 +96,10 @@ type Config struct {
 type ConfigClient struct {
 	Type            string                 `yaml:"type"`
 	ServerURI       string                 `yaml:"serverUri"`
-	TenantName      string                 `yaml:"tenantName"`
 	RefreshMode     int                    `yaml:"refreshMode"`
 	RefreshInterval int                    `yaml:"refreshInterval"`
 	RefreshPort     string                 `yaml:"refreshPort"`
-	Autodiscovery   bool                   `yaml:"autodiscovery"`
+	AutoDiscovery   bool                   `yaml:"autodiscovery"`
 	APIVersion      ConfigAPIVersionStruct `yaml:"api"`
 	Enabled         bool                   `yaml:"enabled"`
 	Dimension       map[string]string      `yaml:"dimension"`
@@ -110,12 +108,6 @@ type ConfigClient struct {
 // ConfigAPIVersionStruct is the structure for configuration API version
 type ConfigAPIVersionStruct struct {
 	Version string `yaml:"version"`
-}
-
-// ReferencesStruct references structure
-type ReferencesStruct struct {
-	Version   string `yaml:"version"`
-	Transport string `yaml:"transport"`
 }
 
 // Protocol protocol structure

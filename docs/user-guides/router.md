@@ -36,38 +36,17 @@ servicecomb:
                 app: {appId}
         - precedence: {number1}
           match:        
-            refer: {sourceTemplateName} #参考某个source模板ID
+            refer: {matchPolicy} #参考某个match policy
           route:
             - weight: {percent}
               tags:
                 version: {version2}
                 app: {appId}        
-sourceTemplate:  #定义source模板
-  {templateName}: # source 模板ID
-    source: {sourceServiceName} 
-    sourceTags：
-      {tag}：{value}
-    headers:
-      {key0}:
-        regex: {regex}
-      {key1}
-        exact: {=?}
-      {key2}:
-        noEqu: {!=?}
-      {key3}
-        greater: {>?}    
-      {key4}:
-        less: {<?}
-      {key5}
-        noLess: {>=?}      
-      {key6}:
-        noGreater: {<=?}
 ```
 
 路由规则说明：
 
-- 匹配特定请求由match配置，匹配条件是：source（源服务名）、source  tags 及headers，另外也可以使用refer字段来使用source模板进行匹配。
-- Match中的Source Tags用于和服务调用请求中的sourceInfo中的tags 进行逐一匹配。
+- 匹配特定请求由match配置，使用refer字段引用已经定义好的match规则
 - Header中的字段的匹配支持正则, 等于, 小于, 大, 于不等于等匹配方式。
 - 如果未定义match，则可匹配任何请求。
 - 转发权重定义在routeRule.{targetServiceName}.route下，由weight配置。
@@ -140,7 +119,7 @@ servicecomb:
 
 ```yaml
 match:
-  refer: {templateName}
+  refer: {matchPolicyName}
   source: {sourceServiceName}
   headers:
     {key}:
@@ -152,7 +131,7 @@ match:
 请求的匹配规则属性配置如下：
 
 **refer**
-> *(optional, string)* 引用的匹配规则模板名称，用户可选择在sourceTemplate中定义匹配规则模板，并在此处引用。若引用了匹配规则模板，则其他配置项不用配置。 
+> *(optional, string)* 引用的match policy名称，用户可选择指定引用一个match policy，一旦符合请求特征，那就是匹配了
 
 **source**
 > *(optional, string)* 表示发送请求的服务，和consumer是一个意义。
@@ -257,19 +236,18 @@ route:
 
 ```yaml
 servicecomb:
-    routeRule: 
-      Carts: |
-        - precedence: 2
-          match:
-            refer: vmall-with-special-header
-          route:
-            - weight: 100           
-              tags:            
-                version: 2.0
-    sourceTemplate:
-      vmall-with-special-header:
-        source: vmall
-        headers:
-          cookie:
-            regex: "^(.*?;)?(user=jason)(;.*)?$"
+  routeRule: 
+    Carts: |
+      - precedence: 2
+        match:
+          refer: user-with-special-header
+        route:
+          - weight: 100           
+            tags:            
+              version: 2.0
+  match:
+    user-with-special-header:
+      headers:
+        cookie:
+          regex: "^(.*?;)?(user=jason)(;.*)?$"
 ```
