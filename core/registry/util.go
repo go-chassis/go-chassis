@@ -121,7 +121,7 @@ func FillUnspecifiedIP(host string) (string, error) {
 			addr = iputil.GetLocalIP()
 		}
 		if len(addr) == 0 {
-			return addr, fmt.Errorf("failed to get local IP address")
+			return addr, fmt.Errorf("auto generate IP address failed, plz manually set listenAddress and advertiseAddress")
 		}
 	}
 	return addr, nil

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package match
+package marker
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ import (
 
 var matches sync.Map
 
-//Operate decide value Match expression or not
+//Operate decide value match expression or not
 type Operate func(value, expression string) bool
 
 var operatorPlugin = map[string]Operate{
@@ -65,7 +65,7 @@ func Mark(inv *invocation.Invocation) {
 		return true
 	})
 	if matchName != "" {
-		//openlogging.GetLogger().Infof("the invocation math policy %s", matchName)
+		//the invocation math policy
 		inv.Mark(matchName)
 	}
 }
@@ -120,21 +120,21 @@ func headsMatch(headers map[string]string, headPolicy map[string]map[string]stri
 	return true
 }
 
-//Match compare value and expression
-func Match(strategy, value, expression string) (bool, error) {
-	f, ok := operatorPlugin[strategy]
+//match compare value and expression
+func Match(operator, value, expression string) (bool, error) {
+	f, ok := operatorPlugin[operator]
 	if !ok {
-		return false, fmt.Errorf("invalid Match method")
+		return false, fmt.Errorf("invalid match method")
 	}
 	return f(value, expression), nil
 }
 
-//SaveMatchPolicy saves Match policy
+//SaveMatchPolicy saves match policy
 func SaveMatchPolicy(value string, k string, name string) {
 	m := &config.MatchPolicy{}
 	err := yaml.Unmarshal([]byte(value), m)
 	if err != nil {
-		openlogging.Warn("invalid policy:" + k)
+		openlogging.Warn("invalid policy " + k + ":" + err.Error())
 		return
 	}
 	openlogging.GetLogger().Debugf("get policy %s %v", name, m)

@@ -135,7 +135,7 @@ func initConfigServer(endpoint string, enableSSL bool, tlsConfig *tls.Config, in
 		TLSConfig:       tlsConfig,
 		RefreshMode:     refreshMode,
 		RefreshInterval: interval,
-		AutoDiscovery:   config.GetConfigServerConf().Autodiscovery,
+		AutoDiscovery:   config.GetConfigServerConf().AutoDiscovery,
 		APIVersion:      config.GetConfigServerConf().APIVersion.Version,
 		RefreshPort:     config.GetConfigServerConf().RefreshPort,
 	}

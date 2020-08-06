@@ -38,9 +38,6 @@ func TestRPCInvoker_InvokeFailinChainInit(t *testing.T) {
 		"X-User": "tianxiaoliang",
 	})
 
-	config.GlobalDefinition.Cse.References = make(map[string]model.ReferencesStruct)
-	version := model.ReferencesStruct{Version: ""}
-	config.GlobalDefinition.Cse.References["Server"] = version
 	err := invoker.Invoke(ctx, "Server", "HelloServer", "SayHello", &helloworld.HelloRequest{Name: "Peter"}, replyOne,
 		core.WithMetadata(nil), core.WithStrategy(""), core.StreamingRequest())
 	assert.Error(t, err)

@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/go-mesh/openlogging"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -19,12 +20,14 @@ func Localhost() string { return "127.0.0.1" }
 func GetLocalIP() string {
 	addresses, err := net.InterfaceAddrs()
 	if err != nil {
+		log.Println(err)
 		return ""
 	}
 	for _, address := range addresses {
 		// Parse IP
 		var ip net.IP
 		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
+			log.Println(err)
 			return ""
 		}
 		// Check if valid global unicast IPv4 address

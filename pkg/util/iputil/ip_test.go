@@ -10,8 +10,9 @@ import (
 	"testing"
 )
 
-func TestGetLocapIp(t *testing.T) {
+func TestGetLocalIp(t *testing.T) {
 	localip := iputil.GetLocalIP()
+	t.Log(localip)
 	assert.NotNil(t, localip)
 }
 
