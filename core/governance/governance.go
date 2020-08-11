@@ -36,7 +36,7 @@ var processFuncMap = map[string]ProcessFunc{
 }
 
 //ProcessFunc process a config
-type ProcessFunc func(key string, value string)
+type ProcessFunc func(key string, value string) error
 
 //InstallProcessor install a func to process config,
 //if a config key matches the key prefix, then the func will process the config
@@ -57,7 +57,10 @@ func Init() {
 		openlogging.Debug(k + ":" + value)
 		for prefix, f := range processFuncMap {
 			if strings.HasPrefix(k, prefix) {
-				f(k, value)
+				err := f(k, value)
+				if err != nil {
+					openlogging.Error("can not process " + prefix + ":" + err.Error())
+				}
 				break
 			}
 		}

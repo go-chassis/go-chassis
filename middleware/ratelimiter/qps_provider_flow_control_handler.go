@@ -21,14 +21,14 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *handler.Chain, i *invocation
 	}
 	//qps rate <=0
 	if rlc.Rate <= 0 {
-		r := newErrResponse(i, rlc)
+		r := newErrResponse(i)
 		cb(r)
 		return
 	}
 	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate, rlc.Rate/5) {
 		chain.Next(i, cb)
 	} else {
-		r := newErrResponse(i, rlc)
+		r := newErrResponse(i)
 		cb(r)
 	}
 }

@@ -15,40 +15,18 @@
  * limitations under the License.
  */
 
-package handler
+package governance
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/marker"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-//TrafficMarker
-const (
-	TrafficMarker = "traffic-marker"
-)
-
-//MarkHandler compares the match rule with invocation and mark this invocation
-type MarkHandler struct {
-}
-
-//Name return the handler name
-func (m *MarkHandler) Name() string {
-	return TrafficMarker
-}
-
-//Handle to handle the mart invocation
-func (m *MarkHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invocation.ResponseCallBack) {
-	markInHeader := inv.Header(common.HeaderMark)
-	if markInHeader != "" {
-		inv.Mark(markInHeader)
-	} else {
-		marker.Mark(inv)
-	}
-
-	chain.Next(inv, cb)
-}
-
-func newMarkHandler() Handler {
-	return &MarkHandler{}
+func TestProcessLimiter(t *testing.T) {
+	b := []byte(`
+match: t
+rate: 1
+`)
+	err := ProcessLimiter("servicecomb.rateLimiting.test", string(b))
+	assert.NoError(t, err)
 }

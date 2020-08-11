@@ -1,8 +1,5 @@
 # Invoker
 ## Introduction
-
----
-
 Invoker is the entry point for a developer to call remote service
 
 ## API
@@ -59,7 +56,7 @@ resp, err := core.NewRestInvoker(core.ChainName("custom")).ContextDo(context.TOD
 
 #### Multiple Port
 if you define different port for the same protocol, like below
-```go
+```yaml
 cse:
   protocols:
     rest:

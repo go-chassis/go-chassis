@@ -32,7 +32,7 @@ func TestMarkHandler_Handle(t *testing.T) {
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
-		assert.Equal(t, "", i.GetMark())
+		assert.Equal(t, "none", i.GetMark())
 	})
 
 	archaius.Init(archaius.WithMemorySource())
@@ -81,7 +81,7 @@ method: GET
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
-		assert.Equal(t, "", i.GetMark())
+		assert.Equal(t, "none", i.GetMark())
 	})
 
 	t.Run("test request path exact match", func(t *testing.T) {
@@ -134,7 +134,7 @@ method: GET
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
-		assert.Equal(t, "", i.GetMark())
+		assert.Equal(t, "none", i.GetMark())
 	})
 }
 
@@ -174,7 +174,7 @@ method: POST
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
-		assert.Equal(t, "", i.GetMark())
+		assert.Equal(t, "none", i.GetMark())
 	})
 
 	t.Run("test request all header", func(t *testing.T) {

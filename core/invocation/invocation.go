@@ -12,6 +12,9 @@ const (
 	Consumer = iota
 	Provider
 )
+const (
+	MDMark = "mark"
+)
 
 // Response is invocation response struct
 type Response struct {
@@ -49,17 +52,17 @@ type Invocation struct {
 
 //GetMark return match rule name that request matches
 func (inv *Invocation) GetMark() string {
-	m, ok := inv.Metadata["mark"].(string)
+	m, ok := inv.Metadata[MDMark].(string)
 	if ok {
 		return m
 	}
-	return ""
+	return "none"
 }
 
 //Mark marks a invocation, it means the invocation matches a match rule
 //so that governance rule can be applied to invocation with specific mark
 func (inv *Invocation) Mark(matchRuleName string) {
-	inv.Metadata["mark"] = matchRuleName
+	inv.Metadata[MDMark] = matchRuleName
 }
 
 // New create invocation, context can not be nil
@@ -75,6 +78,8 @@ func New(ctx context.Context) *Invocation {
 	if inv.Ctx.Value(common.ContextHeaderKey{}) == nil {
 		inv.Ctx = context.WithValue(inv.Ctx, common.ContextHeaderKey{}, map[string]string{})
 	}
+	inv.Metadata = make(map[string]interface{}, 1)
+	inv.Metadata[MDMark] = "none"
 	return inv
 }
 
@@ -97,4 +102,10 @@ func (inv *Invocation) SetHeader(k, v string) {
 //Headers return a map that protocol plugin should deliver in transport
 func (inv *Invocation) Headers() map[string]string {
 	return inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+}
+
+//Header return header value
+func (inv *Invocation) Header(name string) string {
+	m := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
+	return m[name]
 }

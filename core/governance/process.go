@@ -18,6 +18,7 @@
 package governance
 
 import (
+	"errors"
 	"github.com/go-chassis/go-chassis/core/marker"
 	"github.com/go-chassis/go-chassis/resilience/rate"
 	"github.com/go-mesh/openlogging"
@@ -27,36 +28,38 @@ import (
 
 //ProcessMatch saves all policy to match module
 //then match module is able to mark invocation
-func ProcessMatch(key string, value string) {
+func ProcessMatch(key string, value string) error {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {
 		openlogging.Warn("invalid key:" + key)
-		return
+		return errors.New("invalid key:" + key)
 	}
 	name := s[2]
-	marker.SaveMatchPolicy(value, key, name)
+	return marker.SaveMatchPolicy(value, key, name)
 }
 
-type limiterPolicy struct {
-	Matcher string `json:"match"`
-	Quota   int    `json:"quota"`
+type LimiterPolicy struct {
+	MatchPolicyName string `yaml:"match"`
+	Rate            int    `yaml:"rate"`
+	Burst           int    `yaml:"burst"`
 }
 
 //ProcessLimiter saves limiter, after a invocation is marked,
 //go chassis will get correspond limiter with mark name
-func ProcessLimiter(key string, value string) {
+func ProcessLimiter(key string, value string) error {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {
 		openlogging.Warn("invalid key:" + key)
-		return
+		return errors.New("invalid key:" + key)
 	}
-	policy := &limiterPolicy{}
+	policy := &LimiterPolicy{}
 	err := yaml.Unmarshal([]byte(value), policy)
 	if err != nil {
 		openlogging.Error("invalid limiter: " + key)
-		return
+		return err
 	}
 
-	//key is match rule name, value is qps
-	rate.GetRateLimiters().UpdateRateLimit(policy.Matcher, policy.Quota, policy.Quota/5)
+	//key is the match policy name, also marker tag
+	rate.GetRateLimiters().UpdateRateLimit(policy.MatchPolicyName, policy.Rate, policy.Burst)
+	return nil
 }
