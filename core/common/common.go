@@ -97,11 +97,13 @@ const BuildinLabelVersion = BuildinTagVersion + ":" + LatestVersion
 // CallerKey caller key
 const CallerKey = "caller"
 
+//service comb headers
 const (
-	// HeaderSourceName is constant for header source name
 	HeaderSourceName = "x-cse-src-microservice"
 	// HeaderXCseContent is constant for header , get some json msg about HeaderSourceName like {"k":"v"}
 	HeaderXCseContent = "x-cse-context"
+
+	HeaderMark = "X-Mark"
 )
 
 const (

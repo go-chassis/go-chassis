@@ -1,8 +1,5 @@
 # Cipher
 ## 概述
-
----
-
 Go chassis以插件的形式提供加解密组件功能，用户可以自己定制
 
 ## Configuration
@@ -25,7 +22,6 @@ ssl:
 
 ## API
 
----
 可通过实现Cipher接口，自定义Cipher
 
 ```go

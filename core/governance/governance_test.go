@@ -28,9 +28,10 @@ func TestInstallProcess(t *testing.T) {
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("servicecomb.customResource.aResource", "test")
 	var value string
-	governance.InstallProcessor("servicecomb.customResource", func(k, v string) {
+	governance.InstallProcessor("servicecomb.customResource", func(k, v string) error {
 		t.Log("process:" + k)
 		value = v
+		return nil
 	})
 	governance.Init()
 	assert.Equal(t, "test", value)

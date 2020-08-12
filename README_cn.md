@@ -3,7 +3,7 @@ Go-Chassis 是一个go语言的微服务开发框架，帮助你快速开发微�
 ### 为什么使用 Go chassis
 - 强大的中间件 "handler chain":不止拥有 "filter" or "interceptor"的能力. chain中每个handler都可以拿到后面的handler的执行结果，包括业务代码的执行结果。这在很多场景下都很实用，比如:
 
-1.跟踪业务指标，并导出他们让promethues收集。
+1.跟踪业务指标，并导出他们让prometheus收集。
 
 2.跟踪关键的业务执行结果，审计这些信息。
 
@@ -92,13 +92,4 @@ go mod vendor
 > [欢迎在此登录自己的信息](https://github.com/go-chassis/go-chassis/issues/592)
 
 ![趣头条](https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=61fc74acb212c8fcb4f3f1cbc438f578/d8f9d72a6059252dc75d1b883f9b033b5ab5b9f7.jpg)
-
-# 使用go chassis开发的开源项目
-- [apache/servicecomb-kie](https://github.com/apache/servicecomb-kie): 
-A distributed configuration management service, go chassis and mesher integrate with it,
-so that user can manage service configurations by this service.
-- [apache/servicecomb-mesher](https://github.com/apache/servicecomb-mesher): 
-A service mesh able to co-work with go chassis, 
-it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/configurations/edge.html) also.
-- [KubeEdge](https://github.com/kubeedge/kubeedge): Kubernetes Native Edge Computing Framework (project under CNCF) https://kubeedge.io
 

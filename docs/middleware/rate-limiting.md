@@ -1,4 +1,4 @@
-# Rate limiting
+# Rate limiting v1
 ## 概述
 
 用户可以通过配置限流策略限制provider端的请求频率，使每秒请求数限制在最大请求量的大小。配置可限制接收处理请求的频率

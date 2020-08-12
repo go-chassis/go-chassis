@@ -20,14 +20,13 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = u'go-chassis'
-copyright = u'2017-2019, Huawei Technologies Co.,Ltd.'
+copyright = u'2017-2020, Huawei Technologies Co.,Ltd.'
 author = u'Huawei Technologies Co.,Ltd.'
 
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
 release = u''
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -171,7 +170,6 @@ texinfo_documents = [
      author, 'go-chassis', 'One line description of project.',
      'Miscellaneous'),
 ]
-
 def setup(app):
     app.add_config_value('recommonmark_config', {
         #'url_resolver': lambda url: github_doc_root + url,

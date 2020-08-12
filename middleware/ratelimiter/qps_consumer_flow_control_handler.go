@@ -1,7 +1,7 @@
 package ratelimiter
 
 import (
-	"fmt"
+	"errors"
 	"github.com/go-chassis/go-chassis/resilience/rate"
 	"github.com/go-mesh/openlogging"
 	"net/http"
@@ -16,6 +16,7 @@ import (
 const (
 	Consumer = "ratelimiter-consumer"
 	Provider = "ratelimiter-provider"
+	Name     = "rate-limiter"
 )
 
 // ConsumerRateLimiterHandler consumer rate limiter handler
@@ -31,7 +32,7 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *handler.Chain, i *invocation
 	}
 	//qps rate <=0
 	if rlc.Rate <= 0 {
-		r := newErrResponse(i, rlc)
+		r := newErrResponse(i)
 		cb(r)
 		return
 	}
@@ -39,22 +40,21 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *handler.Chain, i *invocation
 	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate, rlc.Rate/5) {
 		chain.Next(i, cb)
 	} else {
-		r := newErrResponse(i, rlc)
+		r := newErrResponse(i)
 		cb(r)
 		return
 	}
 
 }
 
-func newErrResponse(i *invocation.Invocation, rlc control.RateLimitingConfig) *invocation.Response {
-	switch i.Reply.(type) {
+func newErrResponse(i *invocation.Invocation) *invocation.Response {
+	switch resp := i.Reply.(type) {
 	case *http.Response:
-		resp := i.Reply.(*http.Response)
 		resp.StatusCode = http.StatusTooManyRequests
 	}
 	r := &invocation.Response{}
 	r.Status = http.StatusTooManyRequests
-	r.Err = fmt.Errorf("%s | %v", rlc.Key, rlc.Rate)
+	r.Err = errors.New("too many requests")
 	return r
 }
 

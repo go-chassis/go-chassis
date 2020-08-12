@@ -62,7 +62,7 @@ func Init(opts Options) error {
 //defaultManager is manage quotas
 var defaultManager Manager
 
-// Quota describe quota infos
+// Rate describe quota infos
 type Quota struct {
 	ResourceName string
 	Limit        int64

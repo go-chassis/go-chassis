@@ -3,6 +3,7 @@
 package rate
 
 import (
+	"github.com/go-mesh/openlogging"
 	"sync"
 
 	"k8s.io/client-go/util/flowcontrol"
@@ -37,6 +38,7 @@ func GetRateLimiters() *Limiters {
 
 //TryAccept try to accept a request. if limiter can not accept a request, it returns false
 //name is the limiter name
+//qps is not necessary if the limiter already exists
 func (qpsL *Limiters) TryAccept(name string, qps, burst int) bool {
 	qpsL.RLock()
 	limiter, ok := qpsL.m[name]
@@ -47,7 +49,6 @@ func (qpsL *Limiters) TryAccept(name string, qps, burst int) bool {
 	}
 	qpsL.RUnlock()
 	return limiter.TryAccept()
-
 }
 
 // addLimiter create a new limiter and add it to limiter map
@@ -70,6 +71,12 @@ func (qpsL *Limiters) addLimiter(name string, qps, burst int) bool {
 
 // UpdateRateLimit will update the old limiters
 func (qpsL *Limiters) UpdateRateLimit(name string, qps, burst int) {
+	openlogging.Info("add limiter", openlogging.WithTags(openlogging.Tags{
+		"module": "rateLimiter",
+		"event":  "update",
+		"mark":   name,
+		"qps":    qps,
+	}))
 	qpsL.addLimiter(name, qps, burst)
 }
 

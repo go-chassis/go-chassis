@@ -19,6 +19,7 @@ package chassis
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-chassis/core/governance"
 	"os"
 	"sync"
 
@@ -163,6 +164,7 @@ func (c *chassis) initialize() error {
 	if err := initBackendPlugins(); err != nil {
 		return err
 	}
+	governance.Init()
 	c.Initialized = true
 	return nil
 }

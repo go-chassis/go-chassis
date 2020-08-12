@@ -1,0 +1,24 @@
+---
+cse:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  protocols:
+    rest:
+      listenAddress: "127.0.0.1:5001"
+      #advertiseAddress: "internal_ip:5001"
+  handler:
+    chain:
+      Provider:
+        default: traffic-marker,rate-limiter
+servicecomb:
+  match:
+    markGetRequest: |
+      method: GET
+      apiPath:
+        exact: "/hello"
+  rateLimiting:
+    limiteGet: |
+      match: markGetRequest
+      rate: 10
+      burst: 1
