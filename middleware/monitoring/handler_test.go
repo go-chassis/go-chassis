@@ -23,6 +23,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/prometheus/common/expfmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -72,9 +73,14 @@ func TestNewWithChain(t *testing.T) {
 	c.ServeHTTP(resp, r)
 	c.ServeHTTP(resp, r)
 
+	resp2 := httptest.NewRecorder()
 	r, _ = http.NewRequest("GET", "/err", nil)
-	c.ServeHTTP(resp, r)
-	c.ServeHTTP(resp, r)
+	c.ServeHTTP(resp2, r)
+	body, err := ioutil.ReadAll(resp2.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "err", string(body))
+	assert.Equal(t, http.StatusInternalServerError, resp2.Code)
+	c.ServeHTTP(resp2, r)
 
 	mfs, err := metrics.GetSystemPrometheusRegistry().Gather()
 	assert.NoError(t, err)
