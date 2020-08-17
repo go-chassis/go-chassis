@@ -76,14 +76,15 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 			}
 			err := metrics.CounterAdd(MetricsErrors, 1, m)
 			if err != nil {
-				openlogging.Fatal(err.Error())
+				openlogging.Error(err.Error())
 			}
 		}
 		duration := time.Since(start)
 		err := metrics.SummaryObserve(MetricsLatency, float64(duration.Milliseconds()), labelMap)
 		if err != nil {
-			openlogging.Fatal(err.Error())
+			openlogging.Error(err.Error())
 		}
+		cb(resp)
 	})
 
 }
