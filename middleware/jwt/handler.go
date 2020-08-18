@@ -44,6 +44,11 @@ type Handler struct {
 
 //Handle intercept unauthorized request
 func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	if auth == nil {
+		//jwt is not initialized, then skip authentication, do not report error
+		chain.Next(i, cb)
+		return
+	}
 	var req *http.Request
 	if r, ok := i.Args.(*http.Request); ok {
 		req = r

@@ -45,6 +45,24 @@ func new() handler.Handler {
 	return &fakeHandler{}
 }
 func TestUse(t *testing.T) {
+	handler.RegisterHandler("jwt", newHandler)
+	handler.RegisterHandler("fake", new)
+	to, _ := token.DefaultManager.Sign(map[string]interface{}{
+		"username": "peter",
+	}, []byte("my_secret"))
+	t.Log(to)
+	c, err := handler.CreateChain(common.Provider, "default", []string{"jwt", "fake"}...)
+	t.Run("jwt is not init", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/login", nil)
+		req.Header.Add("Authorization", "Bearer "+to)
+		inv := &invocation.Invocation{
+			Args: req,
+		}
+		c.Next(inv, func(ir *invocation.Response) {
+			err = ir.Err
+			assert.NoError(t, err)
+		})
+	})
 	Use(&Auth{
 		MustAuth: func(req *http.Request) bool {
 			if strings.Contains(req.URL.Path, "/login") {
@@ -57,14 +75,6 @@ func TestUse(t *testing.T) {
 			return []byte("my_secret"), nil
 		},
 	})
-
-	handler.RegisterHandler("jwt", newHandler)
-	handler.RegisterHandler("fake", new)
-	to, _ := token.DefaultManager.Sign(map[string]interface{}{
-		"username": "peter",
-	}, []byte("my_secret"))
-	t.Log(to)
-	c, err := handler.CreateChain(common.Provider, "default", []string{"jwt", "fake"}...)
 	t.Run("success", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api", nil)
 		req.Header.Add("Authorization", "Bearer "+to)
