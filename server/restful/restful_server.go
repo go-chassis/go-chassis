@@ -300,9 +300,11 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 	} else {
 		if err := os.RemoveAll(path); err != nil {
+			openlogging.Error(err.Error())
 			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
 		}
-		if err := os.MkdirAll(path, 0600); err != nil {
+		if err := os.MkdirAll(path, 0700); err != nil {
+			openlogging.Error(err.Error())
 			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
 		}
 		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
