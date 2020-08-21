@@ -8,7 +8,7 @@ import (
 )
 
 func TestCopyFile(t *testing.T) {
-	err := ioutil.WriteFile("./test.copy", []byte("test"), 0600)
+	err := ioutil.WriteFile("./test.copy", []byte("test"), 0700)
 	assert.NoError(t, err)
 	err = CopyFile("./test.copy", "./test2.copy")
 	assert.NoError(t, err)
@@ -18,7 +18,7 @@ func TestCopyFile(t *testing.T) {
 }
 
 func Test_removeFile(t *testing.T) {
-	ioutil.WriteFile("./remove.copy", []byte("test"), 0600)
+	ioutil.WriteFile("./remove.copy", []byte("test"), 0700)
 	p := "remove.copy"
 
 	type args struct {
