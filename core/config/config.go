@@ -21,7 +21,7 @@ var lbConfig *model.LBWrapper
 
 // MicroserviceDefinition has info about application id, provider info, description of the service,
 // and description of the instance
-var MicroserviceDefinition *model.MicroserviceCfg
+var MicroserviceDefinition *model.ServiceSpec
 
 //MonitorCfgDef has monitor info, including zipkin and apm.
 var MonitorCfgDef *model.MonitorCfg
@@ -34,12 +34,12 @@ var ErrNoName = errors.New("micro service name is missing in description file")
 
 //GetConfigServerConf return config server conf
 func GetConfigServerConf() model.ConfigClient {
-	return GlobalDefinition.Cse.Config.Client
+	return GlobalDefinition.ServiceComb.Config.Client
 }
 
 //GetTransportConf return transport settings
 func GetTransportConf() model.Transport {
-	return GlobalDefinition.Cse.Transport
+	return GlobalDefinition.ServiceComb.Transport
 }
 
 //GetDataCenter return data center info
@@ -69,11 +69,6 @@ func readFromArchaius() error {
 		return err
 	}
 
-	err = readMicroServiceSpecFiles()
-	if err != nil {
-		return err
-	}
-
 	populateConfigServerAddress()
 	populateServiceRegistryAddress()
 	err = ReadMonitorFromArchaius()
@@ -85,7 +80,6 @@ func readFromArchaius() error {
 	populateServiceName()
 	populateVersion()
 	populateApp()
-	populateTenant()
 
 	return nil
 }
@@ -99,10 +93,7 @@ func populateServiceRegistryAddress() {
 			openlogging.Tags{
 				"ep": registryAddrFromEnv,
 			}))
-		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
+		GlobalDefinition.ServiceComb.Registry.Address = registryAddrFromEnv
 	}
 }
 
@@ -111,7 +102,7 @@ func populateConfigServerAddress() {
 	//config server Address , higher priority for environment variable
 	configServerAddrFromEnv := readEndpoint(common.EnvCCEndpoint)
 	if configServerAddrFromEnv != "" {
-		GlobalDefinition.Cse.Config.Client.ServerURI = configServerAddrFromEnv
+		GlobalDefinition.ServiceComb.Config.Client.ServerURI = configServerAddrFromEnv
 	}
 }
 
@@ -128,34 +119,27 @@ func readEndpoint(env string) string {
 // populateServiceEnvironment populate service environment
 func populateServiceEnvironment() {
 	if e := archaius.GetString(common.Env, ""); e != "" {
-		MicroserviceDefinition.ServiceDescription.Environment = e
+		MicroserviceDefinition.Environment = e
 	}
 }
 
 // populateServiceName populate service name
 func populateServiceName() {
 	if e := archaius.GetString(common.ServiceName, ""); e != "" {
-		MicroserviceDefinition.ServiceDescription.Name = e
+		MicroserviceDefinition.Name = e
 	}
 }
 
 // populateVersion populate version
 func populateVersion() {
 	if e := archaius.GetString(common.Version, ""); e != "" {
-		MicroserviceDefinition.ServiceDescription.Version = e
+		MicroserviceDefinition.Version = e
 	}
 }
 
 func populateApp() {
 	if e := archaius.GetString(common.App, ""); e != "" {
-		MicroserviceDefinition.AppID = e
-	}
-}
-
-// populateTenant populate tenant
-func populateTenant() {
-	if GlobalDefinition.Cse.Service.Registry.Tenant == "" {
-		GlobalDefinition.Cse.Service.Registry.Tenant = common.DefaultApp
+		MicroserviceDefinition.Name = e
 	}
 }
 
@@ -166,6 +150,7 @@ func ReadGlobalConfigFromArchaius() error {
 	if err != nil {
 		return err
 	}
+	MicroserviceDefinition = &GlobalDefinition.ServiceComb.ServiceDescription
 	return nil
 }
 
@@ -202,12 +187,6 @@ func ReadHystrixFromArchaius() error {
 		return err
 	}
 	return nil
-}
-
-// readMicroServiceSpecFiles read micro service configuration file by archaius
-func readMicroServiceSpecFiles() error {
-	MicroserviceDefinition = &model.MicroserviceCfg{}
-	return archaius.UnmarshalConfig(MicroserviceDefinition)
 }
 
 //GetLoadBalancing return lb config
@@ -257,16 +236,16 @@ func Init() error {
 		return err
 	}
 
-	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
-	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
-	runtime.Environment = MicroserviceDefinition.ServiceDescription.Environment
-	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties
+	runtime.ServiceName = MicroserviceDefinition.Name
+	runtime.Version = MicroserviceDefinition.Version
+	runtime.Environment = MicroserviceDefinition.Environment
+	runtime.MD = MicroserviceDefinition.Properties
 	runtime.App = MicroserviceDefinition.AppID
 	if runtime.App == "" {
 		runtime.App = common.DefaultApp
 	}
 
-	runtime.HostName = MicroserviceDefinition.ServiceDescription.Hostname
+	runtime.HostName = MicroserviceDefinition.Hostname
 	if runtime.HostName == "" {
 		runtime.HostName, err = os.Hostname()
 		if err != nil {

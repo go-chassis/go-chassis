@@ -21,7 +21,7 @@ The specific profile path will be under this root path.
 ## Example
 
 ```yaml
-cse:
+servicecomb:
   profile:
     enable: true
     apiPath: /profile

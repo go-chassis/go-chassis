@@ -48,7 +48,7 @@ type Server interface
 * 修改配置文件以启动协议监听
 
 ```
-cse:
+servicecomb:
   protocols:
     grpc:
       listenAddress: 127.0.0.1:5000

@@ -17,9 +17,8 @@ import (
 
 func TestCDInit(t *testing.T) {
 	b := []byte(`
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       #disabled: false           optional:禁用注册发现选项，默认开始注册发现
       type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
       scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
@@ -38,11 +37,9 @@ cse:
 
 	b = []byte(`
 ---
-#微服务的私有属性
-#APPLICATION_ID: CSE #optional
-service_description:
-  name: Client
-  #version: 0.1 #optional
+servicecomb:
+  service:
+	  name: Client
 
 `)
 	d, _ = os.Getwd()
@@ -64,9 +61,6 @@ service_description:
 	check = config.GetContractDiscoveryAddress()
 	assert.Equal(t, "http://127.0.0.1:30100", check)
 
-	check = config.GetContractDiscoveryTenant()
-	assert.Equal(t, "default", check)
-
 	check = config.GetContractDiscoveryAPIVersion()
 	assert.Equal(t, "", check)
 
@@ -75,17 +69,15 @@ service_description:
 	assert.NoError(t, err)
 	t.Run("TestCDInit2", func(t *testing.T) {
 		b := []byte(`
-cse:
-  service:
-    registry:
-      contractDiscovery:
-        type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
-        scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
-        address: http://10.0.0.1:30100
-        refreshInterval: 30s
-        api:
-          version: v1
-        disabled: true
+servicecomb:
+  registry:
+    type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
+    scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
+    address: http://10.0.0.1:30100
+    refreshInterval: 30s
+    api:
+      version: v1
+    disabled: true
 `)
 		d, _ := os.Getwd()
 		filename1 := filepath.Join(d, "chassis.yaml")
@@ -104,9 +96,6 @@ cse:
 
 		check = config.GetContractDiscoveryAddress()
 		assert.Equal(t, "http://10.0.0.1:30100", check)
-
-		check = config.GetContractDiscoveryTenant()
-		assert.Equal(t, "", check)
 
 		check = config.GetContractDiscoveryAPIVersion()
 		assert.Equal(t, "v1", check)

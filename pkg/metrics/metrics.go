@@ -120,7 +120,7 @@ func Init() error {
 	}
 	defaultRegistry = f(Options{
 		FlushInterval:          10 * time.Second,
-		EnableGoRuntimeMetrics: archaius.GetBool("cse.metrics.enableGoRuntimeMetrics", true),
+		EnableGoRuntimeMetrics: archaius.GetBool("servicecomb.metrics.enableGoRuntimeMetrics", true),
 	})
 	return nil
 }

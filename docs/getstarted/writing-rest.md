@@ -36,9 +36,8 @@ func (s *RestFulHello) URLPatterns() []restful.Route {
 ```
 3.Modify chassis.yaml to describe the server you need
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100 
   protocols: # what kind of server you want to launch
     rest: #launch a http server
@@ -59,8 +58,9 @@ and certainly the method name must start with uppercase
 
 5.Modify microservice.yaml
 ```yaml
-service_description:
-  name: RESTServer # name your provider
+servicecomb:
+  service:
+    name: RESTServer # name your provider
 ```
 6.In main.go init and start the chassis 
 ```go
@@ -90,15 +90,15 @@ client
 ```
 1. modify chassis.yaml
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100
 ```
 2. modify microservice.yaml
 ```yaml
-service_description:
-  name: RESTClient #name your consumer
+servicecomb:
+  service:
+    name: RESTClient #name your consumer
 ```
 3.in main.go call your service
 ```go
@@ -223,9 +223,8 @@ If you want to define your own instead of automatically generating a schema，
 You can modify the configuration '**noRefreshSchema: true**' in chassis.yaml
 
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100 
   protocols:
     rest:

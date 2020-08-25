@@ -6,7 +6,7 @@ import (
 
 // HystrixConfigWrapper hystrix configuration wrapper structure
 type HystrixConfigWrapper struct {
-	HystrixConfig *HystrixConfig `yaml:"cse"`
+	HystrixConfig *HystrixConfig `yaml:"servicecomb"`
 }
 
 // HystrixConfig is hystrix configuration structure

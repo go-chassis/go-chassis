@@ -18,7 +18,7 @@ var InstanceEndpoints = make(map[string]string)
 // RegisterService register micro-service
 func RegisterService() error {
 	service := config.MicroserviceDefinition
-	if e := service.ServiceDescription.Environment; e != "" {
+	if e := service.Environment; e != "" {
 		openlogging.GetLogger().Infof("Microservice environment: [%s]", e)
 	}
 	var err error
@@ -27,22 +27,19 @@ func RegisterService() error {
 		openlogging.GetLogger().Warnf("no schemas file for microservice [%s].", runtime.ServiceName)
 		runtime.Schemas = make([]string, 0)
 		// from yaml setting
-		if len(service.ServiceDescription.Schemas) != 0 {
-			runtime.Schemas = service.ServiceDescription.Schemas
+		if len(service.Schemas) != 0 {
+			runtime.Schemas = service.Schemas
 		}
 	}
-	if service.ServiceDescription.Level == "" {
-		service.ServiceDescription.Level = common.DefaultLevel
+	if service.ServicesStatus == "" {
+		service.ServicesStatus = common.DefaultStatus
 	}
-	if service.ServiceDescription.ServicesStatus == "" {
-		service.ServiceDescription.ServicesStatus = common.DefaultStatus
-	}
-	if service.ServiceDescription.Properties == nil {
-		service.ServiceDescription.Properties = make(map[string]string)
+	if service.Properties == nil {
+		service.Properties = make(map[string]string)
 	}
 	framework := metadata.NewFramework()
 
-	svcPaths := service.ServiceDescription.ServicePaths
+	svcPaths := service.ServicePaths
 	var regpaths []ServicePath
 	for _, svcPath := range svcPaths {
 		var regpath ServicePath
@@ -53,12 +50,11 @@ func RegisterService() error {
 	microservice := &MicroService{
 		ServiceID:   runtime.ServiceID,
 		AppID:       runtime.App,
-		ServiceName: service.ServiceDescription.Name,
-		Version:     service.ServiceDescription.Version,
+		ServiceName: service.Name,
+		Version:     service.Version,
 		Paths:       regpaths,
-		Environment: service.ServiceDescription.Environment,
-		Status:      service.ServiceDescription.ServicesStatus,
-		Level:       service.ServiceDescription.Level,
+		Environment: service.Environment,
+		Status:      service.ServicesStatus,
 		Schemas:     runtime.Schemas,
 		Framework: &Framework{
 			Version: framework.Version,
@@ -73,16 +69,16 @@ func RegisterService() error {
 	if len(microservice.Alias) == 0 {
 		// if the microservice is allowed to be called by consumers with different appId,
 		// this means that the governance configuration of the consumer side needs to
-		// support key format with appid, like 'cse.loadbalance.{alias}.strategy.name'.
+		// support key format with appid, like 'servicecomb.loadbalance.{alias}.strategy.name'.
 		microservice.Alias = microservice.AppID + ":" + microservice.ServiceName
 	}
 	if config.GetRegistratorScope() == common.ScopeFull {
 		microservice.Metadata["allowCrossApp"] = common.TRUE
-		service.ServiceDescription.Properties["allowCrossApp"] = common.TRUE
+		service.Properties["allowCrossApp"] = common.TRUE
 	} else {
-		service.ServiceDescription.Properties["allowCrossApp"] = common.FALSE
+		service.Properties["allowCrossApp"] = common.FALSE
 	}
-	openlogging.GetLogger().Debugf("update micro service properties%v", service.ServiceDescription.Properties)
+	openlogging.GetLogger().Debugf("update micro service properties%v", service.Properties)
 	openlogging.GetLogger().Infof("framework registered is [ %s:%s ]", framework.Name, framework.Version)
 	openlogging.GetLogger().Infof("micro service registered by [ %s ]", framework.Register)
 
@@ -105,12 +101,12 @@ func RegisterService() error {
 func RegisterServiceInstances() error {
 	var err error
 	service := config.MicroserviceDefinition
-	runtime.Schemas, err = schema.GetSchemaIDs(service.ServiceDescription.Name)
+	runtime.Schemas, err = schema.GetSchemaIDs(service.Name)
 	if err != nil || len(runtime.Schemas) == 0 {
 		runtime.Schemas = make([]string, 0)
 		// from yaml setting
-		if len(service.ServiceDescription.Schemas) != 0 {
-			runtime.Schemas = service.ServiceDescription.Schemas
+		if len(service.Schemas) != 0 {
+			runtime.Schemas = service.Schemas
 		}
 	}
 
@@ -123,11 +119,11 @@ func RegisterServiceInstances() error {
 		openlogging.Debug("upload contract to registry, " + schemaID)
 	}
 	openlogging.Debug("start to register instance.")
-	eps, err := MakeEndpointMap(config.GlobalDefinition.Cse.Protocols)
+	eps, err := MakeEndpointMap(config.GlobalDefinition.ServiceComb.Protocols)
 	if err != nil {
 		return err
 	}
-	openlogging.GetLogger().Infof("service support protocols %v", config.GlobalDefinition.Cse.Protocols)
+	openlogging.GetLogger().Infof("service support protocols %v", config.GlobalDefinition.ServiceComb.Protocols)
 	if len(InstanceEndpoints) != 0 {
 		eps = make(map[string]*Endpoint, len(InstanceEndpoints))
 		for m, ep := range InstanceEndpoints {
@@ -139,14 +135,14 @@ func RegisterServiceInstances() error {
 			eps[m] = epObj
 		}
 	}
-	if service.ServiceDescription.ServicesStatus == "" {
-		service.ServiceDescription.ServicesStatus = common.DefaultStatus
+	if service.ServicesStatus == "" {
+		service.ServicesStatus = common.DefaultStatus
 	}
 	microServiceInstance := &MicroServiceInstance{
 		InstanceID:   runtime.InstanceID,
 		EndpointsMap: eps,
 		HostName:     runtime.HostName,
-		Status:       service.ServiceDescription.ServicesStatus,
+		Status:       service.ServicesStatus,
 		Metadata:     map[string]string{"nodeIP": runtime.NodeIP},
 	}
 	var dInfo = new(DataCenterInfo)
@@ -164,12 +160,12 @@ func RegisterServiceInstances() error {
 	//Set to runtime
 	runtime.InstanceID = instanceID
 	runtime.InstanceStatus = runtime.StatusRunning
-	if service.ServiceDescription.InstanceProperties != nil {
-		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(runtime.ServiceID, instanceID, service.ServiceDescription.InstanceProperties); err != nil {
+	if service.InstanceProperties != nil {
+		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(runtime.ServiceID, instanceID, service.InstanceProperties); err != nil {
 			openlogging.GetLogger().Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID)
 			return err
 		}
-		runtime.InstanceMD = service.ServiceDescription.InstanceProperties
+		runtime.InstanceMD = service.InstanceProperties
 		openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID)
 	}
 	openlogging.GetLogger().Infof("register instance success, instanceID: %s.", instanceID)

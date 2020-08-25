@@ -368,8 +368,7 @@ func TestRegistryClient_GetDefaultHeaders(t *testing.T) {
 
 	err := registryClient.Initialize(
 		client.Options{
-			Addrs:        []string{"127.0.0.1:30100"},
-			ConfigTenant: "go-sc-tenant",
+			Addrs: []string{"127.0.0.1:30100"},
 		})
 	assert.Nil(t, err)
 

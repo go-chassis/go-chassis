@@ -22,7 +22,7 @@ import _ github.com/go-chassis/go-chassis/middleware/ratelimiter
 provider端需要在chassis.yaml添加ratelimiter-provider。同时在rate\_limiting.yaml中配置具体的请求数。
 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:
@@ -30,7 +30,7 @@ cse:
 ```
 
 ```yaml
-cse:
+servicecomb:
   flowcontrol:
     Provider:
       qps:

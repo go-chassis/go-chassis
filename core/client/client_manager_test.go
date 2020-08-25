@@ -32,7 +32,7 @@ func init() {
 }
 func TestGetFailureMap(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Transport.Failure = map[string]string{
+	config.GlobalDefinition.ServiceComb.Transport.Failure = map[string]string{
 		"rest": "http_500,http:502",
 	}
 
@@ -49,7 +49,7 @@ func TestGetFailureMap(t *testing.T) {
 }
 func TestGetMaxIdleCon(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Transport.MaxIdlCons = map[string]int{
+	config.GlobalDefinition.ServiceComb.Transport.MaxIdlCons = map[string]int{
 		"rest": 1,
 	}
 
@@ -57,7 +57,7 @@ func TestGetMaxIdleCon(t *testing.T) {
 		func(t *testing.T) {
 			n := client.GetMaxIdleCon("rest")
 			assert.Equal(t, 1, n)
-			config.GlobalDefinition.Cse.Transport.MaxIdlCons = map[string]int{}
+			config.GlobalDefinition.ServiceComb.Transport.MaxIdlCons = map[string]int{}
 			n = client.GetMaxIdleCon("rest")
 			assert.Equal(t, 512, n)
 		})
@@ -70,7 +70,7 @@ func TestInitError(t *testing.T) {
 	pro.WorkerNumber = 1
 	m["fake"] = pro
 
-	config.GlobalDefinition.Cse.Protocols = m
+	config.GlobalDefinition.ServiceComb.Protocols = m
 
 	t.Run("get client func without installing its plugin",
 		func(t *testing.T) {
@@ -101,7 +101,7 @@ func TestInit(t *testing.T) {
 	pro.WorkerNumber = 1
 	m["fake"] = pro
 
-	config.GlobalDefinition.Cse.Protocols = m
+	config.GlobalDefinition.ServiceComb.Protocols = m
 	t.Run("get client func after installing its plugin",
 		func(t *testing.T) {
 			client.InstallPlugin("fake", rest.NewRestClient)
@@ -134,7 +134,7 @@ func BenchmarkGetClient(b *testing.B) {
 	m["highway"] = model.Protocol{}
 	m["rest"] = model.Protocol{}
 	m["grpc"] = model.Protocol{}
-	config.GlobalDefinition.Cse.Protocols = m
+	config.GlobalDefinition.ServiceComb.Protocols = m
 
 	i := &invocation.Invocation{Protocol: "highway"}
 	c, err := client.GetClient(i)
@@ -170,7 +170,7 @@ func TestSetTimeoutToClientCache(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{}
 	m := make(map[string]model.Protocol)
 	m["rest"] = model.Protocol{}
-	config.GlobalDefinition.Cse.Protocols = m
+	config.GlobalDefinition.ServiceComb.Protocols = m
 	i := &invocation.Invocation{Protocol: "rest", MicroServiceName: "rest_server"}
 	c, err := client.GetClient(i)
 	assert.NotEmpty(t, c)

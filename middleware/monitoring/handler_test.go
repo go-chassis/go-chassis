@@ -61,7 +61,7 @@ func (r *DummyResource) URLPatterns() []restful.Route {
 
 func TestNewWithChain(t *testing.T) {
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.metrics.enableGoRuntimeMetrics", false)
+	archaius.Set("servicecomb.metrics.enableGoRuntimeMetrics", false)
 	metrics.Init()
 	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
 	chain, err := handler.CreateChain(common.Provider, "testChain", "monitoring")

@@ -40,19 +40,20 @@ you can consider a project as an micro service, after compile, build and run, it
 ## Example
 
 ```yaml
-service_description:
-  name: Server
-  hostname: 10.244.1.3
-  properties:
-    project: X1
-  instance_properties:
-    nodeIP: 192.168.0.111
-  paths:
-  - path: /rest/demoservice
-    property:
-      checksession: true
-  schemas:
-  - "schema"
-  - "schema1"
-  - "schema2"
+servicecomb:
+  service:
+      name: Server
+      hostname: 10.244.1.3
+      properties:
+        project: X1
+      instance_properties:
+        nodeIP: 192.168.0.111
+      paths:
+      - path: /rest/demoservice
+        property:
+          checksession: true
+      schemas:
+      - "schema"
+      - "schema1"
+      - "schema2"
 ```

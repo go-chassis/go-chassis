@@ -1,7 +1,6 @@
 ---
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       #disabled: false           optional:禁用注册发现选项，默认开始注册发现
       type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
       scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务

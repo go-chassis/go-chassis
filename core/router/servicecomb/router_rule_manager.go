@@ -10,9 +10,9 @@ import (
 
 // constant for route rule keys
 const (
-	DarkLaunchKey      = "^cse\\.darklaunch\\.policy\\."
+	DarkLaunchKey      = "^servicecomb\\.darklaunch\\.policy\\."
 	DarkLaunchKeyV2    = "^servicecomb\\.routeRule\\."
-	DarkLaunchPrefix   = "cse.darklaunch.policy."
+	DarkLaunchPrefix   = "servicecomb.darklaunch.policy."
 	DarkLaunchPrefixV2 = "servicecomb.routeRule."
 	DarkLaunchTypeRule = "RULE"
 	DarkLaunchTypeRate = "RATE"

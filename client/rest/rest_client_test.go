@@ -34,7 +34,7 @@ func initEnv() {
 		LoggerLevel: "INFO",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.noRefreshSchema", true)
+	archaius.Set("servicecomb.noRefreshSchema", true)
 	config.ReadGlobalConfigFromArchaius()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -49,8 +49,8 @@ func TestNewRestClient_Call(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 	strategyRule := make(map[string]string)
 	strategyRule["sessionTimeoutInSeconds"] = "30"
 
@@ -109,8 +109,8 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
@@ -158,8 +158,8 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 	handler.CreateChains(common.Provider, defaultChain)
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)

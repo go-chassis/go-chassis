@@ -15,31 +15,31 @@ func TestLbEventError(t *testing.T) {
 
 	eventlistener.Init()
 	lbEventListener := &eventlistener.LoadbalancingEventListener{}
-	e := &event.Event{EventType: "UPDATE", Key: "cse.loadbalance.strategy.name", Value: "SessionStickiness"}
+	e := &event.Event{EventType: "UPDATE", Key: "servicecomb.loadbalance.strategy.name", Value: "SessionStickiness"}
 	lbEventListener.Event(e)
-	assert.Equal(t, loadbalancer.StrategySessionStickiness, archaius.GetString("cse.loadbalance.strategy.name", ""))
+	assert.Equal(t, loadbalancer.StrategySessionStickiness, archaius.GetString("servicecomb.loadbalance.strategy.name", ""))
 	assert.Equal(t, loadbalancer.StrategySessionStickiness, config.GetStrategyName("", ""))
-	e2 := &event.Event{EventType: "DELETE", Key: "cse.loadbalance.strategy.name", Value: "RoundRobin"}
+	e2 := &event.Event{EventType: "DELETE", Key: "servicecomb.loadbalance.strategy.name", Value: "RoundRobin"}
 	lbEventListener.Event(e2)
-	archaius.Delete("cse.loadbalance.strategy.name")
-	assert.NotEqual(t, loadbalancer.StrategySessionStickiness, archaius.GetString("cse.loadbalancer.strategy.name", ""))
+	archaius.Delete("servicecomb.loadbalance.strategy.name")
+	assert.NotEqual(t, loadbalancer.StrategySessionStickiness, archaius.GetString("servicecomb.loadbalancer.strategy.name", ""))
 
 }
 
 func TestLbEvent(t *testing.T) {
 
-	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
+	loadbalancer.Enable(archaius.GetString("servicecomb.loadbalance.strategy.name", ""))
 	eventlistener.Init()
-	archaius.Set("cse.loadbalance.strategy.name", "SessionStickiness")
+	archaius.Set("servicecomb.loadbalance.strategy.name", "SessionStickiness")
 	lbEventListener := &eventlistener.LoadbalancingEventListener{}
-	e := &event.Event{EventType: "UPDATE", Key: "cse.loadbalance.strategy.name", Value: "SessionStickiness"}
+	e := &event.Event{EventType: "UPDATE", Key: "servicecomb.loadbalance.strategy.name", Value: "SessionStickiness"}
 	lbEventListener.Event(e)
-	assert.Equal(t, loadbalancer.StrategySessionStickiness, archaius.GetString("cse.loadbalance.strategy.name", ""))
+	assert.Equal(t, loadbalancer.StrategySessionStickiness, archaius.GetString("servicecomb.loadbalance.strategy.name", ""))
 	assert.Equal(t, loadbalancer.StrategySessionStickiness, config.GetStrategyName("", ""))
-	e2 := &event.Event{EventType: "DELETE", Key: "cse.loadbalance.strategy.name", Value: "RoundRobin"}
+	e2 := &event.Event{EventType: "DELETE", Key: "servicecomb.loadbalance.strategy.name", Value: "RoundRobin"}
 	lbEventListener.Event(e2)
-	archaius.Delete("cse.loadbalance.strategy.name")
-	assert.NotEqual(t, loadbalancer.StrategySessionStickiness, archaius.GetString("cse.loadbalance.strategy.name", ""))
+	archaius.Delete("servicecomb.loadbalance.strategy.name")
+	assert.NotEqual(t, loadbalancer.StrategySessionStickiness, archaius.GetString("servicecomb.loadbalance.strategy.name", ""))
 
 }
 func init() {
@@ -48,6 +48,6 @@ func init() {
 		RollingPolicy: "size",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.loadbalance.strategy.name", "SessionStickiness")
+	archaius.Set("servicecomb.loadbalance.strategy.name", "SessionStickiness")
 	config.ReadLBFromArchaius()
 }

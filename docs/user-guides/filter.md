@@ -8,7 +8,7 @@
 目前可配的filter只有根据Available Zone Filter。可根据微服务实例的region以及AZ信息进行过滤，优先寻找同Region与AZ的实例。
 
 ```
-cse:
+servicecomb:
   loadbalance:
     serverListFilters: zoneaware
 ```

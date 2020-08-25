@@ -37,7 +37,7 @@ controlPanel:
   infra: istio
   settings:
     Address: xxx
-cse:
+servicecomb:
   flowcontrol:
     Consumer:
       qps:
@@ -54,14 +54,13 @@ cse:
       kind: constant
       minMs: 200
       maxMs: 400
-  service:
-    registry:
-      type: servicecenter
-      scope: full
-      address: http://127.0.0.1:30100
-      refeshInterval : 30s
-      watch: true
-      register: reg
+  registry:
+    type: servicecenter
+    scope: full
+    address: http://127.0.0.1:30100
+    refreshInterval : 30s
+    watch: true
+    register: reg
   protocols:
     rest:
       listenAddress: 127.0.0.1:5001
@@ -87,15 +86,15 @@ ssl:
 	defer msDefFile.Close()
 	_, err = msDefFile.WriteString(`---
 #微服务的私有属性
-service_description:
-  name: nodejs2
-  level: FRONT
-  version: 0.1
-  properties:
-    allowCrossApp: true
-  instance_properties:
-    a: s
-    p: s
+servicecomb:
+  service:
+    name: nodejs2
+    version: 0.1
+    properties:
+      allowCrossApp: true
+    instance_properties:
+      a: s
+      p: s
 `)
 
 	lager.Init(&lager.Options{
@@ -107,7 +106,7 @@ service_description:
 
 	config.Init()
 
-	config.GlobalDefinition.Cse.Service.Registry.AutoRegister = "abc"
+	config.GlobalDefinition.ServiceComb.Registry.AutoRegister = "abc"
 
 	chassis.SetDefaultConsumerChains(nil)
 	chassis.SetDefaultProviderChains(nil)

@@ -31,7 +31,7 @@ const (
 	EnvCCEndpoint  = "PAAS_CSE_CC_ENDPOINT"
 )
 
-// env connect with "." like service_description.name and service_description.version which can not be used in k8s.
+// env connect with "." like servicecomb.service.name and servicecomb.service.version which can not be used in k8s.
 // So we can not use archaius to set env.
 // To support this declaring constant for service name and version
 // constant for service name and version.
@@ -58,7 +58,7 @@ const (
 	SslCertFileKey     = "certFile"
 	SslKeyFileKey      = "keyFile"
 	SslCertPwdFileKey  = "certPwdFile"
-	AKSKCustomCipher   = "cse.credentials.akskCustomCipher"
+	AKSKCustomCipher   = "servicecomb.credentials.akskCustomCipher"
 )
 
 // constant for protocol types

@@ -24,7 +24,7 @@ type BizKeeperConsumerHandler struct{}
 func (bk *BizKeeperConsumerHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	command, cmdConfig := control.DefaultPanel.GetCircuitBreaker(*i, common.Consumer)
 
-	cmdConfig.MetricsConsumerNum = archaius.GetInt("cse.metrics.circuitMetricsConsumerNum", hystrix.DefaultMetricsConsumerNum)
+	cmdConfig.MetricsConsumerNum = archaius.GetInt("servicecomb.metrics.circuitMetricsConsumerNum", hystrix.DefaultMetricsConsumerNum)
 	hystrix.ConfigureCommand(command, cmdConfig)
 
 	finish := make(chan *invocation.Response, 1)

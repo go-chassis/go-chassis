@@ -111,7 +111,6 @@ func ToSCOptions(options registry.Options) client.Options {
 	sco.TLSConfig = options.TLSConfig
 	sco.Addrs = options.Addrs
 	sco.Compressed = options.Compressed
-	sco.ConfigTenant = options.Tenant
 	sco.EnableSSL = options.EnableSSL
 	sco.Verbose = options.Verbose
 	sco.Version = options.Version

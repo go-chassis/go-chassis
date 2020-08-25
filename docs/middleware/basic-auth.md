@@ -14,7 +14,7 @@ go chassis提供高级别通用中间件抽象层，其中的一个抽象是Basi
 ```
 更改配置文件, 将basicAuth handler添加到chain中，注意作为认证鉴权，一般说的都是服务端功能，所以要放到provider chain中
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

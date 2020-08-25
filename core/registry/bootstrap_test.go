@@ -18,10 +18,10 @@ func init() {
 		LoggerLevel: "INFO",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.service.registry.address", "http://127.0.0.1:30100")
-	archaius.Set("service_description.name", "Client")
+	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")
+	archaius.Set("servicecomb.service.name", "Client")
 	runtime.HostName = "localhost"
-	config.MicroserviceDefinition = &model.MicroserviceCfg{}
+	config.MicroserviceDefinition = &model.ServiceSpec{}
 	archaius.UnmarshalConfig(config.MicroserviceDefinition)
 	config.ReadGlobalConfigFromArchaius()
 }
@@ -29,7 +29,7 @@ func init() {
 func TestRegisterService(t *testing.T) {
 	runtime.Init()
 
-	config.MicroserviceDefinition.ServiceDescription.Schemas = []string{"schemaId2", "schemaId3", "schemaId4"}
+	config.MicroserviceDefinition.Schemas = []string{"schemaId2", "schemaId3", "schemaId4"}
 
 	testRegistryObj := new(mock.RegistratorMock)
 	registry.DefaultRegistrator = testRegistryObj

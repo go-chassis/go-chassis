@@ -73,7 +73,7 @@ var gaugeVecs map[string]*prometheus.GaugeVec
 // GetPrometheusSinker get prometheus configurations
 func GetPrometheusSinker() {
 	onceInit.Do(func() {
-		t, err := time.ParseDuration(archaius.GetString("cse.metrics.flushInterval", "10s"))
+		t, err := time.ParseDuration(archaius.GetString("servicecomb.metrics.flushInterval", "10s"))
 		if err != nil {
 			t = time.Second * 10
 		}

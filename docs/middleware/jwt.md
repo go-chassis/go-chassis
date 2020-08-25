@@ -48,7 +48,7 @@ func (r *HelloAuth) Login(b *rf.Context) {
 
 更改配置文件, 将basicAuth handler添加到chain中，注意作为认证鉴权，一般说的都是服务端功能，所以要放到provider chain中
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

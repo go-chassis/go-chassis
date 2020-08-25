@@ -57,8 +57,8 @@ type restfulServer struct {
 
 func newRestfulServer(opts server.Options) server.ProtocolServer {
 	ws := new(restful.WebService)
-	if archaius.GetBool("cse.metrics.enable", false) {
-		metricPath := archaius.GetString("cse.metrics.apiPath", DefaultMetricPath)
+	if archaius.GetBool("servicecomb.metrics.enable", false) {
+		metricPath := archaius.GetString("servicecomb.metrics.apiPath", DefaultMetricPath)
 		if !strings.HasPrefix(metricPath, "/") {
 			metricPath = "/" + metricPath
 		}
@@ -74,10 +74,10 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 }
 
 func addProfileRoutes(ws *restful.WebService) {
-	if !archaius.GetBool("cse.profile.enable", false) {
+	if !archaius.GetBool("servicecomb.profile.enable", false) {
 		return
 	}
-	profilePath := archaius.GetString("cse.profile.apiPath", DefaultProfilePath)
+	profilePath := archaius.GetString("servicecomb.profile.apiPath", DefaultProfilePath)
 	if !strings.HasPrefix(profilePath, "/") {
 		profilePath = "/" + profilePath
 	}
@@ -296,7 +296,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 		OpenService:     true,
 		SwaggerFilePath: "./swagger-ui/dist/",
 	}
-	if globalconfig.GlobalDefinition.Cse.NoRefreshSchema {
+	if globalconfig.GlobalDefinition.ServiceComb.NoRefreshSchema {
 		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 	} else {
 		if err := os.RemoveAll(path); err != nil {

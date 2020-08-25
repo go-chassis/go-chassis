@@ -33,7 +33,7 @@ func TestProviderRateLimiterDisable(t *testing.T) {
 	c.AddHandler(&ratelimiter.ProviderRateLimiterHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.FlowControl.Provider.QPS.Enabled = false
+	config.GlobalDefinition.ServiceComb.FlowControl.Provider.QPS.Enabled = false
 	i := &invocation.Invocation{
 		SourceMicroService: "service1",
 		SchemaID:           "schema1",
@@ -55,7 +55,7 @@ func TestProviderRateLimiterHandler_Handle(t *testing.T) {
 	c.AddHandler(&ratelimiter.ProviderRateLimiterHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.FlowControl.Provider.QPS.Enabled = true
+	config.GlobalDefinition.ServiceComb.FlowControl.Provider.QPS.Enabled = true
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",
@@ -76,7 +76,7 @@ func TestProviderRateLimiterHandler_Handle_SourceMicroService(t *testing.T) {
 	c.AddHandler(&ratelimiter.ProviderRateLimiterHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.FlowControl.Provider.QPS.Enabled = true
+	config.GlobalDefinition.ServiceComb.FlowControl.Provider.QPS.Enabled = true
 	i := &invocation.Invocation{
 		SourceMicroService: "service1",
 		SchemaID:           "schema1",

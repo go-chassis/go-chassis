@@ -31,14 +31,14 @@ func TestTransportHandler_HandleRest(t *testing.T) {
 	t.Log("testing transport handler with rest protocol")
 	microContent := `---
 #微服务的私有属性
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+	  name: Client
+	  version: 0.1`
 
 	yamlContent := `---
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100
   protocols:
     rest:
@@ -71,7 +71,7 @@ cse:
 	c := &handler.Chain{}
 	i := &invocation.Invocation{}
 	i.Reply = &helloworld.HelloReply{}
-	i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+	i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/path/test", nil)
 	i.Reply = rest.NewResponse()
 	i.Ctx = context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
 		"user": "test",

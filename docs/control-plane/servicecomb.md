@@ -8,9 +8,8 @@ Update the chassis.yaml of your microservices with the following configuration.
 ## Configurations
 
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       type: servicecenter
       address: http://10.0.0.1:30100,http://10.0.0.2:30100 
       refeshInterval : 30s       
@@ -32,7 +31,7 @@ User can use this [guide](https://kie.readthedocs.io/en/latest/get-started.html)
 Update the chassis.yaml of your microservices with the following configuration.
 
 ```yaml
-cse:
+servicecomb:
   config:
     client:
       serverUri: http://127.0.0.1:30110         # This should be the address of your Kie Server
@@ -44,9 +43,9 @@ cse:
 Update the microservice.yaml of your microservices with the following configuration.
 
 ```yaml
-APPLICATION_ID: appname    # your application name
-service_description:
-  name: servicename        # your microservices name
-  version: 0.1.0           # your microservices version
-  environment: prod        # the environment where your application runs
+servicecomb:
+  service:
+    name: servicename        # your microservices name
+    version: 0.1.0           # your microservices version
+    environment: prod        # the environment where your application runs
 ```

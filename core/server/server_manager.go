@@ -84,8 +84,8 @@ func UnRegistrySelfInstances() error {
 //Init initializes
 func Init() error {
 	var err error
-	for k, v := range config.GlobalDefinition.Cse.Protocols {
-		if err = initialServer(config.GlobalDefinition.Cse.Handler.Chain.Provider, v, k); err != nil {
+	for k, v := range config.GlobalDefinition.ServiceComb.Protocols {
+		if err = initialServer(config.GlobalDefinition.ServiceComb.Handler.Chain.Provider, v, k); err != nil {
 			log.Println(err)
 			return err
 		}
@@ -135,10 +135,10 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 		ProtocolServerName: name,
 		ChainName:          chainName,
 		TLSConfig:          tlsConfig,
-		BodyLimit:          config.GlobalDefinition.Cse.Transport.MaxBodyBytes[protocolName],
-		HeaderLimit:        config.GlobalDefinition.Cse.Transport.MaxHeaderBytes[protocolName],
+		BodyLimit:          config.GlobalDefinition.ServiceComb.Transport.MaxBodyBytes[protocolName],
+		HeaderLimit:        config.GlobalDefinition.ServiceComb.Transport.MaxHeaderBytes[protocolName],
 	}
-	if t := config.GlobalDefinition.Cse.Transport.Timeout[protocolName]; len(t) > 0 {
+	if t := config.GlobalDefinition.ServiceComb.Transport.Timeout[protocolName]; len(t) > 0 {
 		timeout, err := time.ParseDuration(t)
 		if err != nil {
 			openlogging.GetLogger().Errorf("parse timeout failed: %s", err)

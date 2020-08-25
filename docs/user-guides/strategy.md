@@ -47,7 +47,7 @@ invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
 配置chassis.yaml的负载均衡部分，以及添加处理链。
 
 ```yaml
-cse:
+servicecomb:
   loadbalance:                 # 全局负载均衡配置
     strategy:
       name: RoundRobin

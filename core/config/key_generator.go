@@ -4,7 +4,7 @@ import "strings"
 
 // constant for hystrix keys
 const (
-	FixedPrefix = "cse"
+	FixedPrefix = "servicecomb"
 
 	NamespaceIsolation                = "isolation"
 	NamespaceCircuitBreaker           = "circuitBreaker"

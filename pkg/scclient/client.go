@@ -79,8 +79,7 @@ type RegistryClient struct {
 
 // RegistryConfig is a structure to store registry configurations like address of cc, ssl configurations and tenant name
 type RegistryConfig struct {
-	SSL    bool
-	Tenant string
+	SSL bool
 }
 
 // URLParameter maintains the list of parameters to be added in URL
@@ -95,8 +94,7 @@ func (c *RegistryClient) ResetRevision() {
 func (c *RegistryClient) Initialize(opt Options) (err error) {
 	c.revision = "0"
 	c.Config = &RegistryConfig{
-		SSL:    opt.EnableSSL,
-		Tenant: opt.ConfigTenant,
+		SSL: opt.EnableSSL,
 	}
 
 	options := &httpclient.Options{
@@ -119,7 +117,7 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 		return err
 	}
 
-	//Set the API Version based on the value set in chassis.yaml cse.service.registry.api.version
+	//Set the API Version based on the value set in chassis.yaml servicecomb.registry.api.version
 	//Default Value Set to V4
 	opt.Version = strings.ToLower(opt.Version)
 	switch opt.Version {
@@ -198,9 +196,6 @@ func (c *RegistryClient) GetDefaultHeaders() http.Header {
 		TenantHeader:      []string{"default"},
 	}
 
-	if c.Config.Tenant != "" {
-		headers.Set(TenantHeader, c.Config.Tenant)
-	}
 	return headers
 }
 

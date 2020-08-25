@@ -18,10 +18,8 @@ If you set cse.service.Registry.serviceDiscovery.type as "kube", then "configPat
 > NOTE:  Provider applications with go-chassis must deploy itself as a Pod asscociate with Services. The Service ports must be named and the port name must be the form **\<protocol>[-\<suffix>]**. protocol can set to be `rest` or `grpc` now.
 
 ```yaml
-cse:
-  service:
-    Registry:
-      serviceDiscovery:
+servicecomb:
+  registry:
         type: kube
         configPath: /etc/.kube/config
 ```

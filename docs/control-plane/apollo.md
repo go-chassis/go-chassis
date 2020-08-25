@@ -5,7 +5,7 @@
 Use can use this [guide](https://github.com/ctripcorp/apollo/wiki) to start up the Ctrip Apollo and make the Project, NamesSpace and add Configurations to it. Once your Apollo Server is setup then you can do the following modification in Go-Chassis to make it work with Apollo.  
 Update the chassis.yaml of your microservices with the following configuration.
 ```yaml
-cse:
+servicecomb:
   config:
     client:
       serverUri: http://127.0.0.1:8080          # This should be the address of your Apollo Server

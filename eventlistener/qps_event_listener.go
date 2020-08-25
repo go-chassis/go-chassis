@@ -13,7 +13,7 @@ import (
 
 const (
 	//QPSLimitKey is a variable of type string
-	QPSLimitKey = "cse.flowcontrol"
+	QPSLimitKey = "servicecomb.flowcontrol"
 )
 
 //QPSEventListener is a struct used for Event listener
