@@ -52,8 +52,8 @@ func TestCBInit(t *testing.T) {
 	microContent := `---
 servicecomb:
   service:
-	  name: Client
-	  version: 0.1`
+    name: Client
+    version: 0.1`
 
 	prepareTestFile(t, f, "chassis.yaml", "")
 	prepareTestFile(t, f, "microservice.yaml", microContent)

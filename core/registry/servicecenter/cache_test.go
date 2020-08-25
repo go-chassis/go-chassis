@@ -2,7 +2,6 @@ package servicecenter_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"os"
 	"testing"
 	"time"
@@ -27,13 +26,10 @@ func init() {
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")
 	archaius.Set("servicecomb.registry.autoSchemaIndex", true)
-	config.ReadGlobalConfigFromArchaius()
-
 	archaius.Set("servicecomb.service.name", "Server")
 	archaius.Set("servicecomb.service.hostname", "localhost")
-	config.MicroserviceDefinition = &model.ServiceSpec{}
-	archaius.UnmarshalConfig(config.MicroserviceDefinition)
 	os.Setenv("HTTP_DEBUG", "1")
+	config.ReadGlobalConfigFromArchaius()
 }
 func TestCacheManager_AutoSync(t *testing.T) {
 	registry.Enable()

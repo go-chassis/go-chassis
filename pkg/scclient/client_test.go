@@ -372,9 +372,6 @@ func TestRegistryClient_GetDefaultHeaders(t *testing.T) {
 		})
 	assert.Nil(t, err)
 
-	header := registryClient.GetDefaultHeaders()
-	tenant := header.Get(client.TenantHeader)
-	assert.Equal(t, tenant, "go-sc-tenant")
 }
 func init() {
 	lager.Init(&lager.Options{

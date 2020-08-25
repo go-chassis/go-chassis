@@ -49,7 +49,6 @@ const (
 // Define variables for the client
 var (
 	MSAPIPath     = ""
-	TenantHeader  = "X-Domain-Name"
 	GovernAPIPATH = ""
 )
 var (
@@ -144,7 +143,6 @@ func (c *RegistryClient) updateAPIPath() {
 	switch c.apiVersion {
 	case "v3":
 		MSAPIPath = APIPath
-		TenantHeader = "X-Tenant-Name"
 		GovernAPIPATH = APIPath
 		openlogging.GetLogger().Info("Use Service center v3")
 	default:
@@ -193,7 +191,6 @@ func (c *RegistryClient) GetDefaultHeaders() http.Header {
 	headers := http.Header{
 		HeaderContentType: []string{"application/json"},
 		HeaderUserAgent:   []string{"cse-serviceregistry-client/1.0.0"},
-		TenantHeader:      []string{"default"},
 	}
 
 	return headers
