@@ -60,7 +60,7 @@ servicecomb:
  config:
 ```
 
-## move "registry" under "servicecomb"
+## move "registry,router,quota" under "servicecomb"
 
 for example:
 
@@ -69,9 +69,31 @@ for example:
 cse:
  service:
    registry:
+   quota:
+   router:
 ```
 2.0
 ```yaml
 servicecomb:
  registry:
+ quota:
+ router:
 ```
+
+## others
+
+1.if you use archaius.Getxxx("cse.xxxx") to pull config of go chassis
+
+in this case, if you hacked go chassis config to do something, you must change as below
+1.8
+```go
+archaius.Getxxx("cse.xxxx")
+```
+2.0
+```go
+archaius.Getxxx("servicecomb.xxxx")
+```
+
+2.from 1.x to 2.0 there could be many of internal APIs has been refactored, but most API your code won't call. if you find any problem,
+please record your problem in [issues](https://github.com/go-chassis/go-chassis/issues).
+or even help us to complete this instruction.

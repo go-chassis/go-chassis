@@ -1,5 +1,6 @@
-router:
-  infra: cse # router rule comes from where
+servicecomb:
+  router:
+    infra: cse # router rule comes from where
 #servicecomb:
 #  routeRule:
 #    Server: |

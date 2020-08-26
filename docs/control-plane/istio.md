@@ -47,9 +47,9 @@ Then when deploying the micro services in Istio, make sure the Kubernetes Servic
 In the original go-chassis configuration, user can specify tag based route rules, as described below:
 
 ```yaml
-## router.yaml
-router:
-  infra: cse
+servicecomb:
+  router:
+    infra: cse
 routeRule: |
   targetService:
     - precedence: 2
