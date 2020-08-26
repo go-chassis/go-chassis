@@ -79,3 +79,21 @@ servicecomb:
  quota:
  router:
 ```
+
+## others
+
+1.if you use archaius.Getxxx to pull config of go chassis
+
+in this case, you hacked in to go chassis config to do something, you must change to below
+1.8
+```go
+archaius.Getxxx("cse.xxxx")
+```
+2.0
+```go
+archaius.Getxxx("servicecomb.xxxx")
+```
+
+2.from 1.x to 2.0 there could be many of internal APIs has been refactored,
+please record your problem in [issues](https://github.com/go-chassis/go-chassis/issues).
+or even help up to complete this instruction.
