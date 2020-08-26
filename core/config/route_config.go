@@ -7,10 +7,10 @@ const DefaultRouterType = "cse"
 
 // GetRouterType returns the type of router
 func GetRouterType() string {
-	return archaius.GetString("servicecomb.service.router.infra", DefaultRouterType)
+	return archaius.GetString("servicecomb.router.infra", DefaultRouterType)
 }
 
 // GetRouterEndpoints returns the router address
 func GetRouterEndpoints() string {
-	return archaius.GetString("servicecomb.service.router.address", "")
+	return archaius.GetString("servicecomb.router.address", "")
 }

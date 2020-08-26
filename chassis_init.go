@@ -171,8 +171,8 @@ func (c *chassis) initialize() error {
 
 func initBackendPlugins() error {
 	if err := quota.Init(quota.Options{
-		Plugin:   archaius.GetString("servicecomb.service.quota.plugin", ""),
-		Endpoint: archaius.GetString("servicecomb.service.quota.endpoint", ""),
+		Plugin:   archaius.GetString("servicecomb.quota.plugin", ""),
+		Endpoint: archaius.GetString("servicecomb.quota.endpoint", ""),
 	}); err != nil {
 		return err
 	}

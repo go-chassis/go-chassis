@@ -26,10 +26,9 @@ router.InstallRouterPlugin("istio", func() (router.Router, error) {
 Second, specify your plugin name in router.yaml
 ```yaml
 servicecomb:
-  service:
-    router:
-      plugin: istio
-      address: "xxx"
+  router:
+    plugin: istio
+    address: "xxx"
 ``` 
 
 go chassis will use your router implementation as router rule configuration source, 

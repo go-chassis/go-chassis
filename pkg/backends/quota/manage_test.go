@@ -40,7 +40,7 @@ func (im *inMemory) GetQuotas(service, domain string) ([]*quota.Quota, error) {
 }
 func TestInit(t *testing.T) {
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("servicecomb.service.quota.plugin", "mock")
+	archaius.Set("servicecomb.quota.plugin", "mock")
 	t.Run("circuit qms plugin", func(t *testing.T) {
 		err := quota.Init(quota.Options{
 			Endpoint: "",
@@ -56,7 +56,7 @@ func TestInit(t *testing.T) {
 		})
 		err := quota.Init(quota.Options{
 			Endpoint: "",
-			Plugin:   archaius.GetString("servicecomb.service.quota.plugin", "mock"),
+			Plugin:   archaius.GetString("servicecomb.quota.plugin", "mock"),
 		})
 		assert.NoError(t, err)
 	})
