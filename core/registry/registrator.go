@@ -99,7 +99,6 @@ func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 		return
 	}
 	oR.Addrs = hostsR
-	oR.Tenant = config.GetRegistratorTenant()
 	oR.Version = config.GetRegistratorAPIVersion()
 	oR.TLSConfig, err = getTLSConfig(schemeR, RTag)
 	if err != nil {
@@ -113,7 +112,6 @@ func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 		return
 	}
 	oSD.Addrs = hostsSD
-	oSD.Tenant = config.GetServiceDiscoveryTenant()
 	oSD.Version = config.GetServiceDiscoveryAPIVersion()
 	oSD.ConfigPath = config.GetServiceDiscoveryConfigPath()
 	oSD.TLSConfig, err = getTLSConfig(schemeSD, SDTag)
@@ -128,7 +126,6 @@ func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 		return
 	}
 	oCD.Addrs = hostsCD
-	oCD.Tenant = config.GetContractDiscoveryTenant()
 	oCD.Version = config.GetContractDiscoveryAPIVersion()
 	oCD.TLSConfig, err = getTLSConfig(schemeCD, CDTag)
 	if err != nil {

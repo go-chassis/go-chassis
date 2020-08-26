@@ -22,7 +22,7 @@ import _ github.com/go-chassis/go-chassis/middleware/ratelimiter
 
 Add marker and limiter to handler 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

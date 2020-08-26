@@ -2,7 +2,7 @@
 region:
   name: us-east
   availableZone: us-east-1
-cse:
+servicecomb:
 #  flowcontrol:
 #    Provider:
 #      qps:

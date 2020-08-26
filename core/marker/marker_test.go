@@ -85,7 +85,7 @@ func TestMark(t *testing.T) {
         apiPath: 
           contains: "path/test"`
 		marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
-		i := createInvoker(nil, http.MethodPost, "cse://127.0.0.1:9992/path/test")
+		i := createInvoker(nil, http.MethodPost, "http://127.0.0.1:9992/path/test")
 		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())
 	})

@@ -7,7 +7,7 @@ Go chassis以插件的形式提供加解密组件功能，用户可以自己定�
 you can use cipher in SK and passphase decryption
 
 ```yaml
-cse:
+servicecomb:
   credentials:
     accessKey: xxx
     secretKey: xxx #ecrypted
@@ -92,7 +92,7 @@ func (c *DefaultCipher)Decrypt(src string) (string, error) {
 
 3.Set cipher name in auth.yaml to decrypt SK
 ```yaml
-cse:
+servicecomb:
   credentials:
     accessKey: xxx
     secretKey: xxx #ecrypted

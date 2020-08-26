@@ -10,14 +10,14 @@ import (
 func TestQpsEvent(t *testing.T) {
 	eventlistener.Init()
 	eventListen := &eventlistener.QPSEventListener{}
-	t.Log("sending the events for the key cse.flowcontrol.Consumer.qps.limit.Server")
-	e := &event.Event{EventType: "UPDATE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
+	t.Log("sending the events for the key servicecomb.flowcontrol.Consumer.qps.limit.Server")
+	e := &event.Event{EventType: "UPDATE", Key: "servicecomb.flowcontrol.Consumer.qps.limit.Server", Value: 199}
 	eventListen.Event(e)
 
-	e1 := &event.Event{EventType: "CREATE", Key: "cse.flowcontrol.Provider.qps.limit.Server", Value: 100}
+	e1 := &event.Event{EventType: "CREATE", Key: "servicecomb.flowcontrol.Provider.qps.limit.Server", Value: 100}
 	eventListen.Event(e1)
 
-	e2 := &event.Event{EventType: "DELETE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
+	e2 := &event.Event{EventType: "DELETE", Key: "servicecomb.flowcontrol.Consumer.qps.limit.Server", Value: 199}
 	eventListen.Event(e2)
 
 }

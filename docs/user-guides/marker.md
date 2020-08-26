@@ -23,7 +23,7 @@ each policy is defined as a yaml value, the yaml key path is servicecomb.match.{
 
 must add marker to handler 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

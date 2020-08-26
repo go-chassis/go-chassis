@@ -16,7 +16,7 @@ import (
 )
 
 var yamlContent = `---
-cse:
+servicecomb:
   governance:
     Consumer:
       service1:
@@ -35,11 +35,10 @@ func TestRestFaultHandler_Names(t *testing.T) {
 	assert.Equal(t, "fault-inject", conName)
 
 	microContent := `---
-#微服务的私有属性
-service_description:
-  name: Client
-  level: FRONT
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 	f := prepareConfDir(t)
 	prepareTestFile(t, f, "chassis.yaml", "")
 	prepareTestFile(t, f, "microservice.yaml", microContent)
@@ -53,8 +52,8 @@ service_description:
 	c.AddHandler(&normalAfter{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.FaultInject] = handler.FaultInject
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer[handler.FaultInject] = handler.FaultInject
 
 	t.Run("unknown protocol", func(t *testing.T) {
 		inv := &invocation.Invocation{

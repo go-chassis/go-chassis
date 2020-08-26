@@ -4,9 +4,8 @@ record access log as a handler in provider chain
 
 1.add this in provider chain, and as the first handler
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       disabled: true
       registry: manual
   protocols: # what kind of server you want to launch

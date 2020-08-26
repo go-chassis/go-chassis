@@ -39,7 +39,7 @@ type Options struct {
 
 // GetFailureMap return failure map
 func GetFailureMap(p string) map[string]bool {
-	failureList := strings.Split(config.GlobalDefinition.Cse.Transport.Failure[p], ",")
+	failureList := strings.Split(config.GlobalDefinition.ServiceComb.Transport.Failure[p], ",")
 	failureMap := make(map[string]bool)
 	for _, v := range failureList {
 		if v == "" {

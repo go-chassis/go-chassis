@@ -68,7 +68,7 @@ func (c *chassis) initChains(chainType string) error {
 	var handlerNameMap = map[string]string{defaultChainName: ""}
 	switch chainType {
 	case common.Provider:
-		if providerChainMap := config.GlobalDefinition.Cse.Handler.Chain.Provider; len(providerChainMap) != 0 {
+		if providerChainMap := config.GlobalDefinition.ServiceComb.Handler.Chain.Provider; len(providerChainMap) != 0 {
 			if _, ok := providerChainMap[defaultChainName]; !ok {
 				providerChainMap[defaultChainName] = c.DefaultProviderChainNames[defaultChainName]
 			}
@@ -77,7 +77,7 @@ func (c *chassis) initChains(chainType string) error {
 			handlerNameMap = c.DefaultProviderChainNames
 		}
 	case common.Consumer:
-		if consumerChainMap := config.GlobalDefinition.Cse.Handler.Chain.Consumer; len(consumerChainMap) != 0 {
+		if consumerChainMap := config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer; len(consumerChainMap) != 0 {
 			if _, ok := consumerChainMap[defaultChainName]; !ok {
 				consumerChainMap[defaultChainName] = c.DefaultConsumerChainNames[defaultChainName]
 			}
@@ -128,12 +128,12 @@ func (c *chassis) initialize() error {
 		return err
 	}
 	bootstrap.Bootstrap()
-	if !archaius.GetBool("cse.service.registry.disabled", false) {
+	if !archaius.GetBool("servicecomb.registry.disabled", false) {
 		err := registry.Enable()
 		if err != nil {
 			return err
 		}
-		strategyName := archaius.GetString("cse.loadbalance.strategy.name", "")
+		strategyName := archaius.GetString("servicecomb.loadbalance.strategy.name", "")
 		if err := loadbalancer.Enable(strategyName); err != nil {
 			return err
 		}

@@ -50,9 +50,10 @@ func prepareTestFile(t *testing.T, confDir, file, content string) {
 func TestCBInit(t *testing.T) {
 	f := prepareConfDir(t)
 	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 
 	prepareTestFile(t, f, "chassis.yaml", "")
 	prepareTestFile(t, f, "microservice.yaml", microContent)
@@ -81,7 +82,7 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 	c.AddHandler(&ratelimiter.ConsumerRateLimiterHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.FlowControl.Consumer.QPS.Enabled = false
+	config.GlobalDefinition.ServiceComb.FlowControl.Consumer.QPS.Enabled = false
 	i := &invocation.Invocation{
 		SourceMicroService: "service1",
 		SchemaID:           "schema1",
@@ -109,7 +110,7 @@ func TestConsumerRateLimiterHandler_Handle(t *testing.T) {
 	c.AddHandler(&ratelimiter.ConsumerRateLimiterHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.FlowControl.Consumer.QPS.Enabled = true
+	config.GlobalDefinition.ServiceComb.FlowControl.Consumer.QPS.Enabled = true
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",

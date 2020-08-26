@@ -212,11 +212,12 @@ route:
 
 微服务定义中定义了元数据
 ```yaml
-service_description:
-  name: Server
-  hostname: 10.244.1.3
-  instance_properties:
-    modelVersion: 1.1
+servicecomb:
+  service:
+    name: Server
+    hostname: 10.244.1.3
+    instanceProperties:
+      modelVersion: 1.1
 ```
 
 那么可以定义路由规则进行分流

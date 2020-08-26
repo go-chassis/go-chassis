@@ -41,7 +41,7 @@ github.com/go-chassis/go-chassis/pkg/metrics/metrics.go
 ## 示例
 
 ```yaml
-cse:
+servicecomb:
   metrics:
     apiPath: /metrics      # we can also give api path having prefix "/" ,like /adas/metrics
     enable: true

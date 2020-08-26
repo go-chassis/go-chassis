@@ -4,7 +4,6 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/endpoint"
 	"github.com/go-chassis/go-chassis/core/registry"
 	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
@@ -15,11 +14,10 @@ import (
 
 func init() {
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.service.registry.address", "http://127.0.0.1:30100")
-	archaius.Set("service_description.name", "Client")
+	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")
+	archaius.Set("servicecomb.service.name", "Client")
 	config.ReadGlobalConfigFromArchaius()
-	config.MicroserviceDefinition = &model.MicroserviceCfg{}
-	archaius.UnmarshalConfig(config.MicroserviceDefinition)
+	config.MicroserviceDefinition = &config.GlobalDefinition.ServiceComb.ServiceDescription
 
 }
 func TestGetEndpointFromServiceCenterInvalidScenario(t *testing.T) {

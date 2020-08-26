@@ -13,7 +13,7 @@ import (
 
 func TestGetConfigServerEndpoint(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{
-		Cse: model.CseStruct{
+		ServiceComb: model.ServiceComb{
 			Config: model.Config{
 				Client: model.ConfigClient{},
 			},

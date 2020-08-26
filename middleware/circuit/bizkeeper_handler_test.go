@@ -44,12 +44,13 @@ func prepareTestFile(t *testing.T, confDir, file, content string) {
 func TestCBInit(t *testing.T) {
 	f := prepareConfDir(t)
 	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 	circuitContent :=
 		`
-cse:
+servicecomb:
   isolation:
     Consumer:
       timeoutInMilliseconds: 1000
@@ -100,8 +101,8 @@ func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 	c.AddHandler(&circuit.BizKeeperConsumerHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer["bizkeeperconsumerdefault"] = "bizkeeper-consumer"
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer["bizkeeperconsumerdefault"] = "bizkeeper-consumer"
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",
@@ -121,8 +122,8 @@ func TestBizKeeperProviderHandler_Handle(t *testing.T) {
 	c.AddHandler(&circuit.BizKeeperProviderHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Provider["bizkeeperproviderdefault"] = "bizkeeper-provider"
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider["bizkeeperproviderdefault"] = "bizkeeper-provider"
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",

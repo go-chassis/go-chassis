@@ -64,14 +64,15 @@ func (h *handler2) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 
 func TestTLSEndpointLBHandlerWithRetry(t *testing.T) {
 	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+	  name: Client
+	  version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
   availableZone: us-east-1
-cse:
+servicecomb:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -174,14 +175,15 @@ cse:
 }
 func TestLBHandlerWithRetry(t *testing.T) {
 	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+	  name: Client
+	  version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
   availableZone: us-east-1
-cse:
+servicecomb:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -282,14 +284,15 @@ cse:
 func TestTLSLBHandlerWithNoRetry(t *testing.T) {
 	microContent := `---
 #微服务的私有属性
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+	  name: Client
+	  version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
   availableZone: us-east-1
-cse:
+servicecomb:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -376,14 +379,15 @@ cse:
 func TestLBHandlerWithNoRetry(t *testing.T) {
 	microContent := `---
 #微服务的私有属性
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+	  name: Client
+	  version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
   availableZone: us-east-1
-cse:
+servicecomb:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -514,7 +518,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	control.Init(opts)
 	registry.Enable()
 	registry.DoRegister()
-	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
+	loadbalancer.Enable(archaius.GetString("servicecomb.loadbalance.strategy.name", ""))
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",

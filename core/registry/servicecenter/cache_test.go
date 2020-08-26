@@ -2,7 +2,6 @@ package servicecenter_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"os"
 	"testing"
 	"time"
@@ -25,15 +24,12 @@ func init() {
 		RollingPolicy: "size",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.service.registry.address", "http://127.0.0.1:30100")
-	archaius.Set("cse.service.registry.autoSchemaIndex", true)
-	config.ReadGlobalConfigFromArchaius()
-
-	archaius.Set("service_description.name", "Server")
-	archaius.Set("service_description.hostname", "localhost")
-	config.MicroserviceDefinition = &model.MicroserviceCfg{}
-	archaius.UnmarshalConfig(config.MicroserviceDefinition)
+	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")
+	archaius.Set("servicecomb.registry.autoSchemaIndex", true)
+	archaius.Set("servicecomb.service.name", "Server")
+	archaius.Set("servicecomb.service.hostname", "localhost")
 	os.Setenv("HTTP_DEBUG", "1")
+	config.ReadGlobalConfigFromArchaius()
 }
 func TestCacheManager_AutoSync(t *testing.T) {
 	registry.Enable()
@@ -153,7 +149,7 @@ func TestCacheManager_MakeSchemaIndex(t *testing.T) {
 		4. Check the status of Cache
 	*/
 
-	config.GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.RefreshInterval = "1"
+	config.GlobalDefinition.ServiceComb.Registry.RefreshInterval = "1"
 	registry.Enable()
 	registry.DoRegister()
 	time.Sleep(time.Second * 1)

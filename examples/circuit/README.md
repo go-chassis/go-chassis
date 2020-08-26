@@ -2,7 +2,7 @@
 here is the config
 ```yaml
 ---
-cse:
+servicecomb:
   isolation:
     Consumer:
       timeoutInMilliseconds: 100

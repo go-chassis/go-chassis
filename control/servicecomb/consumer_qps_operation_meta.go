@@ -20,7 +20,7 @@ type ProviderKeys struct {
 }
 
 //Prefix is const
-const Prefix = "cse.flowcontrol"
+const Prefix = "servicecomb.flowcontrol"
 
 // GetConsumerKey get specific key for consumer
 func GetConsumerKey(sourceName, serviceName, schemaID, OperationID string) *ConsumerKeys {

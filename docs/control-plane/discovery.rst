@@ -14,12 +14,9 @@ example
 
 ::
 
-  cse:
-    service:
-      Registry:
-        registrator:
-          disabled: true
-        serviceDiscovery:
+  servicecomb:
+  registry:
+        registry:
           type: pilotv2
           address: grpc://istio-pilot.istio-system:15010
 

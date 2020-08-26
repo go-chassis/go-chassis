@@ -9,7 +9,6 @@ import (
 type Options struct {
 	Addrs      []string
 	EnableSSL  bool
-	Tenant     string
 	Timeout    time.Duration
 	TLSConfig  *tls.Config
 	Compressed bool

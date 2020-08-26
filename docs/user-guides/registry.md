@@ -65,9 +65,8 @@ InstallPlugin(name string, f func(opts ...Option) Registry)
 服务中心最简化配置只需要registry的address，注册的微服务实例通过appId、服务名和版本决定。
 
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       disabled: false            #optional: 默认开启registry模块
       type: servicecenter        #optional: 默认类型为对接服务中心
       address: http://10.0.0.1:30100,http://10.0.0.2:30100 

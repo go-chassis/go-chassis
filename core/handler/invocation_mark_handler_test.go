@@ -22,13 +22,13 @@ func TestMarkHandler_Handle(t *testing.T) {
 	c.AddHandler(&handler.MarkHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
 	t.Run("test no match policy", func(t *testing.T) {
 		i := invocation.New(context.Background())
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/path/test", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -53,7 +53,7 @@ method: GET
 		i := invocation.New(context.Background())
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/path/test", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -65,7 +65,7 @@ method: GET
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/path/test", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -77,7 +77,7 @@ method: GET
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/test", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -89,7 +89,7 @@ method: GET
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test2", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/test2", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -105,8 +105,8 @@ func TestMarkHandler_Handle2(t *testing.T) {
 	c.AddHandler(&handler.MarkHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
 	archaius.Init(archaius.WithMemorySource())
 	var yamlContent = `
 method: GET
@@ -118,7 +118,7 @@ method: GET
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test2", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/test2", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -130,7 +130,7 @@ method: GET
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodPost, "cse://127.0.0.1:9992/test2", nil)
+		i.Args, _ = rest.NewRequest(http.MethodPost, "http://127.0.0.1:9992/test2", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -145,8 +145,8 @@ func TestMarkHandler_HandleMutilePolicy(t *testing.T) {
 	c.AddHandler(&handler.MarkHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
 
 	archaius.Init(archaius.WithMemorySource())
 	var yamlContent = `
@@ -170,7 +170,7 @@ method: POST
 		i := invocation.New(context.Background())
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/path/test", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -182,7 +182,7 @@ method: POST
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/path/test", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -194,7 +194,7 @@ method: POST
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodPost, "cse://127.0.0.1:9992/test", nil)
+		i.Args, _ = rest.NewRequest(http.MethodPost, "http://127.0.0.1:9992/test", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})
@@ -206,7 +206,7 @@ method: POST
 		i.Metadata = make(map[string]interface{})
 		i.SetHeader("user", "jason")
 		i.SetHeader("cookie", "asdfojjsdof;user=jason;sfaoabc")
-		i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/test2", nil)
+		i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/test2", nil)
 		c.Next(i, func(r *invocation.Response) {
 			assert.NoError(t, r.Err)
 		})

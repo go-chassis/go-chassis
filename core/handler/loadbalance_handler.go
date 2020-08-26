@@ -10,7 +10,6 @@ import (
 	"net/http"
 
 	"github.com/cenkalti/backoff"
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/control"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
@@ -54,9 +53,6 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		return nil, lbErr
 	}
 
-	if i.Protocol == "" {
-		i.Protocol = archaius.GetString("cse.references."+i.MicroServiceName+".transport", ins.DefaultProtocol)
-	}
 	if i.Protocol == "" {
 		for k := range ins.EndpointsMap {
 			i.Protocol = k

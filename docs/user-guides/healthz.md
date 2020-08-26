@@ -45,10 +45,7 @@ import _ "github.com/go-chassis/go-chassis/healthz/provider"
 ###### 示例
 
 ```yaml
-cse:
-  service:
-    Registry:
+servicecomb:
+  registry:
       healthCheck: true
-      #serviceDiscovery:
-      #  healthCheck: true # 同时支持单独开启服务发现能力时的客户端健康检查
 ```

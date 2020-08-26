@@ -15,12 +15,12 @@ import (
 // constants for consumer isolation, circuit breaker, fallback keys
 const (
 	// ConsumerIsolationKey is a variable of type string
-	ConsumerIsolationKey      = "cse.isolation"
-	ConsumerCircuitbreakerKey = "cse.circuitBreaker"
-	ConsumerFallbackKey       = "cse.fallback"
-	ConsumerFallbackPolicyKey = "cse.fallbackpolicy"
-	regex4normal              = "cse\\.(isolation|circuitBreaker|fallback|fallbackpolicy)\\.Consumer\\.(.*)\\.(timeout|timeoutInMilliseconds|maxConcurrentRequests|enabled|forceOpen|forceClosed|sleepWindowInMilliseconds|requestVolumeThreshold|errorThresholdPercentage|enabled|maxConcurrentRequests|policy)\\.(.+)"
-	regex4mesher              = "cse\\.(isolation|circuitBreaker|fallback|fallbackpolicy)\\.(.+)\\.Consumer\\.(.*)\\.(timeout|timeoutInMilliseconds|maxConcurrentRequests|enabled|forceOpen|forceClosed|sleepWindowInMilliseconds|requestVolumeThreshold|errorThresholdPercentage|enabled|maxConcurrentRequests|policy)\\.(.+)"
+	ConsumerIsolationKey      = "servicecomb.isolation"
+	ConsumerCircuitbreakerKey = "servicecomb.circuitBreaker"
+	ConsumerFallbackKey       = "servicecomb.fallback"
+	ConsumerFallbackPolicyKey = "servicecomb.fallbackpolicy"
+	regex4normal              = "servicecomb\\.(isolation|circuitBreaker|fallback|fallbackpolicy)\\.Consumer\\.(.*)\\.(timeout|timeoutInMilliseconds|maxConcurrentRequests|enabled|forceOpen|forceClosed|sleepWindowInMilliseconds|requestVolumeThreshold|errorThresholdPercentage|enabled|maxConcurrentRequests|policy)\\.(.+)"
+	regex4mesher              = "servicecomb\\.(isolation|circuitBreaker|fallback|fallbackpolicy)\\.(.+)\\.Consumer\\.(.*)\\.(timeout|timeoutInMilliseconds|maxConcurrentRequests|enabled|forceOpen|forceClosed|sleepWindowInMilliseconds|requestVolumeThreshold|errorThresholdPercentage|enabled|maxConcurrentRequests|policy)\\.(.+)"
 )
 
 //CircuitBreakerEventListener is a struct with one string variable

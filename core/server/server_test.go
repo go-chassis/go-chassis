@@ -21,7 +21,7 @@ func init() {
 		RollingPolicy: "size",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.noRefreshSchema", true)
+	archaius.Set("servicecomb.noRefreshSchema", true)
 	config.ReadGlobalConfigFromArchaius()
 }
 
@@ -60,8 +60,8 @@ func TestSrcMgr(t *testing.T) {
 
 	cseproto["rest"] = mp
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Protocols = cseproto
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Protocols = cseproto
 
 	server.Init()
 
@@ -102,8 +102,8 @@ func TestSrcMgrErr(t *testing.T) {
 
 	cseproto["rest"] = mp
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Protocols = cseproto
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Protocols = cseproto
 
 	server.Init()
 

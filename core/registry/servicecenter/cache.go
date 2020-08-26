@@ -64,7 +64,7 @@ func (c *CacheManager) AutoSync() {
 
 // refreshCache refresh cache
 func (c *CacheManager) refreshCache() {
-	if archaius.GetBool("cse.service.registry.autodiscovery", false) {
+	if archaius.GetBool("servicecomb.registry.autodiscovery", false) {
 		err := c.registryClient.SyncEndpoints()
 		if err != nil {
 			openlogging.GetLogger().Errorf("get sc endpoints failed: %s", err)
@@ -77,14 +77,14 @@ func (c *CacheManager) refreshCache() {
 		c.registryClient.ResetRevision()
 	}
 
-	if archaius.GetBool("cse.service.registry.autoSchemaIndex", false) {
+	if archaius.GetBool("servicecomb.registry.autoSchemaIndex", false) {
 		err = c.MakeSchemaIndex()
 		if err != nil {
 			openlogging.GetLogger().Errorf("MakeSchemaIndex failed: %s", err)
 		}
 	}
 
-	if archaius.GetBool("cse.service.registry.autoIPIndex", false) {
+	if archaius.GetBool("servicecomb.registry.autoIPIndex", false) {
 		err = c.MakeIPIndex()
 		if err != nil {
 			openlogging.GetLogger().Errorf("Auto Update IP index failed: %s", err)

@@ -115,13 +115,13 @@ func getTLSForClient(configServerURL string) (*tls.Config, error) {
 
 func initConfigServer(endpoint string, enableSSL bool, tlsConfig *tls.Config, interval int) error {
 
-	refreshMode := archaius.GetInt("cse.config.client.refreshMode", common.DefaultRefreshMode)
+	refreshMode := archaius.GetInt("servicecomb.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != remote.ModeWatch && refreshMode != remote.ModeInterval {
 		openlogging.Error(ErrRefreshMode.Error())
 		return ErrRefreshMode
 	}
 
-	remoteSourceType := archaius.GetString("cse.config.client.type", archaius.KieSource)
+	remoteSourceType := archaius.GetString("servicecomb.config.client.type", archaius.KieSource)
 
 	var ri = &archaius.RemoteInfo{
 		DefaultDimension: map[string]string{

@@ -25,7 +25,7 @@ type Handler interface {
 ##### 添加配置
 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       [service_type]:
@@ -62,7 +62,7 @@ func (h *FakeHandler) Handle(chain *handler.Chain, inv *invocation.Invocation,
 chassis.yaml配置示例如下
 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

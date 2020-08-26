@@ -57,7 +57,7 @@ resp, err := core.NewRestInvoker(core.ChainName("custom")).ContextDo(context.TOD
 #### Multiple Port
 if you define different port for the same protocol, like below
 ```yaml
-cse:
+servicecomb:
   protocols:
     rest:
       listenAddress: 0.0.0.0:5000

@@ -58,7 +58,7 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 func TestServicecenter_HeartbeatUpdatProperties(t *testing.T) {
 	config.Init()
 	var ins = map[string]string{"type": "test"}
-	config.MicroserviceDefinition.ServiceDescription.InstanceProperties = ins
+	config.MicroserviceDefinition.InstanceProperties = ins
 	registry.Enable()
 	registry.DoRegister()
 

@@ -4,7 +4,7 @@
 
 ## 配置
 ```yaml
-cse:
+servicecomb:
   protocols:
     {name}:
   handler:

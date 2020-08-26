@@ -37,7 +37,7 @@ Use backoff.minMs to set the the first wait time
 edit load_balancing.yaml.
 
 ```yaml
-cse:
+servicecomb:
   loadbalance:
     retryEnabled: true
     retryOnNext: 2

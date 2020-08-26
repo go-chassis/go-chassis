@@ -1,6 +1,6 @@
 ---
 
-cse:
+servicecomb:
   flowcontrol:
     Consumer:
       qps:

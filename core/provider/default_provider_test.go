@@ -183,10 +183,10 @@ func BenchmarkDefaultProvider_GetOperation(b *testing.B) {
 }
 func init() {
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.noRefreshSchema", true)
-	archaius.Set("service_description.name", "Client")
-	archaius.Set("service_description.hostname", "localhost")
-	config.MicroserviceDefinition = &model.MicroserviceCfg{}
+	archaius.Set("servicecomb.noRefreshSchema", true)
+	archaius.Set("servicecomb.service.name", "Client")
+	archaius.Set("servicecomb.service.hostname", "localhost")
+	config.MicroserviceDefinition = &model.ServiceSpec{}
 	archaius.UnmarshalConfig(config.MicroserviceDefinition)
 	config.ReadGlobalConfigFromArchaius()
 	lager.Init(&lager.Options{

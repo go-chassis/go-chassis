@@ -23,7 +23,7 @@ then go chassis will automatically generate advertise address, it is convenience
 ## Example
 this config will launch 2 http server and 1 grpc server
 ```
-cse:
+servicecomb:
   protocols:
     rest:
       listenAddress: 0.0.0.0:5000
@@ -35,7 +35,7 @@ cse:
 
 for ipv6, need quotation marks. because [] is object list in yaml format
 ```
-cse:
+servicecomb:
   protocols:
     rest:
       listenAddress: "[2407:c080:17ff:ffff::7274:83a]:5000"
@@ -43,7 +43,7 @@ cse:
 
 if you do not want to specify a port, you can leave the port empty (use quotes) or use 0, the system will give a random port for you
 ```
-cse:
+servicecomb:
   protocols:
     rest:
       listenAddress: 0.0.0.0:0

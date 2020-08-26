@@ -106,17 +106,17 @@ func TestGetChain(t *testing.T) {
 	t.Log("getting chain of various service type and chain name")
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 	handler.RegisterHandler(BIZKEEPERFAKE, createBizkeeperFakeHandler)
 	handler.RegisterHandler("loadbalancer-fake", createBizkeeperFakeHandler)
-	handler.CreateChains(common.Provider, config.GlobalDefinition.Cse.Handler.Chain.Provider)
-	handler.CreateChains(common.Consumer, config.GlobalDefinition.Cse.Handler.Chain.Consumer)
+	handler.CreateChains(common.Provider, config.GlobalDefinition.ServiceComb.Handler.Chain.Provider)
+	handler.CreateChains(common.Consumer, config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer)
 	c, err := handler.GetChain(common.Consumer, "custom")
 	assert.NoError(t, err)
 	assert.Equal(t, "custom", c.Name)
@@ -131,7 +131,7 @@ func TestGetChain(t *testing.T) {
 
 	t.Log("handler name为空")
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = map[string]string{
 		"default": "",
 		"custom":  ",",
 	}
@@ -156,11 +156,11 @@ func BenchmarkPool_GetChain(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.Init()
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 

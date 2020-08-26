@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	lbPrefix                                 = "cse.loadbalance"
+	lbPrefix                                 = "servicecomb.loadbalance"
 	propertySessionStickinessRuleTimeout     = "SessionStickinessRule.sessionTimeoutInSeconds"
 	propertySessionStickinessRuleFailedTimes = "SessionStickinessRule.successiveFailedTimes"
 	propertyRetryEnabled                     = "retryEnabled"

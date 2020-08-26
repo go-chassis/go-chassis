@@ -39,8 +39,8 @@ func TestBootstrap(t *testing.T) {
 	config.Init()
 	time.Sleep(1 * time.Second)
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.MicroserviceDefinition = &model.MicroserviceCfg{}
-	config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version = "v2"
+	config.MicroserviceDefinition = &model.ServiceSpec{}
+	config.GlobalDefinition.ServiceComb.Registry.APIVersion.Version = "v2"
 
 	t.Log("Test bootstrap.go")
 
@@ -60,7 +60,7 @@ func TestBootstrap(t *testing.T) {
 	t.Log("Install Plugins")
 	bootstrap.InstallPlugin(plugin1.Name, plugin1)
 	bootstrap.InstallPlugin(plugin2.Name, plugin2)
-	config.GlobalDefinition.Cse.Config.Client.ServerURI = ""
+	config.GlobalDefinition.ServiceComb.Config.Client.ServerURI = ""
 	bootstrap.Bootstrap()
 
 	t.Log("verifying Plugins")

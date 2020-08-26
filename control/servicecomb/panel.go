@@ -53,7 +53,7 @@ func (p *Panel) GetLoadBalancing(inv invocation.Invocation) control.LoadBalancin
 //GetRateLimiting get rate limiting config
 func (p *Panel) GetRateLimiting(inv invocation.Invocation, serviceType string) control.RateLimitingConfig {
 	rl := control.RateLimitingConfig{}
-	rl.Enabled = archaius.GetBool("cse.flowcontrol."+serviceType+".qps.enabled", true)
+	rl.Enabled = archaius.GetBool("servicecomb.flowcontrol."+serviceType+".qps.enabled", true)
 	if serviceType == common.Consumer {
 		keys := GetConsumerKey(inv.SourceMicroService, inv.MicroServiceName, inv.SchemaID, inv.OperationID)
 		rl.Rate, rl.Key = GetQPSRateWithPriority(

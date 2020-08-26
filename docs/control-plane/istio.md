@@ -30,12 +30,9 @@ import _ "github.com/go-mesh/mesher/plugins/registry/istiov2"
 - **Configure service discovery in chassis.yaml**
 
 ```yaml
-cse:
-  service:
-    registry:
-      registrator:
-        disabled: true
-      serviceDiscovery:
+servicecomb:
+  registry:
+      registry:
         type: pilotv2
         address: grpc://istio-pilot.istio-system:15010
 ```

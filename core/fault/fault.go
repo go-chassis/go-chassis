@@ -27,7 +27,6 @@ func InstallFaultInjectionPlugin(name string, f InjectFault) {
 
 func init() {
 	InstallFaultInjectionPlugin("rest", faultInject)
-	InstallFaultInjectionPlugin("highway", faultInject)
 	InstallFaultInjectionPlugin("dubbo", faultInject)
 }
 
