@@ -28,7 +28,7 @@ you can consider a project as an micro service, after compile, build and run, it
 **properties**
 > *(optional, map)* micro service metadata ，usually it is defined in project, and never changed
 
-**instance_properties**
+**instanceProperties**
 > *(optional, map)* instance metadata, during runtime, it can be different based on environment
 
 **paths**
@@ -46,7 +46,7 @@ servicecomb:
       hostname: 10.244.1.3
       properties:
         project: X1
-      instance_properties:
+      instanceProperties:
         nodeIP: 192.168.0.111
       paths:
       - path: /rest/demoservice

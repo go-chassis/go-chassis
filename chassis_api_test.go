@@ -92,7 +92,7 @@ servicecomb:
     version: 0.1
     properties:
       allowCrossApp: true
-    instance_properties:
+    instanceProperties:
       a: s
       p: s
 `)

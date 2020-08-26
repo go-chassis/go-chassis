@@ -1,5 +1,5 @@
 servicecomb:
   service:
     name: FileUploadServer
-  properties:
-    allowCrossApp: true
+    properties:
+      allowCrossApp: true

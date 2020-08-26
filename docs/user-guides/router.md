@@ -216,7 +216,7 @@ servicecomb:
   service:
     name: Server
     hostname: 10.244.1.3
-    instance_properties:
+    instanceProperties:
       modelVersion: 1.1
 ```
 

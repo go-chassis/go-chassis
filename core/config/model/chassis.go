@@ -127,7 +127,7 @@ type ServiceSpec struct {
 	Version            string              `yaml:"version"`
 	Environment        string              `yaml:"environment"`
 	Properties         map[string]string   `yaml:"properties"`
-	InstanceProperties map[string]string   `yaml:"instance_properties"`
+	InstanceProperties map[string]string   `yaml:"instanceProperties"`
 	ServicePaths       []ServicePathStruct `yaml:"paths"`
 	ServicesStatus     string              `yaml:"status"`
 	Schemas            []string            `yaml:"schemas"`
