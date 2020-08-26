@@ -82,9 +82,9 @@ servicecomb:
 
 ## others
 
-1.if you use archaius.Getxxx to pull config of go chassis
+1.if you use archaius.Getxxx("cse.xxxx") to pull config of go chassis
 
-in this case, you hacked in to go chassis config to do something, you must change to below
+in this case, if you hacked go chassis config to do something, you must change as below
 1.8
 ```go
 archaius.Getxxx("cse.xxxx")
