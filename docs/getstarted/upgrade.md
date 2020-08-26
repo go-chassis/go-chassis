@@ -60,7 +60,7 @@ servicecomb:
  config:
 ```
 
-## move "registry" under "servicecomb"
+## move "registry,router,quota" under "servicecomb"
 
 for example:
 
@@ -69,9 +69,13 @@ for example:
 cse:
  service:
    registry:
+   quota:
+   router:
 ```
 2.0
 ```yaml
 servicecomb:
  registry:
+ quota:
+ router:
 ```
