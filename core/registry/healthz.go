@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	timeoutToPending     = 1 * time.Second
-	timeoutToPackage     = 100 * time.Millisecond
-	chanCapacity         = 1000
+	timeoutToPending = 1 * time.Second
+	timeoutToPackage = 100 * time.Millisecond
+	chanCapacity     = 1000
 )
 
 var defaultHealthChecker = &HealthChecker{}
