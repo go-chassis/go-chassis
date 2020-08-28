@@ -13,7 +13,6 @@ import (
 const (
 	timeoutToPending     = 1 * time.Second
 	timeoutToPackage     = 100 * time.Millisecond
-	timeoutToHealthCheck = 5 * time.Second
 	chanCapacity         = 1000
 )
 
