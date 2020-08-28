@@ -11,18 +11,9 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: bizkeeper-consumer,router,loadbalance,tracing-consumer,ratelimiter-consumer,transport
+        default: bizkeeper-consumer,router,loadbalance,tracing-consumer,transport
   transport:
     failure:
       rest: http_500,http_502
     maxIdleCon:
       rest: 1024
-# ssl:
-#   registry.Consumer.cipherPlugin: default
-#   registry.Consumer.verifyPeer: false
-#   registry.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-#   registry.Consumer.protocol: TLSv1.2
-#   registry.Consumer.caFile:
-#   registry.Consumer.certFile:
-#   registry.Consumer.keyFile:
-#   registry.Consumer.certPwdFile:
