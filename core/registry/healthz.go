@@ -41,12 +41,6 @@ func (i *WrapInstance) ServiceKey() string {
 	return fmt.Sprintf("%s:%s:%s", i.ServiceName, i.Version, i.AppID)
 }
 
-// checkResult is the struct defines the result from health check
-type checkResult struct {
-	Item *WrapInstance
-	Err  error
-}
-
 // HealthChecker is the struct judges the instance health in the removing simpleCache
 type HealthChecker struct {
 	pendingCh chan *WrapInstance
@@ -87,22 +81,6 @@ func (hc *HealthChecker) wait() {
 			}
 		}
 	}
-}
-
-func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
-	c, ok := MicroserviceInstanceIndex.Get(i.ServiceName, nil)
-	if !ok {
-		return
-	}
-	var is []*MicroServiceInstance
-	for _, inst := range c {
-		if inst.InstanceID == i.Instance.InstanceID {
-			continue
-		}
-		is = append(is, inst)
-	}
-	MicroserviceInstanceIndex.Set(i.ServiceName, is)
-	openlog.Debug(fmt.Sprintf("Health check: cached [%d] Instances of service [%s]", len(is), i.ServiceName))
 }
 
 // HealthCheck is the function adds the instance to HealthChecker

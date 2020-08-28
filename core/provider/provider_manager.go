@@ -39,7 +39,7 @@ func RegisterProvider(pluginName string, microserviceName string) Provider {
 // RegisterCustomProvider register customer provider
 func RegisterCustomProvider(microserviceName string, p Provider) {
 	if providers[microserviceName] != nil {
-		openlog.Warn(fmt.Sprintf("Can not replace Provider,since it is not nil"))
+		openlog.Warn("Can not replace Provider,since it is not nil")
 		return
 	}
 	providers[microserviceName] = p

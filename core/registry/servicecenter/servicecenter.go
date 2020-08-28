@@ -326,7 +326,7 @@ func (r *ContractDiscovery) GetMicroServicesByInterface(interfaceName string) (m
 	microServiceModel, ok := value.([]*scregistry.MicroService)
 
 	if !ok {
-		openlog.Error(fmt.Sprintf("GetMicroServicesByInterface failed, Type asserts failed"))
+		openlog.Error("GetMicroServicesByInterface failed, Type asserts failed")
 	}
 
 	for _, v := range microServiceModel {
