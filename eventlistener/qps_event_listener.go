@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-chassis/go-archaius/event"
 	"github.com/go-chassis/go-chassis/resilience/rate"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 
 	"strings"
 
@@ -31,9 +31,9 @@ func (el *QPSEventListener) Event(e *event.Event) {
 	}
 	qps, ok := e.Value.(int)
 	if !ok {
-		openlogging.Error(fmt.Sprintf("invalid qps config %s", e.Value))
+		openlog.Error(fmt.Sprintf("invalid qps config %s", e.Value))
 	}
-	openlogging.Info("update rate limiter", openlogging.WithTags(openlogging.Tags{
+	openlog.Info("update rate limiter", openlog.WithTags(openlog.Tags{
 		"module": "RateLimiting",
 		"event":  e.EventType,
 		"value":  qps,

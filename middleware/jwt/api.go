@@ -19,7 +19,7 @@ package jwt
 
 import (
 	"github.com/go-chassis/go-chassis/security/token"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"net/http"
 	"time"
 )
@@ -48,12 +48,12 @@ type Auth struct {
 func Use(middleware *Auth) {
 	auth = middleware
 	if auth.Expire == 0 {
-		openlogging.Warn("token issued by service will not expire")
+		openlog.Warn("token issued by service will not expire")
 	}
 	if auth.MustAuth == nil {
-		openlogging.Info("auth all requests")
+		openlog.Info("auth all requests")
 	} else {
-		openlogging.Warn("under some condition, no auth")
+		openlog.Warn("under some condition, no auth")
 	}
 }
 

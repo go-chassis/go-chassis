@@ -23,7 +23,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"gopkg.in/yaml.v2"
 	"net/http"
 	"strings"
@@ -149,10 +149,10 @@ func SaveMatchPolicy(value string, k string, name string) error {
 	m := &config.MatchPolicy{}
 	err := yaml.Unmarshal([]byte(value), m)
 	if err != nil {
-		openlogging.Error("invalid policy " + k + ":" + err.Error())
+		openlog.Error("invalid policy " + k + ":" + err.Error())
 		return err
 	}
-	openlogging.Info("add match policy", openlogging.WithTags(openlogging.Tags{
+	openlog.Info("add match policy", openlog.WithTags(openlog.Tags{
 		"module": "marker",
 		"event":  "update",
 	}))

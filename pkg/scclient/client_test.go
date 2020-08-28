@@ -7,21 +7,21 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	"github.com/go-chassis/paas-lager"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
+	"github.com/go-chassis/seclog"
 	"os"
 	"time"
 )
 
 func init() {
-	log.Init(log.Config{
+	seclog.Init(seclog.Config{
 		LoggerLevel:   "DEBUG",
 		EnableRsyslog: false,
 		LogFormatText: true,
 		Writers:       []string{"stdout"},
 	})
-	l := log.NewLogger("test")
-	openlogging.SetLogger(l)
+	l := seclog.NewLogger("test")
+	openlog.SetLogger(l)
 }
 func TestLoadbalance(t *testing.T) {
 
@@ -51,7 +51,7 @@ func TestClientInitializeHttpErr(t *testing.T) {
 
 	hostname, err := os.Hostname()
 	if err != nil {
-		openlogging.GetLogger().Error("Get hostname failed.")
+		openlog.Error("Get hostname failed.")
 		return
 	}
 	microServiceInstance := &scregistry.MicroServiceInstance{
@@ -219,7 +219,7 @@ func TestRegistryClient_FindMicroServiceInstances(t *testing.T) {
 
 	hostname, err := os.Hostname()
 	if err != nil {
-		openlogging.GetLogger().Error("Get hostname failed.")
+		openlog.Error("Get hostname failed.")
 		return
 	}
 	ms := &scregistry.MicroService{

@@ -21,17 +21,13 @@ servicecomb:
       kind: constant
       minMs: 200
       maxMs: 400
-  service:
-    registry:
-#      disabled: true
-      type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
-#     type: File #this option is to enable local registry instead of service-center
-      scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
-      autodiscovery: false         #是否启动自动发现功能
-      address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
-      #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
-      refeshInterval : 30s
-      watch: true
+  registry:
+    type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
+    scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
+    autodiscovery: false         #是否启动自动发现功能
+    address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
+    refeshInterval : 30s
+    watch: true
   config:
     client:
 #      serverUri: http://127.0.0.1:30103

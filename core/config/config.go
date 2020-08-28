@@ -11,7 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // GlobalDefinition is having the information about region, load balancing, service center, config server,
@@ -54,7 +54,7 @@ func GetAPM() model.APMStruct {
 
 // readFromArchaius unmarshal configurations to expected pointer
 func readFromArchaius() error {
-	openlogging.Debug("read from archaius")
+	openlog.Debug("read from archaius")
 	err := ReadGlobalConfigFromArchaius()
 	if err != nil {
 		return err
@@ -89,8 +89,8 @@ func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
 	registryAddrFromEnv := readEndpoint(common.EnvSCEndpoint)
 	if registryAddrFromEnv != "" {
-		openlogging.Debug("detect env", openlogging.WithTags(
-			openlogging.Tags{
+		openlog.Debug("detect env", openlog.WithTags(
+			openlog.Tags{
 				"ep": registryAddrFromEnv,
 			}))
 		GlobalDefinition.ServiceComb.Registry.Address = registryAddrFromEnv
@@ -110,7 +110,7 @@ func populateConfigServerAddress() {
 func readEndpoint(env string) string {
 	addrFromEnv := archaius.GetString(env, archaius.GetString(common.EnvCSEEndpoint, ""))
 	if addrFromEnv != "" {
-		openlogging.Info("read config " + addrFromEnv)
+		openlog.Info("read config " + addrFromEnv)
 		return addrFromEnv
 	}
 	return addrFromEnv
@@ -171,7 +171,7 @@ func ReadMonitorFromArchaius() error {
 	MonitorCfgDef = &model.MonitorCfg{}
 	err := archaius.UnmarshalConfig(&MonitorCfgDef)
 	if err != nil {
-		openlogging.Error("Config init failed. " + err.Error())
+		openlog.Error("Config init failed. " + err.Error())
 		return err
 	}
 	return nil
@@ -249,12 +249,12 @@ func Init() error {
 	if runtime.HostName == "" {
 		runtime.HostName, err = os.Hostname()
 		if err != nil {
-			openlogging.Error("Get hostname failed:" + err.Error())
+			openlog.Error("Get hostname failed:" + err.Error())
 			return err
 		}
 	} else if runtime.HostName == common.PlaceholderInternalIP {
 		runtime.HostName = iputil.GetLocalIP()
 	}
-	openlogging.Info("Host name is " + runtime.HostName)
+	openlog.Info("Host name is " + runtime.HostName)
 	return err
 }

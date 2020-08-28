@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // CircuitBreaker is created for each ExecutorPool to track whether requests
@@ -67,7 +67,7 @@ func GetCircuit(name string) (*CircuitBreaker, bool, error) {
 		if cb, ok := circuitBreakers[name]; ok {
 			return cb, false, nil
 		}
-		openlogging.GetLogger().Infof("new circuit [%s] is protecting your service", name)
+		openlog.Info(fmt.Sprintf("new circuit [%s] is protecting your service", name))
 		circuitBreakers[name] = newCircuitBreaker(name)
 	} else {
 		defer circuitBreakersMutex.RUnlock()
@@ -173,7 +173,7 @@ func (circuit *CircuitBreaker) allowSingleTest() bool {
 	if circuit.open && now > openedOrLastTestedTime+getSettings(circuit.Name).SleepWindow.Nanoseconds() {
 		swapped := atomic.CompareAndSwapInt64(&circuit.openedOrLastTestedTime, openedOrLastTestedTime, now)
 		if swapped {
-			openlogging.GetLogger().Warnf("hystrix-go: allowing single test to possibly close circuit %v", circuit.Name)
+			openlog.Warn(fmt.Sprintf("hystrix-go: allowing single test to possibly close circuit %v", circuit.Name))
 		}
 		return swapped
 	}
@@ -190,7 +190,7 @@ func (circuit *CircuitBreaker) setOpen() {
 		return
 	}
 
-	openlogging.GetLogger().Infof("hystrix-go: opening circuit %v", circuit.Name)
+	openlog.Info(fmt.Sprintf("hystrix-go: opening circuit %v", circuit.Name))
 
 	circuit.openedOrLastTestedTime = time.Now().UnixNano()
 	circuit.open = true
@@ -204,7 +204,7 @@ func (circuit *CircuitBreaker) setClose() {
 		return
 	}
 
-	openlogging.GetLogger().Warnf("hystrix-go: closing circuit %v", circuit.Name)
+	openlog.Warn(fmt.Sprintf("hystrix-go: closing circuit %v", circuit.Name))
 
 	circuit.open = false
 	circuit.Metrics.Reset()

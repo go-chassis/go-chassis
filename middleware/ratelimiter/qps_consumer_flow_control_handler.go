@@ -3,7 +3,7 @@ package ratelimiter
 import (
 	"errors"
 	"github.com/go-chassis/go-chassis/resilience/rate"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"net/http"
 
 	"github.com/go-chassis/go-chassis/control"
@@ -69,10 +69,10 @@ func (rl *ConsumerRateLimiterHandler) Name() string {
 func init() {
 	err := handler.RegisterHandler(Consumer, newConsumerRateLimiterHandler)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 	err = handler.RegisterHandler(Provider, newProviderRateLimiterHandler)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 }

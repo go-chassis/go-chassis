@@ -25,7 +25,7 @@ import (
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // constants for metric path and name
@@ -62,7 +62,7 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 		if !strings.HasPrefix(metricPath, "/") {
 			metricPath = "/" + metricPath
 		}
-		openlogging.Info("Enabled metrics API on " + metricPath)
+		openlog.Info("Enabled metrics API on " + metricPath)
 		ws.Route(ws.GET(metricPath).To(api.PrometheusHandleFunc))
 	}
 	addProfileRoutes(ws)
@@ -82,15 +82,15 @@ func addProfileRoutes(ws *restful.WebService) {
 		profilePath = "/" + profilePath
 	}
 
-	openlogging.Info("Enabled profile API on " + profilePath)
+	openlog.Info("Enabled profile API on " + profilePath)
 	ws.Route(ws.GET(profilePath).To(profile.HTTPHandleProfileFunc))
 
 	profileRouteRulePath := profilePath + "/" + ProfileRouteRuleSubPath
-	openlogging.Info("Enabled profile route-rule API on " + profileRouteRulePath)
+	openlog.Info("Enabled profile route-rule API on " + profileRouteRulePath)
 	ws.Route(ws.GET(profileRouteRulePath).To(profile.HTTPHandleRouteRuleFunc))
 
 	profileDiscoveryPath := profilePath + "/" + ProfileDiscoverySubPath
-	openlogging.Info("Enabled profile discovery API on " + profileDiscoveryPath)
+	openlog.Info("Enabled profile discovery API on " + profileDiscoveryPath)
 	ws.Route(ws.GET(profileDiscoveryPath).To(profile.HTTPHandleDiscoveryFunc))
 }
 
@@ -119,7 +119,7 @@ func HTTPRequest2Invocation(req *restful.Request, schema, operation string, resp
 }
 
 func (r *restfulServer) Register(schema interface{}, options ...server.RegisterOption) (string, error) {
-	openlogging.Info("register rest server")
+	openlog.Info("register rest server")
 	opts := server.RegisterOptions{}
 	r.mux.Lock()
 	defer r.mux.Unlock()
@@ -137,7 +137,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 	if len(tokens) >= 1 {
 		schemaName = tokens[len(tokens)-1]
 	}
-	openlogging.GetLogger().Infof("schema registered is [%s]", schemaName)
+	openlog.Info(fmt.Sprintf("schema registered is [%s]", schemaName))
 	for k := range routes {
 		GroupRoutePath(&routes[k], schema)
 		handler, err := WrapHandlerChain(&routes[k], schema, schemaName, r.opts)
@@ -267,13 +267,13 @@ func (r *restfulServer) Start() error {
 	go func() {
 		err = r.server.Serve(l)
 		if err != nil {
-			openlogging.Error("http server err: " + err.Error())
+			openlog.Error("http server err: " + err.Error())
 			server.ErrRuntime <- err
 		}
 
 	}()
 
-	openlogging.GetLogger().Infof("http server is listening at %s", registry.InstanceEndpoints[config.ProtocolServerName])
+	openlog.Info(fmt.Sprintf("http server is listening at %s", registry.InstanceEndpoints[config.ProtocolServerName]))
 	return nil
 }
 
@@ -285,7 +285,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	}
 
 	swagger.LogInfo = func(format string, v ...interface{}) {
-		openlogging.GetLogger().Infof(format, v...)
+		openlog.Info(fmt.Sprintf(format, v...))
 	}
 	swaggerConfig := swagger.Config{
 		WebServices:     r.container.RegisteredWebServices(),
@@ -297,20 +297,20 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 		SwaggerFilePath: "./swagger-ui/dist/",
 	}
 	if globalconfig.GlobalDefinition.ServiceComb.NoRefreshSchema {
-		openlogging.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
+		openlog.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
 	} else {
 		if err := os.RemoveAll(path); err != nil {
-			openlogging.Error(err.Error())
+			openlog.Error(err.Error())
 			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
 		}
 		if err := os.MkdirAll(path, 0700); err != nil {
-			openlogging.Error(err.Error())
+			openlog.Error(err.Error())
 			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
 		}
 		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
 	}
 	sws := swagger.RegisterSwaggerService(swaggerConfig, r.container)
-	openlogging.Info("contract has been created successfully. path:" + path)
+	openlog.Info("contract has been created successfully. path:" + path)
 	//set schema information when create local schema file
 	err := schema.SetSchemaInfo(sws)
 	if err != nil {
@@ -321,12 +321,12 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 
 func (r *restfulServer) Stop() error {
 	if r.server == nil {
-		openlogging.Info("http server never started")
+		openlog.Info("http server never started")
 		return nil
 	}
 	//only golang 1.8 support graceful shutdown.
 	if err := r.server.Shutdown(context.TODO()); err != nil {
-		openlogging.Warn("http shutdown error: " + err.Error())
+		openlog.Warn("http shutdown error: " + err.Error())
 		return err // failure/timeout shutting down the server gracefully
 	}
 	return nil

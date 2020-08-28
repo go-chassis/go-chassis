@@ -3,7 +3,7 @@ package provider
 import (
 	"fmt"
 
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // plugin name and schemas map
@@ -16,7 +16,7 @@ var providers = make(map[string]Provider)
 
 // InstallProviderPlugin install provider plugin
 func InstallProviderPlugin(pluginName string, newFunc func(string) Provider) {
-	openlogging.Info("Install Provider Plugin, name: " + pluginName)
+	openlog.Info("Install Provider Plugin, name: " + pluginName)
 	providerPlugins[pluginName] = newFunc
 }
 
@@ -26,11 +26,11 @@ func InstallProviderPlugin(pluginName string, newFunc func(string) Provider) {
 func RegisterProvider(pluginName string, microserviceName string) Provider {
 	pFunc, exist := providerPlugins[pluginName]
 	if !exist {
-		openlogging.GetLogger().Errorf("provider type %s is not exist.", pluginName)
+		openlog.Error(fmt.Sprintf("provider type %s is not exist.", pluginName))
 		return nil
 	}
 	p := pFunc(microserviceName)
-	openlogging.GetLogger().Debugf("registered provider for service [%s]", microserviceName)
+	openlog.Debug(fmt.Sprintf("registered provider for service [%s]", microserviceName))
 	RegisterCustomProvider(microserviceName, p)
 	return p
 
@@ -39,7 +39,7 @@ func RegisterProvider(pluginName string, microserviceName string) Provider {
 // RegisterCustomProvider register customer provider
 func RegisterCustomProvider(microserviceName string, p Provider) {
 	if providers[microserviceName] != nil {
-		openlogging.GetLogger().Warnf("Can not replace Provider,since it is not nil")
+		openlog.Warn("Can not replace Provider,since it is not nil")
 		return
 	}
 	providers[microserviceName] = p

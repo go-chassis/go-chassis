@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-chassis/go-chassis/core/client"
@@ -10,7 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/session"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"net/http"
 )
 
@@ -25,7 +26,7 @@ func errNotNil(err error, cb invocation.ResponseCallBack) {
 	r := &invocation.Response{
 		Err: err,
 	}
-	openlogging.Error("GetClient got Error: " + err.Error())
+	openlog.Error("GetClient got Error: " + err.Error())
 	cb(r)
 }
 
@@ -49,7 +50,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	if err != nil {
 		r.Err = err
 		if err != client.ErrCanceled {
-			openlogging.GetLogger().Errorf("Call got Error, err [%s]", err.Error())
+			openlog.Error(fmt.Sprintf("Call got Error, err [%s]", err.Error()))
 		}
 		if i.Strategy == loadbalancer.StrategySessionStickiness {
 			ProcessSpecialProtocol(i)

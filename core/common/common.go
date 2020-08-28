@@ -3,10 +3,11 @@ package common
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chassis/go-archaius/source/remote"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // constant for provider and consumer
@@ -172,7 +173,7 @@ func WithContext(ctx context.Context, key, val string) context.Context {
 	}
 	at, ok := ctx.Value(ContextHeaderKey{}).(map[string]string)
 	if !ok {
-		openlogging.Debug("context header key does not has map, re-create new context")
+		openlog.Debug("context header key does not has map, re-create new context")
 		return context.WithValue(ctx, ContextHeaderKey{}, map[string]string{
 			key: val,
 		})
@@ -197,7 +198,7 @@ func FromContext(ctx context.Context) map[string]string {
 // GetXCSEContext  get x-cse-context from req.header
 func GetXCSEContext(k string, r *http.Request) string {
 	if r == nil || r.Header == nil {
-		openlogging.GetLogger().Debug("get x-cse-header failed , request(request.Header) is nil or  key is empty, please check its")
+		openlog.Debug("get x-cse-header failed , request(request.Header) is nil or  key is empty, please check its")
 		return ""
 	}
 	cseContextStr := r.Header.Get(HeaderXCseContent)
@@ -208,7 +209,7 @@ func GetXCSEContext(k string, r *http.Request) string {
 	var m map[string]string
 	err := json.Unmarshal([]byte(cseContextStr), &m)
 	if err != nil {
-		openlogging.GetLogger().Debugf("get x-cse-header form req failed , error : %v", err)
+		openlog.Debug(fmt.Sprintf("get x-cse-header form req failed , error : %v", err))
 		return ""
 	}
 	return m[k]
@@ -217,7 +218,7 @@ func GetXCSEContext(k string, r *http.Request) string {
 // SetXCSEContext  set value into x-cse-context
 func SetXCSEContext(vm map[string]string, r *http.Request) {
 	if len(vm) <= 0 || vm == nil || r == nil {
-		openlogging.GetLogger().Debug("set x-cse-header into req failed ,because one of key,value and request is empty(nil) or all empty(nil)")
+		openlog.Debug("set x-cse-header into req failed ,because one of key,value and request is empty(nil) or all empty(nil)")
 		return
 	}
 	if r.Header == nil {
@@ -225,7 +226,7 @@ func SetXCSEContext(vm map[string]string, r *http.Request) {
 	}
 	b, err := json.Marshal(vm)
 	if err != nil {
-		openlogging.GetLogger().Debugf("set value to x-cse-context failed , error : %v ", err.Error())
+		openlog.Debug(fmt.Sprintf("set value to x-cse-context failed , error : %s", err))
 		return
 	}
 	r.Header.Set(HeaderXCseContent, string(b))

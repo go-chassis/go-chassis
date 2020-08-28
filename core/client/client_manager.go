@@ -14,7 +14,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/model"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 var clients = make(map[string]ProtocolClient)
@@ -64,7 +64,7 @@ func GetMaxIdleCon(p string) int {
 func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
-		openlogging.Error(fmt.Sprintf("do not support [%s] client", protocol))
+		openlog.Error(fmt.Sprintf("do not support [%s] client", protocol))
 		return nil, err
 	}
 	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
@@ -79,8 +79,8 @@ func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolC
 		// remember to set SAN (Subject Alternative Name) as server's micro service name
 		// when generating server.csr
 		tlsConfig.ServerName = service
-		openlogging.GetLogger().Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
-			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+		openlog.Warn(fmt.Sprintf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
+			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin))
 	}
 	var command string
 	if service != "" {
@@ -108,7 +108,7 @@ func GetClient(i *invocation.Invocation) (ProtocolClient, error) {
 	c, ok := clients[key]
 	sl.RUnlock()
 	if !ok {
-		openlogging.Info("Create client for " + i.Protocol + ":" + i.MicroServiceName + ":" + i.Endpoint)
+		openlog.Info("Create client for " + i.Protocol + ":" + i.MicroServiceName + ":" + i.Endpoint)
 		c, err = CreateClient(i.Protocol, i.MicroServiceName, i.Endpoint, i.SSLEnable)
 		if err != nil {
 			return nil, err
@@ -130,7 +130,7 @@ func Close(protocol, service, endpoint string) error {
 		return ErrClientNotExist
 	}
 	if err := c.Close(); err != nil {
-		openlogging.GetLogger().Errorf("can not close client %s:%s%:s, err [%s]", protocol, service, endpoint, err.Error())
+		openlog.Error(fmt.Sprintf("can not close client %s:%s%s, err [%s]", protocol, service, endpoint, err.Error()))
 		return err
 	}
 	sl.Lock()

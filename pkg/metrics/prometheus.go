@@ -2,7 +2,7 @@ package metrics
 
 import (
 	"fmt"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"github.com/prometheus/client_golang/prometheus"
 	"sync"
 	"time"
@@ -27,7 +27,7 @@ func NewPrometheusExporter(options Options) Registry {
 	if options.EnableGoRuntimeMetrics {
 		onceEnable.Do(func() {
 			EnableRunTimeMetrics()
-			openlogging.Info("go runtime metrics is exported")
+			openlog.Info("go runtime metrics is exported")
 		})
 
 	}

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
+	"github.com/go-chassis/seclog/third_party/forked/cloudfoundry/lager"
 )
 
 // constant values for logrotate parameters
@@ -36,7 +36,7 @@ const (
 )
 
 //Logger is the global variable for the object of lager.Logger
-//Deprecated. plz use openlogging instead
+//Deprecated. plz use openlog instead
 var Logger lager.Logger
 
 // logFilePath log file path
@@ -63,8 +63,8 @@ func Init(option *Options) {
 	if err != nil {
 		panic(err)
 	}
-	openlogging.SetLogger(Logger)
-	openlogging.Debug("logger init success")
+	openlog.SetLogger(Logger)
+	openlog.Debug("logger init success")
 }
 
 func toLogLevel(option string) (lager.LogLevel, error) {

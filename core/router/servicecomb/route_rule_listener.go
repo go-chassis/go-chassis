@@ -21,7 +21,7 @@ import (
 	"github.com/go-chassis/go-archaius/event"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/router"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
@@ -33,10 +33,10 @@ type routeRuleEventListener struct{}
 // update route rule of a service
 func (r *routeRuleEventListener) Event(e *event.Event) {
 	if e == nil {
-		openlogging.Warn("Event pointer is nil")
+		openlog.Warn("Event pointer is nil")
 		return
 	}
-	openlogging.Info("dark launch event", openlogging.WithTags(openlogging.Tags{
+	openlog.Info("dark launch event", openlog.WithTags(openlog.Tags{
 		"key":   e.Key,
 		"event": e.EventType,
 		"rule":  e.Value,
@@ -52,7 +52,7 @@ func (r *routeRuleEventListener) Event(e *event.Event) {
 	}
 	raw, ok := e.Value.(string)
 	if !ok {
-		openlogging.Error("invalid route rule", openlogging.WithTags(openlogging.Tags{
+		openlog.Error("invalid route rule", openlog.WithTags(openlog.Tags{
 			"value": raw,
 		}))
 	}
@@ -74,14 +74,14 @@ func SaveRouteRule(service string, raw string, isV2 bool) {
 	if !isV2 {
 		routeRules, err = ConvertJSON2RouteRule(raw)
 		if err != nil {
-			openlogging.Error("LoadRules route rule failed", openlogging.WithTags(openlogging.Tags{
+			openlog.Error("LoadRules route rule failed", openlog.WithTags(openlog.Tags{
 				"err": err.Error(),
 			}))
 		}
 	} else {
 		originRule, err := config.NewServiceRule(raw)
 		if err != nil {
-			openlogging.Error("LoadRules route rule failed", openlogging.WithTags(openlogging.Tags{
+			openlog.Error("LoadRules route rule failed", openlog.WithTags(openlog.Tags{
 				"err": err.Error(),
 			}))
 			return

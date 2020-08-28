@@ -24,7 +24,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/status"
 	"github.com/go-chassis/go-chassis/pkg/metrics"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"net/http"
 	"time"
 )
@@ -52,12 +52,12 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 	case *http.Request:
 		err := metrics.CounterAdd(MetricsRequest, 1, labelMap)
 		if err != nil {
-			openlogging.Error("can not monitor:" + err.Error())
+			openlog.Error("can not monitor:" + err.Error())
 		}
 	case *restful.Request:
 		err := metrics.CounterAdd(MetricsRequest, 1, labelMap)
 		if err != nil {
-			openlogging.Error("can not monitor:" + err.Error())
+			openlog.Error("can not monitor:" + err.Error())
 		}
 	default:
 		//skip monitoring
@@ -76,13 +76,13 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 			}
 			err := metrics.CounterAdd(MetricsErrors, 1, m)
 			if err != nil {
-				openlogging.Error(err.Error())
+				openlog.Error(err.Error())
 			}
 		}
 		duration := time.Since(start)
 		err := metrics.SummaryObserve(MetricsLatency, float64(duration.Milliseconds()), labelMap)
 		if err != nil {
-			openlogging.Error(err.Error())
+			openlog.Error(err.Error())
 		}
 		cb(resp)
 	})
@@ -94,7 +94,7 @@ func newHandler() handler.Handler {
 		Labels: labels,
 	})
 	if err != nil {
-		openlogging.Fatal(err.Error())
+		openlog.Fatal(err.Error())
 	}
 	err = metrics.CreateSummary(metrics.SummaryOpts{
 		Name:       MetricsLatency,
@@ -102,14 +102,14 @@ func newHandler() handler.Handler {
 		Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
 	})
 	if err != nil {
-		openlogging.Fatal(err.Error())
+		openlog.Fatal(err.Error())
 	}
 	err = metrics.CreateCounter(metrics.CounterOpts{
 		Name:   MetricsErrors,
 		Labels: labels4Resp,
 	})
 	if err != nil {
-		openlogging.Fatal(err.Error())
+		openlog.Fatal(err.Error())
 	}
 	labelMap = map[string]string{
 		"service":  runtime.ServiceName,
@@ -128,6 +128,6 @@ func (ph *Handler) Name() string {
 func init() {
 	err := handler.RegisterHandler(Name, newHandler)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 }

@@ -14,12 +14,12 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 //SaveToLBCache save configs
 func SaveToLBCache(raw *model.LoadBalancing) {
-	openlogging.Debug("Loading lb config from archaius into cache")
+	openlog.Debug("Loading lb config from archaius into cache")
 	oldKeys := LBConfigCache.Items()
 	newKeys := make(map[string]bool)
 	// if there is no config, none key will be updated
@@ -63,7 +63,7 @@ func saveEachLB(k string, raw model.LoadBalancingSpec) string { // return update
 		SessionTimeoutInSeconds: raw.SessionStickinessRule.SessionTimeoutInSeconds,
 		SuccessiveFailedTimes:   raw.SessionStickinessRule.SuccessiveFailedTimes,
 	}
-	openlogging.Info(fmt.Sprintf("save lb config [%s] [%v]", k, raw))
+	openlog.Info(fmt.Sprintf("save lb config [%s] [%v]", k, raw))
 	setDefaultLBValue(&c)
 	LBConfigCache.Set(k, c, 0)
 	return k
@@ -80,7 +80,7 @@ func setDefaultLBValue(c *control.LoadBalancingConfig) {
 
 //SaveToCBCache save configs
 func SaveToCBCache(raw *model.HystrixConfig) {
-	openlogging.Debug("Loading cb config from archaius into cache")
+	openlog.Debug("Loading cb config from archaius into cache")
 	oldKeys := CBConfigCache.Items()
 	newKeys := make(map[string]bool)
 	// if there is no config, none key will be updated
@@ -115,20 +115,20 @@ func saveEachCB(serviceName, serviceType string) string { //return updated key
 	cbcCacheValue, b := CBConfigCache.Get(cbcCacheKey)
 	formatString := "save circuit breaker config [%#v] for [%s] "
 	if !b || cbcCacheValue == nil {
-		openlogging.GetLogger().Infof(formatString, c, serviceName)
+		openlog.Info(fmt.Sprintf(formatString, c, serviceName))
 		CBConfigCache.Set(cbcCacheKey, c, 0)
 		return cbcCacheKey
 	}
 	commandConfig, ok := cbcCacheValue.(hystrix.CommandConfig)
 	if !ok {
-		openlogging.GetLogger().Infof(formatString, c, serviceName)
+		openlog.Info(fmt.Sprintf(formatString, c, serviceName))
 		CBConfigCache.Set(cbcCacheKey, c, 0)
 		return cbcCacheKey
 	}
 	if c == commandConfig {
 		return cbcCacheKey
 	}
-	openlogging.GetLogger().Infof(formatString, c, serviceName)
+	openlog.Info(fmt.Sprintf(formatString, c, serviceName))
 	CBConfigCache.Set(cbcCacheKey, c, 0)
 	return cbcCacheKey
 }
@@ -178,12 +178,12 @@ func reloadCBCache(src *model.HystrixConfig) map[string]bool { //return updated 
 		src.FallbackProperties,
 		config.GetHystrixConfig().FallbackPolicyProperties} {
 		if services, err := getServiceNamesByServiceTypeAndAnyService(p, common.Consumer); err != nil {
-			openlogging.GetLogger().Errorf("Parse services from config failed: %v", err.Error())
+			openlog.Error(fmt.Sprintf("Parse services from config failed: %v", err.Error()))
 		} else {
 			consumers = append(consumers, services...)
 		}
 		if services, err := getServiceNamesByServiceTypeAndAnyService(p, common.Provider); err != nil {
-			openlogging.GetLogger().Errorf("Parse services from config failed: %v", err.Error())
+			openlog.Error(fmt.Sprintf("Parse services from config failed: %v", err.Error()))
 		} else {
 			providers = append(providers, services...)
 		}

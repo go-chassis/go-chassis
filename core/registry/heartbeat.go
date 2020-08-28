@@ -1,13 +1,13 @@
 package registry
 
 import (
-	"time"
-
+	"fmt"
 	"github.com/go-chassis/go-chassis/core/config"
+	"time"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // DefaultRetryTime default retry time
@@ -41,7 +41,7 @@ func (s *HeartbeatService) Stop() {
 func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID string) {
 	_, err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
-		openlogging.GetLogger().Errorf("heartbeat fail,try to recover, err: %s", err)
+		openlog.Error(fmt.Sprintf("heartbeat fail,try to recover, err: %s", err))
 		s.RetryRegister(microServiceID, microServiceInstanceID)
 	}
 }
@@ -57,21 +57,21 @@ func (s *HeartbeatService) run() {
 //RetryRegister try to register micro-service, and instance
 func (s *HeartbeatService) RetryRegister(sid, iid string) {
 	for !s.shutdown {
-		openlogging.Info("try to re-register")
+		openlog.Info("try to re-register")
 		var err error
 		if _, err = DefaultServiceDiscoveryService.GetMicroService(sid); err != nil {
 			err = s.ReRegisterSelfMSandMSI()
 			if err != nil {
-				openlogging.Error("recover failed:" + err.Error())
+				openlog.Error("recover failed:" + err.Error())
 			} else {
-				openlogging.Warn("recovered service")
+				openlog.Warn("recovered service")
 			}
 		}
 		err = reRegisterSelfMSI(sid, iid)
 		if err != nil {
-			openlogging.Error("recover failed:" + err.Error())
+			openlog.Error("recover failed:" + err.Error())
 		} else {
-			openlogging.Warn("recovered instance")
+			openlog.Warn("recovered instance")
 			break
 		}
 		time.Sleep(DefaultRetryTime)
@@ -82,13 +82,13 @@ func (s *HeartbeatService) RetryRegister(sid, iid string) {
 func (s *HeartbeatService) ReRegisterSelfMSandMSI() error {
 	err := RegisterService()
 	if err != nil {
-		openlogging.GetLogger().Errorf("The reRegisterSelfMSandMSI() startMicroservice failed: %s", err)
+		openlog.Error(fmt.Sprintf("The reRegisterSelfMSandMSI() startMicroservice failed: %s", err))
 		return err
 	}
 
 	err = RegisterServiceInstances()
 	if err != nil {
-		openlogging.GetLogger().Errorf("The reRegisterSelfMSandMSI() startInstances failed: %s", err)
+		openlog.Error(fmt.Sprintf("The reRegisterSelfMSandMSI() startInstances failed: %s", err))
 		return err
 	}
 	return nil
@@ -119,9 +119,9 @@ func reRegisterSelfMSI(sid, iid string) error {
 	}
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(sid, microServiceInstance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("RegisterInstance failed: %s", err)
+		openlog.Error(fmt.Sprintf("register instance failed: %s", err))
 		return err
 	}
-	openlogging.GetLogger().Infof("register instance success, microServiceID/instanceID: %s/%s.", sid, instanceID)
+	openlog.Info(fmt.Sprintf("register instance success, microServiceID/instanceID: %s/%s.", sid, instanceID))
 	return nil
 }

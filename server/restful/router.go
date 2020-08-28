@@ -14,7 +14,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 //const for doc
@@ -96,13 +96,13 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 		defer func() {
 			if r := recover(); r != nil {
 				var stacktrace = tool.GetStackTrace(3)
-				openlogging.Error("handle request panic.", openlogging.WithTags(openlogging.Tags{
+				openlog.Error("handle request panic.", openlog.WithTags(openlog.Tags{
 					"path":  route.Path,
 					"panic": r,
 					"stack": stacktrace,
 				}))
 				if err := resp.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
-					openlogging.Error("write response failed when handler panic.", openlogging.WithTags(openlogging.Tags{
+					openlog.Error("write response failed when handler panic.", openlog.WithTags(openlog.Tags{
 						"err": err.Error(),
 					}))
 				}
@@ -112,13 +112,13 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 		if opts.ChainName != "" {
 			originChain, err = handler.GetChain(common.Provider, opts.ChainName)
 			if err != nil {
-				openlogging.Error("handler chain init err.", openlogging.WithTags(openlogging.Tags{
+				openlog.Error("handler chain init err.", openlog.WithTags(openlog.Tags{
 					"err": err.Error(),
 				}))
 				resp.AddHeader("Content-Type", "text/plain")
 				err := resp.WriteErrorString(http.StatusInternalServerError, err.Error())
 				if err != nil {
-					openlogging.Error(err.Error())
+					openlog.Error(err.Error())
 				}
 				return
 			}
@@ -126,7 +126,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 
 		inv, err := HTTPRequest2Invocation(req, schemaName, route.ResourceFuncName, resp)
 		if err != nil {
-			openlogging.Error("transfer http request to invocation failed.", openlogging.WithTags(openlogging.Tags{
+			openlog.Error("transfer http request to invocation failed.", openlog.WithTags(openlog.Tags{
 				"err": err.Error(),
 			}))
 			return
@@ -149,7 +149,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 
 	}
 
-	openlogging.Info("add route path.", openlogging.WithTags(openlogging.Tags{
+	openlog.Info("add route path.", openlog.WithTags(openlog.Tags{
 		"path":      route.Path,
 		"method":    route.Method,
 		"func_name": route.ResourceFuncName,
@@ -179,7 +179,7 @@ func BuildRouteHandler(route *Route, schema interface{}) (func(ctx *Context), er
 
 	method, exist := reflect.TypeOf(schema).MethodByName(route.ResourceFuncName)
 	if !exist {
-		openlogging.GetLogger().Errorf("router func can not find: %s", route.ResourceFuncName)
+		openlog.Error(fmt.Sprintf("router func can not find: %s", route.ResourceFuncName))
 		return nil, fmt.Errorf("router func can not find: %s", route.ResourceFuncName)
 	}
 

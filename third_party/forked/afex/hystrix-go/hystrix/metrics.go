@@ -1,12 +1,13 @@
 package hystrix
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/metric_collector"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/rolling"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 type commandExecution struct {
@@ -34,7 +35,7 @@ func newMetricExchange(name string, num int) *metricExchange {
 	for i := 0; i < num; i++ {
 		go m.Monitor()
 	}
-	openlogging.GetLogger().Debugf(" launched [%d] Metrics consumer", num)
+	openlog.Debug(fmt.Sprintf(" launched [%d] Metrics consumer", num))
 	return m
 }
 

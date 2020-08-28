@@ -2,12 +2,13 @@ package servicecomb
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 //ConvertJSON2RouteRule parse raw json from cse server to route rule config
@@ -102,7 +103,7 @@ func caseInsensitiveToString(isCaseInsensitive bool) string {
 func setHeadersAndHTTPHeaders(match *config.Match, isCaseInsensitive bool, cKey, con, sp string) {
 	cons := strings.Split(con, sp)
 	if len(cons) != 2 {
-		openlogging.GetLogger().Errorf("set router conf to headers failed , conf : %s", con)
+		openlog.Error(fmt.Sprintf("set router conf to headers failed , conf : %s", con))
 		return
 	}
 	pkey := toCamelCase(cons[0])

@@ -21,7 +21,7 @@ import (
 	"errors"
 	"github.com/go-chassis/go-chassis/core/marker"
 	"github.com/go-chassis/go-chassis/resilience/rate"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"gopkg.in/yaml.v2"
 	"strings"
 )
@@ -31,7 +31,7 @@ import (
 func ProcessMatch(key string, value string) error {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {
-		openlogging.Warn("invalid key:" + key)
+		openlog.Warn("invalid key:" + key)
 		return errors.New("invalid key:" + key)
 	}
 	name := s[2]
@@ -49,13 +49,13 @@ type LimiterPolicy struct {
 func ProcessLimiter(key string, value string) error {
 	s := strings.Split(key, ".")
 	if len(s) != 3 {
-		openlogging.Warn("invalid key:" + key)
+		openlog.Warn("invalid key:" + key)
 		return errors.New("invalid key:" + key)
 	}
 	policy := &LimiterPolicy{}
 	err := yaml.Unmarshal([]byte(value), policy)
 	if err != nil {
-		openlogging.Error("invalid limiter: " + key)
+		openlog.Error("invalid limiter: " + key)
 		return err
 	}
 

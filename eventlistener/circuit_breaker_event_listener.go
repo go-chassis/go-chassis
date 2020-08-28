@@ -9,7 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // constants for consumer isolation, circuit breaker, fallback keys
@@ -30,11 +30,11 @@ type CircuitBreakerEventListener struct {
 
 //Event is a method which triggers flush circuit
 func (el *CircuitBreakerEventListener) Event(e *event.Event) {
-	openlogging.Info("circuit change e: %v", openlogging.WithTags(openlogging.Tags{
+	openlog.Info("circuit change e: %v", openlog.WithTags(openlog.Tags{
 		"key": e.Key,
 	}))
 	if err := config.ReadHystrixFromArchaius(); err != nil {
-		openlogging.Error("can not unmarshal new cb config: " + err.Error())
+		openlog.Error("can not unmarshal new cb config: " + err.Error())
 	}
 	servicecomb.SaveToCBCache(config.GetHystrixConfig())
 	switch e.EventType {
@@ -52,10 +52,10 @@ func FlushCircuitByKey(key string) {
 	sourceName, serviceName := GetNames(key)
 	cmdName := GetCircuitName(sourceName, serviceName)
 	if cmdName == common.Consumer {
-		openlogging.Info("Global Key changed For circuit: [" + cmdName + "], will flush all circuit")
+		openlog.Info("Global Key changed For circuit: [" + cmdName + "], will flush all circuit")
 		hystrix.Flush()
 	} else {
-		openlogging.Info("Specific Key changed For circuit: [" + cmdName + "], will only flush this circuit")
+		openlog.Info("Specific Key changed For circuit: [" + cmdName + "], will only flush this circuit")
 		hystrix.FlushByName(cmdName)
 	}
 
@@ -69,13 +69,13 @@ func GetNames(key string) (string, string) {
 	var serviceName string
 	if regNormal.MatchString(key) {
 		s := regNormal.FindStringSubmatch(key)
-		openlogging.Debug("Normal Key")
+		openlog.Debug("Normal Key")
 		return "", s[2]
 
 	}
 	if regMesher.MatchString(key) {
 		s := regMesher.FindStringSubmatch(key)
-		openlogging.Debug("Mesher Key")
+		openlog.Debug("Mesher Key")
 		return s[2], s[3]
 	}
 	return sourceName, serviceName

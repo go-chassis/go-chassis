@@ -3,7 +3,7 @@ package iputil
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"log"
 	"net"
 	"net/http"
@@ -63,7 +63,7 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 		u, e := url.Parse(addr)
 		if e != nil {
 			//not uri. but still permitted, like zookeeper,file system
-			openlogging.GetLogger().Warnf("parse address failed, %s", e.Error())
+			openlog.Warn(fmt.Sprintf("parse address failed, %s", e.Error()))
 			continue
 		}
 		if len(u.Host) == 0 {
@@ -146,7 +146,7 @@ func ClientIP(r *http.Request) string {
 		}
 		rip, _, err := net.SplitHostPort(ip)
 		if err != nil {
-			openlogging.GetLogger().Warnf("get client ip catch a err, %s", err.Error())
+			openlog.Warn(fmt.Sprintf("get client ip catch a err, %s", err.Error()))
 			return ip
 		}
 		return rip
@@ -164,7 +164,7 @@ func RemoteIP(r *http.Request) string {
 	remoteIP := r.RemoteAddr
 	rip, _, err := net.SplitHostPort(remoteIP)
 	if err != nil {
-		openlogging.GetLogger().Warnf("get remote ip catch a err, %s", err.Error())
+		openlog.Warn(fmt.Sprintf("get remote ip catch a err, %s", err.Error()))
 		return remoteIP
 	}
 	return rip
