@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 var pathReplacer *strings.Replacer
@@ -70,7 +70,7 @@ func removeExceededFiles(path string, baseFileName string,
 	}
 	fileList, err := FilterFileList(path, pat)
 	if err != nil {
-		Logger.Errorf("filepath.Walk() path: %s failed: %s", EscapPath(path), err)
+		Logger.Error(fmt.Sprintf("filepath.Walk() path: %s failed: %s", EscapPath(path), err))
 		return
 	}
 	sort.Strings(fileList)
@@ -82,7 +82,7 @@ func removeExceededFiles(path string, baseFileName string,
 		filePath := fileList[0]
 		err := removeFile(filePath)
 		if err != nil {
-			Logger.Errorf("remove filePath: %s failed: %s", EscapPath(filePath), err)
+			Logger.Error(fmt.Sprintf("remove filePath: %s failed: %s", EscapPath(filePath), err))
 			break
 		}
 		//remove the first element of a list
@@ -115,7 +115,7 @@ func compressFile(filePath, fileBaseName string, replaceTimestamp bool) error {
 	defer func() {
 		err := zipFile.Close()
 		if err != nil {
-			openlogging.Error("can not close log zip file: " + err.Error())
+			openlog.Error("can not close log zip file: " + err.Error())
 		}
 	}()
 
@@ -142,7 +142,7 @@ func shouldRollover(fPath string, MaxFileSize int) bool {
 
 	fileInfo, err := os.Stat(fPath)
 	if err != nil {
-		Logger.Errorf("state path: %s failed: %s", EscapPath(fPath), err)
+		Logger.Error(fmt.Sprintf("state path: %s failed: %s", EscapPath(fPath), err))
 		return false
 	}
 
@@ -162,13 +162,13 @@ func doRollover(fPath string, MaxFileSize int, MaxBackupCount int) {
 	rotateFile := fPath + "." + timeStamp
 	err := CopyFile(fPath, rotateFile)
 	if err != nil {
-		Logger.Errorf("copy path: %s failed: %s", EscapPath(fPath), err)
+		Logger.Error(fmt.Sprintf("copy path: %s failed: %s", EscapPath(fPath), err))
 	}
 
 	//truncate the file
 	f, err := os.OpenFile(fPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0640)
 	if err != nil {
-		Logger.Errorf("truncate path: %s failed: %s", EscapPath(fPath), err)
+		Logger.Error(fmt.Sprintf("truncate path: %s failed: %s", EscapPath(fPath), err))
 		return
 	}
 	f.Close()
@@ -184,7 +184,7 @@ func doBackup(fPath string, MaxBackupCount int) {
 	pat := fmt.Sprintf(`%s\.[0-9]{1,17}$`, filepath.Base(fPath))
 	rotateFileList, err := FilterFileList(filepath.Dir(fPath), pat)
 	if err != nil {
-		Logger.Errorf("walk path: %s failed: %s", EscapPath(fPath), err)
+		Logger.Error(fmt.Sprintf("walk path: %s failed: %s", EscapPath(fPath), err))
 		return
 	}
 
@@ -199,12 +199,12 @@ func doBackup(fPath string, MaxBackupCount int) {
 			err = compressFile(file, filepath.Base(fPath), true)
 		}
 		if err != nil {
-			openlogging.GetLogger().Errorf("compress path: %s failed: %s", EscapPath(file), err)
+			openlog.Error(fmt.Sprintf("compress path: %s failed: %s", EscapPath(file), err))
 			continue
 		}
 		err = removeFile(file)
 		if err != nil {
-			Logger.Errorf("remove path %s failed: %s", EscapPath(file), err)
+			Logger.Error(fmt.Sprintf("remove path %s failed: %s", EscapPath(file), err))
 		}
 	}
 
@@ -215,7 +215,7 @@ func doBackup(fPath string, MaxBackupCount int) {
 func logRotateFile(file string, MaxFileSize int, MaxBackupCount int) {
 	defer func() {
 		if e := recover(); e != nil {
-			Logger.Errorf("LogRotate file path: %s catch an exception.", EscapPath(file))
+			Logger.Error(fmt.Sprintf("LogRotate file path: %s catch an exception.", EscapPath(file)))
 		}
 	}()
 
@@ -231,14 +231,14 @@ func LogRotate(path string, MaxFileSize int, MaxBackupCount int) {
 	//filter .log .trace files
 	defer func() {
 		if e := recover(); e != nil {
-			Logger.Errorf("LogRotate catch an exception, %v", e)
+			Logger.Error(fmt.Sprintf("LogRotate catch an exception, %v", e))
 		}
 	}()
 
 	pat := `.(\.log|\.trace|\.out)$`
 	fileList, err := FilterFileList(path, pat)
 	if err != nil {
-		Logger.Errorf("filepath.Walk() path: %s failed: %s", path, err)
+		Logger.Error(fmt.Sprintf("filepath.Walk() path: %s failed: %s", path, err))
 		return
 	}
 
@@ -348,7 +348,7 @@ func (r *rotators) Rotate(rc *RotateConfig) {
 	r.logFilePaths[rc.logFilePath] = rc
 
 	go func() {
-		openlogging.Info("start log rotate task")
+		openlog.Info("start log rotate task")
 		for {
 			LogRotate(rc.logFileDir, rc.Size, rc.BackupCount)
 			time.Sleep(rc.CheckCycle)

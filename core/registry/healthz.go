@@ -1,15 +1,13 @@
 package registry
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"time"
 
 	chassisClient "github.com/go-chassis/go-chassis/core/client"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/healthz/client"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 const (
@@ -60,7 +58,6 @@ func (hc *HealthChecker) Run() {
 	hc.pendingCh = make(chan *WrapInstance, chanCapacity)
 	hc.delCh = make(chan map[string]*WrapInstance, chanCapacity)
 	go hc.wait()
-	go hc.check()
 }
 
 // Add is the method adds a key of the instance simpleCache into pending chan
@@ -68,7 +65,7 @@ func (hc *HealthChecker) Add(i *WrapInstance) error {
 	select {
 	case hc.pendingCh <- i:
 	case <-time.After(timeoutToPending):
-		return errors.New("Health checker is too busy")
+		return errors.New("health checker is too busy")
 	}
 	return nil
 }
@@ -92,49 +89,6 @@ func (hc *HealthChecker) wait() {
 	}
 }
 
-func (hc *HealthChecker) check() {
-	for pack := range hc.delCh {
-		var rs []<-chan checkResult
-		for _, v := range pack {
-			rs = append(rs, hc.doCheck(v))
-		}
-		for _, r := range rs {
-			cr := <-r
-			if cr.Err != nil {
-				openlogging.GetLogger().Debugf("Health check instance %s failed, %s",
-					cr.Item.ServiceKey(), cr.Err)
-				hc.removeFromCache(cr.Item)
-				continue
-			}
-			openlogging.GetLogger().Debugf("Health check instance %s %s is still alive, keep it in simpleCache",
-				cr.Item.ServiceKey(), cr.Item.Instance.EndpointsMap)
-		}
-	}
-}
-
-func (hc *HealthChecker) doCheck(i *WrapInstance) <-chan checkResult {
-	cr := make(chan checkResult)
-	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), timeoutToHealthCheck)
-		r := checkResult{Item: i, Err: nil}
-		defer func() {
-			cancel()
-			cr <- r
-		}()
-		req := client.Reply{
-			AppID:       i.AppID,
-			ServiceName: i.ServiceName,
-			Version:     i.Version,
-		}
-
-		for protocol, ep := range i.Instance.EndpointsMap {
-			r.Err = client.Test(ctx, protocol, ep.GenEndpoint(), req)
-			return
-		}
-	}()
-	return cr
-}
-
 func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
 	c, ok := MicroserviceInstanceIndex.Get(i.ServiceName, nil)
 	if !ok {
@@ -148,7 +102,7 @@ func (hc *HealthChecker) removeFromCache(i *WrapInstance) {
 		is = append(is, inst)
 	}
 	MicroserviceInstanceIndex.Set(i.ServiceName, is)
-	openlogging.GetLogger().Debugf("Health check: cached [%d] Instances of service [%s]", len(is), i.ServiceName)
+	openlog.Debug(fmt.Sprintf("Health check: cached [%d] Instances of service [%s]", len(is), i.ServiceName))
 }
 
 // HealthCheck is the function adds the instance to HealthChecker
@@ -171,7 +125,7 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 	if !ok || c == nil {
 		// if full new instances or at less one instance, then refresh simpleCache immediately
 		MicroserviceInstanceIndex.Set(service, ups)
-		openlogging.GetLogger().Debugf("Cached [%d] Instances of service [%s]", len(ups), service)
+		openlog.Debug(fmt.Sprintf("Cached [%d] Instances of service [%s]", len(ups), service))
 		return
 	}
 
@@ -194,17 +148,17 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 		// case: keep still alive instances
 		if _, ok := mapUps[exp.InstanceID]; ok {
 			lefts = append(lefts, exp)
-			openlogging.Debug(fmt.Sprintf("cache instance: %v", exp))
+			openlog.Debug(fmt.Sprintf("cache instance: %v", exp))
 			continue
 		} else {
 			for p, ep := range exp.EndpointsMap {
 				if err := chassisClient.Close(p, service, ep.GenEndpoint()); err != nil {
 					if err != chassisClient.ErrClientNotExist {
-						openlogging.Error(fmt.Sprintf("can not close [%s] client for service [%s],intance [%s,%s,%s]: %s",
+						openlog.Error(fmt.Sprintf("can not close [%s] client for service [%s],intance [%s,%s,%s]: %s",
 							p, service, exp.InstanceID, ep, exp.HostName, err))
 					}
 				} else {
-					openlogging.Debug(fmt.Sprintf("closed [%s] client for service [%s],intance [%s,%s,%s]",
+					openlog.Debug(fmt.Sprintf("closed [%s] client for service [%s],intance [%s,%s,%s]",
 						p, service, exp.InstanceID, ep, exp.HostName))
 				}
 			}
@@ -231,10 +185,10 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 	if len(lefts) == 0 {
 		//todo remove this when the simpleCache struct can delete the key if the input is an empty slice
 		MicroserviceInstanceIndex.Delete(service)
-		openlogging.GetLogger().Infof("Delete the service [%s] in the cache", service)
+		openlog.Info(fmt.Sprintf("Delete the service [%s] in the cache", service))
 		return
 	}
 
 	MicroserviceInstanceIndex.Set(service, lefts)
-	openlogging.GetLogger().Debugf("Cached [%d] Instances of service [%s]", len(lefts), service)
+	openlog.Debug(fmt.Sprintf("Cached [%d] Instances of service [%s]", len(lefts), service))
 }

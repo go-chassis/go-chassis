@@ -15,7 +15,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/core/status"
 	"github.com/go-chassis/go-chassis/pkg/util"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // LBHandler loadbalancer handler struct
@@ -28,14 +28,14 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 		i.Strategy = lbConfig.Strategy
 		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			openlogging.GetLogger().Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
-				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
+			openlog.Error(fmt.Sprintf("lb error [%s] because of [%s]", loadbalancer.LBError{
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error()))
 		}
 	} else {
 		strategyFun, err = loadbalancer.GetStrategyPlugin(i.Strategy)
 		if err != nil {
-			openlogging.GetLogger().Errorf("lb error [%s] because of [%s]", loadbalancer.LBError{
-				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error())
+			openlog.Error(fmt.Sprintf("lb error [%s] because of [%s]", loadbalancer.LBError{
+				Message: "Get strategy [" + i.Strategy + "] failed."}.Error(), err.Error()))
 		}
 	}
 	if len(i.Filters) == 0 {
@@ -66,7 +66,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 			"No available instance for protocol server [%s] , microservice: %s has %v",
 			protocolServer, i.MicroServiceName, ins.EndpointsMap)
 		lbErr := loadbalancer.LBError{Message: errStr}
-		openlogging.GetLogger().Errorf(lbErr.Error())
+		openlog.Error(lbErr.Error())
 		return nil, lbErr
 	}
 	return ep, nil
@@ -151,7 +151,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		return respErr
 	}
 	if err := backoff.Retry(operation, lbBackoff); err != nil {
-		openlogging.GetLogger().Errorf("stop retry , error : %v", err)
+		openlog.Error(fmt.Sprintf("stop retry , error : %v", err))
 	}
 
 	if invResp == nil {

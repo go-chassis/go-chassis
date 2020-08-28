@@ -29,7 +29,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/status"
 	"github.com/go-chassis/go-chassis/security/token"
 	restfulserver "github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 //errors
@@ -55,7 +55,7 @@ func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invo
 	} else if r, ok := i.Args.(*restful.Request); ok {
 		req = r.Request
 	} else {
-		openlogging.Error(fmt.Sprintf("this handler only works for http request, wrong type: %t", i.Args))
+		openlog.Error(fmt.Sprintf("this handler only works for http request, wrong type: %t", i.Args))
 		return
 	}
 	if mustAuth(req) {
@@ -72,7 +72,7 @@ func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invo
 		to := s[1]
 		payload, err := token.DefaultManager.Verify(to, auth.SecretFunc)
 		if err != nil {
-			openlogging.Error("can not parse jwt:" + err.Error())
+			openlog.Error("can not parse jwt:" + err.Error())
 			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 			return
 		}
@@ -84,7 +84,7 @@ func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invo
 			}
 		}
 	} else {
-		openlogging.Info("skip auth")
+		openlog.Info("skip auth")
 	}
 
 	chain.Next(i, cb)
@@ -106,6 +106,6 @@ func (h *Handler) Name() string {
 func init() {
 	err := handler.RegisterHandler("jwt", newHandler)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 }

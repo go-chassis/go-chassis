@@ -20,7 +20,7 @@ package token
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"time"
 )
 
@@ -121,18 +121,18 @@ func (j *jwtTokenManager) Verify(tokenString string, f SecretFunc, opts ...Optio
 		return claims, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			openlogging.Error("not a valid jwt")
+			openlog.Error("not a valid jwt")
 			return nil, err
 		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
 			// Token is either expired or not active yet
-			openlogging.Error("token expired")
+			openlog.Error("token expired")
 			return nil, err
 		} else {
-			openlogging.Error("parse token err:" + err.Error())
+			openlog.Error("parse token err:" + err.Error())
 			return nil, err
 		}
 	} else {
-		openlogging.Error("parse token err:" + err.Error())
+		openlog.Error("parse token err:" + err.Error())
 		return nil, err
 	}
 }

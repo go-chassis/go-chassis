@@ -21,14 +21,14 @@ import (
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/resilience/rate"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"math"
 )
 
 func init() {
 	err := handler.RegisterHandler(Name, newRateLimiterHandler)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 }
 

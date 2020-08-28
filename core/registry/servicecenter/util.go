@@ -1,13 +1,14 @@
 package servicecenter
 
 import (
+	"fmt"
 	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
 	"github.com/go-chassis/go-chassis/pkg/scclient"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"gopkg.in/yaml.v2"
 )
 
@@ -65,10 +66,10 @@ func filterInstances(providerInstances []*scregistry.MicroServiceInstance) []*re
 func closeClient(r *client.RegistryClient) error {
 	err := r.Close()
 	if err != nil {
-		openlogging.GetLogger().Errorf("Conn close failed. err %s", err)
+		openlog.Error(fmt.Sprintf("Conn close failed. err %s", err))
 		return err
 	}
-	openlogging.GetLogger().Debugf("Conn close success.")
+	openlog.Debug("Conn close success.")
 	return nil
 }
 

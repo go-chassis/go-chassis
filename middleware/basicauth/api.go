@@ -20,7 +20,7 @@ package basicauth
 
 import (
 	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"net/http"
 )
 
@@ -42,6 +42,6 @@ func Use(middleware *BasicAuth) {
 	auth = middleware
 	err := handler.RegisterHandler("basicAuth", newBasicAuth)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 }

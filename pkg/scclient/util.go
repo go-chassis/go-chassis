@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"net/url"
 )
 
@@ -10,7 +10,7 @@ func getProtocolMap(eps []string) map[string]string {
 	for _, ep := range eps {
 		u, err := url.Parse(ep)
 		if err != nil {
-			openlogging.Error("url err: " + err.Error())
+			openlog.Error("url err: " + err.Error())
 			continue
 		}
 		m[u.Scheme] = u.Host

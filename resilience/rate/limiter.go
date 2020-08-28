@@ -3,7 +3,7 @@
 package rate
 
 import (
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"sync"
 
 	"k8s.io/client-go/util/flowcontrol"
@@ -71,7 +71,7 @@ func (qpsL *Limiters) addLimiter(name string, qps, burst int) bool {
 
 // UpdateRateLimit will update the old limiters
 func (qpsL *Limiters) UpdateRateLimit(name string, qps, burst int) {
-	openlogging.Info("add limiter", openlogging.WithTags(openlogging.Tags{
+	openlog.Info("add limiter", openlog.WithTags(openlog.Tags{
 		"module": "rateLimiter",
 		"event":  "update",
 		"mark":   name,

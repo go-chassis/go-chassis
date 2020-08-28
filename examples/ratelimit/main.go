@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/core/lager"
 	_ "github.com/go-chassis/go-chassis/middleware/ratelimiter"
 	"github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/openlog"
 	"net/http"
 )
 
@@ -28,7 +28,7 @@ func (r *DemoResource) URLPatterns() []restful.Route {
 func main() {
 	chassis.RegisterSchema("rest", &DemoResource{})
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed." + err.Error())
+		openlog.Error("Init failed." + err.Error())
 		return
 	}
 	chassis.Run()

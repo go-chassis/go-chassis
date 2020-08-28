@@ -15,7 +15,7 @@ import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/registry"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 const (
@@ -33,14 +33,15 @@ var (
 func Init() error {
 	configServerURL, err := GetConfigServerEndpoint()
 	if err != nil {
-		openlogging.Warn("can not get config server endpoint: " + err.Error())
+		openlog.Warn("can not get config server endpoint: " + err.Error())
 		return nil
 	}
 
 	var enableSSL bool
 	tlsConfig, tlsError := getTLSForClient(configServerURL)
 	if tlsError != nil {
-		openlogging.GetLogger().Errorf("Get %s.%s TLS config failed, err:[%s]", configServerName, common.Consumer, tlsError.Error())
+		openlog.Error(fmt.Sprintf("Get %s.%s TLS config failed, err:[%s]",
+			configServerName, common.Consumer, tlsError.Error()))
 		return tlsError
 	}
 
@@ -57,11 +58,11 @@ func Init() error {
 
 	err = initConfigServer(configServerURL, enableSSL, tlsConfig, interval)
 	if err != nil {
-		openlogging.Error("failed to init config server: " + err.Error())
+		openlog.Error("failed to init config server: " + err.Error())
 		return err
 	}
 
-	openlogging.Warn("config server init success")
+	openlog.Warn("config server init success")
 	return nil
 }
 
@@ -71,10 +72,10 @@ func GetConfigServerEndpoint() (string, error) {
 	configServerURL := config.GetConfigServerConf().ServerURI
 	if configServerURL == "" {
 		if registry.DefaultServiceDiscoveryService != nil {
-			openlogging.Debug("find config server in registry")
+			openlog.Debug("find config server in registry")
 			ccURL, err := endpoint.GetEndpoint("default", "CseConfigCenter", "latest")
 			if err != nil {
-				openlogging.Warn("failed to find config server endpoints, err: " + err.Error())
+				openlog.Warn("failed to find config server endpoints, err: " + err.Error())
 				return "", err
 			}
 			configServerURL = ccURL
@@ -92,7 +93,7 @@ func getTLSForClient(configServerURL string) (*tls.Config, error) {
 	}
 	ccURL, err := url.Parse(configServerURL)
 	if err != nil {
-		openlogging.Error("Error occurred while parsing config Server Uri" + err.Error())
+		openlog.Error("Error occurred while parsing config Server Uri" + err.Error())
 		return nil, err
 	}
 	if ccURL.Scheme == common.HTTP {
@@ -107,8 +108,8 @@ func getTLSForClient(configServerURL string) (*tls.Config, error) {
 		}
 		return nil, err
 	}
-	openlogging.GetLogger().Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
-		sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+	openlog.Warn(fmt.Sprintf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
+		sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin))
 
 	return tlsConfig, nil
 }
@@ -117,7 +118,7 @@ func initConfigServer(endpoint string, enableSSL bool, tlsConfig *tls.Config, in
 
 	refreshMode := archaius.GetInt("servicecomb.config.client.refreshMode", common.DefaultRefreshMode)
 	if refreshMode != remote.ModeWatch && refreshMode != remote.ModeInterval {
-		openlogging.Error(ErrRefreshMode.Error())
+		openlog.Error(ErrRefreshMode.Error())
 		return ErrRefreshMode
 	}
 
@@ -147,7 +148,7 @@ func initConfigServer(endpoint string, enableSSL bool, tlsConfig *tls.Config, in
 	}
 
 	if err := refreshGlobalConfig(); err != nil {
-		openlogging.Error("failed to refresh global config for lb and cb:" + err.Error())
+		openlog.Error("failed to refresh global config for lb and cb:" + err.Error())
 		return err
 	}
 	return nil

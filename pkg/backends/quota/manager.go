@@ -22,7 +22,7 @@ package quota
 import (
 	"errors"
 	"fmt"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 //errors
@@ -55,7 +55,7 @@ func Init(opts Options) error {
 	if err != nil {
 		return err
 	}
-	openlogging.Info(fmt.Sprintf("quota management system [%s@%s] enabled", opts.Plugin, opts.Endpoint))
+	openlog.Info(fmt.Sprintf("quota management system [%s@%s] enabled", opts.Plugin, opts.Endpoint))
 	return nil
 }
 
@@ -81,12 +81,12 @@ type Manager interface {
 //is will not increase resource usage number after check, you have to increase after resource actually created
 func PreCreate(service, domain, resource string, number int64) error {
 	if defaultManager == nil {
-		openlogging.Debug("quota management not available")
+		openlog.Debug("quota management not available")
 		return nil
 	}
 	qs, err := defaultManager.GetQuotas(service, domain)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 		return ErrGetFailed
 	}
 	var resourceQuota *Quota
@@ -98,7 +98,7 @@ func PreCreate(service, domain, resource string, number int64) error {
 	}
 	if resourceQuota == nil {
 		//no limits
-		openlogging.Debug("no limits for " + resource)
+		openlog.Debug("no limits for " + resource)
 		return nil
 	}
 	if number > resourceQuota.Limit-resourceQuota.Used {

@@ -9,7 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	"github.com/go-chassis/go-chassis/core/fault"
 	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 // constant for fault handler name
@@ -38,7 +38,7 @@ func (rl *FaultHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invo
 	r := &invocation.Response{}
 	if !ok {
 		msg := "fault injection doesn't support for protocol " + inv.Protocol
-		openlogging.Error(msg)
+		openlog.Error(msg)
 		r.Err = errors.New(msg)
 		cb(r)
 		return

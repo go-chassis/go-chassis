@@ -2,12 +2,13 @@ package registry
 
 import (
 	"errors"
+	"fmt"
 	"github.com/go-chassis/go-chassis/core/common"
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/core/config/schema"
 	"github.com/go-chassis/go-chassis/core/metadata"
 	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 var errEmptyServiceIDFromRegistry = errors.New("got empty serviceID from registry")
@@ -19,12 +20,12 @@ var InstanceEndpoints = make(map[string]string)
 func RegisterService() error {
 	service := config.MicroserviceDefinition
 	if e := service.Environment; e != "" {
-		openlogging.GetLogger().Infof("Microservice environment: [%s]", e)
+		openlog.Info(fmt.Sprintf("Microservice environment: [%s]", e))
 	}
 	var err error
 	runtime.Schemas, err = schema.GetSchemaIDs(runtime.ServiceName)
 	if err != nil || len(runtime.Schemas) == 0 {
-		openlogging.GetLogger().Warnf("no schemas file for microservice [%s].", runtime.ServiceName)
+		openlog.Warn(fmt.Sprintf("no schemas file for microservice [%s].", runtime.ServiceName))
 		runtime.Schemas = make([]string, 0)
 		// from yaml setting
 		if len(service.Schemas) != 0 {
@@ -78,21 +79,21 @@ func RegisterService() error {
 	} else {
 		service.Properties["allowCrossApp"] = common.FALSE
 	}
-	openlogging.GetLogger().Debugf("update micro service properties%v", service.Properties)
-	openlogging.GetLogger().Infof("framework registered is [ %s:%s ]", framework.Name, framework.Version)
-	openlogging.GetLogger().Infof("micro service registered by [ %s ]", framework.Register)
+	openlog.Debug(fmt.Sprintf("update micro service properties%v", service.Properties))
+	openlog.Info(fmt.Sprintf("framework registered is [ %s:%s ]", framework.Name, framework.Version))
+	openlog.Info(fmt.Sprintf("micro service registered by [ %s ]", framework.Register))
 
 	sid, err := DefaultRegistrator.RegisterService(microservice)
 	if err != nil {
-		openlogging.GetLogger().Errorf("register service [%s] failed: %s", microservice.ServiceName, err)
+		openlog.Error(fmt.Sprintf("register service [%s] failed: %s", microservice.ServiceName, err))
 		return err
 	}
 	if sid == "" {
-		openlogging.Error(errEmptyServiceIDFromRegistry.Error())
+		openlog.Error(errEmptyServiceIDFromRegistry.Error())
 		return errEmptyServiceIDFromRegistry
 	}
 	runtime.ServiceID = sid
-	openlogging.GetLogger().Infof("register service success:[%s] ", runtime.ServiceID)
+	openlog.Info(fmt.Sprintf("register service success:[%s] ", runtime.ServiceID))
 
 	return nil
 }
@@ -114,22 +115,22 @@ func RegisterServiceInstances() error {
 		schemaInfo := schema.GetContent(schemaID)
 		err := DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
 		if err != nil {
-			openlogging.Warn("upload contract to registry failed: " + err.Error())
+			openlog.Warn("upload contract to registry failed: " + err.Error())
 		}
-		openlogging.Debug("upload contract to registry, " + schemaID)
+		openlog.Debug("upload contract to registry, " + schemaID)
 	}
-	openlogging.Debug("start to register instance.")
+	openlog.Debug("start to register instance.")
 	eps, err := MakeEndpointMap(config.GlobalDefinition.ServiceComb.Protocols)
 	if err != nil {
 		return err
 	}
-	openlogging.GetLogger().Infof("service support protocols %v", config.GlobalDefinition.ServiceComb.Protocols)
+	openlog.Info(fmt.Sprintf("service support protocols %v", config.GlobalDefinition.ServiceComb.Protocols))
 	if len(InstanceEndpoints) != 0 {
 		eps = make(map[string]*Endpoint, len(InstanceEndpoints))
 		for m, ep := range InstanceEndpoints {
 			epObj, err := NewEndPoint(ep)
 			if err != nil {
-				openlogging.GetLogger().Errorf("parser instance protocol %s endpoint error %s", m, err)
+				openlog.Error(fmt.Sprintf("parser instance protocol %s endpoint error %s", m, err))
 				continue
 			}
 			eps[m] = epObj
@@ -154,7 +155,7 @@ func RegisterServiceInstances() error {
 	}
 	instanceID, err := DefaultRegistrator.RegisterServiceInstance(runtime.ServiceID, microServiceInstance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("register instance failed, serviceID: %s, err %s", runtime.ServiceID, err.Error())
+		openlog.Error(fmt.Sprintf("register instance failed, serviceID: %s, err %s", runtime.ServiceID, err.Error()))
 		return err
 	}
 	//Set to runtime
@@ -162,12 +163,12 @@ func RegisterServiceInstances() error {
 	runtime.InstanceStatus = runtime.StatusRunning
 	if service.InstanceProperties != nil {
 		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(runtime.ServiceID, instanceID, service.InstanceProperties); err != nil {
-			openlogging.GetLogger().Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID)
+			openlog.Error(fmt.Sprintf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID))
 			return err
 		}
 		runtime.InstanceMD = service.InstanceProperties
-		openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID)
+		openlog.Debug(fmt.Sprintf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID))
 	}
-	openlogging.GetLogger().Infof("register instance success, instanceID: %s.", instanceID)
+	openlog.Info(fmt.Sprintf("register instance success, instanceID: %s.", instanceID))
 	return nil
 }

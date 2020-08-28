@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"strings"
 )
 
@@ -49,7 +49,7 @@ func processV2Rule(ruleV2Map map[string]interface{}, destinations map[string][]*
 		service := strings.Replace(k, DarkLaunchPrefixV2, "", 1)
 		r, err := config.NewServiceRule(value)
 		if err != nil {
-			openlogging.Error("convert failed: " + err.Error())
+			openlog.Error("convert failed: " + err.Error())
 		}
 		destinations[service] = r.Value()
 	}
@@ -66,7 +66,7 @@ func processV1Rule(ruleV1Map map[string]interface{}, destinations map[string][]*
 		service := strings.Replace(k, DarkLaunchPrefix, "", 1)
 		r, err := ConvertJSON2RouteRule(value)
 		if err != nil {
-			openlogging.Error("convert failed: " + err.Error())
+			openlog.Error("convert failed: " + err.Error())
 		}
 		destinations[service] = r
 	}
@@ -80,7 +80,7 @@ func prepareRule(configMap map[string]interface{}, ruleV1Map map[string]interfac
 			continue
 		}
 		if strings.HasPrefix(k, DarkLaunchPrefixV2) {
-			openlogging.Debug("get one route rule:" + k)
+			openlog.Debug("get one route rule:" + k)
 			ruleV2Map[k] = v
 			continue
 		}

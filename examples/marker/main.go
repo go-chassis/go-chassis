@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-chassis/go-chassis"
 	rf "github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"net/http"
 
 	_ "github.com/go-chassis/go-chassis/middleware/ratelimiter"
@@ -24,7 +24,7 @@ func (r *Hello) URLPatterns() []rf.Route {
 func main() {
 	chassis.RegisterSchema("rest", &Hello{})
 	if err := chassis.Init(); err != nil {
-		openlogging.Fatal("Init failed." + err.Error())
+		openlog.Fatal("Init failed." + err.Error())
 		return
 	}
 	chassis.Run()

@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/paas-lager"
-	"github.com/go-chassis/paas-lager/third_party/forked/cloudfoundry/lager"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
+	"github.com/go-chassis/seclog"
+	"github.com/go-chassis/seclog/third_party/forked/cloudfoundry/lager"
 )
 
 const (
@@ -23,13 +23,13 @@ type LagerEventListener struct {
 
 //Event is a method for Lager event listening
 func (el *LagerEventListener) Event(e *event.Event) {
-	logger := openlogging.GetLogger()
+	logger := openlog.GetLogger()
 	l, ok := logger.(lager.Logger)
 	if !ok {
 		return
 	}
 
-	openlogging.Info("Get lager e", openlogging.WithTags(openlogging.Tags{
+	openlog.Info("Get lager e", openlog.WithTags(openlog.Tags{
 		"key":   e.Key,
 		"value": e.Value,
 		"type":  e.EventType,
@@ -42,18 +42,18 @@ func (el *LagerEventListener) Event(e *event.Event) {
 
 	var lagerLogLevel lager.LogLevel
 	switch strings.ToUpper(v) {
-	case log.DEBUG:
+	case seclog.DEBUG:
 		lagerLogLevel = lager.DEBUG
-	case log.INFO:
+	case seclog.INFO:
 		lagerLogLevel = lager.INFO
-	case log.WARN:
+	case seclog.WARN:
 		lagerLogLevel = lager.WARN
-	case log.ERROR:
+	case seclog.ERROR:
 		lagerLogLevel = lager.ERROR
-	case log.FATAL:
+	case seclog.FATAL:
 		lagerLogLevel = lager.FATAL
 	default:
-		openlogging.Info("ops..., got unknown logger level")
+		openlog.Info("ops..., got unknown logger level")
 		return
 	}
 

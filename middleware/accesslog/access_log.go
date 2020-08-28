@@ -1,10 +1,11 @@
 package accesslog
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 
 	"github.com/go-chassis/go-chassis/core/handler"
 	"github.com/go-chassis/go-chassis/core/invocation"
@@ -21,19 +22,19 @@ var (
 		record: restfulRecord,
 	}
 
-	log openlogging.Logger
+	log openlog.Logger
 )
 
 const handlerNameAccessLog = "access-log"
 
 func init() {
 	if initiator.LoggerOptions == nil || len(initiator.LoggerOptions.AccessLogFile) == 0 {
-		openlogging.GetLogger().Info("lager.yaml non exist, skip init")
+		openlog.Info("lager.yaml non exist, skip init")
 		return
 	}
 
 	if initiator.LoggerOptions.AccessLogFile == lager.Stdout {
-		log = openlogging.GetLogger()
+		log = openlog.GetLogger()
 	} else {
 		var err error
 		opts := &lager.Options{
@@ -48,7 +49,7 @@ func init() {
 		}
 		log, err = lager.NewLog(opts)
 		if err != nil {
-			openlogging.GetLogger().Errorf("new access log failed, %s", err.Error())
+			openlog.Error(fmt.Sprintf("new access log failed, %s", err.Error()))
 			return
 		}
 	}
@@ -57,7 +58,7 @@ func init() {
 		return instance
 	})
 	if err != nil {
-		openlogging.GetLogger().Errorf("register access log handler failed, %s", err.Error())
+		openlog.Error(fmt.Sprintf("register access log handler failed, %s", err.Error()))
 	}
 }
 
@@ -87,6 +88,6 @@ func (a *accessLog) Name() string {
 func restfulRecord(startTime time.Time, i *invocation.Invocation) {
 	req := i.Args.(*restful.Request)
 	resp := i.Reply.(*restful.Response)
-	log.Infof("%s %s from %s %d %dms", req.Request.Method, req.Request.URL.String(),
-		iputil.ClientIP(req.Request), resp.StatusCode(), time.Since(startTime).Nanoseconds()/1000000)
+	log.Info(fmt.Sprintf("%s %s from %s %d %dms", req.Request.Method, req.Request.URL.String(),
+		iputil.ClientIP(req.Request), resp.StatusCode(), time.Since(startTime).Nanoseconds()/1000000))
 }

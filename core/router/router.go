@@ -11,7 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/invocation"
 	"github.com/go-chassis/go-chassis/core/registry"
 	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 //Router return route rule, you can also set custom route rule
@@ -31,7 +31,7 @@ var DefaultRouter Router
 
 // InstallRouterPlugin install router plugin
 func InstallRouterPlugin(name string, f func() (Router, error)) {
-	openlogging.Info("install route rule plugin: " + name)
+	openlog.Info("install route rule plugin: " + name)
 	routerServices[name] = f
 }
 
@@ -154,7 +154,7 @@ func valueToUpper(b, value string) string {
 // SortRules sort route rules
 func SortRules(name string) []*config.RouteRule {
 	if DefaultRouter == nil {
-		openlogging.Debug("router not available")
+		openlog.Debug("router not available")
 	}
 	slice := DefaultRouter.FetchRouteRuleByServiceName(name)
 	return QuickSort(0, len(slice)-1, slice)

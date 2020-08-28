@@ -19,7 +19,7 @@ package governance
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"strings"
 )
 
@@ -48,18 +48,18 @@ func InstallProcessor(keyPrefix string, process ProcessFunc) {
 //and call process func according to key prefix
 func Init() {
 	configMap := archaius.GetConfigs()
-	openlogging.Info("process all governance rules")
+	openlog.Info("process all governance rules")
 	for k, v := range configMap {
 		value, ok := v.(string)
 		if !ok {
-			openlogging.Warn("not string format,key:" + k)
+			openlog.Warn("not string format,key:" + k)
 		}
-		openlogging.Debug(k + ":" + value)
+		openlog.Debug(k + ":" + value)
 		for prefix, f := range processFuncMap {
 			if strings.HasPrefix(k, prefix) {
 				err := f(k, value)
 				if err != nil {
-					openlogging.Error("can not process " + prefix + ":" + err.Error())
+					openlog.Error("can not process " + prefix + ":" + err.Error())
 				}
 				break
 			}

@@ -15,7 +15,7 @@ import (
 	"github.com/go-chassis/go-chassis/core/config/model"
 	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
 	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 const (
@@ -39,7 +39,7 @@ func GetProtocolMap(eps []string) (map[string]*Endpoint, string) {
 		}
 		u, err := NewEndPoint(ep)
 		if err != nil {
-			openlogging.GetLogger().Errorf("Can not parse %s, error %s", ep, err)
+			openlog.Error(fmt.Sprintf("Can not parse %s, error %s", ep, err))
 			continue
 		}
 		m[proto] = u
@@ -146,7 +146,7 @@ func startBackOff(operation func() error) {
 		Clock:               backoff.SystemClock,
 	}
 	for {
-		openlogging.GetLogger().Infof("start backoff with initial interval %v", initialInterval)
+		openlog.Info(fmt.Sprintf("start backoff with initial interval %v", initialInterval))
 		err := backoff.Retry(operation, backOff)
 		if err == nil {
 			return
@@ -167,7 +167,7 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 		if ok {
 			u, e := url.Parse(addr)
 			if e != nil {
-				openlogging.Warn("registry address is invalid:" + addr)
+				openlog.Warn("registry address is invalid:" + addr)
 				continue
 			}
 			if len(u.Host) == 0 {
@@ -195,14 +195,14 @@ func getTLSConfig(scheme, t string) (*tls.Config, error) {
 		if err != nil {
 			if chassisTLS.IsSSLConfigNotExist(err) {
 				tmpErr := fmt.Errorf("%s tls mode, but no ssl config", sslTag)
-				openlogging.Error(tmpErr.Error() + ", err: " + err.Error())
+				openlog.Error(tmpErr.Error() + ", err: " + err.Error())
 				return nil, tmpErr
 			}
-			openlogging.GetLogger().Errorf("Load %s TLS config failed: %s", err)
+			openlog.Error(fmt.Sprintf("Load TLS config failed: %s", err))
 			return nil, err
 		}
-		openlogging.GetLogger().Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
-			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+		openlog.Warn(fmt.Sprintf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
+			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin))
 		tlsConfig = tmpTLSConfig
 	}
 	return tlsConfig, nil

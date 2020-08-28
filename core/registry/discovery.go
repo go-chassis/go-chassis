@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chassis/go-chassis/core/config"
 	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 )
 
 var sdFunc = make(map[string]func(opts Options) ServiceDiscovery)
@@ -15,7 +15,7 @@ var cdFunc = make(map[string]func(opts Options) ContractDiscovery)
 //InstallServiceDiscovery install service discovery client
 func InstallServiceDiscovery(name string, f func(opts Options) ServiceDiscovery) {
 	sdFunc[name] = f
-	openlogging.Info("Installed service discovery plugin: " + name)
+	openlog.Info("Installed service discovery plugin: " + name)
 }
 
 //NewDiscovery create discovery service
@@ -30,7 +30,7 @@ func NewDiscovery(name string, opts Options) (ServiceDiscovery, error) {
 //InstallContractDiscovery install contract service client
 func InstallContractDiscovery(name string, f func(opts Options) ContractDiscovery) {
 	cdFunc[name] = f
-	openlogging.Info("Installed contract discovery plugin: " + name)
+	openlog.Info("Installed contract discovery plugin: " + name)
 }
 
 //ServiceDiscovery fetch service and instances from remote or local
@@ -57,7 +57,7 @@ type ContractDiscovery interface {
 
 func enableServiceDiscovery(opts Options) error {
 	if config.GetServiceDiscoveryDisable() {
-		openlogging.Warn("discovery is disabled")
+		openlog.Warn("discovery is disabled")
 		return nil
 	}
 
@@ -77,7 +77,7 @@ func enableServiceDiscovery(opts Options) error {
 
 	DefaultServiceDiscoveryService.AutoSync()
 
-	openlogging.GetLogger().Infof("Enable %s service discovery.", t)
+	openlog.Info(fmt.Sprintf("enable %s service discovery.", t))
 	return nil
 }
 
@@ -92,9 +92,9 @@ func enableContractDiscovery(opts Options) {
 	}
 	f := cdFunc[t]
 	if f == nil {
-		openlogging.GetLogger().Warn("No contract discovery plugin")
+		openlog.Warn("No contract discovery plugin")
 		return
 	}
 	DefaultContractDiscoveryService = f(opts)
-	openlogging.GetLogger().Infof("Enable %s contract discovery.", t)
+	openlog.Info(fmt.Sprintf("Enable %s contract discovery.", t))
 }
