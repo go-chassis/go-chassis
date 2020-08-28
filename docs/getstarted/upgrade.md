@@ -103,7 +103,7 @@ or even help us to complete this instruction.
 
 
 # Upgrade from 2.0.0 to 2.0.1
-log tool is refactored
+## refactor log tool
 
 if you must change import
 
