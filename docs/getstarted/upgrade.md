@@ -126,3 +126,4 @@ openlogging.GetLogger().Debugf("init %s's handler map", chainType)
 ```go
 openlog.Debug(fmt.Sprintf("init %s's handler map", chainType))
 ```
+ 
