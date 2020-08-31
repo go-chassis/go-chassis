@@ -50,6 +50,7 @@ const (
 var (
 	MSAPIPath     = ""
 	GovernAPIPATH = ""
+	TenantHeader  = "X-Domain-Name"
 )
 var (
 	//ErrNotModified means instance is not changed
@@ -122,6 +123,7 @@ func (c *RegistryClient) Initialize(opt Options) (err error) {
 	switch opt.Version {
 	case "v3":
 		c.apiVersion = "v3"
+		TenantHeader = "X-Tenant-Name"
 	default:
 		c.apiVersion = "v4"
 	}
@@ -191,6 +193,7 @@ func (c *RegistryClient) GetDefaultHeaders() http.Header {
 	headers := http.Header{
 		HeaderContentType: []string{"application/json"},
 		HeaderUserAgent:   []string{"cse-serviceregistry-client/1.0.0"},
+		TenantHeader:      []string{"default"},
 	}
 
 	return headers
