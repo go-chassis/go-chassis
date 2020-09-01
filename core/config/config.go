@@ -139,7 +139,7 @@ func populateVersion() {
 
 func populateApp() {
 	if e := archaius.GetString(common.App, ""); e != "" {
-		MicroserviceDefinition.Name = e
+		MicroserviceDefinition.AppID = e
 	}
 }
 
