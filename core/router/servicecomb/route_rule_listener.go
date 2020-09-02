@@ -19,12 +19,12 @@ package servicecomb
 
 import (
 	"github.com/go-chassis/go-archaius/event"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/router"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/router"
 	"github.com/go-chassis/openlog"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	wp "github.com/go-chassis/go-chassis/v2/core/router/weightpool"
 	"strings"
 )
 

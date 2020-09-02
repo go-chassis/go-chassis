@@ -1,18 +1,18 @@
 package client_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/client/rest"
-	_ "github.com/go-chassis/go-chassis/initiator"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/client"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/client"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/stretchr/testify/assert"
 )
 

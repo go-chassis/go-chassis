@@ -2,14 +2,14 @@ package main
 
 import (
 	"errors"
-	"github.com/go-chassis/go-chassis/middleware/jwt"
+	"github.com/go-chassis/go-chassis/v2/middleware/jwt"
 	"net/http"
 	"strings"
 
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/middleware/jwt"
-	"github.com/go-chassis/go-chassis/security/token"
-	rf "github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/middleware/jwt"
+	"github.com/go-chassis/go-chassis/v2/security/token"
+	rf "github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/go-chassis/openlog"
 )
 

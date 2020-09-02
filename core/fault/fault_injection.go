@@ -3,8 +3,8 @@ package fault
 import (
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"math/rand"
 	"time"
 )

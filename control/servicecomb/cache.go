@@ -1,9 +1,9 @@
 package servicecomb
 
 import (
-	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/resilience/retry"
+	"github.com/go-chassis/go-chassis/v2/control"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/resilience/retry"
 	"github.com/patrickmn/go-cache"
 )
 

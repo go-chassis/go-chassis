@@ -7,17 +7,17 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/control"
-	_ "github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
-	_ "github.com/go-chassis/go-chassis/initiator"
-	"github.com/go-chassis/go-chassis/middleware/circuit"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/control"
+	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
+	"github.com/go-chassis/go-chassis/v2/middleware/circuit"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -158,7 +158,7 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 	c := handler.Chain{}
 	c.AddHandler(&circuit.BizKeeperConsumerHandler{})
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
 
 	config.Init()
 	opts := control.Options{

@@ -5,16 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-chassis/go-archaius/source/remote"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/endpoint"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/endpoint"
+	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
 	"net/url"
 	"strings"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	"github.com/go-chassis/openlog"
 )
 

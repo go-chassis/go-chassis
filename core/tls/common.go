@@ -6,15 +6,15 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/security/cipher"
+	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	"io/ioutil"
 	"strings"
 
 	security2 "github.com/go-chassis/foundation/security"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/pkg/string"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/pkg/string"
 	//this import used for plain cipher
-	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 )
 
 //SSLConfig struct stores the necessary info for SSL configuration

@@ -10,8 +10,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 )
 
 // LoggerOptions has the configuration about logging

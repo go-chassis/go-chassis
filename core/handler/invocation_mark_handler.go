@@ -18,9 +18,9 @@
 package handler
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/marker"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
 )
 
 //TrafficMarker

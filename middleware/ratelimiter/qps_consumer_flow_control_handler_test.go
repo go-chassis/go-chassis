@@ -7,18 +7,18 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
-	"github.com/go-chassis/go-chassis/middleware/ratelimiter"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/control"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/v2/middleware/ratelimiter"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 
-	_ "github.com/go-chassis/go-chassis/control/servicecomb"
+	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
 )
 
 func init() {
@@ -69,7 +69,7 @@ servicecomb:
 func TestConsumerRateLimiterDisable(t *testing.T) {
 	t.Log("testing consumerratelimiter handler with qps enabled as false")
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/server/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/server/")
 
 	config.Init()
 	opts := control.Options{

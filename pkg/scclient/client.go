@@ -17,8 +17,8 @@ import (
 	"github.com/apache/servicecomb-service-center/pkg/registry"
 	"github.com/cenkalti/backoff"
 	"github.com/go-chassis/foundation/httpclient"
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
-	"github.com/go-chassis/go-chassis/resilience/retry"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
+	"github.com/go-chassis/go-chassis/v2/resilience/retry"
 	"github.com/go-chassis/openlog"
 	"github.com/gorilla/websocket"
 )

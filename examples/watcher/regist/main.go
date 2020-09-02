@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
 	"os"
 	"time"
 )

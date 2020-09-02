@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 )
 
 //ErrCanceled means Request is canceled by context management

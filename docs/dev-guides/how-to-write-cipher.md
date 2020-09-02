@@ -60,7 +60,7 @@ to touch any cloud resources.
 ```go
 package plain
 
-import sec "github.com/go-chassis/go-chassis/security"
+import sec "github.com/go-chassis/go-chassis/v2/security"
 import "github.com/go-chassis/foundation/security"
 
 type DefaultCipher struct {

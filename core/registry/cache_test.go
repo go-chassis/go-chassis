@@ -1,7 +1,7 @@
 package registry_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"testing"
 
 	"strings"

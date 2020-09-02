@@ -3,8 +3,8 @@ package eventlistener
 import (
 	"fmt"
 	"github.com/go-chassis/go-archaius/event"
-	"github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/v2/control/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/openlog"
 )
 

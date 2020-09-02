@@ -2,15 +2,15 @@ package ratelimiter_test
 
 import (
 	"context"
-	"github.com/go-chassis/go-chassis/core/governance"
-	"github.com/go-chassis/go-chassis/core/marker"
+	"github.com/go-chassis/go-chassis/v2/core/governance"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
 	"net/http"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/middleware/ratelimiter"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/middleware/ratelimiter"
 	"github.com/stretchr/testify/assert"
 )
 

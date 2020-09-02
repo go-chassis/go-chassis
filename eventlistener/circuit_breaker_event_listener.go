@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-chassis/go-chassis/v2/control/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/go-chassis/openlog"
 )
 

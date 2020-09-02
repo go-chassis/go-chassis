@@ -5,13 +5,13 @@ package provider_test
 import (
 	"context"
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/provider"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/provider"
 
 	"github.com/stretchr/testify/assert"
 )

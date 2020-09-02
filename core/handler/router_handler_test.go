@@ -2,15 +2,15 @@ package handler_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
+	_ "github.com/go-chassis/go-chassis/v2/core/router/servicecomb"
 
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/router"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/middleware/ratelimiter"
-	"github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/middleware/ratelimiter"
+	"github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/go-chassis/openlog"
 	"net/http"
 )

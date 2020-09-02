@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/provider"
+	"github.com/go-chassis/go-chassis/v2/core/provider"
 )
 
 //Options is the options for service initiating

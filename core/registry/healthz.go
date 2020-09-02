@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	chassisClient "github.com/go-chassis/go-chassis/core/client"
-	"github.com/go-chassis/go-chassis/core/config"
+	chassisClient "github.com/go-chassis/go-chassis/v2/core/client"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/openlog"
 )
 

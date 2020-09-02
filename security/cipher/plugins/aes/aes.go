@@ -2,11 +2,11 @@ package aes
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/security/cipher"
+	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	"os"
 
 	security2 "github.com/go-chassis/foundation/security"
-	"github.com/go-chassis/go-chassis/pkg/goplugin"
+	"github.com/go-chassis/go-chassis/v2/pkg/goplugin"
 	"github.com/go-chassis/openlog"
 )
 

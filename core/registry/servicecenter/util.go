@@ -3,11 +3,11 @@ package servicecenter
 import (
 	"fmt"
 	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/go-chassis/openlog"
 	"gopkg.in/yaml.v2"
 )

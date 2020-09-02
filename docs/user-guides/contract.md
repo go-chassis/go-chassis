@@ -24,7 +24,7 @@ schema目录位于：
 包路径
 
 ```go
-import "github.com/go-chassis/go-chassis/core/config/schema"
+import "github.com/go-chassis/go-chassis/v2/core/config/schema"
 ```
 
 契约字典，key值为契约文件名，value为契约文件内容
@@ -49,7 +49,7 @@ the contract file structure is as below
 
 
 define API doc in URLPatterns function 
-check https://github.com/go-chassis/go-chassis/blob/master/server/restful/router.go for more options
+check https://github.com/go-chassis/go-chassis/v2/blob/master/server/restful/router.go for more options
 
 ```go
 

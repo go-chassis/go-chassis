@@ -4,11 +4,11 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/go-chassis/go-chassis/initiator"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"path/filepath"

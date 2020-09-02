@@ -2,9 +2,9 @@ package fault_test
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/fault"
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/fault"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

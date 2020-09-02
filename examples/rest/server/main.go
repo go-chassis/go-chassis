@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/examples/schemas"
+	"github.com/go-chassis/go-chassis/v2"
+	"github.com/go-chassis/go-chassis/v2/core/server"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas"
 	"github.com/go-chassis/openlog"
 )
 

@@ -3,8 +3,8 @@ package circuit
 import (
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/go-chassis/openlog"
 	"io"
 	"io/ioutil"

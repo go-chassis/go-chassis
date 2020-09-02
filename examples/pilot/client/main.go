@@ -6,11 +6,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core"
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/bootstrap"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder

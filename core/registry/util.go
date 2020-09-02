@@ -11,10 +11,10 @@ import (
 	"fmt"
 
 	"github.com/cenkalti/backoff"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"github.com/go-chassis/go-chassis/pkg/util/iputil"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/iputil"
 	"github.com/go-chassis/openlog"
 )
 

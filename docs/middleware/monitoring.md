@@ -14,7 +14,7 @@ it records 3 different metrics:
 
 1.Import it in your main file
 ```go
-import _ github.com/go-chassis/go-chassis/middleware/monitoring
+import _ github.com/go-chassis/go-chassis/v2/middleware/monitoring
 ```
 
 2. you must set monitoring handler in chain provider chain

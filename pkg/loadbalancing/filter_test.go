@@ -2,11 +2,11 @@ package loadbalancing_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/loadbalancing"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/loadbalancing"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

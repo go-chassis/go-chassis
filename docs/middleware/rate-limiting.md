@@ -15,7 +15,7 @@
 
 引入middleware
 ```go
-import _ github.com/go-chassis/go-chassis/middleware/ratelimiter
+import _ github.com/go-chassis/go-chassis/v2/middleware/ratelimiter
 ```
 #### Provider示例
 

@@ -2,7 +2,7 @@ package restful
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/pkg/tool"
+	"github.com/go-chassis/go-chassis/v2/pkg/tool"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -10,10 +10,10 @@ import (
 	"strings"
 
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/server"
 	"github.com/go-chassis/openlog"
 )
 
