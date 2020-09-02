@@ -1,6 +1,6 @@
 Minimize Installation
 =====
-1.Install [go 1.12+](https://golang.org/doc/install) 
+1.Install [go 1.13+](https://golang.org/doc/install) 
 
 2.Generate go mod
 ```bash
@@ -8,7 +8,7 @@ go mod init
 ```
 3.Add go chassis 
 ```bash
-GO111MODULE=on go get github.com/go-chassis/go-chassis
+GO111MODULE=on go get github.com/go-chassis/go-chassis/v2
 ```
 
 4.Use go mod
