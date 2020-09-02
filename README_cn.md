@@ -94,7 +94,7 @@ go mod vendor
 
 # Known Users
 
-> [欢迎在此登录自己的信息](https://github.com/go-chassis/go-chassis/issues/592)
+> [欢迎在此登录自己的信息](https://github.com/go-chassis/go-chassis/v2/issues/592)
 
 ![趣头条](https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=61fc74acb212c8fcb4f3f1cbc438f578/d8f9d72a6059252dc75d1b883f9b033b5ab5b9f7.jpg)
 

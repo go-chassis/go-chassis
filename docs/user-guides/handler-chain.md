@@ -53,7 +53,7 @@ func SetDefaultProviderChains(c map[string]string)
 
 ```
 
-you can check build-in handler list in [handler.go](https://github.com/go-chassis/go-chassis/blob/master/core/handler/handler.go)
+you can check build-in handler list in [handler.go](https://github.com/go-chassis/go-chassis/v2/blob/master/core/handler/handler.go)
 the const part shows handler list
 ```go
 const (

@@ -49,7 +49,7 @@ the contract file structure is as below
 
 
 define API doc in URLPatterns function 
-check https://github.com/go-chassis/go-chassis/blob/master/server/restful/router.go for more options
+check https://github.com/go-chassis/go-chassis/v2/blob/master/server/restful/router.go for more options
 
 ```go
 
