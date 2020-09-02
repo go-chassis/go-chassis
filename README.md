@@ -5,7 +5,7 @@
 [![GoDoc](https://godoc.org/github.com/go-chassis/go-chassis?status.svg)](https://godoc.org/github.com/go-chassis/go-chassis)
 [![HitCount](http://hits.dwyl.io/go-chassis/go-chassis.svg)](http://hits.dwyl.io/go-chassis/go-chassis)  
 [![Join Slack](https://img.shields.io/badge/Join-Slack-orange.svg)](https://go-chassis.slack.com/)      
-[![goproxy.cn](https://goproxy.cn/stats/github.com/go-chassis/go-chassis/v2/badges/download-count.svg)](https://goproxy.cn)
+[![goproxy.cn](https://goproxy.cn/stats/github.com/go-chassis/go-chassis/badges/download-count.svg)](https://goproxy.cn)
 [![Documentation Status](https://readthedocs.org/projects/go-chassis/badge/?version=latest)](https://go-chassis.readthedocs.io/en/latest/?badge=latest)
       
 [中文版README](README_cn.md)
@@ -47,7 +47,7 @@ you can use Istio configurations to control go chassis.
  fit both client side discovery and server side discovery pattern, 
  and you can disable it in local to test service easily
  - **Pluggable Protocol**: 
- You can customize protocol, by default support http and grpc, go chassis define standardized [model](https://github.com/go-chassis/go-chassis/v2/blob/master/core/invocation/invocation.go) to makes all request of different protocol leverage same features
+ You can customize protocol, by default support http and grpc, go chassis define standardized [model](https://github.com/go-chassis/go-chassis/blob/master/core/invocation/invocation.go) to makes all request of different protocol leverage same features
  - **Multiple server management**: you can separate API by protocols and ports
  - **Handler Chain**: Able to add your own code during service calling for client and server side
   - **rich middleware**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
@@ -133,7 +133,7 @@ it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/con
 - [KubeEdge](https://github.com/kubeedge/kubeedge): Kubernetes Native Edge Computing Framework (project under CNCF) https://kubeedge.io
 
 # Known Users
-To register your self, go to https://github.com/go-chassis/go-chassis/v2/issues/592
+To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
  
  ![image](assets/logos/qutoutiao.PNG)
 
