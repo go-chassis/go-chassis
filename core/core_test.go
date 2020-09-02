@@ -1,22 +1,22 @@
 package core_test
 
 import (
-	_ "github.com/go-chassis/go-chassis/initiator"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 
 	"context"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	_ "github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	_ "github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
 	"github.com/stretchr/testify/assert"
 )
 

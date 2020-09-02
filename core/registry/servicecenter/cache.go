@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
 
 	"github.com/go-chassis/openlog"
 	"k8s.io/apimachinery/pkg/util/sets"

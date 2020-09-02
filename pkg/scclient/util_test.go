@@ -2,7 +2,7 @@ package client_test
 
 import (
 	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
-	"github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

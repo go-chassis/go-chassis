@@ -2,15 +2,15 @@ package server_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 
 	"errors"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/registry/mock"
-	"github.com/go-chassis/go-chassis/core/server"
-	_ "github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/registry/mock"
+	"github.com/go-chassis/go-chassis/v2/core/server"
+	_ "github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

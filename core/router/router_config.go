@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/iputil"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/go-chassis/openlog"
 )
 

@@ -77,7 +77,9 @@ github.com/go-chassis/go-archaius v1.3.2 h1:b52voYtSL+fukmvg/rsn/quw/hgDWtV945ad
 github.com/go-chassis/go-archaius v1.3.2/go.mod h1:nzRL1sSodtgeCZMzCNu0y2LPH5zz7chp8uaQ0GS0x6I=
 github.com/go-chassis/go-archaius v1.3.3 h1:phNCPOi5tIMj6SBLJCoD2GcE2f43rk0I3gdpHqm90Pg=
 github.com/go-chassis/go-archaius v1.3.3/go.mod h1:K9gt8DIj582EQfKQdZV+jWBKNeevwaM+2cdLQgpOlZM=
+github.com/go-chassis/go-chassis v0.0.0-20200716073336-4183d5dd1246 h1:yxtoclu0QclYtwXxo4AYTCPJsYFM/Xo2/5C1HLRnzqg=
 github.com/go-chassis/go-chassis v0.0.0-20200716073336-4183d5dd1246/go.mod h1:S7RbnpeTWBqZ4+UxGAs05a6qdhDyWKpTNuil8FYNiME=
+github.com/go-chassis/go-chassis v1.8.3 h1:abMUm489NF8wHqYtoY4KEN2Xy65og6R4NCS9KpxgpWI=
 github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f h1:5QmmNpVcGqIc6tuKNe5EAI4PA8Yn2EL9Oee7YdcJ4PE=
 github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f/go.mod h1:eW62fYuzlNFDvIacB6AV8bhUDCTy4myfTCv0bT9Gbb0=
 github.com/go-chassis/openlog v1.1.1 h1:iX7U0JP52SaJc5p7iOPVvpcbx3ML/53U1RuZDArW9xc=

@@ -19,7 +19,7 @@ package governance_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/governance"
+	"github.com/go-chassis/go-chassis/v2/core/governance"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

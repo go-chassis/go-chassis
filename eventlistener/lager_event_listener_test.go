@@ -4,7 +4,7 @@ import (
 	"github.com/go-chassis/go-archaius/event"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/eventlistener"
+	"github.com/go-chassis/go-chassis/v2/eventlistener"
 )
 
 func TestLagerEventListener_Event(t *testing.T) {

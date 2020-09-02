@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 )
 
 // RPCInvoker is rpc invoker

@@ -10,33 +10,33 @@ import (
 	"syscall"
 
 	//init logger first
-	_ "github.com/go-chassis/go-chassis/initiator"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 	//load balancing
-	_ "github.com/go-chassis/go-chassis/pkg/loadbalancing"
+	_ "github.com/go-chassis/go-chassis/v2/pkg/loadbalancing"
 	//protocols
-	_ "github.com/go-chassis/go-chassis/client/rest"
-	_ "github.com/go-chassis/go-chassis/server/restful"
+	_ "github.com/go-chassis/go-chassis/v2/client/rest"
+	_ "github.com/go-chassis/go-chassis/v2/server/restful"
 	//routers
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
 	//router
-	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
+	_ "github.com/go-chassis/go-chassis/v2/core/router/servicecomb"
 	//control panel
-	_ "github.com/go-chassis/go-chassis/control/servicecomb"
+	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
 	// registry
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-	"github.com/go-chassis/go-chassis/core/server"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/core/server"
 	// prometheus reporter for circuit breaker metrics
-	_ "github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix/reporter"
+	_ "github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix/reporter"
 	// aes package handles security related plugins
-	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/aes"
-	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/aes"
+	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	//config servers
 	_ "github.com/go-chassis/go-archaius/source/remote"
 	_ "github.com/go-chassis/go-archaius/source/remote/kie"
-	"github.com/go-chassis/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/v2/core/metadata"
 )
 
 var goChassis *chassis

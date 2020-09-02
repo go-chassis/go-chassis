@@ -1,7 +1,8 @@
-# Rate limiting v2
+# Rate limiting v2 alpha
 ## Introduction
 Based on traffic marker, this rate limiter can limit traffic rate
 
+it is a alpha feature
 ## Usage
 it allows you to define a list of rate limit policy.
 each policy is defined as a yaml value, the yaml key path is servicecomb.rateLimiting.{policy_name}.
@@ -17,7 +18,7 @@ each policy is defined as a yaml value, the yaml key path is servicecomb.rateLim
 >
 Import middleware
 ```go
-import _ github.com/go-chassis/go-chassis/middleware/ratelimiter
+import _ github.com/go-chassis/go-chassis/v2/middleware/ratelimiter
 ```
 
 Add marker and limiter to handler 

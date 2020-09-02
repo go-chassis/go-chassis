@@ -1,9 +1,9 @@
 package mock
 
 import (
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/stretchr/testify/mock"
 )
 

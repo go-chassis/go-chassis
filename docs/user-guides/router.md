@@ -165,7 +165,7 @@ match:
 用户可以自行定义路由匹配方式，实现业务相关的匹配算法。 如下为一个range算子的例子：
 - 实现算子
 ```
-import github.com/go-chassis/go-chassis/core/match
+import github.com/go-chassis/go-chassis/v2/core/match
 
 func Range(value, expression string) bool {
     #check value is satisfy expression or not

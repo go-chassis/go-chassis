@@ -3,9 +3,9 @@ package schema
 import (
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-chassis/openlog"
 	"io/ioutil"

@@ -1,8 +1,8 @@
 package lager_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/lager"
-	//"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	//"github.com/go-chassis/go-chassis/v2/core/config"
 	"os"
 	"path/filepath"
 	"testing"

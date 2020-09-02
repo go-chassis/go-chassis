@@ -2,11 +2,11 @@ package registry
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	"github.com/go-chassis/openlog"
 )
 

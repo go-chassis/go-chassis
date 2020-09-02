@@ -1,13 +1,13 @@
 package registry_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/registry"
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

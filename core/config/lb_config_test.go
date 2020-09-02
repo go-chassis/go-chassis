@@ -1,12 +1,12 @@
 package config_test
 
 import (
-	"github.com/go-chassis/go-chassis/resilience/retry"
-	// "github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/v2/resilience/retry"
+	// "github.com/go-chassis/go-chassis/v2/core/common"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/stretchr/testify/assert"
 )
 

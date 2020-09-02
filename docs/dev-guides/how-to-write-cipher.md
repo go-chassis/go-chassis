@@ -60,8 +60,8 @@ to touch any cloud resources.
 ```go
 package plain
 
-import sec "github.com/go-chassis/go-chassis/security"
-import "github.com/go-chassis/foundation/security"
+import sec "github.com/go-chassis/go-chassis/v2/security"
+import "github.com/go-chassis/foundation/v2/security/cipher"
 
 type DefaultCipher struct {
 }
@@ -72,7 +72,7 @@ func init() {
 }
 
 // define a method of newing a plugin object, and register this method
-func new() security.Cipher {
+func new() cipher.Cipher {
     return &DefaultCipher{
     }
 }

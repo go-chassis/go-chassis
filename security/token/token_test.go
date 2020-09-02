@@ -18,8 +18,8 @@
 package token_test
 
 import (
-	"github.com/go-chassis/go-chassis/security/secret"
-	"github.com/go-chassis/go-chassis/security/token"
+	"github.com/go-chassis/go-chassis/v2/security/secret"
+	"github.com/go-chassis/go-chassis/v2/security/token"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

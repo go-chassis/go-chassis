@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2/server/restful"
 )
 
 // RestFulRouterB is a struct used for implementation of restfull router program

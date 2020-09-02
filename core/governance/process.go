@@ -19,8 +19,8 @@ package governance
 
 import (
 	"errors"
-	"github.com/go-chassis/go-chassis/core/marker"
-	"github.com/go-chassis/go-chassis/resilience/rate"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
+	"github.com/go-chassis/go-chassis/v2/resilience/rate"
 	"github.com/go-chassis/openlog"
 	"gopkg.in/yaml.v2"
 	"strings"

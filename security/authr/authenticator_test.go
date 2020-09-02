@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/security/authr"
+	"github.com/go-chassis/go-chassis/v2/security/authr"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"

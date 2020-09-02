@@ -1,8 +1,8 @@
 package servicecenter_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
 	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 	"testing"

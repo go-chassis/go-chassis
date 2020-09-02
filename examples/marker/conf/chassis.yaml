@@ -10,7 +10,6 @@ servicecomb:
     chain:
       Provider:
         default: traffic-marker,rate-limiter
-servicecomb:
   match:
     markGetRequest: |
       method: GET

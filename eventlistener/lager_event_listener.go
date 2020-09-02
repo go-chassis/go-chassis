@@ -4,7 +4,7 @@ import (
 	"github.com/go-chassis/go-archaius/event"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/openlog"
 	"github.com/go-chassis/seclog"
 	"github.com/go-chassis/seclog/third_party/forked/cloudfoundry/lager"

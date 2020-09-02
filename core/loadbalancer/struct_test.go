@@ -1,7 +1,7 @@
 package loadbalancer_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

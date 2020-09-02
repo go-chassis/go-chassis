@@ -3,7 +3,7 @@ package tracing
 import (
 	"fmt"
 
-	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/openlog"
 	"github.com/opentracing/opentracing-go"
 )

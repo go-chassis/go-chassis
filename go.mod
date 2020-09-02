@@ -1,4 +1,4 @@
-module github.com/go-chassis/go-chassis
+module github.com/go-chassis/go-chassis/v2
 
 require (
 	github.com/apache/servicecomb-service-center v0.0.0-20200723031815-784c3533a8f2
@@ -7,6 +7,7 @@ require (
 	github.com/emicklei/go-restful v2.12.0+incompatible
 	github.com/go-chassis/foundation v0.1.1-0.20200825060850-b16bf420f7b3
 	github.com/go-chassis/go-archaius v1.3.3
+	github.com/go-chassis/go-chassis v0.0.0-20200716073336-4183d5dd1246
 	github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f
 	github.com/go-chassis/openlog v1.1.1
 	github.com/go-chassis/seclog v1.2.1

@@ -1,7 +1,9 @@
-# Traffic marker
+# Traffic marker(alpha)
 ## Introduction
 Traffic marker module is able to mark requests in both client(consumer) or server(provider) side,
 it is the foundation of traffic management.
+
+it is a alpha feature.
 ## Configurations
 it allows you to define a list of match policy.
 each policy is defined as a yaml value, the yaml key path is servicecomb.match.{policy_name}.
