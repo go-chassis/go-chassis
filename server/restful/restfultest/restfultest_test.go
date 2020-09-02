@@ -25,11 +25,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-chassis/go-chassis/server/restful/restfultest"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/server/restful"
+	"github.com/go-chassis/go-chassis/v2/server/restful/restfultest"
 	"github.com/stretchr/testify/assert"
 )
 

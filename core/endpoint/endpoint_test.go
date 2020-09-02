@@ -2,11 +2,11 @@ package endpoint_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/endpoint"
-	"github.com/go-chassis/go-chassis/core/registry"
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/endpoint"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

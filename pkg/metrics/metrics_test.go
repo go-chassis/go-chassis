@@ -2,7 +2,7 @@ package metrics_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/pkg/metrics"
+	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
 	"github.com/go-chassis/openlog"
 	"github.com/prometheus/common/expfmt"
 	"github.com/stretchr/testify/assert"

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/go-chassis/go-chassis"
-	rf "github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2"
+	rf "github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/go-chassis/openlog"
 	"net/http"
 
-	_ "github.com/go-chassis/go-chassis/middleware/ratelimiter"
+	_ "github.com/go-chassis/go-chassis/v2/middleware/ratelimiter"
 )
 
 type Hello struct{}

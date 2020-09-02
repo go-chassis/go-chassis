@@ -1,4 +1,4 @@
-module github.com/go-chassis/go-chassis
+module github.com/go-chassis/go-chassis/v2
 
 require (
 	github.com/apache/servicecomb-service-center v0.0.0-20200723031815-784c3533a8f2

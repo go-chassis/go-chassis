@@ -10,7 +10,7 @@ it also monitor each service call to make service [observable](https://docs.go-c
 
 1.Import it in your main file
 ```go
-import _ github.com/go-chassis/go-chassis/middleware/circuit
+import _ github.com/go-chassis/go-chassis/v2/middleware/circuit
 ```
 
 2.Learn Configurations

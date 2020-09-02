@@ -27,6 +27,5 @@ access_log_file: xxx
 3.import access log package
 ```go
 // should import after import go-chassis
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/middleware/accesslog"
+	_ "github.com/go-chassis/go-chassis/v2/middleware/accesslog"
 ```

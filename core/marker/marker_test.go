@@ -19,9 +19,9 @@ package marker_test
 
 import (
 	"context"
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/marker"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"

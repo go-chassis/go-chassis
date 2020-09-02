@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/resilience/retry"
+	"github.com/go-chassis/go-chassis/v2/resilience/retry"
 	"strings"
 	"sync"
 )

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/examples/schemas"
-	_ "github.com/go-chassis/go-chassis/middleware/monitoring"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/bootstrap"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas"
+	_ "github.com/go-chassis/go-chassis/v2/middleware/monitoring"
 	"github.com/go-chassis/openlog"
 )
 

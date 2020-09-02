@@ -2,20 +2,20 @@ package router_test
 
 import (
 	"context"
-	"github.com/go-chassis/go-chassis/core/marker"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
 	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/router"
-	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	_ "github.com/go-chassis/go-chassis/v2/core/router/servicecomb"
 	"github.com/stretchr/testify/assert"
 )
 

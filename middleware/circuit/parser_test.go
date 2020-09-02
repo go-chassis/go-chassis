@@ -20,7 +20,7 @@ package circuit_test
 import (
 	"testing"
 
-	"github.com/go-chassis/go-chassis/middleware/circuit"
+	"github.com/go-chassis/go-chassis/v2/middleware/circuit"
 	"github.com/stretchr/testify/assert"
 )
 

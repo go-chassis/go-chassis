@@ -3,11 +3,11 @@ package eventlistener_test
 import (
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-archaius/event"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/eventlistener"
+	"github.com/go-chassis/go-chassis/v2/eventlistener"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -20,9 +20,9 @@ package marker
 import (
 	"fmt"
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/openlog"
 	"gopkg.in/yaml.v2"
 	"net/http"

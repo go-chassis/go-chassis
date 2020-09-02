@@ -3,11 +3,11 @@ package registry
 import (
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/schema"
-	"github.com/go-chassis/go-chassis/core/metadata"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/schema"
+	"github.com/go-chassis/go-chassis/v2/core/metadata"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	"github.com/go-chassis/openlog"
 )
 

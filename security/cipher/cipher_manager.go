@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/go-chassis/foundation/security"
-	"github.com/go-chassis/go-chassis/pkg/goplugin"
+	"github.com/go-chassis/go-chassis/v2/pkg/goplugin"
 	"github.com/go-chassis/openlog"
 )
 

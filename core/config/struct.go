@@ -1,7 +1,7 @@
 package config
 
 import (
-	stringutil "github.com/go-chassis/go-chassis/pkg/string"
+	stringutil "github.com/go-chassis/go-chassis/v2/pkg/string"
 	"gopkg.in/yaml.v2"
 )
 

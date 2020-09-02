@@ -15,7 +15,7 @@ package reporter
 // Some parts of this file have been modified to make it functional in this package
 import (
 	"github.com/go-chassis/go-archaius"
-	circuit2 "github.com/go-chassis/go-chassis/middleware/circuit"
+	circuit2 "github.com/go-chassis/go-chassis/v2/middleware/circuit"
 
 	"strings"
 	"sync"
@@ -23,9 +23,9 @@ import (
 
 	"fmt"
 
-	m "github.com/go-chassis/go-chassis/pkg/metrics"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	m "github.com/go-chassis/go-chassis/v2/pkg/metrics"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

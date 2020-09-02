@@ -2,9 +2,9 @@ package cipher_test
 
 import (
 	security2 "github.com/go-chassis/foundation/security"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/security/cipher"
-	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/aes"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/security/cipher"
+	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/aes"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

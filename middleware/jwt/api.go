@@ -18,7 +18,7 @@
 package jwt
 
 import (
-	"github.com/go-chassis/go-chassis/security/token"
+	"github.com/go-chassis/go-chassis/v2/security/token"
 	"github.com/go-chassis/openlog"
 	"net/http"
 	"time"

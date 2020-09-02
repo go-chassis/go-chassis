@@ -3,12 +3,12 @@ package eventlistener
 import (
 	"fmt"
 	"github.com/go-chassis/go-archaius/event"
-	"github.com/go-chassis/go-chassis/resilience/rate"
+	"github.com/go-chassis/go-chassis/v2/resilience/rate"
 	"github.com/go-chassis/openlog"
 
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/common"
 )
 
 const (
