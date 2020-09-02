@@ -3,7 +3,7 @@
 ## 概述
 go chassis 提供了Restful风格的http服务，
 基于 [go-restful](https://github.com/emicklei/go-restful)，
-版本号参考[go.mod](https://github.com/go-chassis/go-chassis/v2/blob/master/go.mod)
+版本号参考[go.mod](https://github.com/go-chassis/go-chassis/blob/master/go.mod)
 使用方法请参阅下面的内容。
 
 > yaml的设置请参考 [Get started](../getstarted/writing-rest.html)
