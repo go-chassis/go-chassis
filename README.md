@@ -52,7 +52,7 @@ you can use Istio configurations to control go chassis.
  - **Handler Chain**: Able to add your own code during service calling for client and server side
   - **rich middleware**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
  - **Traffic marker** Traffic marker module is able to mark requests in both client(consumer) or server(provider) side,
-with marker, you can govern traffic based on marker.
+with marker, you can govern traffic based on it.
  - **Traffic management**: Able to route to different service based on weight and match rule, it can be used in many scenario, such as canary release
  - **Security**: build in cipher, authentication, RSA related funtions
   - **Safty and reslience**: support fault-tolerant(with expotential backoff policy), rate limiting, client-side load-balancing, circuit breaker to makes your service facing any unpredictable situation.
