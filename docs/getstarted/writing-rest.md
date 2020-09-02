@@ -1,6 +1,6 @@
 Writing Rest service
 ==========================
-Checkout full example in [here](https://github.com/go-chassis/go-chassis/v2/tree/master/examples/rest)
+Checkout full example in [here](https://github.com/go-chassis/go-chassis/tree/master/examples/rest)
 ### Provider
 this section show you how to write a http server
 

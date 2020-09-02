@@ -55,4 +55,4 @@ servicecomb:
         default: jwt
 ```
 
-验证与完整代码https://github.com/go-chassis/go-chassis/v2/tree/master/examples/jwt
+验证与完整代码https://github.com/go-chassis/go-chassis/tree/master/examples/jwt
