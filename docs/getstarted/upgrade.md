@@ -98,7 +98,7 @@ archaius.Getxxx("servicecomb.xxxx")
 ```
 
 2.from 1.x to 2.0 there could be many of internal APIs has been refactored, but most API your code won't call. if you find any problem,
-please record your problem in [issues](https://github.com/go-chassis/go-chassis/v2/issues).
+please record your problem in [issues](https://github.com/go-chassis/go-chassis/issues).
 or even help us to complete this instruction.
 
 
