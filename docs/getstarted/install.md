@@ -12,16 +12,17 @@ GO111MODULE=on go get github.com/go-chassis/go-chassis/v2
 ```
 
 4.Use go mod
-    ```bash
-    GO111MODULE=on go mod download
-    #optional
-    GO111MODULE=on go mod vendor
-    ```
+```bash
+GO111MODULE=on go mod download
+#optional
+GO111MODULE=on go mod vendor
+```
+
 if you are facing network issue 
 ```bash
 export GOPROXY=https://goproxy.io
 ```
-5.Install [service-center](http://servicecomb.apache.org/release/)
+5.Install [service-center](https://service-center.readthedocs.io/en/latest/get-started/install.html)
 
 6.[Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
 
