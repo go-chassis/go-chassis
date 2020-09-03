@@ -73,7 +73,7 @@ go mod init
 ```
 2.Add go chassis 
 ```shell script
-go get github.com/go-chassis/go-chassis/v2
+ go get github.com/go-chassis/go-chassis/v2@v2.0.2
 ```
 if you are facing network issue 
 ```bash
