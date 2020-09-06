@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/go-chassis/go-chassis/v2/core/client"
@@ -12,7 +13,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/v2/session"
 	"github.com/go-chassis/openlog"
-	"net/http"
 )
 
 // TransportHandler transport handler
@@ -50,7 +50,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	if err != nil {
 		r.Err = err
 		if err != client.ErrCanceled {
-			openlog.Error(fmt.Sprintf("Call got Error, err [%s]", err.Error()))
+			openlog.Error(fmt.Sprintf("call err [%s]", err.Error()))
 		}
 		if i.Strategy == loadbalancer.StrategySessionStickiness {
 			ProcessSpecialProtocol(i)
