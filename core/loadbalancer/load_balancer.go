@@ -151,7 +151,7 @@ func BuildKey(microServiceName, tags, protocol string) string {
 	return strings.Join([]string{microServiceName, tags, protocol}, "/")
 }
 
-// SetLatency for a instance ,it only save latest 10 stats for instance's protocol
+// SetLatency for a instance, it only save latest 10 stats for instance's protocol
 func SetLatency(latency time.Duration, addr, microServiceName string, tags utiltags.Tags, protocol string) {
 	key := BuildKey(microServiceName, tags.String(), protocol)
 

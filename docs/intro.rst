@@ -7,5 +7,4 @@ Introductions
 
    intro/what-is
    intro/concepts
-   intro/features
    intro/how-it-works

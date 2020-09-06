@@ -84,6 +84,8 @@ github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f 
 github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f/go.mod h1:eW62fYuzlNFDvIacB6AV8bhUDCTy4myfTCv0bT9Gbb0=
 github.com/go-chassis/openlog v1.1.1 h1:iX7U0JP52SaJc5p7iOPVvpcbx3ML/53U1RuZDArW9xc=
 github.com/go-chassis/openlog v1.1.1/go.mod h1:ZZOS68OvrFIKEJbuBa4YnYzmxyVx3lmcMfMKb+Hx/yQ=
+github.com/go-chassis/openlog v1.1.2 h1:LgGfwwOhpU8c6URV6ADpaRBPVY7Ph1C28jCQ6zzQawQ=
+github.com/go-chassis/openlog v1.1.2/go.mod h1:+eYCADVxWyJkwsFMUBrMxyQlNqW+UUsCxvR2LrYZUaA=
 github.com/go-chassis/paas-lager v1.1.1 h1:/6wqawUGjPCpd57A/tzJzgC4MnEhNuigbayQS+2VWPQ=
 github.com/go-chassis/paas-lager v1.1.1/go.mod h1:tILYbn3+0jjCxhY6/ue9L8eRq+VJ60U6VYIdugqchB4=
 github.com/go-chassis/seclog v1.1.1/go.mod h1:S6n+d+fbXhIzmBSeDrvruSwoh1AdN2OpDQ8jvFWoar8=
@@ -91,6 +93,7 @@ github.com/go-chassis/seclog v1.2.0 h1:GRf/7Q5ZJJDlwQWJZf3LFlZQvDoECJhqWTw7pgUQR
 github.com/go-chassis/seclog v1.2.0/go.mod h1:88O2MV8uP6L3ulaIGcrwAtXhNAii/57cuvdDfW7JQIg=
 github.com/go-chassis/seclog v1.2.1 h1:h+Aijmh76ICKD1jcajpt/LK2wJMmtHofUjE+/MhOrYs=
 github.com/go-chassis/seclog v1.2.1/go.mod h1:88O2MV8uP6L3ulaIGcrwAtXhNAii/57cuvdDfW7JQIg=
+github.com/go-chassis/seclog v1.2.2/go.mod h1:nylyP3LMsninQT6HVfF7p7MgrPoLdf+HWXnc4Y63IN4=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-kit/kit v0.9.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9GBnD5lWE=
