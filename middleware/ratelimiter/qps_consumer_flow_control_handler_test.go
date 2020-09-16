@@ -23,8 +23,7 @@ import (
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func prepareConfDir(t *testing.T) string {
@@ -97,8 +96,7 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestConsumerRateLimiterHandler_Handle(t *testing.T) {

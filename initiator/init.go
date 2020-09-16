@@ -27,9 +27,8 @@ func InitLogger() {
 	//initialize log in any case
 	if err != nil {
 		lager.Init(&lager.Options{
-			LoggerLevel:   lager.LevelInfo,
-			RollingPolicy: "size",
-			Writers:       lager.Stdout,
+			LoggerLevel: lager.LevelDebug,
+			Writers:     lager.Stdout,
 		})
 		if os.IsNotExist(err) {
 			openlog.Info(fmt.Sprintf("[%s] not exist", fileutil.LogConfigPath()))
@@ -37,17 +36,7 @@ func InitLogger() {
 			log.Panicln(err)
 		}
 	} else {
-		lager.Init(&lager.Options{
-			Writers:        LoggerOptions.Writers,
-			LoggerLevel:    LoggerOptions.LoggerLevel,
-			RollingPolicy:  LoggerOptions.RollingPolicy,
-			LoggerFile:     LoggerOptions.LoggerFile,
-			LogFormatText:  LoggerOptions.LogFormatText,
-			LogRotateDate:  LoggerOptions.LogRotateDate,
-			LogRotateSize:  LoggerOptions.LogRotateSize,
-			LogBackupCount: LoggerOptions.LogBackupCount,
-		})
-
+		lager.Init(LoggerOptions)
 	}
 }
 

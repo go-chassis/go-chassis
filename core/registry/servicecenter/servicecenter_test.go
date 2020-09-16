@@ -17,8 +17,7 @@ import (
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {

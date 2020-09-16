@@ -42,8 +42,7 @@ func init() {
 			LoggerLevel:    lager.LevelInfo,
 			LoggerFile:     initiator.LoggerOptions.AccessLogFile,
 			LogFormatText:  initiator.LoggerOptions.LogFormatText,
-			RollingPolicy:  initiator.LoggerOptions.RollingPolicy,
-			LogRotateDate:  initiator.LoggerOptions.LogRotateDate,
+			LogRotateAge:   initiator.LoggerOptions.LogRotateAge,
 			LogRotateSize:  initiator.LoggerOptions.LogRotateSize,
 			LogBackupCount: initiator.LoggerOptions.LogBackupCount,
 		}
@@ -62,8 +61,8 @@ func init() {
 	}
 }
 
-// CustomizeRecord support customize recorder
-func CustomizeRecord(record Record) {
+// Use support customize recorder
+func Use(record Record) {
 	instance.record = record
 }
 

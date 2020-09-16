@@ -24,8 +24,7 @@ func initenv() {
 	config.Init()
 
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 

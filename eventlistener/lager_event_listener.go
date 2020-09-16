@@ -12,7 +12,7 @@ import (
 
 const (
 	//LagerLevelKey is a variable of type string
-	LagerLevelKey = "logger_level"
+	LagerLevelKey = "logLevel"
 )
 
 //LagerEventListener is a struct used for Event listener

@@ -16,8 +16,7 @@ import (
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestCreateChain(t *testing.T) {
@@ -49,8 +48,7 @@ func TestCreateChain(t *testing.T) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func BenchmarkChain_Next(b *testing.B) {

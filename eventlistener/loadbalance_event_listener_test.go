@@ -44,8 +44,7 @@ func TestLbEvent(t *testing.T) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("servicecomb.loadbalance.strategy.name", "SessionStickiness")
