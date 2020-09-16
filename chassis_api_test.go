@@ -98,8 +98,7 @@ servicecomb:
 `)
 
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
@@ -147,7 +146,6 @@ func TestInitError(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", p)
 
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }

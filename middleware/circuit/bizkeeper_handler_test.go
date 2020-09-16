@@ -149,8 +149,7 @@ func TestBizKeeperHandler_Names(t *testing.T) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {

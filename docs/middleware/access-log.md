@@ -21,7 +21,7 @@ servicecomb:
 # can be a file path or stdout
 # a file path: record access log in this file, recommend access file path' dir is same as log file'dir
 # stdout: access log will record in console stdout
-access_log_file: xxx
+accessLogFile: xxx
 ```
 
 3.import access log package

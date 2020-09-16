@@ -16,7 +16,6 @@ import (
 func init() {
 	seclog.Init(seclog.Config{
 		LoggerLevel:   "DEBUG",
-		EnableRsyslog: false,
 		LogFormatText: true,
 		Writers:       []string{"stdout"},
 	})
@@ -375,7 +374,6 @@ func TestRegistryClient_GetDefaultHeaders(t *testing.T) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }

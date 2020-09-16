@@ -43,8 +43,7 @@ func TestGetStrategyName(t *testing.T) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 

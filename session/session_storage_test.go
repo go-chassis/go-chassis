@@ -13,8 +13,7 @@ import (
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestSessionStorage(t *testing.T) {

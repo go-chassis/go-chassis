@@ -20,8 +20,7 @@ import (
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")

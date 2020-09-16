@@ -503,8 +503,7 @@ servicecomb:
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func BenchmarkLBHandler_Handle(b *testing.B) {

@@ -9,6 +9,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/core/provider"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
+	"github.com/go-chassis/openlog"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"os"
@@ -43,7 +44,7 @@ type ProviderHandler struct {
 func (ph *ProviderHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	p, err := provider.GetProvider(i.MicroServiceName)
 	if err != nil {
-		lager.Logger.Error("GetProvider failed." + err.Error())
+		openlog.Error("GetProvider failed." + err.Error())
 	}
 	p.Invoke(i)
 }
@@ -98,8 +99,7 @@ func createBizkeeperFakeHandler() handler.Handler {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestGetChain(t *testing.T) {
@@ -171,7 +171,6 @@ func BenchmarkPool_GetChain(b *testing.B) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
