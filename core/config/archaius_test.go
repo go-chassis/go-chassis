@@ -8,7 +8,7 @@ import (
 
 func TestMain(m *testing.M) {
 	lbBytes := []byte(`
-servicecomb: 
+cse: 
   loadbalance: 
     TargetService: 
       backoff: 

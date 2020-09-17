@@ -37,7 +37,7 @@ controlPanel:
   infra: istio
   settings:
     Address: xxx
-servicecomb:
+cse:
   flowcontrol:
     Consumer:
       qps:
@@ -54,6 +54,7 @@ servicecomb:
       kind: constant
       minMs: 200
       maxMs: 400
+servicecomb:
   registry:
     type: servicecenter
     scope: full

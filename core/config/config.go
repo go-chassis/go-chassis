@@ -2,6 +2,8 @@ package config
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/go-chassis/go-archaius"
@@ -156,13 +158,12 @@ func ReadGlobalConfigFromArchaius() error {
 
 // ReadLBFromArchaius for to unmarshal the global config file(chassis.yaml) information
 func ReadLBFromArchaius() error {
-	lbMutex.Lock()
-	defer lbMutex.Unlock()
 	lbConfig = &model.LBWrapper{}
 	err := archaius.UnmarshalConfig(lbConfig)
 	if err != nil {
 		return err
 	}
+	log.Println(fmt.Printf("%+v", lbConfig))
 	return nil
 }
 
@@ -179,8 +180,6 @@ func ReadMonitorFromArchaius() error {
 
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
 func ReadHystrixFromArchaius() error {
-	cbMutex.RLock()
-	defer cbMutex.RUnlock()
 	HystrixConfig = &model.HystrixConfigWrapper{}
 	err := archaius.UnmarshalConfig(&HystrixConfig)
 	if err != nil {
@@ -192,7 +191,7 @@ func ReadHystrixFromArchaius() error {
 //GetLoadBalancing return lb config
 func GetLoadBalancing() *model.LoadBalancing {
 	if lbConfig != nil {
-		return lbConfig.Prefix.LBConfig
+		return &lbConfig.Prefix.LBConfig
 	}
 	return nil
 }
@@ -200,7 +199,7 @@ func GetLoadBalancing() *model.LoadBalancing {
 //GetHystrixConfig return cb config
 func GetHystrixConfig() *model.HystrixConfig {
 	if HystrixConfig != nil {
-		return HystrixConfig.HystrixConfig
+		return &HystrixConfig.HystrixConfig
 	}
 	return nil
 }

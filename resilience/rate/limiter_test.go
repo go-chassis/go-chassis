@@ -29,13 +29,13 @@ func TestProcessQpsTokenReq(t *testing.T) {
 
 func TestUpdateRateLimit(t *testing.T) {
 	l := rate.GetRateLimiters()
-	l.UpdateRateLimit("servicecomb.flowcontrol.Consumer.l.limit.Server.Employee", 200, 1)
-	l.UpdateRateLimit("servicecomb.flowcontrol.Provider.l.limit.Server", 100, 1)
+	l.UpdateRateLimit("cse.flowcontrol.Consumer.l.limit.Server.Employee", 200, 1)
+	l.UpdateRateLimit("cse.flowcontrol.Provider.l.limit.Server", 100, 1)
 }
 
 func TestDeleteRateLimit(t *testing.T) {
 	qps := rate.GetRateLimiters()
-	qps.DeleteRateLimiter("servicecomb.flowcontrol.Consumer.qps.limit.Server.Employee")
+	qps.DeleteRateLimiter("cse.flowcontrol.Consumer.qps.limit.Server.Employee")
 }
 
 func TestLimiters_TryAccept(t *testing.T) {

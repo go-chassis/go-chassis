@@ -50,7 +50,7 @@ servicecomb:
     version: 0.1`
 	circuitContent :=
 		`
-servicecomb:
+cse:
   isolation:
     Consumer:
       timeoutInMilliseconds: 1000

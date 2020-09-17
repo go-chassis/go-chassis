@@ -6,40 +6,40 @@ import (
 
 // HystrixConfigWrapper hystrix configuration wrapper structure
 type HystrixConfigWrapper struct {
-	HystrixConfig *HystrixConfig `yaml:"servicecomb"`
+	HystrixConfig HystrixConfig `yaml:"cse"`
 }
 
 // HystrixConfig is hystrix configuration structure
 type HystrixConfig struct {
-	IsolationProperties      *IsolationWrapper      `yaml:"isolation"`
-	CircuitBreakerProperties *CircuitWrapper        `yaml:"circuitBreaker"`
-	FallbackProperties       *FallbackWrapper       `yaml:"fallback"`
-	FallbackPolicyProperties *FallbackPolicyWrapper `yaml:"fallbackpolicy"`
+	IsolationProperties      IsolationWrapper      `yaml:"isolation"`
+	CircuitBreakerProperties CircuitWrapper        `yaml:"circuitBreaker"`
+	FallbackProperties       FallbackWrapper       `yaml:"fallback"`
+	FallbackPolicyProperties FallbackPolicyWrapper `yaml:"fallbackpolicy"`
 }
 
 // IsolationWrapper isolation wrapper structure
 type IsolationWrapper struct {
-	Consumer *IsolationSpec `yaml:"Consumer"`
-	Provider *IsolationSpec `yaml:"Provider"`
+	Consumer IsolationSpec `yaml:"Consumer"`
+	Provider IsolationSpec `yaml:"Provider"`
 }
 
 // CircuitWrapper circuit wrapper structure
 type CircuitWrapper struct {
-	Scope    string              `yaml:"scope"`
-	Consumer *CircuitBreakerSpec `yaml:"Consumer"`
-	Provider *CircuitBreakerSpec `yaml:"Provider"`
+	Scope    string             `yaml:"scope"`
+	Consumer CircuitBreakerSpec `yaml:"Consumer"`
+	Provider CircuitBreakerSpec `yaml:"Provider"`
 }
 
 // FallbackWrapper fallback wrapper structure
 type FallbackWrapper struct {
-	Consumer *FallbackSpec `yaml:"Consumer"`
-	Provider *FallbackSpec `yaml:"Provider"`
+	Consumer FallbackSpec `yaml:"Consumer"`
+	Provider FallbackSpec `yaml:"Provider"`
 }
 
 // FallbackPolicyWrapper fallback policy wrapper
 type FallbackPolicyWrapper struct {
-	Consumer *FallbackPolicySpec `yaml:"Consumer"`
-	Provider *FallbackPolicySpec `yaml:"Provider"`
+	Consumer FallbackPolicySpec `yaml:"Consumer"`
+	Provider FallbackPolicySpec `yaml:"Provider"`
 }
 
 // IsolationSpec isolation speciafications

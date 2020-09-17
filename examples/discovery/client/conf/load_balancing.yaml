@@ -1,6 +1,6 @@
 ---
 
-servicecomb:
+cse:
   loadbalance:
     Server:
       strategy:

@@ -1,16 +1,15 @@
-package eventlistener_test
+package servicecomb_test
 
 import (
 	"github.com/go-chassis/go-archaius/event"
+	"github.com/go-chassis/go-chassis/v2/control/servicecomb"
 	"testing"
-
-	"github.com/go-chassis/go-chassis/v2/eventlistener"
 )
 
 func TestLagerEventListener_Event(t *testing.T) {
 	t.Log("Test lager_event_listener_test.go")
-	eventlistener.Init()
-	eventListen := &eventlistener.LagerEventListener{}
+	servicecomb.Init()
+	eventListen := &servicecomb.LagerEventListener{}
 	t.Log("sending the events for the key logLevel")
 
 	e1 := &event.Event{EventType: "UPDATE", Key: "logLevel", Value: "INFO"}

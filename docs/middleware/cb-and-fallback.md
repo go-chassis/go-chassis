@@ -72,7 +72,7 @@ you can also [custom fallback policy](http://docs.go-chassis.com/dev-guides/circ
 
 ## **Examples**
 ```yaml
-servicecomb:
+cse:
   isolation:
     Consumer:
       timeoutInMilliseconds: 1
@@ -118,7 +118,7 @@ if you want to isolate instance or instance-api,you must set
 bizkeeper-consumer handler in chain after load balancing and before transport
 ,hear is a example
 ```yaml
-servicecomb:
+cse:
   isolation:
     Consumer:
       timeoutInMilliseconds: 1

@@ -12,6 +12,6 @@ import (
 func TestGetSpecificKey(t *testing.T) {
 	cmd := strings.Join([]string{common.Consumer, "Carts"}, ".")
 	key := config.GetHystrixSpecificKey(config.NamespaceIsolation, cmd, config.PropertyTimeoutInMilliseconds)
-	assert.Equal(t, "servicecomb.isolation.Consumer.Carts."+config.PropertyTimeoutInMilliseconds, key)
+	assert.Equal(t, "cse.isolation.Consumer.Carts."+config.PropertyTimeoutInMilliseconds, key)
 	t.Log(key)
 }
