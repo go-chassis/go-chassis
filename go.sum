@@ -77,6 +77,14 @@ github.com/go-chassis/go-archaius v1.3.2 h1:b52voYtSL+fukmvg/rsn/quw/hgDWtV945ad
 github.com/go-chassis/go-archaius v1.3.2/go.mod h1:nzRL1sSodtgeCZMzCNu0y2LPH5zz7chp8uaQ0GS0x6I=
 github.com/go-chassis/go-archaius v1.3.3 h1:phNCPOi5tIMj6SBLJCoD2GcE2f43rk0I3gdpHqm90Pg=
 github.com/go-chassis/go-archaius v1.3.3/go.mod h1:K9gt8DIj582EQfKQdZV+jWBKNeevwaM+2cdLQgpOlZM=
+github.com/go-chassis/go-archaius v1.3.4 h1:M9lMavqcauLVkRzpvmfIUPpPFxaw6PYjaPnMdSnnZAQ=
+github.com/go-chassis/go-archaius v1.3.4/go.mod h1:K9gt8DIj582EQfKQdZV+jWBKNeevwaM+2cdLQgpOlZM=
+github.com/go-chassis/go-archaius v1.3.5-0.20200917044649-769555c43be4 h1:a24XVUypNocwwC6sXZXWykkc7hSfgzbkn2/x2E7zwVk=
+github.com/go-chassis/go-archaius v1.3.5-0.20200917044649-769555c43be4/go.mod h1:K9gt8DIj582EQfKQdZV+jWBKNeevwaM+2cdLQgpOlZM=
+github.com/go-chassis/go-archaius v1.3.5 h1:ZK429eo5HymXSrZ2E0/4dcjPhTXTh+Oo72IPSlTcs7I=
+github.com/go-chassis/go-archaius v1.3.5/go.mod h1:K9gt8DIj582EQfKQdZV+jWBKNeevwaM+2cdLQgpOlZM=
+github.com/go-chassis/go-archaius v1.3.6-0.20200917065837-57a2bca2b7ff h1:Cc6dMdaK+PK8A2F30gkn6eMu+zZ6btER3qzTluYvD2w=
+github.com/go-chassis/go-archaius v1.3.6-0.20200917065837-57a2bca2b7ff/go.mod h1:K9gt8DIj582EQfKQdZV+jWBKNeevwaM+2cdLQgpOlZM=
 github.com/go-chassis/go-chassis v0.0.0-20200716073336-4183d5dd1246 h1:yxtoclu0QclYtwXxo4AYTCPJsYFM/Xo2/5C1HLRnzqg=
 github.com/go-chassis/go-chassis v0.0.0-20200716073336-4183d5dd1246/go.mod h1:S7RbnpeTWBqZ4+UxGAs05a6qdhDyWKpTNuil8FYNiME=
 github.com/go-chassis/go-chassis v1.8.3 h1:abMUm489NF8wHqYtoY4KEN2Xy65og6R4NCS9KpxgpWI=

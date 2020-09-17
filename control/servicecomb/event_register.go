@@ -1,4 +1,4 @@
-package eventlistener
+package servicecomb
 
 import (
 	"github.com/go-chassis/go-archaius"
@@ -18,10 +18,10 @@ func RegisterKeys(eventListener event.Listener, keys ...string) {
 func Init() {
 	qpsEventListener := &QPSEventListener{}
 	circuitBreakerEventListener := &CircuitBreakerEventListener{}
-	lbEventListener := &LoadbalancingEventListener{}
+	lbEventListener := &LoadBalancingEventListener{}
 
-	RegisterKeys(qpsEventListener, QPSLimitKey)
-	RegisterKeys(circuitBreakerEventListener, ConsumerFallbackKey, ConsumerFallbackPolicyKey, ConsumerIsolationKey, ConsumerCircuitbreakerKey)
+	RegisterKeys(qpsEventListener, Prefix)
+	RegisterKeys(circuitBreakerEventListener, ConsumerFallbackKey, ConsumerFallbackPolicyKey, ConsumerIsolationKey, ConsumerCircuitBreakerKey)
 	RegisterKeys(lbEventListener, LoadBalanceKey)
 	RegisterKeys(&LagerEventListener{}, LagerLevelKey)
 

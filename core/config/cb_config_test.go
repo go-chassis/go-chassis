@@ -18,7 +18,7 @@ import (
 func TestCBInit(t *testing.T) {
 	b := []byte(`
 ---
-servicecomb:
+cse:
   isolation:
     Consumer:
       timeoutInMilliseconds: 10

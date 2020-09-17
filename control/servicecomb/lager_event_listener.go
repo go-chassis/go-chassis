@@ -1,4 +1,4 @@
-package eventlistener
+package servicecomb
 
 import (
 	"github.com/go-chassis/go-archaius/event"

@@ -1,12 +1,12 @@
 ---
-servicecomb:
+cse:
   isolation:
     Consumer:
       timeoutInMilliseconds: 1000
       maxConcurrentRequests: 100
       Server:
         timeoutInMilliseconds: 1000
-        maxConcurrentRequests: 100
+        maxConcurrentRequests: 1
   circuitBreaker:
     Consumer:
       enabled: false

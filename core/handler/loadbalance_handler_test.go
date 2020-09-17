@@ -66,13 +66,13 @@ func TestTLSEndpointLBHandlerWithRetry(t *testing.T) {
 	microContent := `---
 servicecomb:
   service:
-	  name: Client
-	  version: 0.1`
+    name: Client
+    version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
   availableZone: us-east-1
-servicecomb:
+cse:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -177,13 +177,13 @@ func TestLBHandlerWithRetry(t *testing.T) {
 	microContent := `---
 servicecomb:
   service:
-	  name: Client
-	  version: 0.1`
+    name: Client
+    version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
   availableZone: us-east-1
-servicecomb:
+cse:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -286,13 +286,13 @@ func TestTLSLBHandlerWithNoRetry(t *testing.T) {
 #微服务的私有属性
 servicecomb:
   service:
-	  name: Client
-	  version: 0.1`
+    name: Client
+    version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
   availableZone: us-east-1
-servicecomb:
+cse:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -307,7 +307,7 @@ servicecomb:
 	assert.NoError(t, err)
 	err = os.MkdirAll(logConf, 0700)
 	assert.NoError(t, err)
-	chassisyaml := filepath.Join(chassisConf, "chassis.yaml")
+	chassisyaml := filepath.Join(chassisConf, "load_balancing.yaml")
 	microserviceyaml := filepath.Join(chassisConf, "microservice.yaml")
 	f1, err := os.Create(chassisyaml)
 	assert.NoError(t, err)
@@ -387,7 +387,7 @@ servicecomb:
 region:
   name: us-east
   availableZone: us-east-1
-servicecomb:
+cse:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -517,7 +517,7 @@ func BenchmarkLBHandler_Handle(b *testing.B) {
 	control.Init(opts)
 	registry.Enable()
 	registry.DoRegister()
-	loadbalancer.Enable(archaius.GetString("servicecomb.loadbalance.strategy.name", ""))
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	testData1 := []*registry.MicroService{
 		{
 			ServiceName: "test2",

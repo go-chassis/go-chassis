@@ -2,6 +2,7 @@ package lager_test
 
 import (
 	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/openlog"
 	"os"
 	"path/filepath"
 	"testing"
@@ -33,8 +34,9 @@ func TestInitialize2(t *testing.T) {
 	t.Log("initializing config for to initialize PassLagerDefinition variable")
 
 	//Initializing lager
-	lager.Init(&lager.Options{})
-
+	lager.Init(&lager.Options{LoggerLevel: "INFO"})
+	openlog.Debug("no output")
+	openlog.Info("output")
 	if _, err := os.Stat(logDir); err != nil {
 		if os.IsNotExist(err) {
 			t.Error(err)

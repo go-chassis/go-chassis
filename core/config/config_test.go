@@ -86,7 +86,7 @@ func TestInit2(t *testing.T) {
 
 func TestInit3(t *testing.T) {
 	file := []byte(`
-servicecomb:
+cse:
   isolation:
     Consumer:
       timeoutInMilliseconds: 10
@@ -142,7 +142,7 @@ servicecomb:
 
 func TestGetLoadBalancing(t *testing.T) {
 	lbBytes := []byte(`
-servicecomb: 
+cse: 
   loadbalance: 
     TargetService: 
       backoff: 

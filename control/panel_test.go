@@ -1,6 +1,7 @@
 package control_test
 
 import (
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/v2/control"
 	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
 	"github.com/go-chassis/go-chassis/v2/core/config"
@@ -28,6 +29,7 @@ func TestInit(t *testing.T) {
 		Infra:   config.GlobalDefinition.Panel.Infra,
 		Address: config.GlobalDefinition.Panel.Settings["address"],
 	}
+	archaius.Init(archaius.WithMemorySource())
 	err := control.Init(opts)
 	assert.NoError(t, err)
 	opts.Infra = "xxx"
@@ -38,8 +40,8 @@ func TestInit(t *testing.T) {
 
 func TestNewCircuitCmd(t *testing.T) {
 	config.HystrixConfig = &model.HystrixConfigWrapper{
-		HystrixConfig: &model.HystrixConfig{
-			CircuitBreakerProperties: &model.CircuitWrapper{
+		HystrixConfig: model.HystrixConfig{
+			CircuitBreakerProperties: model.CircuitWrapper{
 				Scope: "",
 			},
 		},

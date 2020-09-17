@@ -56,11 +56,6 @@ func TestSaveDefaultToLBCache(t *testing.T) {
 }
 
 func TestSaveToCBCache(t *testing.T) {
-	config.GlobalDefinition = &model.GlobalCfg{
-		Panel: model.ControlPanel{
-			Infra: "",
-		},
-	}
 	opts := control.Options{
 		Infra:   config.GlobalDefinition.Panel.Infra,
 		Address: config.GlobalDefinition.Panel.Settings["address"],

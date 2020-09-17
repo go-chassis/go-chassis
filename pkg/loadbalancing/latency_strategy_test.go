@@ -66,7 +66,7 @@ func TestWeightedResponseStrategy_Pick(t *testing.T) {
 	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:9090", "Server", defaultTags, common.ProtocolHighway)
 	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:9090", "Server", defaultTags, common.ProtocolHighway)
 	loadbalancer.SetLatency(1*time.Second, "10.0.0.3:9090", "Server", defaultTags, common.ProtocolHighway)
-	loadbalancer.Enable(archaius.GetString("servicecomb.loadbalance.strategy.name", ""))
+	loadbalancer.Enable(archaius.GetString("cse.loadbalance.strategy.name", ""))
 	f, _ := loadbalancer.GetStrategyPlugin(loadbalancer.StrategyLatency)
 	s := f()
 	inv := &invocation.Invocation{

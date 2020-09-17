@@ -2,12 +2,12 @@ package model
 
 // LBWrapper loadbalancing structure
 type LBWrapper struct {
-	Prefix *LoadBalancingConfig `yaml:"servicecomb"`
+	Prefix LoadBalancingConfig `yaml:"cse"`
 }
 
 // LoadBalancingConfig loadbalancing structure
 type LoadBalancingConfig struct {
-	LBConfig *LoadBalancing `yaml:"loadbalance"`
+	LBConfig LoadBalancing `yaml:"loadbalance"`
 }
 
 // LoadBalancing loadbalancing structure

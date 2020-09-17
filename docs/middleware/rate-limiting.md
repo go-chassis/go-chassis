@@ -30,7 +30,7 @@ servicecomb:
 ```
 
 ```yaml
-servicecomb:
+cse:
   flowcontrol:
     Provider:
       qps:

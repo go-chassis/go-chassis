@@ -140,7 +140,7 @@ func Close(protocol, service, endpoint string) error {
 }
 
 // SetTimeoutToClientCache set timeout to client
-func SetTimeoutToClientCache(spec *model.IsolationWrapper) {
+func SetTimeoutToClientCache(spec model.IsolationWrapper) {
 	sl.Lock()
 	defer sl.Unlock()
 	for _, client := range clients {

@@ -70,7 +70,7 @@ func RegisterService() error {
 	if len(microservice.Alias) == 0 {
 		// if the microservice is allowed to be called by consumers with different appId,
 		// this means that the governance configuration of the consumer side needs to
-		// support key format with appid, like 'servicecomb.loadbalance.{alias}.strategy.name'.
+		// support key format with appid, like 'cse.loadbalance.{alias}.strategy.name'.
 		microservice.Alias = microservice.AppID + ":" + microservice.ServiceName
 	}
 	if config.GetRegistratorScope() == common.ScopeFull {

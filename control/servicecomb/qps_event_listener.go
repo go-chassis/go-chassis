@@ -1,4 +1,4 @@
-package eventlistener
+package servicecomb
 
 import (
 	"fmt"
@@ -9,11 +9,6 @@ import (
 	"strings"
 
 	"github.com/go-chassis/go-chassis/v2/core/common"
-)
-
-const (
-	//QPSLimitKey is a variable of type string
-	QPSLimitKey = "servicecomb.flowcontrol"
 )
 
 //QPSEventListener is a struct used for Event listener

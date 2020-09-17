@@ -1,4 +1,4 @@
-# Load balancing
+# Client side load balancing
 ## 概述
 
 用户可以通过配置选择不同的负载均衡策略，当前支持轮询、随机、基于响应时间的权值、会话保持等多种负载均衡策略。
@@ -47,7 +47,7 @@ invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
 配置chassis.yaml的负载均衡部分，以及添加处理链。
 
 ```yaml
-servicecomb:
+cse:
   loadbalance:                 # 全局负载均衡配置
     strategy:
       name: RoundRobin
