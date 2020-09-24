@@ -26,7 +26,7 @@ import (
 
 func TestInstallProcess(t *testing.T) {
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("servicecomb.customResource.aResource", "test")
+	archaius.Set("servicecomb.customResource.name1", "test")
 	var value string
 	governance.InstallProcessor("servicecomb.customResource", func(k, v string) error {
 		t.Log("process:" + k)

@@ -84,11 +84,16 @@ type RuleItem struct {
 }
 
 //MatchPolicy specify a request mach policy
+type MatchPolicies struct {
+	Matches []MatchPolicy `yaml:"matches"`
+}
+
+//MatchPolicy specify a request mach policy
 type MatchPolicy struct {
 	TrafficMarkPolicy string                       `yaml:"trafficMarkPolicy"`
 	Headers           map[string]map[string]string `yaml:"headers"`
 	APIPaths          map[string]string            `yaml:"apiPath"`
-	Method            string                       `yaml:"method"`
+	Method            []string                     `yaml:"method"`
 }
 
 //LimiterConfig is rate limiter policy

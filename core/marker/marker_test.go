@@ -41,50 +41,63 @@ func TestMatch(t *testing.T) {
 
 func TestSaveMatchPolicy(t *testing.T) {
 	testName := "match-user-json"
-	testMatchPolic := `
-        headers:
-          cookie:
-            regex: "^(.*?;)?(user=jason)(;.*)?$"
-          user:
-            equal: jason
-        apiPath:
-          contains: "some/api"
-        method: GET
-	`
-	marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
+	testMatchPolicy := `
+matches: 
+  - apiPath: 
+      exact: /some/api
+    headers: 
+      cookie: 
+        regex: ^(.*?;)?(user=jack)(;.*)?$
+      os: 
+        contains: linux
+    method: 
+      - GET
+      - POST
+    trafficMarkPolicy: once
+`
+	marker.SaveMatchPolicy(testName, testMatchPolicy, "servicecomb.marker."+testName)
+	m := marker.Policy(testName)
+	assert.Equal(t, "GET", m.Matches[0].Method[0])
+	assert.Equal(t, "/some/api", m.Matches[0].APIPaths["exact"])
+	assert.Equal(t, "linux", m.Matches[0].Headers["os"]["contains"])
 }
 
 func TestMark(t *testing.T) {
-
 	t.Run("test match header", func(t *testing.T) {
-		testName := "match-user-json-header"
-		testMatchPolic := `
-        headers:
-          user:
-            exact: jason`
-		marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
+		testName := "match-user-header"
+		testMatchPolicy := `
+matches: 
+  - headers: 
+      user: 
+        exact: jason
+`
+		marker.SaveMatchPolicy(testName, testMatchPolicy, "servicecomb.marker."+testName)
 		i := createInvoker(map[string]string{
 			"user": "jason",
-		}, http.MethodPost, "")
+		}, http.MethodPost, "/api")
 		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())
 	})
 	t.Run("test match method", func(t *testing.T) {
-		testName := "match-user-json-method"
+		testName := "match-method"
 		testMatchPolic := `
-        method: GET`
-		marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
+matches: 
+  - method: 
+      - GET
+`
+		marker.SaveMatchPolicy(testName, testMatchPolic, "servicecomb.marker."+testName)
 		i := createInvoker(nil, http.MethodGet, "")
 		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())
 	})
 
-	t.Run("test match apipath", func(t *testing.T) {
-		testName := "match-user-json-apipath"
+	t.Run("test match api", func(t *testing.T) {
+		testName := "match-api"
 		testMatchPolic := `
-        apiPath: 
-          contains: "path/test"`
-		marker.SaveMatchPolicy(testMatchPolic, "servicecomb.marker."+testName, testName)
+matches: 
+  - apiPath: 
+      contains: "path/test"`
+		marker.SaveMatchPolicy(testName, testMatchPolic, "servicecomb.marker."+testName)
 		i := createInvoker(nil, http.MethodPost, "http://127.0.0.1:9992/path/test")
 		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())

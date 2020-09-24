@@ -238,11 +238,12 @@ func TestMatchRefer(t *testing.T) {
 	inv.Args, _ = http.NewRequest("GET", "some/api", nil)
 	inv.Metadata = make(map[string]interface{})
 	testMatchPolicy := `
-apiPath:
-  contains: "some/api"
-method: GET
+matches:
+  - apiPath:
+      contains: "some/api"
+    method: [GET]
 `
-	marker.SaveMatchPolicy(testMatchPolicy, "servicecomb.marker."+m.Refer, m.Refer)
+	marker.SaveMatchPolicy(m.Refer, testMatchPolicy, "servicecomb.marker."+m.Refer)
 	b = router.Match(inv, m, nil, nil)
 	assert.True(t, b)
 }

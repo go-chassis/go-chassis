@@ -76,6 +76,7 @@ func (qpsL *Limiters) UpdateRateLimit(name string, qps, burst int) {
 		"event":  "update",
 		"mark":   name,
 		"qps":    qps,
+		"burst":  burst,
 	}))
 	qpsL.addLimiter(name, qps, burst)
 }

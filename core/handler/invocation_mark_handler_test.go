@@ -37,15 +37,17 @@ func TestMarkHandler_Handle(t *testing.T) {
 
 	archaius.Init(archaius.WithMemorySource())
 	var yamlContent = `
-headers:
-  cookie:
-    regex: "^(.*?;)?(user=jason)(;.*)?$"
-  user:
-    exact: jason
-apiPath:
-  contains: "path/test"
-  exact: "/test2"
-method: GET
+matches:
+  - headers:
+      cookie:
+        regex: "^(.*?;)?(user=jason)(;.*)?$"
+      user:
+        exact: jason
+    apiPath:
+      contains: "path/test"
+    method: [GET]
+  - apiPath:
+      exact: "/test2"
 `
 	archaius.Set(strings.Join([]string{governance.KindMatchPrefix, "match-user-json"}, "."), yamlContent)
 	governance.Init()
@@ -109,7 +111,8 @@ func TestMarkHandler_Handle2(t *testing.T) {
 	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer[handler.TrafficMarker] = handler.TrafficMarker
 	archaius.Init(archaius.WithMemorySource())
 	var yamlContent = `
-method: GET
+matches:
+  - method: [GET]
 `
 	archaius.Set(strings.Join([]string{governance.KindMatchPrefix, "match-user-json"}, "."), yamlContent)
 	governance.Init()
@@ -150,18 +153,21 @@ func TestMarkHandler_HandleMutilePolicy(t *testing.T) {
 
 	archaius.Init(archaius.WithMemorySource())
 	var yamlContent = `
-headers:
-  cookie:
-    regex: "^(.*?;)?(user=jason)(;.*)?$"
-  user:
-    exact: jason
-apiPath:
-  contains: "path/test"
-  exact: "/test2"
-method: GET
+matches:
+  - headers:
+      cookie:
+        regex: "^(.*?;)?(user=jason)(;.*)?$"
+      user:
+        exact: jason
+    apiPath:
+      contains: "path/test"
+    method: [GET]
+  - apiPath:
+      contains: "test2"
 `
 	var yamlContent2 = `
-method: POST 
+matches:
+  - method: [POST] 
 `
 	archaius.Set(strings.Join([]string{governance.KindMatchPrefix, "match-user-json"}, "."), yamlContent)
 	archaius.Set(strings.Join([]string{governance.KindMatchPrefix, "match-user-json-2"}, "."), yamlContent2)

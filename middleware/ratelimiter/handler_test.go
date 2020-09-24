@@ -21,17 +21,19 @@ func init() {
 func TestHandler_Handle(t *testing.T) {
 	testName := "api1"
 	testMatchPolicy := `
-apiPath:
-  contains: "api/1"
+matches:
+  - apiPath:
+      contains: "api/1"
+    method: [GET]
 `
-	marker.SaveMatchPolicy(testMatchPolicy, "servicecomb.marker."+testName, testName)
-
+	err := marker.SaveMatchPolicy(testName, testMatchPolicy, "servicecomb.marker."+testName)
+	assert.NoError(t, err)
 	b := []byte(`
 match: api1
 rate: 10
 burst: 2
 `)
-	err := governance.ProcessLimiter("servicecomb.rateLimiting.test", string(b))
+	err = governance.ProcessLimiter("servicecomb.rateLimiting.test", string(b))
 	assert.NoError(t, err)
 
 	c := handler.Chain{}
