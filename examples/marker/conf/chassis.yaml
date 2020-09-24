@@ -10,14 +10,15 @@ servicecomb:
     chain:
       Provider:
         default: traffic-marker,rate-limiter
-servicecomb:
   match:
     markGetRequest: |
-      method: GET
-      apiPath:
-        exact: "/hello"
+      matches:
+        - method:
+            - GET
+          apiPath:
+            exact: "/hello"
   rateLimiting:
     limiteGet: |
       match: markGetRequest
-      rate: 10
-      burst: 1
+      rate: 100
+      burst: 20

@@ -35,7 +35,7 @@ func ProcessMatch(key string, value string) error {
 		return errors.New("invalid key:" + key)
 	}
 	name := s[2]
-	return marker.SaveMatchPolicy(value, key, name)
+	return marker.SaveMatchPolicy(name, value, key)
 }
 
 type LimiterPolicy struct {

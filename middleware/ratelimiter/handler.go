@@ -41,7 +41,7 @@ func (h *Handler) Handle(chain *handler.Chain, inv *invocation.Invocation, cb in
 		chain.Next(inv, cb)
 		return
 	}
-	if rate.GetRateLimiters().TryAccept(inv.GetMark(), math.MaxInt32, 0) {
+	if rate.GetRateLimiters().TryAccept(inv.GetMark(), math.MaxInt32, 1) {
 		chain.Next(inv, cb)
 		return
 	}

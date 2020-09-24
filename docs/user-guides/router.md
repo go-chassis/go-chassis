@@ -178,7 +178,6 @@ func init() {
 - 在配置中使用
 ```yaml
 match:
-  source: vmall
   headers:
     cookie:
       range: "0-100"

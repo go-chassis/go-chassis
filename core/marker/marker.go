@@ -61,17 +61,20 @@ func Mark(inv *invocation.Invocation) {
 	matchName := ""
 	policy := "once"
 	matches.Range(func(k, v interface{}) bool {
-		mp, ok := v.(*config.MatchPolicy)
+		mps, ok := v.(*config.MatchPolicies)
 		if !ok {
 			return true
 		}
-		if isMatch(inv, mp) {
-			if name, ok := k.(string); ok {
-				matchName = name
-				policy = mp.TrafficMarkPolicy
-				return false
+		for _, mp := range mps.Matches {
+			if isMatch(inv, &mp) {
+				if name, ok := k.(string); ok {
+					matchName = name
+					policy = mp.TrafficMarkPolicy
+					return false
+				}
 			}
 		}
+
 		return true
 	})
 	if matchName != "" {
@@ -100,13 +103,22 @@ func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
 	if len(matchPolicy.APIPaths) != 0 && !apiMatch(req.URL.Path, matchPolicy.APIPaths) {
 		return false
 	}
-
-	if matchPolicy.Method != "" && strings.ToUpper(matchPolicy.Method) != req.Method {
-		return false
+	if len(matchPolicy.Method) != 0 {
+		if !methodMatch(req.Method, matchPolicy.Method) {
+			return false
+		}
 	}
 	return true
 }
-
+func methodMatch(reqMethod string, methods []string) bool {
+	matchMethod := false
+	for _, m := range methods {
+		if strings.ToUpper(reqMethod) == m {
+			matchMethod = true
+		}
+	}
+	return matchMethod
+}
 func apiMatch(apiPath string, apiPolicy map[string]string) bool {
 	if len(apiPolicy) == 0 {
 		return true
@@ -145,8 +157,8 @@ func Match(operator, value, expression string) (bool, error) {
 }
 
 //SaveMatchPolicy saves match policy
-func SaveMatchPolicy(value string, k string, name string) error {
-	m := &config.MatchPolicy{}
+func SaveMatchPolicy(name, value string, k string) error {
+	m := &config.MatchPolicies{}
 	err := yaml.Unmarshal([]byte(value), m)
 	if err != nil {
 		openlog.Error("invalid policy " + k + ":" + err.Error())
@@ -158,4 +170,17 @@ func SaveMatchPolicy(value string, k string, name string) error {
 	}))
 	matches.Store(name, m)
 	return nil
+}
+
+//Policy return policy
+func Policy(name string) *config.MatchPolicies {
+	i, ok := matches.Load(name)
+	if !ok {
+		return nil
+	}
+	m, ok := i.(*config.MatchPolicies)
+	if !ok {
+		return nil
+	}
+	return m
 }
