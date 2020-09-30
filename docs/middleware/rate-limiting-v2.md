@@ -33,15 +33,18 @@ servicecomb:
 servicecomb:
   match:
     traffic-to-some-api-from-jack: |
-        headers:
-          cookie:
-            regex: "^(.*?;)?(user=jack)(;.*)?$"
-          os:
-            contains: linux
-        apiPath:
-          exact: "/some/api" 
-        method: GET 
-        trafficMarkPolicy: once
+        matches:
+          - headers:
+              cookie:
+                regex: "^(.*?;)?(user=jack)(;.*)?$"
+              os:
+                contains: linux
+            apiPath:
+              exact: "/some/api" 
+            method: 
+              - GET 
+              - POST
+            trafficMarkPolicy: once
   rateLimiting:
     limiterPolicy1: |
       match: traffic-to-some-api-from-jack

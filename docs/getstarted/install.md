@@ -24,11 +24,11 @@ export GOPROXY=https://goproxy.io
 ```
 5.Install [service-center](https://service-center.readthedocs.io/en/latest/get-started/install.html)
 
-6.[Write your first http micro service](http://docs.go-chassis.com/getstarted/writing-rest.html)
+6.[Write your first http micro service](https://go-chassis.readthedocs.io/getstarted/writing-rest.html)
 
 
 Use gRPC communication
 ===================
 follow https://developers.google.com/protocol-buffers/docs/gotutorial to install grpc 
 
-[Write your first grpc micro service](http://docs.go-chassis.com/getstarted/writing-rpc.html)
+[Write your first grpc micro service](https://go-chassis.readthedocs.io//getstarted/writing-rpc.html)
