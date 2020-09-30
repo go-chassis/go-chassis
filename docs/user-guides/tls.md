@@ -94,7 +94,7 @@ if you set Passphrase for you keyFile, you must set this config
 
 **{Consumer|Provider}.cipherPlugin**
 > *(optional, string)* you can custom 
-[Cipher](https://docs.go-chassis.com/dev-guides/how-to-write-cipher.html) 
+[Cipher](https://go-chassis.readthedocs.io/dev-guides/how-to-write-cipher.html) 
 to decrypt "certPwdFile" content, by default no decryption        
 
 ## Example1: Simple TLS communication
