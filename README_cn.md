@@ -96,5 +96,7 @@ go mod vendor
 
 > [欢迎在此登录自己的信息](https://github.com/go-chassis/go-chassis/issues/592)
 
-![趣头条](assets/logos/qutoutiao.PNG)
-![Shopee](assets/logos/Shopee.png)
+![huawei](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/huawei.PNG) 
+![qutoutiao](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG)
+![Shopee](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png)
+
