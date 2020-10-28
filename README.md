@@ -135,8 +135,8 @@ it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/con
 # Known Users
 To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
  
- ![image](assets/logos/qutoutiao.PNG)
-
+ ![qutoutiao](assets/logos/qutoutiao.PNG)
+ ![Shopee](assets/logos/Shopee.png)
 # To start developing go chassis
 
 1. Install [go 1.12+](https://golang.org/doc/install) 
