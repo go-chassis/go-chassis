@@ -60,6 +60,7 @@ const (
 	SslKeyFileKey      = "keyFile"
 	SslCertPwdFileKey  = "certPwdFile"
 	AKSKCustomCipher   = "servicecomb.credentials.akskCustomCipher"
+	ServerName         = "serverName"
 )
 
 // constant for protocol types
