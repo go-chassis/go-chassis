@@ -50,6 +50,7 @@ func getDefaultSslConfigMap() map[string]string {
 		common.SslCertFileKey:     "",
 		common.SslKeyFileKey:      "",
 		common.SslCertPwdFileKey:  "",
+		common.SslServerNameKey:   "",
 	}
 	return defaultSslConfigMap
 }
@@ -115,6 +116,7 @@ func parseSSLConfig(sslConfigMap map[string]string) (*SSLConfig, error) {
 	sslConfig.CertFile = sslConfigMap[common.SslCertFileKey]
 	sslConfig.KeyFile = sslConfigMap[common.SslKeyFileKey]
 	sslConfig.CertPWDFile = sslConfigMap[common.SslCertPwdFileKey]
+	sslConfig.ServerName = sslConfigMap[common.SslServerNameKey]
 
 	return sslConfig, nil
 }
