@@ -1,5 +1,7 @@
 package model
 
+import "github.com/go-chassis/go-chassis/v2/storage"
+
 //GlobalCfg chassis.yaml 配置项
 type GlobalCfg struct {
 	ServiceComb ServiceComb       `yaml:"servicecomb"`
@@ -29,6 +31,7 @@ type ServiceComb struct {
 	Credentials        CredentialStruct    `yaml:"credentials"`
 	Transport          Transport           `yaml:"transport"`
 	NoRefreshSchema    bool                `yaml:"noRefreshSchema"`
+	DB                 storage.DB          `yaml:"db"`
 }
 
 //Transport defines failure
