@@ -68,6 +68,9 @@ tag usually comprises of service name, role(Consumer or Provider) and protocol.
 **Consumer.certFile**
 > *(optional, string)* Certificate file path for client
 
+**Consumer.serverName**
+> *(optional, string)* Consumer will verify SN in cert file, it must equal to ServerName
+
 **{Consumer|Provider}.verifyPeer**
 >*(optional, bool)*
 verify the other service or not, default is false.
