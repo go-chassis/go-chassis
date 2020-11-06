@@ -25,7 +25,6 @@ Go-Chassis 是一个go语言的微服务开发框架，专注于帮你实现云�
 
 # 特性
 
-Less dependencies: checkout the go.mod file, it has less dependency on open source project by default, to import more features checkout plugins to see more features
  - **可插拔的注册发现组件**: 当前支持Apache ServiceComb，kubernetes与istio，无论是服务端发现还是客户端注册发现都可以适配。
  - **插件化协议**: 当前支持http，grpc，支持开发者定制私有协议
  - **多端口管理**:  对于同协议，可以开放不同的端口，使用端口来划分API，面向不同调用方
@@ -39,7 +38,7 @@ Less dependencies: checkout the go.mod file, it has less dependency on open sour
  - **后端服务**: 将后端服务视为插件使用，比如配额管理，认证鉴权服务。可以便于测试，并保证组件的可替换性
  - **运行时热加载配置**: 集成轻量级配置管理框架go-archaius, 配置可以在运行时热加载，无需重启，比如负载均衡，断路器，流量管理等配置
  - **原生支持动态配置框架**: 集成轻量级配置管理框架 go-archaius, 开发者可以实现拥有运行时配置热加载功能的应用
-  - **API first** go chassis会自动生成 Open API 2.0 文档并把它注册到Apache ServiceComb的service center. 你可以在统一的服务查看微服务文档。
+  - **API first**： go chassis会自动生成 Open API 2.0 文档并把它注册到Apache ServiceComb的service center. 你可以在统一的服务查看微服务文档。
  - **spring cloud与service mesh统一治理**: [servicecomb-mesher](https://github.com/apache/servicecomb-mesher)， [spring cloud](https://github.com/huaweicloud/spring-cloud-huawei)提供。
  -  **极少的开源依赖** 查看go.mod文件，开源库依赖已经做到最少依赖，更多的功能可以查看[插件库](https://github.com/go-chassis/go-chassis-extension)
 
