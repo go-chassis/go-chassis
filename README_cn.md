@@ -25,21 +25,24 @@ Go-Chassis 是一个go语言的微服务开发框架，专注于帮你实现云�
 
 # 特性
 
+Less dependencies: checkout the go.mod file, it has less dependency on open source project by default, to import more features checkout plugins to see more features
  - **可插拔的注册发现组件**: 当前支持Apache ServiceComb，kubernetes与istio，无论是服务端发现还是客户端注册发现都可以适配。
  - **插件化协议**: 当前支持http，grpc，支持开发者定制私有协议
  - **多端口管理**:  对于同协议，可以开放不同的端口，使用端口来划分API，面向不同调用方
- - **断路器**:  在运行时保护你的分布式系统，免于错误雪崩。
- - **流量管理**:  可以根据访问特征，微服务元数据，权重等规则灵活控制流量，可支持金丝雀发布等场景。
- - **客户端复杂均衡**: 支持定制策略，当前支持roundrobin，随机，会话粘纸与延迟权重。
- - **限流**:  客户端，服务端均可限流
- - **可插拔的加解密组件**:   加解密组件会被应用到mTLS等安全敏感的处理流程中，可自定义算法
- - **Handler Chain**:  可以在处理请求的过程中定制特殊逻辑，比如认证鉴权。
- - **Metrics**:  支持上报prometheus
- - **调用链追踪**: 集成opentracing-go作为标准，当前支持zipkin 
+ - **丰富的中间件**:  利用handler chaiun，提供了多种通用中间件，比如认证鉴权，限流，重试，流量标记等
+ - **流量标记**:  定义流量特征并为他标记为一个独有的字符，便于后续根据特征进行流量管理
+ - **流量管理**:  可以根据访问特征，微服务元数据，权重等规则灵活控制流量，可支持金丝雀发布，限流等场景。
+ - **安全**: cipher插件化设计，可以对接不同加解密算法
+ - **客户端复杂均衡**: 
+ - **韧性**:  支持重试，限流，客户端负载均衡，断路器，在业务受损，请求失败时保证关键任务运行正常。
+ - **遥测**:  提供metrics抽象API，并且默认收集请求数，延迟等通用指标，支持prometheus，集成opentracing-go作为标准，当前支持zipkin 。
+ - **后端服务**: 将后端服务视为插件使用，比如配额管理，认证鉴权服务。可以便于测试，并保证组件的可替换性
  - **运行时热加载配置**: 集成轻量级配置管理框架go-archaius, 配置可以在运行时热加载，无需重启，比如负载均衡，断路器，流量管理等配置
  - **原生支持动态配置框架**: 集成轻量级配置管理框架 go-archaius, 开发者可以实现拥有运行时配置热加载功能的应用
- - **API gateway与service mesh方案**: 由 [servicecomb-mesher](https://github.com/apache/servicecomb-mesher)提供. 
- - **Open API 2.0支持** go chassis会自动生成 Open API 2.0 文档并把它注册到Apache ServiceComb的service center. 你可以在统一的服务查看微服务文档。
+  - **API first** go chassis会自动生成 Open API 2.0 文档并把它注册到Apache ServiceComb的service center. 你可以在统一的服务查看微服务文档。
+ - **spring cloud与service mesh统一治理**: [servicecomb-mesher](https://github.com/apache/servicecomb-mesher)， [spring cloud](https://github.com/huaweicloud/spring-cloud-huawei)提供。
+ -  **极少的开源依赖** 查看go.mod文件，开源库依赖已经做到最少依赖，更多的功能可以查看[插件库](https://github.com/go-chassis/go-chassis-extension)
+
 
 go chassis插件库 [plugins](https://github.com/go-chassis/go-chassis-extension) 可以查看目前的插件
 
