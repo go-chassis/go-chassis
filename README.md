@@ -50,21 +50,19 @@ you can use Istio configurations to control go chassis.
  You can customize protocol, by default support http and grpc, go chassis define standardized [model](https://github.com/go-chassis/go-chassis/blob/master/core/invocation/invocation.go) to makes all request of different protocol leverage same features
  - **Multiple server management**: you can separate API by protocols and ports
  - **Handler Chain**: Able to add your own code during service calling for client and server side
-  - **rich middleware**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
+ - **rich middleware**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
  - **Traffic marker** Traffic marker module is able to mark requests in both client(consumer) or server(provider) side,
 with marker, you can govern traffic based on it.
  - **Traffic management**: Able to route to different service based on weight and match rule, it can be used in many scenario, such as canary release
  - **Security**: build in cipher, authentication, RSA related funtions
-  - **Safty and reslience**: support fault-tolerant(with expotential backoff policy), rate limiting, client-side load-balancing, circuit breaker to makes your service facing any unpredictable situation.
- - **Metrics**: Able to expose Prometheus metric API automatically and customize metrics reporter
- - **Tracing**:Use opentracing-go as standard library, easy to integrate tracing system
- - **Logger**: You can custom your own writer to sink log, by default support file and stdout
+ - **Safty and reslience**: support fault-tolerant(with expotential backoff policy), rate limiting, client-side load-balancing, circuit breaker to makes your service facing any unpredictable situation.
+ - **Telemetry**: Able to expose Prometheus metric API automatically and customize metrics reporte. Use opentracing-go as standard library, easy to integrate tracing system
+ - **Backing services**: use [backend service](https://go-chassis.readthedocs.io/en/latest/dev-guides/backends.html) as a plugin, so that your app can be easily test, and swap to another plugin.
  - **Hot re-configuration**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting, developer is also able to develop a service which has hot-reconfiguration feature easily. [see](https://go-chassis.readthedocs.io/en/latest/user-guides/dynamic-conf.html#)
- - **Open API 2.0 native support** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
- - **Spring Cloud** integrate with servicecomb, go chassis can work together with spring cloud.
+ - **API first** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
+ - **Spring Cloud** integrate with servicecomb, go chassis can work together with [spring cloud](https://github.com/huaweicloud/spring-cloud-huawei).
  - **Service mesh**: you can introduce multi-language to your microservice system. powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
-
-You can check [plugins](https://github.com/go-chassis/go-chassis-extension) to see more features
+ - **Less dependencies**: checkout the go.mod file, it has less dependency on open source project by default, to import more features checkout [plugins](https://github.com/go-chassis/go-chassis-extension) to see more features
 
 # Get started 
 1.Generate go mod
