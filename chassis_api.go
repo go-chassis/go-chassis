@@ -61,8 +61,8 @@ func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
-//HajackSignal set signals that want to hajack.
-func HajackSignal(sigs ...os.Signal) {
+//HijackSignal set signals that want to hajack.
+func HijackSignal(sigs ...os.Signal) {
 	goChassis.sigs = sigs
 }
 

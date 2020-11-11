@@ -115,7 +115,7 @@ service_description:
 
 	sigs := []os.Signal{syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT}
 
-	chassis.HajackSignal(sigs...)
+	chassis.HijackSignal(sigs...)
 
 	chassis.InstallPreShutdown("pre_test", func(os.Signal) {
 		t.Log("pre_shutdown_test")
