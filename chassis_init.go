@@ -53,7 +53,7 @@ type chassis struct {
 	sigs                   []os.Signal
 	preShutDownFuncs       map[string]func(os.Signal)
 	postShutDownFuncs      map[string]func(os.Signal)
-	hajackGracefulShutdown func(os.Signal)
+	hijackGracefulShutdown func(os.Signal)
 }
 
 // Schema struct for to represent schema info

@@ -117,15 +117,15 @@ service_description:
 
 	chassis.HajackSignal(sigs...)
 
-	chassis.InstalPreShutdown("pre_test", func(os.Signal) {
+	chassis.InstallPreShutdown("pre_test", func(os.Signal) {
 		t.Log("pre_shutdown_test")
 	})
 
-	chassis.InstalPostShutdown("post_test", func(os.Signal) {
+	chassis.InstallPostShutdown("post_test", func(os.Signal) {
 		t.Log("post_shutdown_test")
 	})
 
-	chassis.HajackGracefulShutdown(chassis.GracefulShutdown)
+	chassis.HijackGracefulShutdown(chassis.GracefulShutdown)
 
 	err = chassis.Init()
 	assert.NoError(t, err)
