@@ -191,4 +191,3 @@ func Init() error {
 	openlogging.GetLogger().Infof("init chassis success, version is %s", metadata.SdkVersion)
 	return nil
 }
-
