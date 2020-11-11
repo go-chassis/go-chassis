@@ -61,13 +61,13 @@ func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
-//HajackSignal set signals that want to hajack.
-func HajackSignal(sigs ...os.Signal) {
+//HijackSignal set signals that want to hijack.
+func HijackSignal(sigs ...os.Signal) {
 	goChassis.sigs = sigs
 }
 
-//InstalPreShutdown instal what you want to achieve before graceful shutdown
-func InstalPreShutdown(name string, f func(os.Signal)) {
+//InstallPreShutdown instal what you want to achieve before graceful shutdown
+func InstallPreShutdown(name string, f func(os.Signal)) {
 	// lazy init
 	if goChassis.preShutDownFuncs == nil {
 		goChassis.preShutDownFuncs = make(map[string]func(os.Signal))
@@ -75,8 +75,8 @@ func InstalPreShutdown(name string, f func(os.Signal)) {
 	goChassis.preShutDownFuncs[name] = f
 }
 
-//InstalPostShutdown instal what you want to achieve after graceful shutdown
-func InstalPostShutdown(name string, f func(os.Signal)) {
+//InstallPostShutdown instal what you want to achieve after graceful shutdown
+func InstallPostShutdown(name string, f func(os.Signal)) {
 	// lazy init
 	if goChassis.postShutDownFuncs == nil {
 		goChassis.postShutDownFuncs = make(map[string]func(os.Signal))
@@ -84,9 +84,9 @@ func InstalPostShutdown(name string, f func(os.Signal)) {
 	goChassis.postShutDownFuncs[name] = f
 }
 
-//HajackGracefulShutdown reset GracefulShutdown
-func HajackGracefulShutdown(f func(os.Signal)) {
-	goChassis.hajackGracefulShutdown = f
+//HijackGracefulShutdown reset GracefulShutdown
+func HijackGracefulShutdown(f func(os.Signal)) {
+	goChassis.hijackGracefulShutdown = f
 }
 
 //Run bring up the service,it waits for os signal,and shutdown gracefully
@@ -131,7 +131,7 @@ func waitingSignal() {
 			v(s)
 		}
 	}
-	goChassis.hajackGracefulShutdown(s)
+	goChassis.hijackGracefulShutdown(s)
 	if goChassis.postShutDownFuncs != nil {
 		for k, v := range goChassis.postShutDownFuncs {
 			openlog.Info(fmt.Sprintf("exec post shutdown funcs %s", k))
@@ -183,7 +183,7 @@ func Init() error {
 			common.DefaultKey: defaultChain,
 		}
 	}
-	goChassis.hajackGracefulShutdown = GracefulShutdown
+	goChassis.hijackGracefulShutdown = GracefulShutdown
 	if err := goChassis.initialize(); err != nil {
 		log.Println("init chassis fail:", err)
 		return err
