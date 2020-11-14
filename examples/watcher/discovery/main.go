@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
+	scregistry "github.com/go-chassis/cari/discovery"
 	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
 	"log"
 	"os"

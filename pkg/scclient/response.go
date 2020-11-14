@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/apache/servicecomb-service-center/pkg/registry"
+	"github.com/go-chassis/cari/discovery"
 )
 
 const (
@@ -34,12 +34,12 @@ const (
 
 // MicroServiceProvideResponse is a struct with provider information
 type MicroServiceProvideResponse struct {
-	Services []*registry.MicroService `json:"providers,omitempty"`
+	Services []*discovery.MicroService `json:"providers,omitempty"`
 }
 
 // MicroServiceInstanceChangedEvent is a struct to store the Changed event information
 type MicroServiceInstanceChangedEvent struct {
-	Action   string                         `protobuf:"bytes,2,opt,name=action" json:"action,omitempty"`
-	Key      *registry.MicroServiceKey      `protobuf:"bytes,3,opt,name=key" json:"key,omitempty"`
-	Instance *registry.MicroServiceInstance `protobuf:"bytes,4,opt,name=instance" json:"instance,omitempty"`
+	Action   string                          `protobuf:"bytes,2,opt,name=action" json:"action,omitempty"`
+	Key      *discovery.MicroServiceKey      `protobuf:"bytes,3,opt,name=key" json:"key,omitempty"`
+	Instance *discovery.MicroServiceInstance `protobuf:"bytes,4,opt,name=instance" json:"instance,omitempty"`
 }

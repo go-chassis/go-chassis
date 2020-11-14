@@ -2,7 +2,7 @@ package servicecenter
 
 import (
 	"fmt"
-	scregistry "github.com/apache/servicecomb-service-center/pkg/registry"
+	scregistry "github.com/go-chassis/cari/discovery"
 	"net/url"
 	"time"
 
