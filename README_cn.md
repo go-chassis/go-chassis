@@ -1,4 +1,4 @@
-Go-Chassis 是一个go语言的微服务开发框架，专注于帮你实现云原生应用
+Go-Chassis 是一个go语言的微服务开发框架，专注于帮你实现云原生应用。Logo的含义是开发者可以通过引入go chassis重新创造和定制自己的“轮子”（即开发框架），以此来加速云原生应用的交付速度
 
 ### 为什么使用 Go chassis
 - 强大的中间件 "handler chain":不止拥有 "filter" or "interceptor"的能力. chain中每个handler都可以拿到后面的handler的执行结果，包括业务代码的执行结果。这在很多场景下都很实用，比如:
