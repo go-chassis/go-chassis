@@ -11,7 +11,8 @@
 [中文版README](README_cn.md)
 
 Go-Chassis is a microservice framework for rapid development of microservices in Go.
-it focus on helping developer to deliver cloud native application more easily.
+it focus on helping developer to deliver cloud native application more easily. 
+The idea of logo is, developer can recreate and customize their own "wheel"(a framework) by go chassis to accelarate the delivery of software.
 
 ### Why use Go chassis
 - powerful middleware "handler chain": 
