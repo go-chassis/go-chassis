@@ -75,7 +75,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 	inv.OperationID = req.URL.Path
 	inv.Args = req
 	inv.Reply = resp
-	inv.URLPathFormat = req.URL.Path
+	inv.URLPath = req.URL.Path
 
 	inv.SetMetadata(common.RestMethod, req.Method)
 

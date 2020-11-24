@@ -104,7 +104,7 @@ func HTTPRequest2Invocation(req *restful.Request, schema, operation string, resp
 		Protocol:           common.ProtocolRest,
 		SchemaID:           schema,
 		OperationID:        operation,
-		URLPathFormat:      req.Request.URL.Path,
+		URLPath:            req.Request.URL.Path,
 		Metadata: map[string]interface{}{
 			common.RestMethod: req.Request.Method,
 		},

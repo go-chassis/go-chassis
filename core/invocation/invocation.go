@@ -2,9 +2,10 @@ package invocation
 
 import (
 	"context"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	utiltags "github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 )
 
 // constant values for consumer and provider
@@ -26,31 +27,45 @@ type Response struct {
 // ResponseCallBack process invocation response
 type ResponseCallBack func(*Response)
 
-//Invocation is the basic struct that used in go chassis to make client and transport layer transparent .
-//developer should implements a client which is able to transfer invocation to there own request
-//a protocol server should transfer request to invocation and then back to request
+// Invocation is the basic struct which makes transport layer transparent to middleware "handler chain".
+// developer should implements a client which is able to transfer invocation to there native protocol request,
+// a protocol server should transfer request to invocation and then back to request
 type Invocation struct {
+	//Invocation is a stateful struct,
+	//this index indicates the current index number of handler of a chain
 	HandlerIndex       int
-	SSLEnable          bool
-	Endpoint           string //service's ip and port, it is decided in load balancing
-	Protocol           string
-	Port               string //Port is the name of a real service port
+	SSLEnable          bool   // indicates whether provider service using TLS communication to serve or not
+	Endpoint           string // service's ip and port, it is decided in load balancing or specified by invoker
+	Protocol           string // indicates consumer what to use which protocol to communicate with provider
+	PortName           string // indicates the name of a service port number
 	SourceServiceID    string
 	SourceMicroService string
-	MicroServiceName   string //Target micro service name
-	SchemaID           string //correspond struct name
-	OperationID        string //correspond struct func name
-	Args               interface{}
-	URLPathFormat      string
-	Reply              interface{}
-	Ctx                context.Context        //ctx can save protocol headers
-	Metadata           map[string]interface{} //local scope data
-	RouteTags          utiltags.Tags          //route tags is decided in router handler
-	Strategy           string                 //load balancing strategy
-	Filters            []string
+	MicroServiceName   string // provider micro service name that consumer want to request
+
+	// route tags is decided in router handler, it indicates metadata of a microservice,
+	// like service version, env, etc.
+	RouteTags utiltags.Tags
+
+	SchemaID    string // correspond struct name
+	OperationID string // correspond func name of struct
+	URLPath     string // relative API path of http request
+
+	// it holds native request of protocol, use http protocol for example,
+	// it is *http.request
+	Args interface{}
+
+	// it holds native response of protocol, use http protocol for example,
+	// in consumer it is *http.response.
+	// in provider it is *http.ResponseWriter
+	Reply interface{}
+
+	Ctx      context.Context        // ctx can save protocol headers
+	Metadata map[string]interface{} // can save local data, will not send in header on network
+	Strategy string                 // load balancing strategy
+	Filters  []string
 }
 
-//GetMark return match rule name that request matches
+// GetMark return match rule name that request matches
 func (inv *Invocation) GetMark() string {
 	m, ok := inv.Metadata[MDMark].(string)
 	if ok {
@@ -59,8 +74,8 @@ func (inv *Invocation) GetMark() string {
 	return "none"
 }
 
-//Mark marks a invocation, it means the invocation matches a match rule
-//so that governance rule can be applied to invocation with specific mark
+// Mark marks a invocation, it means the invocation matches a match rule
+// so that governance rule can be applied to invocation with specific mark
 func (inv *Invocation) Mark(matchRuleName string) {
 	inv.Metadata[MDMark] = matchRuleName
 }
@@ -83,7 +98,7 @@ func New(ctx context.Context) *Invocation {
 	return inv
 }
 
-//SetMetadata local scope params
+// SetMetadata local scope data
 func (inv *Invocation) SetMetadata(key string, value interface{}) {
 	if inv.Metadata == nil {
 		inv.Metadata = make(map[string]interface{})
@@ -91,20 +106,19 @@ func (inv *Invocation) SetMetadata(key string, value interface{}) {
 	inv.Metadata[key] = value
 }
 
-//SetHeader set headers, the client and server plugins should use them in protocol headers
-//it is convenience but has lower performance than you use Headers[k]=v,
-// when you have a batch of kv to set
+// SetHeader set headers of protocol request, the client and server plugins should use them in protocol headers
+// it is convenience but has lower performance than you use Headers[k]=v, when you have a batch of kv to set
 func (inv *Invocation) SetHeader(k, v string) {
 	m := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 	m[k] = v
 }
 
-//Headers return a map that protocol plugin should deliver in transport
+// Headers return a map that protocol plugin should deliver in transport
 func (inv *Invocation) Headers() map[string]string {
 	return inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 }
 
-//Header return header value
+// Header return header value
 func (inv *Invocation) Header(name string) string {
 	m := inv.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 	return m[name]

@@ -4,7 +4,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-chassis/go-chassis)](https://goreportcard.com/report/github.com/go-chassis/go-chassis) 
 [![GoDoc](https://godoc.org/github.com/go-chassis/go-chassis?status.svg)](https://godoc.org/github.com/go-chassis/go-chassis)
 [![HitCount](http://hits.dwyl.io/go-chassis/go-chassis.svg)](http://hits.dwyl.io/go-chassis/go-chassis)  
-[![Join Slack](https://img.shields.io/badge/Join-Slack-orange.svg)](https://go-chassis.slack.com/)      
 [![goproxy.cn](https://goproxy.cn/stats/github.com/go-chassis/go-chassis/badges/download-count.svg)](https://goproxy.cn)
 [![Documentation Status](https://readthedocs.org/projects/go-chassis/badge/?version=latest)](https://go-chassis.readthedocs.io/en/latest/?badge=latest)
       
@@ -39,8 +38,6 @@ like registry, metrics, handler chain, config server etc
 - With many build-in function like route management, circuit breaker, load balancing, monitoring etc,
 your don't need to investigate, implement and integrate many solutions yourself.
 
-- go chassis supports Istio control panel, go chassis can bring better performance to go program, 
-you can use Istio configurations to control go chassis.
 
 
 # Features
@@ -72,7 +69,7 @@ go mod init
 ```
 2.Add go chassis 
 ```shell script
- go get github.com/go-chassis/go-chassis/v2@v2.0.2
+ go get github.com/go-chassis/go-chassis/v2@v2.0.4
 ```
 if you are facing network issue 
 ```bash
@@ -92,8 +89,7 @@ NOTICE: Now examples is migrating to [here](https://github.com/go-chassis/go-cha
 # Communication Protocols
 Go-Chassis supports 3 types of communication protocol.
 1. Rest - REST is an approach that leverages the HTTP protocol for communication.
-2. Highway - This is a RPC communication protocol, it was deprecated.
-3. grpc - native grpc protocol, go chassis bring circuit breaker, route management etc to grpc.
+3. gRPC - native grpc protocol, go chassis bring circuit breaker, route management etc to grpc.
 ## Debug suggestion for dlv:
 Add `-tags debug` into go build arguments before debugging, if your go version is go1.10 onward.
 
@@ -109,19 +105,6 @@ https://github.com/golang/go/issues/23733
 
 https://github.com/derekparker/delve/issues/865
 
-# Eco system
-this part introduce some eco systems that go chassis can run with
-## Apache ServiceComb
-With ServiceComb service center as registry, go chassis supply more features like contract management 
-and [multiple service registry](https://github.com/apache/servicecomb-service-center/blob/master/docs/aggregate.md), 
-highly recommended. that will not prevent you from using kubernetes or Istio, 
-Because service center can aggregate heterogeneous registry 
-and give you a unified service registry entry point.
-
-## Kubernetes and Istio
-go chassis has k8s registry and Istio registry plugins, and support Istio traffic management
-you can use spring cloud or Envoy with go chassis under same service discovery service.
-
 # Other project using go-chassis
 - [apache/servicecomb-kie](https://github.com/apache/servicecomb-kie): 
 A cloud native distributed configuration management service, go chassis and mesher integrate with it,
@@ -133,9 +116,11 @@ it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/con
 
 # Known Users
 To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
+
 ![huawei](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/huawei.PNG) 
 ![qutoutiao](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG)
 ![Shopee](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png)
+
 
 # To start developing go chassis
 

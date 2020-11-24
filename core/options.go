@@ -141,7 +141,7 @@ func wrapInvocationWithOpts(i *invocation.Invocation, opts InvokeOptions) {
 	i.Protocol = opts.Protocol
 	i.Strategy = opts.StrategyFunc
 	i.Filters = opts.Filters
-	i.Port = opts.Port
+	i.PortName = opts.Port
 	if opts.Metadata != nil {
 		i.Metadata = opts.Metadata
 	}
