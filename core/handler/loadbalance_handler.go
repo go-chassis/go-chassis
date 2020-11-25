@@ -59,7 +59,7 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 			break
 		}
 	}
-	protocolServer := util.GenProtoEndPoint(i.Protocol, i.Port)
+	protocolServer := util.GenProtoEndPoint(i.Protocol, i.PortName)
 	ep, ok := ins.EndpointsMap[protocolServer]
 	if !ok {
 		errStr := fmt.Sprintf(
