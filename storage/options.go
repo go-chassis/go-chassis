@@ -1,6 +1,6 @@
 package storage
 
-//DB is yaml file struct to set mongodb config
+//Options is yaml file struct to set db config
 type Options struct {
 	URI        string `yaml:"uri"`
 	PoolSize   int    `yaml:"poolSize"`
