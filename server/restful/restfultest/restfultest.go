@@ -18,15 +18,15 @@
 package restfultest
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/server"
 	"net/http"
 	"reflect"
 	"strings"
 
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/handler"
-	chassisRestful "github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	chassisRestful "github.com/go-chassis/go-chassis/v2/server/restful"
 )
 
 //Container is unit test solution for rest api method

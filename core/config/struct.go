@@ -1,7 +1,7 @@
 package config
 
 import (
-	stringutil "github.com/go-chassis/go-chassis/pkg/string"
+	stringutil "github.com/go-chassis/go-chassis/v2/pkg/string"
 	"gopkg.in/yaml.v2"
 )
 
@@ -84,10 +84,16 @@ type RuleItem struct {
 }
 
 //MatchPolicy specify a request mach policy
+type MatchPolicies struct {
+	Matches []MatchPolicy `yaml:"matches"`
+}
+
+//MatchPolicy specify a request mach policy
 type MatchPolicy struct {
-	Headers  map[string]map[string]string `yaml:"headers"`
-	APIPaths map[string]string            `yaml:"apiPath"`
-	Method   string                       `yaml:"method"`
+	TrafficMarkPolicy string                       `yaml:"trafficMarkPolicy"`
+	Headers           map[string]map[string]string `yaml:"headers"`
+	APIPaths          map[string]string            `yaml:"apiPath"`
+	Method            []string                     `yaml:"method"`
 }
 
 //LimiterConfig is rate limiter policy

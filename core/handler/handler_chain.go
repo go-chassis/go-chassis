@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/openlog"
 )
 
 // ChainMap just concurrent read
@@ -17,6 +17,19 @@ type Chain struct {
 	ServiceType string
 	Name        string
 	Handlers    []Handler
+}
+
+func (c *Chain) Clone() Chain {
+	var clone = Chain{
+		ServiceType: c.ServiceType,
+		Name:        c.Name,
+		Handlers:    make([]Handler, len(c.Handlers)),
+	}
+
+	for i, h := range c.Handlers {
+		clone.Handlers[i] = h
+	}
+	return clone
 }
 
 // AddHandler chain can add a handler
@@ -87,7 +100,7 @@ func CreateChain(serviceType string, chainName string, handlerNames ...string) (
 		ServiceType: serviceType,
 		Name:        chainName,
 	}
-	openlogging.Debug(fmt.Sprintf("add [%d] handlers for chain [%s]", len(handlerNames), chainName))
+	openlog.Debug(fmt.Sprintf("add [%d] handlers for chain [%s]", len(handlerNames), chainName))
 
 	for _, name := range handlerNames {
 		err := addHandler(c, name)
@@ -97,7 +110,7 @@ func CreateChain(serviceType string, chainName string, handlerNames ...string) (
 	}
 
 	if len(c.Handlers) == 0 {
-		openlogging.Warn("Chain " + chainName + " is Empty")
+		openlog.Warn("Chain " + chainName + " is Empty")
 		return c, nil
 	}
 	return c, nil

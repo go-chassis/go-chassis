@@ -1,10 +1,10 @@
 package profile
 
 import (
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/router"
-	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	_ "github.com/go-chassis/go-chassis/v2/core/router/servicecomb"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -2,7 +2,7 @@
 region:
   name: us-east
   availableZone: us-east-1
-cse:
+servicecomb:
   loadbalance:
     strategy:
       name: RoundRobin
@@ -13,20 +13,9 @@ cse:
       kind: constant
       minMs: 200
       maxMs: 400
-  service:
-    registry:
-    #  scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
-    #  autodiscovery: false         #是否启动自动发现功能
-    #  address: http://istio-pilot.istio-system:8080 # If type is File then address will be the path of the file
-    #  #register: manual          #optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
-      refeshInterval : 30s
-    #  watch: true
-    #  #disabled: true
-      registrator:
-        disabled: true
-      serviceDiscovery:
-        type: pilot
-        address: http://istio-pilot.istio-system:8080 # If type is File then address will be the path of the file
+  registry:
+    type: pilot
+    address: http://istio-pilot.istio-system:8080 # If type is File then address will be the path of the file
   config:
     client:
 #      serverUri: http://127.0.0.1:30103

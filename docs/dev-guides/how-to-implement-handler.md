@@ -25,7 +25,7 @@ type Handler interface {
 ##### 添加配置
 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       [service_type]:
@@ -39,8 +39,8 @@ cse:
 ```go
 package handler
 import (
-    "github.com/go-chassis/go-chassis/core/handler"
-    "github.com/go-chassis/go-chassis/core/invocation"
+    "github.com/go-chassis/go-chassis/v2/core/handler"
+    "github.com/go-chassis/go-chassis/v2/core/invocation"
     "log"
 )
 const Name = "fake-handler"
@@ -62,7 +62,7 @@ func (h *FakeHandler) Handle(chain *handler.Chain, inv *invocation.Invocation,
 chassis.yaml配置示例如下
 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

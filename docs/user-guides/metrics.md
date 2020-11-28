@@ -34,14 +34,14 @@ it will affect service performance
 ## Custom Metrics
 The API is in
 ```go
-github.com/go-chassis/go-chassis/pkg/metrics/metrics.go
+github.com/go-chassis/go-chassis/v2/pkg/metrics/metrics.go
 ``` 
 
 
 ## 示例
 
 ```yaml
-cse:
+servicecomb:
   metrics:
     apiPath: /metrics      # we can also give api path having prefix "/" ,like /adas/metrics
     enable: true

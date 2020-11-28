@@ -4,11 +4,11 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/go-chassis/go-chassis/initiator"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"path/filepath"
@@ -62,15 +62,12 @@ cse:
 	assert.NoError(t, err)
 
 	b = []byte(`
-cse:
-  service:
-    registry:
-      #disabled: false           optional:禁用注册发现选项，默认开始注册发现
+servicecomb:
+  registry:
       type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
       scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
       address: http://127.0.0.1:30100
-      #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
-      refeshInterval : 30s
+      refreshInterval : 30s
       watch: true
   protocols:
     rest:
@@ -94,9 +91,9 @@ cse:
 	assert.NoError(t, err)
 
 	b = []byte(`
----
-service_description:
-  name: Client
+servicecomb:
+  service:
+    name: Client
 
 `)
 	d, _ = os.Getwd()

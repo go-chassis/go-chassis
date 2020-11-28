@@ -3,9 +3,9 @@ package circuit
 import (
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-chassis/openlog"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -58,7 +58,7 @@ func FallbackNil(inv *invocation.Invocation, finish chan *invocation.Response) f
 		if err.Error() == hystrix.ErrForceFallback.Error() || err.Error() == hystrix.ErrCircuitOpen.Error() ||
 			err.Error() == hystrix.ErrMaxConcurrency.Error() {
 			// isolation happened, so lead to callback
-			openlogging.GetLogger().Errorf(fmt.Sprintf("fallback for %s:%s:%s, error [%s]",
+			openlog.Error(fmt.Sprintf("fallback for %s:%s:%s, error [%s]",
 				inv.MicroServiceName, inv.SchemaID, inv.OperationID,
 				err.Error()))
 			resp := &invocation.Response{}
@@ -70,7 +70,7 @@ func FallbackNil(inv *invocation.Invocation, finish chan *invocation.Response) f
 				if resp.Body != nil {
 					_, err = io.Copy(ioutil.Discard, resp.Body)
 					if err != nil {
-						openlogging.Error(err.Error())
+						openlog.Error(err.Error())
 					}
 					resp.Body.Close()
 				}
@@ -93,7 +93,7 @@ func FallbackErr(inv *invocation.Invocation, finish chan *invocation.Response) f
 		resp := &invocation.Response{}
 		if err.Error() == hystrix.ErrForceFallback.Error() || err.Error() == hystrix.ErrCircuitOpen.Error() {
 			// isolation happened, so lead to callback
-			openlogging.GetLogger().Errorf(fmt.Sprintf("fallback for %s:%s:%s, error [%s]",
+			openlog.Error(fmt.Sprintf("fallback for %s:%s:%s, error [%s]",
 				inv.MicroServiceName, inv.SchemaID, inv.OperationID,
 				err.Error()))
 			resp.Err = hystrix.CircuitError{
@@ -102,7 +102,7 @@ func FallbackErr(inv *invocation.Invocation, finish chan *invocation.Response) f
 			}
 		} else if err.Error() == hystrix.ErrMaxConcurrency.Error() {
 			// isolation happened, so lead to callback
-			openlogging.GetLogger().Errorf(fmt.Sprintf("fallback for %s:%s:%s, error [%s]",
+			openlog.Error(fmt.Sprintf("fallback for %s:%s:%s, error [%s]",
 				inv.MicroServiceName, inv.SchemaID, inv.OperationID,
 				err.Error()))
 			resp.Err = hystrix.CircuitError{
@@ -122,7 +122,7 @@ func FallbackErr(inv *invocation.Invocation, finish chan *invocation.Response) f
 			if resp.Body != nil {
 				_, err = io.Copy(ioutil.Discard, resp.Body)
 				if err != nil {
-					openlogging.Error(err.Error())
+					openlog.Error(err.Error())
 				}
 				resp.Body.Close()
 			}

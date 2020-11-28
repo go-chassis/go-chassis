@@ -3,8 +3,8 @@ package core
 import (
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 )
 
 // Options is a struct to stores information about chain name, filters, and their invocation options
@@ -47,7 +47,7 @@ var DefaultOptions = Options{
 }
 
 //ChainName is able to custom handler chain for a invoker.
-//you can specify a handler chain name under "cse.handler.chain.Consumer" in chassis.yaml file.
+//you can specify a handler chain name under "servicecomb.handler.chain.Consumer" in chassis.yaml file.
 //so that you can define different invoker with different handler chain.
 //a handler chain is bind to a invoker instance.
 func ChainName(name string) Option {
@@ -141,7 +141,7 @@ func wrapInvocationWithOpts(i *invocation.Invocation, opts InvokeOptions) {
 	i.Protocol = opts.Protocol
 	i.Strategy = opts.StrategyFunc
 	i.Filters = opts.Filters
-	i.Port = opts.Port
+	i.PortName = opts.Port
 	if opts.Metadata != nil {
 		i.Metadata = opts.Metadata
 	}

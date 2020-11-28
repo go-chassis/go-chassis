@@ -1,9 +1,12 @@
-# RouterConfigure
+# Router 
+this guide shows how to customize your own router management.
 
 ### Introduction
 
 A Router plugin should has ability to fetch router rule, 
 it decides where the route rule comes from.
+
+go chassis has standardized model "config.RouteRule", you must adapt to it
 ```go
 type Router interface {
 	Init(Options) error
@@ -16,17 +19,16 @@ type Router interface {
 First, install your plugin 
 ```go
 router.InstallRouterPlugin("istio", func() (router.Router, error) {
-			//your implementation
+			//return your router implementation
 		})
 ```
 
 Second, specify your plugin name in router.yaml
 ```yaml
 servicecomb:
-  service:
-    router:
-      plugin: istio
-      address: "xxx"
+  router:
+    plugin: istio
+    address: "xxx"
 ``` 
 
 go chassis will use your router implementation as router rule configuration source, 

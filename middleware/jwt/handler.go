@@ -24,17 +24,17 @@ import (
 	"strings"
 
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/status"
-	"github.com/go-chassis/go-chassis/security/token"
-	restfulserver "github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/status"
+	"github.com/go-chassis/go-chassis/v2/security/token"
+	restfulserver "github.com/go-chassis/go-chassis/v2/server/restful"
+	"github.com/go-chassis/openlog"
 )
 
 //errors
 var (
-	ErrNoHeader    = errors.New("not authorized")
+	ErrNoHeader    = errors.New("no authorization in header")
 	ErrInvalidAuth = errors.New("invalid authentication")
 )
 
@@ -44,13 +44,18 @@ type Handler struct {
 
 //Handle intercept unauthorized request
 func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	if auth == nil {
+		//jwt is not initialized, then skip authentication, do not report error
+		chain.Next(i, cb)
+		return
+	}
 	var req *http.Request
 	if r, ok := i.Args.(*http.Request); ok {
 		req = r
 	} else if r, ok := i.Args.(*restful.Request); ok {
 		req = r.Request
 	} else {
-		openlogging.Error(fmt.Sprintf("this handler only works for http request, wrong type: %t", i.Args))
+		openlog.Error(fmt.Sprintf("this handler only works for http request, wrong type: %t", i.Args))
 		return
 	}
 	if mustAuth(req) {
@@ -67,7 +72,7 @@ func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invo
 		to := s[1]
 		payload, err := token.DefaultManager.Verify(to, auth.SecretFunc)
 		if err != nil {
-			openlogging.Error("can not parse jwt:" + err.Error())
+			openlog.Error("can not parse jwt:" + err.Error())
 			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 			return
 		}
@@ -79,7 +84,7 @@ func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invo
 			}
 		}
 	} else {
-		openlogging.Info("skip auth")
+		openlog.Info("skip auth")
 	}
 
 	chain.Next(i, cb)
@@ -97,4 +102,10 @@ func newHandler() handler.Handler {
 // Name returns the router string
 func (h *Handler) Name() string {
 	return "jwt"
+}
+func init() {
+	err := handler.RegisterHandler("jwt", newHandler)
+	if err != nil {
+		openlog.Error(err.Error())
+	}
 }

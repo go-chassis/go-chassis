@@ -1,8 +1,8 @@
 package metadata_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/metadata"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/metadata"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
@@ -10,8 +10,7 @@ import (
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestFramework(t *testing.T) {

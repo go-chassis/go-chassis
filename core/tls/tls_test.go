@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
 	"github.com/stretchr/testify/assert"
 )
 

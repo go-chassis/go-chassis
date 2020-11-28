@@ -6,15 +6,15 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/registry"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/util"
-	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/iputil"
+	"github.com/go-chassis/openlog"
 )
 
 //NewFunc returns a ProtocolServer
@@ -26,7 +26,7 @@ var servers = make(map[string]ProtocolServer)
 //InstallPlugin For developer
 func InstallPlugin(protocol string, newFunc NewFunc) {
 	serverPlugins[protocol] = newFunc
-	openlogging.Info("Installed Server Plugin, protocol:" + protocol)
+	openlog.Info("Installed Server Plugin, protocol:" + protocol)
 }
 
 //GetServerFunc returns the server function
@@ -58,15 +58,15 @@ var ErrRuntime = make(chan error)
 //StartServer starting the server
 func StartServer() error {
 	for name, server := range servers {
-		openlogging.GetLogger().Info("starting server " + name + "...")
+		openlog.Info("starting server " + name + "...")
 		err := server.Start()
 		if err != nil {
-			openlogging.GetLogger().Errorf("servers failed to start, err %s", err)
+			openlog.Error(fmt.Sprintf("servers failed to start, err %s", err))
 			return fmt.Errorf("can not start [%s] server,%s", name, err.Error())
 		}
-		openlogging.GetLogger().Debug(name + " server start success")
+		openlog.Debug(name + " server start success")
 	}
-	openlogging.GetLogger().Info("all server start completed")
+	openlog.Info("all server start completed")
 
 	return nil
 }
@@ -74,8 +74,8 @@ func StartServer() error {
 //UnRegistrySelfInstances this function removes the self instance
 func UnRegistrySelfInstances() error {
 	if err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(runtime.ServiceID, runtime.InstanceID); err != nil {
-		openlogging.GetLogger().Errorf("StartServer() UnregisterMicroServiceInstance failed, sid/iid: %s/%s: %s",
-			runtime.ServiceID, runtime.InstanceID, err)
+		openlog.Error(fmt.Sprintf("unregister instance failed, sid/iid: %s/%s: %s",
+			runtime.ServiceID, runtime.InstanceID, err))
 		return err
 	}
 	return nil
@@ -84,8 +84,8 @@ func UnRegistrySelfInstances() error {
 //Init initializes
 func Init() error {
 	var err error
-	for k, v := range config.GlobalDefinition.Cse.Protocols {
-		if err = initialServer(config.GlobalDefinition.Cse.Handler.Chain.Provider, v, k); err != nil {
+	for k, v := range config.GlobalDefinition.ServiceComb.Protocols {
+		if err = initialServer(config.GlobalDefinition.ServiceComb.Handler.Chain.Provider, v, k); err != nil {
 			log.Println(err)
 			return err
 		}
@@ -99,7 +99,7 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 	if err != nil {
 		return err
 	}
-	openlogging.GetLogger().Debugf("Init server [%s], protocol is [%s]", name, protocolName)
+	openlog.Debug(fmt.Sprintf("init server [%s], protocol is [%s]", name, protocolName))
 	f, err := GetServerFunc(protocolName)
 	if err != nil {
 		return fmt.Errorf("do not support [%s] server", name)
@@ -112,8 +112,8 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 			return err
 		}
 	} else {
-		openlogging.GetLogger().Warnf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
-			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+		openlog.Warn(fmt.Sprintf("%s TLS mode, verify peer: %t, cipher plugin: %s.",
+			sslTag, sslConfig.VerifyPeer, sslConfig.CipherPlugin))
 	}
 
 	if p.Listen == "" {
@@ -135,13 +135,13 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 		ProtocolServerName: name,
 		ChainName:          chainName,
 		TLSConfig:          tlsConfig,
-		BodyLimit:          config.GlobalDefinition.Cse.Transport.MaxBodyBytes[protocolName],
-		HeaderLimit:        config.GlobalDefinition.Cse.Transport.MaxHeaderBytes[protocolName],
+		BodyLimit:          config.GlobalDefinition.ServiceComb.Transport.MaxBodyBytes[protocolName],
+		HeaderLimit:        config.GlobalDefinition.ServiceComb.Transport.MaxHeaderBytes[protocolName],
 	}
-	if t := config.GlobalDefinition.Cse.Transport.Timeout[protocolName]; len(t) > 0 {
+	if t := config.GlobalDefinition.ServiceComb.Transport.Timeout[protocolName]; len(t) > 0 {
 		timeout, err := time.ParseDuration(t)
 		if err != nil {
-			openlogging.GetLogger().Errorf("parse timeout failed: %s", err)
+			openlog.Error(fmt.Sprintf("parse timeout failed: %s", err))
 			return err
 		}
 		if timeout < 0 {

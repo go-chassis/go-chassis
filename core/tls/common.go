@@ -6,15 +6,16 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/security/cipher"
 	"io/ioutil"
 	"strings"
 
 	security2 "github.com/go-chassis/foundation/security"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/pkg/string"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	stringutil "github.com/go-chassis/go-chassis/v2/pkg/string"
+	"github.com/go-chassis/go-chassis/v2/security/cipher"
+
 	//this import used for plain cipher
-	_ "github.com/go-chassis/go-chassis/security/cipher/plugins/plain"
+	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 )
 
 //SSLConfig struct stores the necessary info for SSL configuration
@@ -28,6 +29,7 @@ type SSLConfig struct {
 	CertFile     string   `yaml:"cert_file" json:"certFile"`
 	KeyFile      string   `yaml:"key_file" json:"keyFile"`
 	CertPWDFile  string   `yaml:"cert_pwd_file" json:"certPwdFile"`
+	ServerName   string   `yaml:"server_name" json:"serverName"`
 }
 
 //TLSCipherSuiteMap is a map with key of type string and value of type unsigned integer
@@ -162,6 +164,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 			InsecureSkipVerify: !sslConfig.VerifyPeer,
 			MinVersion:         sslConfig.MinVersion,
 			MaxVersion:         sslConfig.MaxVersion,
+			ServerName:         sslConfig.ServerName,
 		}
 	}
 

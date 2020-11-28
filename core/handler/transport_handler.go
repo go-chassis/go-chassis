@@ -2,16 +2,17 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/client"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/session"
-	"github.com/go-mesh/openlogging"
-	"net/http"
+	"github.com/go-chassis/go-chassis/v2/core/client"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/session"
+	"github.com/go-chassis/openlog"
 )
 
 // TransportHandler transport handler
@@ -25,7 +26,7 @@ func errNotNil(err error, cb invocation.ResponseCallBack) {
 	r := &invocation.Response{
 		Err: err,
 	}
-	openlogging.Error("GetClient got Error: " + err.Error())
+	openlog.Error("GetClient got Error: " + err.Error())
 	cb(r)
 }
 
@@ -49,7 +50,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	if err != nil {
 		r.Err = err
 		if err != client.ErrCanceled {
-			openlogging.GetLogger().Errorf("Call got Error, err [%s]", err.Error())
+			openlog.Error(fmt.Sprintf("call err [%s]", err.Error()))
 		}
 		if i.Strategy == loadbalancer.StrategySessionStickiness {
 			ProcessSpecialProtocol(i)

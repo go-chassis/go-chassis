@@ -1,15 +1,16 @@
 package core
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/session"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/session"
+	"github.com/go-chassis/openlog"
 )
 
 // newOptions is for updating options
@@ -40,7 +41,7 @@ func (ri *abstractInvoker) invoke(i *invocation.Invocation) error {
 
 	c, err := handler.GetChain(common.Consumer, ri.opts.ChainName)
 	if err != nil {
-		openlogging.GetLogger().Errorf("Handler chain init err [%s]", err.Error())
+		openlog.Error(fmt.Sprintf("Handler chain init err [%s]", err.Error()))
 		return err
 	}
 

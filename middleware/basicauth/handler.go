@@ -22,10 +22,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/status"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/status"
+	"github.com/go-chassis/openlog"
 	"net/http"
 	"strings"
 )
@@ -52,7 +52,7 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 	} else if r, ok := i.Args.(*restful.Request); ok {
 		req = r.Request
 	} else {
-		openlogging.Error(fmt.Sprintf("this handler only works for http protocol, wrong type: %t", i.Args))
+		openlog.Error(fmt.Sprintf("this handler only works for http protocol, wrong type: %t", i.Args))
 		return
 	}
 	subject := req.Header.Get(HeaderAuth)
@@ -62,7 +62,7 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 	}
 	u, p, err := decode(subject)
 	if err != nil {
-		openlogging.Error("can not decode base 64:" + err.Error())
+		openlog.Error("can not decode base 64:" + err.Error())
 		handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 		return
 	}

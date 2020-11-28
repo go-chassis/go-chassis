@@ -1,18 +1,17 @@
 package main
 
 import (
-	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/examples/schemas"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas"
+	"github.com/go-chassis/openlog"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/server/
 
 func main() {
-	chassis.RegisterSchema("rest", &schemas.RestFulHello{}, server.WithSchemaID("RestHelloService"))
+	chassis.RegisterSchema("rest", &schemas.RestFulHello{})
 	if err := chassis.Init(); err != nil {
-		openlogging.Fatal("Init failed." + err.Error())
+		openlog.Fatal("Init failed." + err.Error())
 		return
 	}
 	chassis.Run()

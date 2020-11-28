@@ -2,13 +2,13 @@ package handler_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	_ "github.com/go-chassis/go-chassis/initiator"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"path/filepath"
@@ -16,7 +16,7 @@ import (
 )
 
 var yamlContent = `---
-cse:
+servicecomb:
   governance:
     Consumer:
       service1:
@@ -35,11 +35,10 @@ func TestRestFaultHandler_Names(t *testing.T) {
 	assert.Equal(t, "fault-inject", conName)
 
 	microContent := `---
-#微服务的私有属性
-service_description:
-  name: Client
-  level: FRONT
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 	f := prepareConfDir(t)
 	prepareTestFile(t, f, "chassis.yaml", "")
 	prepareTestFile(t, f, "microservice.yaml", microContent)
@@ -53,8 +52,8 @@ service_description:
 	c.AddHandler(&normalAfter{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer[handler.FaultInject] = handler.FaultInject
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer[handler.FaultInject] = handler.FaultInject
 
 	t.Run("unknown protocol", func(t *testing.T) {
 		inv := &invocation.Invocation{

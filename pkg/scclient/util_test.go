@@ -1,41 +1,41 @@
 package client_test
 
 import (
-	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
+	scregistry "github.com/go-chassis/cari/discovery"
+	"github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestRegroupInstances(t *testing.T) {
-	keys := []*proto.FindService{
+	keys := []*scregistry.FindService{
 		{
-			Service: &proto.MicroServiceKey{
+			Service: &scregistry.MicroServiceKey{
 				ServiceName: "Service1",
 			},
 		},
 		{
-			Service: &proto.MicroServiceKey{
+			Service: &scregistry.MicroServiceKey{
 				ServiceName: "Service2",
 			},
 		},
 		{
-			Service: &proto.MicroServiceKey{
+			Service: &scregistry.MicroServiceKey{
 				ServiceName: "Service3",
 			},
 		},
 	}
-	resp := proto.BatchFindInstancesResponse{
-		Services: &proto.BatchFindResult{
-			Updated: []*proto.FindResult{
+	resp := &scregistry.BatchFindInstancesResponse{
+		Services: &scregistry.BatchFindResult{
+			Updated: []*scregistry.FindResult{
 				{Index: 2,
-					Instances: []*proto.MicroServiceInstance{{
+					Instances: []*scregistry.MicroServiceInstance{{
 						InstanceId: "1",
 					}}},
 			},
 		},
 	}
-	m := client.RegroupInstances(keys, resp)
+	m := servicecenter.RegroupInstances(keys, resp)
 	t.Log(m)
 	assert.Equal(t, 1, len(m["Service3"]))
 	assert.Equal(t, 0, len(m["Service1"]))

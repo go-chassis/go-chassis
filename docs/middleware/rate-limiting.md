@@ -1,4 +1,4 @@
-# Rate limiting
+# Rate limiting v1
 ## 概述
 
 用户可以通过配置限流策略限制provider端的请求频率，使每秒请求数限制在最大请求量的大小。配置可限制接收处理请求的频率
@@ -15,14 +15,14 @@
 
 引入middleware
 ```go
-import _ github.com/go-chassis/go-chassis/middleware/ratelimiter
+import _ github.com/go-chassis/go-chassis/v2/middleware/ratelimiter
 ```
 #### Provider示例
 
 provider端需要在chassis.yaml添加ratelimiter-provider。同时在rate\_limiting.yaml中配置具体的请求数。
 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

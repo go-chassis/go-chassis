@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"strings"
 	"sync"
 
@@ -10,11 +10,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
+	"github.com/go-chassis/openlog"
 )
 
 var clients = make(map[string]ProtocolClient)
@@ -39,7 +39,7 @@ type Options struct {
 
 // GetFailureMap return failure map
 func GetFailureMap(p string) map[string]bool {
-	failureList := strings.Split(config.GlobalDefinition.Cse.Transport.Failure[p], ",")
+	failureList := strings.Split(config.GlobalDefinition.ServiceComb.Transport.Failure[p], ",")
 	failureMap := make(map[string]bool)
 	for _, v := range failureList {
 		if v == "" {
@@ -64,7 +64,7 @@ func GetMaxIdleCon(p string) int {
 func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
-		openlogging.Error(fmt.Sprintf("do not support [%s] client", protocol))
+		openlog.Error(fmt.Sprintf("do not support [%s] client", protocol))
 		return nil, err
 	}
 	tlsConfig, sslConfig, err := chassisTLS.GetTLSConfigByService(service, protocol, common.Consumer)
@@ -79,8 +79,8 @@ func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolC
 		// remember to set SAN (Subject Alternative Name) as server's micro service name
 		// when generating server.csr
 		tlsConfig.ServerName = service
-		openlogging.GetLogger().Warnf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
-			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin)
+		openlog.Warn(fmt.Sprintf("%s %s TLS mode, verify peer: %t, cipher plugin: %s.",
+			protocol, service, sslConfig.VerifyPeer, sslConfig.CipherPlugin))
 	}
 	var command string
 	if service != "" {
@@ -108,7 +108,7 @@ func GetClient(i *invocation.Invocation) (ProtocolClient, error) {
 	c, ok := clients[key]
 	sl.RUnlock()
 	if !ok {
-		openlogging.Info("Create client for " + i.Protocol + ":" + i.MicroServiceName + ":" + i.Endpoint)
+		openlog.Info("Create client for " + i.Protocol + ":" + i.MicroServiceName + ":" + i.Endpoint)
 		c, err = CreateClient(i.Protocol, i.MicroServiceName, i.Endpoint, i.SSLEnable)
 		if err != nil {
 			return nil, err
@@ -130,7 +130,7 @@ func Close(protocol, service, endpoint string) error {
 		return ErrClientNotExist
 	}
 	if err := c.Close(); err != nil {
-		openlogging.GetLogger().Errorf("can not close client %s:%s%:s, err [%s]", protocol, service, endpoint, err.Error())
+		openlog.Error(fmt.Sprintf("can not close client %s:%s%s, err [%s]", protocol, service, endpoint, err.Error()))
 		return err
 	}
 	sl.Lock()
@@ -140,7 +140,7 @@ func Close(protocol, service, endpoint string) error {
 }
 
 // SetTimeoutToClientCache set timeout to client
-func SetTimeoutToClientCache(spec *model.IsolationWrapper) {
+func SetTimeoutToClientCache(spec model.IsolationWrapper) {
 	sl.Lock()
 	defer sl.Unlock()
 	for _, client := range clients {

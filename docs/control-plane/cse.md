@@ -7,7 +7,7 @@ ServiceStage 是华为云推出的云服务，通过其中的CSE(cloud service e
 
 ```yaml
 ## Huawei Public Cloud ak/sk
-cse:
+servicecomb:
   credentials:
     accessKey: xxx
     secretKey: xxx

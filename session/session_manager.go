@@ -5,14 +5,15 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
+	"github.com/go-chassis/openlog"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -108,8 +109,8 @@ func SaveSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) c
 
 	sessionIDValue, err := GenerateSessionID()
 	if err != nil {
-		openlogging.Warn("session id generate fail, it is impossible", openlogging.WithTags(
-			openlogging.Tags{
+		openlog.Warn("session id generate fail, it is impossible", openlog.WithTags(
+			openlog.Tags{
 				"err": err.Error(),
 			}))
 	}
@@ -157,7 +158,7 @@ func setCookie(resp *http.Response, value string) {
 // SaveSessionIDFromHTTP check session id
 func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req *http.Request) {
 	if resp == nil {
-		openlogging.GetLogger().Warnf("", ErrResponseNil)
+		openlog.Warn(fmt.Sprintf("%s", ErrResponseNil))
 		return
 	}
 
@@ -185,8 +186,8 @@ func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req 
 	} else {
 		sessionIDValue, err := GenerateSessionID()
 		if err != nil {
-			openlogging.Warn("session id generate fail, it is impossible", openlogging.WithTags(
-				openlogging.Tags{
+			openlog.Warn("session id generate fail, it is impossible", openlog.WithTags(
+				openlog.Tags{
 					"err": err.Error(),
 				}))
 		}
@@ -237,7 +238,7 @@ func GetSessionCookie(ctx context.Context, resp *http.Response) string {
 	}
 
 	if resp == nil {
-		openlogging.GetLogger().Warnf("", ErrResponseNil)
+		openlog.Warn(fmt.Sprintf("%s", ErrResponseNil))
 		return ""
 	}
 
@@ -272,12 +273,12 @@ func GetSessionID(namespace string) string {
 
 	value, ok := SessionStickinessCache.Get(getSessionStickinessCacheKey(namespace))
 	if !ok || value == nil {
-		openlogging.GetLogger().Warn("not sessionID in cache")
+		openlog.Warn("not sessionID in cache")
 		return ""
 	}
 	s, ok := value.(string)
 	if !ok {
-		openlogging.GetLogger().Warn("get sessionID from cache failed")
+		openlog.Warn("get sessionID from cache failed")
 		return ""
 	}
 	return s

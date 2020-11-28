@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/go-chassis/openlog"
 
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/bootstrap"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
 	"time"
 )
 
@@ -17,7 +18,7 @@ import (
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed." + err.Error())
+		openlog.Error("Init failed." + err.Error())
 		return
 	}
 	// run is only to enable metric exporter
@@ -30,14 +31,14 @@ func main() {
 	for i := 0; i < 500; i++ {
 		req, err := rest.NewRequest("GET", "http://ErrServer/lock", nil)
 		if err != nil {
-			lager.Logger.Error("new request failed.")
+			openlog.Error("new request failed.")
 			return
 		}
 		resp, err := invoker.ContextDo(ctx, req)
 		if err != nil {
-			lager.Logger.Errorf("deadlock request failed. %s", err.Error())
+			openlog.Error(fmt.Sprintf("deadlock request failed. %s", err.Error()))
 		} else {
-			lager.Logger.Info("REST Server [GET]: " + string(httputil.ReadBody(resp)))
+			openlog.Info("REST Server [GET]: " + string(httputil.ReadBody(resp)))
 		}
 
 	}
@@ -45,14 +46,14 @@ func main() {
 	for {
 		req, err := rest.NewRequest("GET", "http://ErrServer/sayhimessage", nil)
 		if err != nil {
-			lager.Logger.Error("new request failed.")
+			openlog.Error("new request failed.")
 			return
 		}
 		resp, err := invoker.ContextDo(ctx, req)
 		if err != nil {
-			lager.Logger.Errorf("normal request failed. %s", err.Error())
+			openlog.Error(fmt.Sprintf("normal request failed. %s", err.Error()))
 		} else {
-			lager.Logger.Info("REST Server [GET]: " + string(httputil.ReadBody(resp)))
+			openlog.Info("REST Server [GET]: " + string(httputil.ReadBody(resp)))
 		}
 		time.Sleep(30 * time.Second)
 	}

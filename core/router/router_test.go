@@ -1,25 +1,27 @@
 package router_test
 
 import (
+	"context"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
+	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/router"
-	_ "github.com/go-chassis/go-chassis/core/router/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	_ "github.com/go-chassis/go-chassis/v2/core/router/servicecomb"
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 
@@ -200,31 +202,50 @@ func TestMatch(t *testing.T) {
 	si.Name = "service"
 	si.Tags[common.BuildinTagApp] = "app"
 	si.Tags[common.BuildinTagVersion] = "0.1"
-	match := InitMatch("service", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
+	matchConf := initMatch("service", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
 	headers := map[string]string{}
 	headers["cookie"] = "abc-def-ghi"
-	assert.Equal(t, false, router.Match(match, headers, si))
+	assert.Equal(t, false, router.Match(nil, matchConf, headers, si))
 	si.Tags["tag1"] = "v1"
-	assert.Equal(t, false, router.Match(match, headers, si))
+	assert.Equal(t, false, router.Match(nil, matchConf, headers, si))
 	headers["age"] = "15"
-	assert.Equal(t, true, router.Match(match, headers, si))
-	match.HTTPHeaders["noEqual"] = map[string]string{"noEqu": "e"}
-	assert.Equal(t, true, router.Match(match, headers, si))
+	assert.Equal(t, true, router.Match(nil, matchConf, headers, si))
+	matchConf.HTTPHeaders["noEqual"] = map[string]string{"noEqu": "e"}
+	assert.Equal(t, true, router.Match(nil, matchConf, headers, si))
 	headers["noEqual"] = "noe"
-	assert.Equal(t, true, router.Match(match, headers, si))
-	match.HTTPHeaders["noLess"] = map[string]string{"noLess": "100"}
+	assert.Equal(t, true, router.Match(nil, matchConf, headers, si))
+	matchConf.HTTPHeaders["noLess"] = map[string]string{"noLess": "100"}
 	headers["noLess"] = "120"
-	assert.Equal(t, true, router.Match(match, headers, si))
-	match.HTTPHeaders["noGreater"] = map[string]string{"noGreater": "100"}
+	assert.Equal(t, true, router.Match(nil, matchConf, headers, si))
+	matchConf.HTTPHeaders["noGreater"] = map[string]string{"noGreater": "100"}
 	headers["noGreater"] = "120"
-	assert.Equal(t, false, router.Match(match, headers, si))
+	assert.Equal(t, false, router.Match(nil, matchConf, headers, si))
 
 	si.Name = "error"
-	assert.Equal(t, false, router.Match(match, headers, si))
+	assert.Equal(t, false, router.Match(nil, matchConf, headers, si))
 
 	headers["cookie"] = "7gh"
 	si.Name = "service"
-	assert.Equal(t, false, router.Match(match, headers, si))
+	assert.Equal(t, false, router.Match(nil, matchConf, headers, si))
+}
+
+func TestMatchRefer(t *testing.T) {
+	m := config.Match{}
+	m.Refer = "testMarker"
+	inv := invocation.New(context.TODO())
+	b := router.Match(inv, m, nil, nil)
+	assert.False(t, b)
+	inv.Args, _ = http.NewRequest("GET", "some/api", nil)
+	inv.Metadata = make(map[string]interface{})
+	testMatchPolicy := `
+matches:
+  - apiPath:
+      contains: "some/api"
+    method: [GET]
+`
+	marker.SaveMatchPolicy(m.Refer, testMatchPolicy, "servicecomb.marker."+m.Refer)
+	b = router.Match(inv, m, nil, nil)
+	assert.True(t, b)
 }
 
 func TestFitRate(t *testing.T) {
@@ -268,9 +289,9 @@ func InitDests() map[string][]*config.RouteRule {
 	r1.Routes = InitTags("0.11", "0.2")
 	r2.Routes = InitTags("1.1", "1.2")
 	r3.Routes = InitTags("2.1", "2.2")
-	match1 := InitMatch("source", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
-	match2 := InitMatch("source", "notmatch", map[string]string{"tag1": "v1"})
-	match3 := InitMatch("source1", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
+	match1 := initMatch("source", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
+	match2 := initMatch("source", "notmatch", map[string]string{"tag1": "v1"})
+	match3 := initMatch("source1", "((abc.)def.)ghi", map[string]string{"tag1": "v1"})
 	r2.Match = match2
 	r1.Match = match1
 	r3.Match = match3
@@ -290,7 +311,7 @@ func InitTags(v1 string, v2 string) []*config.RouteTag {
 	return tags
 }
 
-func InitMatch(source string, pat string, tags map[string]string) config.Match {
+func initMatch(source string, pat string, tags map[string]string) config.Match {
 	match := config.Match{}
 	match.Source = source
 	match.SourceTags = tags

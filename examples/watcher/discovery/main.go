@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
+	scregistry "github.com/go-chassis/cari/discovery"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
 	"log"
 	"os"
 	"time"
@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	disService := &proto.MicroService{
+	disService := &scregistry.MicroService{
 		AppId:       "default",
 		ServiceName: "dismyserver1",
 		Version:     "0.0.1",

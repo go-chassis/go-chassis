@@ -2,9 +2,9 @@ package servicecomb
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/router"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	"github.com/go-chassis/openlog"
 	"sync"
 )
 
@@ -45,7 +45,7 @@ func (r *Router) ListRouteRule() map[string][]*config.RouteRule {
 func (r *Router) Init(o router.Options) error {
 	err := archaius.RegisterListener(&routeRuleEventListener{}, DarkLaunchKey, DarkLaunchKeyV2)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 	return r.LoadRules()
 }
@@ -62,14 +62,14 @@ func newRouter() (router.Router, error) {
 func (r *Router) LoadRules() error {
 	configs, err := MergeLocalAndRemoteConfig()
 	if err != nil {
-		openlogging.Error("init route rule failed", openlogging.WithTags(openlogging.Tags{
+		openlog.Error("init route rule failed", openlog.WithTags(openlog.Tags{
 			"err": err.Error(),
 		}))
 	}
 
 	if router.ValidateRule(configs) {
 		r.routeRule = configs
-		openlogging.Info("load route rule", openlogging.WithTags(openlogging.Tags{
+		openlog.Info("load route rule", openlog.WithTags(openlog.Tags{
 			"rule": r.routeRule,
 		}))
 	}
@@ -81,8 +81,8 @@ func (r *Router) SetRouteRuleByKey(k string, rr []*config.RouteRule) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	r.routeRule[k] = rr
-	openlogging.Info("update route rule success", openlogging.WithTags(
-		openlogging.Tags{
+	openlog.Info("update route rule success", openlog.WithTags(
+		openlog.Tags{
 			"service": k,
 			"rule":    rr,
 		}))
@@ -93,8 +93,8 @@ func (r *Router) DeleteRouteRuleByKey(k string) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	delete(r.routeRule, k)
-	openlogging.Info("route rule is removed", openlogging.WithTags(
-		openlogging.Tags{
+	openlog.Info("route rule is removed", openlog.WithTags(
+		openlog.Tags{
 			"service": k,
 		}))
 }

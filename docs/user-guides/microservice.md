@@ -19,7 +19,7 @@ you can consider a project as an micro service, after compile, build and run, it
 > *(optional, string)* hostname of host, it can be IP, $INTERNAL_IP placeholder or hostname, default is hostname return by os.hostname()
 > When specify `hostname: $INTERNAL_IP` go-chassis will report ip address instead of hostname to service center, this is useful when hostname is meaningless in some scenes, such as a docker host.
 
-**APPLICATION_ID**
+**app**
 > *(optional, string)* Application ID, default value is "default"
 
 **version**
@@ -28,7 +28,7 @@ you can consider a project as an micro service, after compile, build and run, it
 **properties**
 > *(optional, map)* micro service metadata ，usually it is defined in project, and never changed
 
-**instance_properties**
+**instanceProperties**
 > *(optional, map)* instance metadata, during runtime, it can be different based on environment
 
 **paths**
@@ -40,19 +40,20 @@ you can consider a project as an micro service, after compile, build and run, it
 ## Example
 
 ```yaml
-service_description:
-  name: Server
-  hostname: 10.244.1.3
-  properties:
-    project: X1
-  instance_properties:
-    nodeIP: 192.168.0.111
-  paths:
-  - path: /rest/demoservice
-    property:
-      checksession: true
-  schemas:
-  - "schema"
-  - "schema1"
-  - "schema2"
+servicecomb:
+  service:
+    name: Server
+    hostname: 10.244.1.3
+    properties:
+      project: X1
+    instanceProperties:
+      nodeIP: 192.168.0.111
+    paths:
+      - path: /rest/demoservice
+        property:
+          checksession: true
+    schemas:
+      - "schema"
+      - "schema1"
+      - "schema2"
 ```

@@ -1,4 +1,5 @@
-service_description:
-  name: FileUploadServer
-properties:
-  allowCrossApp: true
+servicecomb:
+  service:
+    name: FileUploadServer
+    properties:
+      allowCrossApp: true

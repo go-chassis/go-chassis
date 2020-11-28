@@ -2,12 +2,12 @@ package rate_test
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/resilience/rate"
+	"github.com/go-chassis/go-chassis/v2/resilience/rate"
 	"testing"
 	"time"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/stretchr/testify/assert"
 )
 

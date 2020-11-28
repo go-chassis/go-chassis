@@ -2,10 +2,10 @@ package profile
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/router"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	"github.com/go-chassis/openlog"
 )
 
 // const
@@ -22,21 +22,21 @@ type Profile struct {
 // HTTPHandleRouteRuleFunc is a go-restful handler which can expose profile of route rule in http server
 func HTTPHandleRouteRuleFunc(req *restful.Request, rep *restful.Response) {
 	if err := rep.WriteAsJson(listRouteRule()); err != nil {
-		openlogging.Error(msgWriteError + err.Error())
+		openlog.Error(msgWriteError + err.Error())
 	}
 }
 
 // HTTPHandleDiscoveryFunc is a go-restful handler which can expose profile of discovery in http server
 func HTTPHandleDiscoveryFunc(req *restful.Request, rep *restful.Response) {
 	if err := rep.WriteAsJson(listMicroServiceInstance()); err != nil {
-		openlogging.Error(msgWriteError + err.Error())
+		openlog.Error(msgWriteError + err.Error())
 	}
 }
 
 // HTTPHandleProfileFunc is a go-restful handler which can expose all profiles in http server
 func HTTPHandleProfileFunc(req *restful.Request, rep *restful.Response) {
 	if err := rep.WriteAsJson(newProfile()); err != nil {
-		openlogging.Error(msgWriteError + err.Error())
+		openlog.Error(msgWriteError + err.Error())
 	}
 }
 

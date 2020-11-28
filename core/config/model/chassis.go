@@ -1,12 +1,14 @@
 package model
 
+import "github.com/go-chassis/go-chassis/v2/storage"
+
 //GlobalCfg chassis.yaml 配置项
 type GlobalCfg struct {
-	Cse        CseStruct         `yaml:"cse"`
-	Panel      ControlPanel      `yaml:"control"`
-	Ssl        map[string]string `yaml:"ssl"`
-	Tracing    TracingStruct     `yaml:"tracing"`
-	DataCenter *DataCenterInfo   `yaml:"region"`
+	ServiceComb ServiceComb       `yaml:"servicecomb"`
+	Panel       ControlPanel      `yaml:"control"`
+	Ssl         map[string]string `yaml:"ssl"`
+	Tracing     TracingStruct     `yaml:"tracing"`
+	DataCenter  *DataCenterInfo   `yaml:"region"`
 }
 
 // DataCenterInfo gives data center information
@@ -16,19 +18,20 @@ type DataCenterInfo struct {
 	AvailableZone string `yaml:"availableZone"`
 }
 
-//CseStruct 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
-type CseStruct struct {
-	Config          Config                      `yaml:"config"`
-	Service         ServiceStruct               `yaml:"service"`
-	Protocols       map[string]Protocol         `yaml:"protocols"`
-	Handler         HandlerStruct               `yaml:"handler"`
-	References      map[string]ReferencesStruct `yaml:"references"` //Deprecated
-	FlowControl     FlowControl                 `yaml:"flowcontrol"`
-	Monitor         MonitorStruct               `yaml:"monitor"`
-	Metrics         MetricsStruct               `yaml:"metrics"`
-	Credentials     CredentialStruct            `yaml:"credentials"`
-	Transport       Transport                   `yaml:"transport"`
-	NoRefreshSchema bool                        `yaml:"noRefreshSchema"`
+//ServiceComb 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
+type ServiceComb struct {
+	Registry           RegistryStruct      `yaml:"registry"`
+	Config             Config              `yaml:"config"`
+	ServiceDescription ServiceSpec         `yaml:"service"`
+	Protocols          map[string]Protocol `yaml:"protocols"`
+	Handler            HandlerStruct       `yaml:"handler"`
+	FlowControl        FlowControl         `yaml:"flowcontrol"`
+	Monitor            MonitorStruct       `yaml:"monitor"`
+	Metrics            MetricsStruct       `yaml:"metrics"`
+	Credentials        CredentialStruct    `yaml:"credentials"`
+	Transport          Transport           `yaml:"transport"`
+	NoRefreshSchema    bool                `yaml:"noRefreshSchema"`
+	Options            storage.Options     `yaml:"options"`
 }
 
 //Transport defines failure
@@ -97,11 +100,10 @@ type Config struct {
 type ConfigClient struct {
 	Type            string                 `yaml:"type"`
 	ServerURI       string                 `yaml:"serverUri"`
-	TenantName      string                 `yaml:"tenantName"`
 	RefreshMode     int                    `yaml:"refreshMode"`
 	RefreshInterval int                    `yaml:"refreshInterval"`
 	RefreshPort     string                 `yaml:"refreshPort"`
-	Autodiscovery   bool                   `yaml:"autodiscovery"`
+	AutoDiscovery   bool                   `yaml:"autodiscovery"`
 	APIVersion      ConfigAPIVersionStruct `yaml:"api"`
 	Enabled         bool                   `yaml:"enabled"`
 	Dimension       map[string]string      `yaml:"dimension"`
@@ -112,12 +114,6 @@ type ConfigAPIVersionStruct struct {
 	Version string `yaml:"version"`
 }
 
-// ReferencesStruct references structure
-type ReferencesStruct struct {
-	Version   string `yaml:"version"`
-	Transport string `yaml:"transport"`
-}
-
 // Protocol protocol structure
 type Protocol struct {
 	Listen       string `yaml:"listenAddress"`
@@ -126,21 +122,15 @@ type Protocol struct {
 	Transport    string `yaml:"transport"`
 }
 
-// MicroserviceCfg microservice.yaml 配置项
-type MicroserviceCfg struct {
-	AppID              string           `yaml:"APPLICATION_ID"`
-	ServiceDescription MicServiceStruct `yaml:"service_description"`
-}
-
-// MicServiceStruct 设置微服务的私有属性
-type MicServiceStruct struct {
+// ServiceSpec 设置微服务的私有属性
+type ServiceSpec struct {
 	Name               string              `yaml:"name"`
+	AppID              string              `yaml:"app"`
 	Hostname           string              `yaml:"hostname"`
 	Version            string              `yaml:"version"`
 	Environment        string              `yaml:"environment"`
-	Level              string              `yaml:"level"`
 	Properties         map[string]string   `yaml:"properties"`
-	InstanceProperties map[string]string   `yaml:"instance_properties"`
+	InstanceProperties map[string]string   `yaml:"instanceProperties"`
 	ServicePaths       []ServicePathStruct `yaml:"paths"`
 	ServicesStatus     string              `yaml:"status"`
 	Schemas            []string            `yaml:"schemas"`

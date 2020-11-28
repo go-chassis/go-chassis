@@ -1,6 +1,3 @@
----
-#微服务的私有属性
-APPLICATION_ID: pilot #optional
-service_description:
-  name: istioclient
-  #version: 0.1 #optional
+servicecomb:
+  service:
+    name: istioclient

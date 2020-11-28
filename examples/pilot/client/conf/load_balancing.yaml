@@ -1,7 +1,6 @@
 ---
-#APPLICATION_ID: CSE optional
 
-cse:
+servicecomb:
   loadbalance:
     retryEnabled: false
     retryOnNext: 2

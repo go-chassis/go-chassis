@@ -19,7 +19,7 @@ package reporter
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/third_party/forked/afex/hystrix-go/hystrix"
+	"github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix"
 	"testing"
 	"time"
 )
@@ -40,7 +40,7 @@ func TestReportMetricsToPrometheus(t *testing.T) {
 	time.Sleep(1 * time.Second)
 	cb, _, _ := hystrix.GetCircuit("cmd")
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.metrics.flushInterval", "1s")
+	archaius.Set("servicecomb.metrics.flushInterval", "1s")
 	time.Sleep(1 * time.Second)
 	ReportMetricsToPrometheus(cb)
 

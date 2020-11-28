@@ -18,8 +18,9 @@
 package handler
 
 import (
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/match"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
 )
 
 //TrafficMarker
@@ -27,7 +28,7 @@ const (
 	TrafficMarker = "traffic-marker"
 )
 
-//MarkHandler compares the Match rule with invocation and mark this invocation
+//MarkHandler compares the match rule with invocation and mark this invocation
 type MarkHandler struct {
 }
 
@@ -37,9 +38,15 @@ func (m *MarkHandler) Name() string {
 }
 
 //Handle to handle the mart invocation
-func (m *MarkHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
-	match.Mark(i)
-	chain.Next(i, cb)
+func (m *MarkHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invocation.ResponseCallBack) {
+	markInHeader := inv.Header(common.HeaderMark)
+	if markInHeader != "" {
+		inv.Mark(markInHeader)
+	} else {
+		marker.Mark(inv)
+	}
+
+	chain.Next(inv, cb)
 }
 
 func newMarkHandler() Handler {

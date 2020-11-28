@@ -21,8 +21,9 @@ import (
 	"context"
 	"errors"
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/security/authr"
+	"github.com/go-chassis/go-chassis/v2/security/authr"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"testing"
 )
 
@@ -32,7 +33,12 @@ type insecureAuthenticator struct {
 func newInsecureAuth(opts *authr.Options) (authr.Authenticator, error) {
 	return &insecureAuthenticator{}, nil
 }
-func (a *insecureAuthenticator) Login(ctx context.Context, user string, password string) (string, error) {
+func (a *insecureAuthenticator) Login(ctx context.Context, user string, password string, opts ...authr.LoginOption) (string, error) {
+	opt := &authr.LoginOptions{}
+	for _, o := range opts {
+		o(opt)
+	}
+	log.Println(opt.ExpireAfter)
 	if user == archaius.GetString("username", "") && password == archaius.GetString("password", "") {
 		return "token", nil
 	}
@@ -49,7 +55,7 @@ func TestLogin(t *testing.T) {
 	archaius.Set("password", "admin")
 	authr.Install("default", newInsecureAuth)
 	authr.Init()
-	token, _ := authr.Login(ctx, "admin", "admin")
+	token, _ := authr.Login(ctx, "admin", "admin", authr.ExpireAfter("1s"))
 	assert.Equal(t, "token", token)
 	claims, _ := authr.Authenticate(ctx, "token")
 	assert.Equal(t, "admin", claims)

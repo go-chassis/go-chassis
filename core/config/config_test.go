@@ -3,10 +3,10 @@ package config_test
 import (
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 	"io"
@@ -17,15 +17,12 @@ import (
 
 func TestInit1(t *testing.T) {
 	b := []byte(`
-cse:
-  service:
-    registry:
-      #disabled: false           optional:禁用注册发现选项，默认开始注册发现
+servicecomb:
+  registry:
       type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
       scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务
       address: http://127.0.0.1:30100
-      #register: manual          optional：register不配置时默认为自动注册，可选参数有自动注册auto和手动注册manual
-      refeshInterval : 30s
+      refreshInterval : 30s
       watch: true
   transport:
     failure:
@@ -51,11 +48,9 @@ region:
 
 	b = []byte(`
 ---
-#微服务的私有属性
-#APPLICATION_ID: CSE #optional
-service_description:
-  name: Client
-  #version: 0.1 #optional
+servicecomb:
+  service:
+	  name: Client
 
 `)
 	d, _ = os.Getwd()
@@ -84,8 +79,8 @@ service_description:
 func TestInit2(t *testing.T) {
 	t.Log("testing config initialization")
 
-	assert.Equal(t, "servicecenter", config.GlobalDefinition.Cse.Service.Registry.Type)
-	assert.Equal(t, "127.0.0.1:8080", config.GlobalDefinition.Cse.Protocols["rest"].Listen)
+	assert.Equal(t, "servicecenter", config.GlobalDefinition.ServiceComb.Registry.Type)
+	assert.Equal(t, "127.0.0.1:8080", config.GlobalDefinition.ServiceComb.Protocols["rest"].Listen)
 
 }
 

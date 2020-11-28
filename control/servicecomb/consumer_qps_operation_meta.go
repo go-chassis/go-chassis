@@ -3,7 +3,7 @@ package servicecomb
 import (
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/common"
 )
 
 // ConsumerKeys contain consumer keys

@@ -3,9 +3,9 @@ package servicecomb_test
 import (
 	"testing"
 
-	arhcaiusPanel "github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	arhcaiusPanel "github.com/go-chassis/go-chassis/v2/control/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 )
 

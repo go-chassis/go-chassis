@@ -19,26 +19,27 @@ package chassis
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-chassis/v2/core/governance"
 	"os"
 	"sync"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/configserver"
-	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/router"
-	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/core/tracing"
-	"github.com/go-chassis/go-chassis/eventlistener"
-	"github.com/go-chassis/go-chassis/pkg/backends/quota"
-	"github.com/go-chassis/go-chassis/pkg/metrics"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/bootstrap"
+	"github.com/go-chassis/go-chassis/v2/configserver"
+	"github.com/go-chassis/go-chassis/v2/control"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	"github.com/go-chassis/go-chassis/v2/core/server"
+	"github.com/go-chassis/go-chassis/v2/core/tracing"
+
+	"github.com/go-chassis/go-chassis/v2/pkg/backends/quota"
+	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/openlog"
 )
 
 type chassis struct {
@@ -52,7 +53,7 @@ type chassis struct {
 	sigs                   []os.Signal
 	preShutDownFuncs       map[string]func(os.Signal)
 	postShutDownFuncs      map[string]func(os.Signal)
-	hajackGracefulShutdown func(os.Signal)
+	hijackGracefulShutdown func(os.Signal)
 }
 
 // Schema struct for to represent schema info
@@ -67,7 +68,7 @@ func (c *chassis) initChains(chainType string) error {
 	var handlerNameMap = map[string]string{defaultChainName: ""}
 	switch chainType {
 	case common.Provider:
-		if providerChainMap := config.GlobalDefinition.Cse.Handler.Chain.Provider; len(providerChainMap) != 0 {
+		if providerChainMap := config.GlobalDefinition.ServiceComb.Handler.Chain.Provider; len(providerChainMap) != 0 {
 			if _, ok := providerChainMap[defaultChainName]; !ok {
 				providerChainMap[defaultChainName] = c.DefaultProviderChainNames[defaultChainName]
 			}
@@ -76,7 +77,7 @@ func (c *chassis) initChains(chainType string) error {
 			handlerNameMap = c.DefaultProviderChainNames
 		}
 	case common.Consumer:
-		if consumerChainMap := config.GlobalDefinition.Cse.Handler.Chain.Consumer; len(consumerChainMap) != 0 {
+		if consumerChainMap := config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer; len(consumerChainMap) != 0 {
 			if _, ok := consumerChainMap[defaultChainName]; !ok {
 				consumerChainMap[defaultChainName] = c.DefaultConsumerChainNames[defaultChainName]
 			}
@@ -85,19 +86,19 @@ func (c *chassis) initChains(chainType string) error {
 			handlerNameMap = c.DefaultConsumerChainNames
 		}
 	}
-	openlogging.GetLogger().Debugf("init %s's handler map", chainType)
+	openlog.Debug(fmt.Sprintf("init %s's handler map", chainType))
 	return handler.CreateChains(chainType, handlerNameMap)
 }
 func (c *chassis) initHandler() error {
 	if err := c.initChains(common.Provider); err != nil {
-		openlogging.GetLogger().Errorf("chain int failed: %s", err)
+		openlog.Error(fmt.Sprintf("chain int failed: %s", err))
 		return err
 	}
 	if err := c.initChains(common.Consumer); err != nil {
-		openlogging.GetLogger().Errorf("chain int failed: %s", err)
+		openlog.Error(fmt.Sprintf("chain int failed: %s", err))
 		return err
 	}
-	openlogging.Info("chain init success")
+	openlog.Info("chain init success")
 	return nil
 }
 
@@ -107,7 +108,7 @@ func (c *chassis) initialize() error {
 		return nil
 	}
 	if err := config.Init(); err != nil {
-		openlogging.Error("failed to initialize conf: " + err.Error())
+		openlog.Error("failed to initialize conf: " + err.Error())
 		return err
 	}
 	if err := runtime.Init(); err != nil {
@@ -118,7 +119,7 @@ func (c *chassis) initialize() error {
 	}
 	err := c.initHandler()
 	if err != nil {
-		openlogging.GetLogger().Errorf("handler init failed: %s", err)
+		openlog.Error(fmt.Sprintf("handler init failed: %s", err))
 		return err
 	}
 
@@ -127,7 +128,7 @@ func (c *chassis) initialize() error {
 		return err
 	}
 	bootstrap.Bootstrap()
-	if !archaius.GetBool("cse.service.registry.disabled", false) {
+	if !archaius.GetBool("servicecomb.registry.disabled", false) {
 		err := registry.Enable()
 		if err != nil {
 			return err
@@ -140,7 +141,7 @@ func (c *chassis) initialize() error {
 
 	err = configserver.Init()
 	if err != nil {
-		openlogging.Warn("lost config server: " + err.Error())
+		openlog.Warn("lost config server: " + err.Error())
 	}
 	// router needs get configs from config-server when init
 	// so it must init after bootstrap
@@ -159,18 +160,18 @@ func (c *chassis) initialize() error {
 		return err
 	}
 
-	eventlistener.Init()
 	if err := initBackendPlugins(); err != nil {
 		return err
 	}
+	governance.Init()
 	c.Initialized = true
 	return nil
 }
 
 func initBackendPlugins() error {
 	if err := quota.Init(quota.Options{
-		Plugin:   archaius.GetString("servicecomb.service.quota.plugin", ""),
-		Endpoint: archaius.GetString("servicecomb.service.quota.endpoint", ""),
+		Plugin:   archaius.GetString("servicecomb.quota.plugin", ""),
+		Endpoint: archaius.GetString("servicecomb.quota.endpoint", ""),
 	}); err != nil {
 		return err
 	}

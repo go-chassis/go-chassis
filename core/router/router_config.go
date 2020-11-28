@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	chassisTLS "github.com/go-chassis/go-chassis/core/tls"
-	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/iputil"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	"github.com/go-chassis/openlog"
 )
 
 // RouterTLS defines tls prefix
@@ -20,7 +20,7 @@ const RouterTLS = "router"
 func Init() error {
 	err := BuildRouter(config.GetRouterType())
 	if err != nil {
-		openlogging.Error("can not init router [" + config.GetRouterType() + "]: " + err.Error())
+		openlog.Error("can not init router [" + config.GetRouterType() + "]: " + err.Error())
 		return err
 	}
 	op, err := getSpecifiedOptions()
@@ -29,10 +29,10 @@ func Init() error {
 	}
 	err = DefaultRouter.Init(op)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 		return err
 	}
-	openlogging.Info("router init success")
+	openlog.Info("router init success")
 	return nil
 }
 
@@ -47,8 +47,8 @@ func ValidateRule(rules map[string][]*config.RouteRule) bool {
 			}
 
 			if allWeight > 100 {
-				openlogging.Warn("route rule is invalid: total weight is over 100%", openlogging.WithTags(
-					openlogging.Tags{
+				openlog.Warn("route rule is invalid: total weight is over 100%", openlog.WithTags(
+					openlog.Tags{
 						"service": name,
 					}))
 				return false

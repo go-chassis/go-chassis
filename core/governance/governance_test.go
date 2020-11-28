@@ -19,18 +19,19 @@ package governance_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/governance"
+	"github.com/go-chassis/go-chassis/v2/core/governance"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestInstallProcess(t *testing.T) {
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("servicecomb.customResource.aResource", "test")
+	archaius.Set("servicecomb.customResource.name1", "test")
 	var value string
-	governance.InstallProcessor("servicecomb.customResource", func(k, v string) {
+	governance.InstallProcessor("servicecomb.customResource", func(k, v string) error {
 		t.Log("process:" + k)
 		value = v
+		return nil
 	})
 	governance.Init()
 	assert.Equal(t, "test", value)

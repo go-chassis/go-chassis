@@ -2,16 +2,18 @@ package config
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/config/schema"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
-	"github.com/go-chassis/go-chassis/pkg/util/iputil"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/config/schema"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/iputil"
+	"github.com/go-chassis/openlog"
 )
 
 // GlobalDefinition is having the information about region, load balancing, service center, config server,
@@ -21,7 +23,7 @@ var lbConfig *model.LBWrapper
 
 // MicroserviceDefinition has info about application id, provider info, description of the service,
 // and description of the instance
-var MicroserviceDefinition *model.MicroserviceCfg
+var MicroserviceDefinition *model.ServiceSpec
 
 //MonitorCfgDef has monitor info, including zipkin and apm.
 var MonitorCfgDef *model.MonitorCfg
@@ -34,12 +36,12 @@ var ErrNoName = errors.New("micro service name is missing in description file")
 
 //GetConfigServerConf return config server conf
 func GetConfigServerConf() model.ConfigClient {
-	return GlobalDefinition.Cse.Config.Client
+	return GlobalDefinition.ServiceComb.Config.Client
 }
 
 //GetTransportConf return transport settings
 func GetTransportConf() model.Transport {
-	return GlobalDefinition.Cse.Transport
+	return GlobalDefinition.ServiceComb.Transport
 }
 
 //GetDataCenter return data center info
@@ -54,7 +56,7 @@ func GetAPM() model.APMStruct {
 
 // readFromArchaius unmarshal configurations to expected pointer
 func readFromArchaius() error {
-	openlogging.Debug("read from archaius")
+	openlog.Debug("read from archaius")
 	err := ReadGlobalConfigFromArchaius()
 	if err != nil {
 		return err
@@ -65,11 +67,6 @@ func readFromArchaius() error {
 	}
 
 	err = ReadHystrixFromArchaius()
-	if err != nil {
-		return err
-	}
-
-	err = readMicroServiceSpecFiles()
 	if err != nil {
 		return err
 	}
@@ -85,7 +82,6 @@ func readFromArchaius() error {
 	populateServiceName()
 	populateVersion()
 	populateApp()
-	populateTenant()
 
 	return nil
 }
@@ -95,14 +91,11 @@ func populateServiceRegistryAddress() {
 	//Registry Address , higher priority for environment variable
 	registryAddrFromEnv := readEndpoint(common.EnvSCEndpoint)
 	if registryAddrFromEnv != "" {
-		openlogging.Debug("detect env", openlogging.WithTags(
-			openlogging.Tags{
+		openlog.Debug("detect env", openlog.WithTags(
+			openlog.Tags{
 				"ep": registryAddrFromEnv,
 			}))
-		GlobalDefinition.Cse.Service.Registry.Registrator.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.ServiceDiscovery.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.ContractDiscovery.Address = registryAddrFromEnv
-		GlobalDefinition.Cse.Service.Registry.Address = registryAddrFromEnv
+		GlobalDefinition.ServiceComb.Registry.Address = registryAddrFromEnv
 	}
 }
 
@@ -111,7 +104,7 @@ func populateConfigServerAddress() {
 	//config server Address , higher priority for environment variable
 	configServerAddrFromEnv := readEndpoint(common.EnvCCEndpoint)
 	if configServerAddrFromEnv != "" {
-		GlobalDefinition.Cse.Config.Client.ServerURI = configServerAddrFromEnv
+		GlobalDefinition.ServiceComb.Config.Client.ServerURI = configServerAddrFromEnv
 	}
 }
 
@@ -119,7 +112,7 @@ func populateConfigServerAddress() {
 func readEndpoint(env string) string {
 	addrFromEnv := archaius.GetString(env, archaius.GetString(common.EnvCSEEndpoint, ""))
 	if addrFromEnv != "" {
-		openlogging.Info("read config " + addrFromEnv)
+		openlog.Info("read config " + addrFromEnv)
 		return addrFromEnv
 	}
 	return addrFromEnv
@@ -128,34 +121,27 @@ func readEndpoint(env string) string {
 // populateServiceEnvironment populate service environment
 func populateServiceEnvironment() {
 	if e := archaius.GetString(common.Env, ""); e != "" {
-		MicroserviceDefinition.ServiceDescription.Environment = e
+		MicroserviceDefinition.Environment = e
 	}
 }
 
 // populateServiceName populate service name
 func populateServiceName() {
 	if e := archaius.GetString(common.ServiceName, ""); e != "" {
-		MicroserviceDefinition.ServiceDescription.Name = e
+		MicroserviceDefinition.Name = e
 	}
 }
 
 // populateVersion populate version
 func populateVersion() {
 	if e := archaius.GetString(common.Version, ""); e != "" {
-		MicroserviceDefinition.ServiceDescription.Version = e
+		MicroserviceDefinition.Version = e
 	}
 }
 
 func populateApp() {
 	if e := archaius.GetString(common.App, ""); e != "" {
 		MicroserviceDefinition.AppID = e
-	}
-}
-
-// populateTenant populate tenant
-func populateTenant() {
-	if GlobalDefinition.Cse.Service.Registry.Tenant == "" {
-		GlobalDefinition.Cse.Service.Registry.Tenant = common.DefaultApp
 	}
 }
 
@@ -166,18 +152,18 @@ func ReadGlobalConfigFromArchaius() error {
 	if err != nil {
 		return err
 	}
+	MicroserviceDefinition = &GlobalDefinition.ServiceComb.ServiceDescription
 	return nil
 }
 
 // ReadLBFromArchaius for to unmarshal the global config file(chassis.yaml) information
 func ReadLBFromArchaius() error {
-	lbMutex.Lock()
-	defer lbMutex.Unlock()
 	lbConfig = &model.LBWrapper{}
 	err := archaius.UnmarshalConfig(lbConfig)
 	if err != nil {
 		return err
 	}
+	log.Println(fmt.Printf("%+v", lbConfig))
 	return nil
 }
 
@@ -186,7 +172,7 @@ func ReadMonitorFromArchaius() error {
 	MonitorCfgDef = &model.MonitorCfg{}
 	err := archaius.UnmarshalConfig(&MonitorCfgDef)
 	if err != nil {
-		openlogging.Error("Config init failed. " + err.Error())
+		openlog.Error("Config init failed. " + err.Error())
 		return err
 	}
 	return nil
@@ -194,8 +180,6 @@ func ReadMonitorFromArchaius() error {
 
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
 func ReadHystrixFromArchaius() error {
-	cbMutex.RLock()
-	defer cbMutex.RUnlock()
 	HystrixConfig = &model.HystrixConfigWrapper{}
 	err := archaius.UnmarshalConfig(&HystrixConfig)
 	if err != nil {
@@ -204,16 +188,10 @@ func ReadHystrixFromArchaius() error {
 	return nil
 }
 
-// readMicroServiceSpecFiles read micro service configuration file by archaius
-func readMicroServiceSpecFiles() error {
-	MicroserviceDefinition = &model.MicroserviceCfg{}
-	return archaius.UnmarshalConfig(MicroserviceDefinition)
-}
-
 //GetLoadBalancing return lb config
 func GetLoadBalancing() *model.LoadBalancing {
 	if lbConfig != nil {
-		return lbConfig.Prefix.LBConfig
+		return &lbConfig.Prefix.LBConfig
 	}
 	return nil
 }
@@ -221,7 +199,7 @@ func GetLoadBalancing() *model.LoadBalancing {
 //GetHystrixConfig return cb config
 func GetHystrixConfig() *model.HystrixConfig {
 	if HystrixConfig != nil {
-		return HystrixConfig.HystrixConfig
+		return &HystrixConfig.HystrixConfig
 	}
 	return nil
 }
@@ -257,25 +235,25 @@ func Init() error {
 		return err
 	}
 
-	runtime.ServiceName = MicroserviceDefinition.ServiceDescription.Name
-	runtime.Version = MicroserviceDefinition.ServiceDescription.Version
-	runtime.Environment = MicroserviceDefinition.ServiceDescription.Environment
-	runtime.MD = MicroserviceDefinition.ServiceDescription.Properties
+	runtime.ServiceName = MicroserviceDefinition.Name
+	runtime.Version = MicroserviceDefinition.Version
+	runtime.Environment = MicroserviceDefinition.Environment
+	runtime.MD = MicroserviceDefinition.Properties
 	runtime.App = MicroserviceDefinition.AppID
 	if runtime.App == "" {
 		runtime.App = common.DefaultApp
 	}
 
-	runtime.HostName = MicroserviceDefinition.ServiceDescription.Hostname
+	runtime.HostName = MicroserviceDefinition.Hostname
 	if runtime.HostName == "" {
 		runtime.HostName, err = os.Hostname()
 		if err != nil {
-			openlogging.Error("Get hostname failed:" + err.Error())
+			openlog.Error("Get hostname failed:" + err.Error())
 			return err
 		}
 	} else if runtime.HostName == common.PlaceholderInternalIP {
 		runtime.HostName = iputil.GetLocalIP()
 	}
-	openlogging.Info("Host name is " + runtime.HostName)
+	openlog.Info("Host name is " + runtime.HostName)
 	return err
 }

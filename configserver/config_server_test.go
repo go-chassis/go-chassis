@@ -3,17 +3,17 @@ package configserver_test
 import (
 	"testing"
 
-	"github.com/go-chassis/go-chassis/configserver"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-	_ "github.com/go-chassis/go-chassis/initiator"
+	"github.com/go-chassis/go-chassis/v2/configserver"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetConfigServerEndpoint(t *testing.T) {
 	config.GlobalDefinition = &model.GlobalCfg{
-		Cse: model.CseStruct{
+		ServiceComb: model.ServiceComb{
 			Config: model.Config{
 				Client: model.ConfigClient{},
 			},

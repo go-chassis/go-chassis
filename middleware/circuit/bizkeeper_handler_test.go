@@ -7,17 +7,17 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/control"
-	_ "github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
-	_ "github.com/go-chassis/go-chassis/initiator"
-	"github.com/go-chassis/go-chassis/middleware/circuit"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/control"
+	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
+	"github.com/go-chassis/go-chassis/v2/middleware/circuit"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,9 +44,10 @@ func prepareTestFile(t *testing.T, confDir, file, content string) {
 func TestCBInit(t *testing.T) {
 	f := prepareConfDir(t)
 	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 	circuitContent :=
 		`
 cse:
@@ -100,8 +101,8 @@ func TestBizKeeperConsumerHandler_Handle(t *testing.T) {
 	c.AddHandler(&circuit.BizKeeperConsumerHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer["bizkeeperconsumerdefault"] = "bizkeeper-consumer"
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer["bizkeeperconsumerdefault"] = "bizkeeper-consumer"
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",
@@ -121,8 +122,8 @@ func TestBizKeeperProviderHandler_Handle(t *testing.T) {
 	c.AddHandler(&circuit.BizKeeperProviderHandler{})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = make(map[string]string)
-	config.GlobalDefinition.Cse.Handler.Chain.Provider["bizkeeperproviderdefault"] = "bizkeeper-provider"
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = make(map[string]string)
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider["bizkeeperproviderdefault"] = "bizkeeper-provider"
 	i := &invocation.Invocation{
 		MicroServiceName: "service1",
 		SchemaID:         "schema1",
@@ -148,8 +149,7 @@ func TestBizKeeperHandler_Names(t *testing.T) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
@@ -157,7 +157,7 @@ func BenchmarkBizKeepConsumerHandler_Handler(b *testing.B) {
 	c := handler.Chain{}
 	c.AddHandler(&circuit.BizKeeperConsumerHandler{})
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
 
 	config.Init()
 	opts := control.Options{

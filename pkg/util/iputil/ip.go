@@ -3,13 +3,14 @@ package iputil
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/common"
 )
 
 //Localhost is a function which returns localhost IP address
@@ -19,12 +20,14 @@ func Localhost() string { return "127.0.0.1" }
 func GetLocalIP() string {
 	addresses, err := net.InterfaceAddrs()
 	if err != nil {
+		log.Println(err)
 		return ""
 	}
 	for _, address := range addresses {
 		// Parse IP
 		var ip net.IP
 		if ip, _, err = net.ParseCIDR(address.String()); err != nil {
+			log.Println(err)
 			return ""
 		}
 		// Check if valid global unicast IPv4 address
@@ -60,7 +63,7 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 		u, e := url.Parse(addr)
 		if e != nil {
 			//not uri. but still permitted, like zookeeper,file system
-			hosts = append(hosts, u.Host)
+			openlog.Warn(fmt.Sprintf("parse address failed, %s", e.Error()))
 			continue
 		}
 		if len(u.Host) == 0 {
@@ -137,10 +140,14 @@ func StartListener(listenAddress string, tlsConfig *tls.Config) (listener net.Li
 func ClientIP(r *http.Request) string {
 	ips := ForwardedIPs(r)
 	if len(ips) > 0 {
-		rip, _, err := net.SplitHostPort(ips[0])
+		ip := ips[0]
+		if !strings.Contains(ip, ":") {
+			return ip
+		}
+		rip, _, err := net.SplitHostPort(ip)
 		if err != nil {
-			openlogging.GetLogger().Warnf("get client ip catch a err, %s", err.Error())
-			return ips[0]
+			openlog.Warn(fmt.Sprintf("get client ip catch a err, %s", err.Error()))
+			return ip
 		}
 		return rip
 	}
@@ -157,7 +164,7 @@ func RemoteIP(r *http.Request) string {
 	remoteIP := r.RemoteAddr
 	rip, _, err := net.SplitHostPort(remoteIP)
 	if err != nil {
-		openlogging.GetLogger().Warnf("get remote ip catch a err, %s", err.Error())
+		openlog.Warn(fmt.Sprintf("get remote ip catch a err, %s", err.Error()))
 		return remoteIP
 	}
 	return rip

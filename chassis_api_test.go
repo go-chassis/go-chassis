@@ -6,13 +6,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/server"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 
-	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
 	"github.com/stretchr/testify/assert"
 	"syscall"
 )
@@ -33,7 +33,6 @@ func TestInit(t *testing.T) {
 
 	// write some text line-by-line to file
 	_, err = globalDefFile.WriteString(`---
-#APPLICATION_ID: CSE optional
 controlPanel:
   infra: istio
   settings:
@@ -55,14 +54,14 @@ cse:
       kind: constant
       minMs: 200
       maxMs: 400
-  service:
-    registry:
-      type: servicecenter
-      scope: full
-      address: http://127.0.0.1:30100
-      refeshInterval : 30s
-      watch: true
-      register: reg
+servicecomb:
+  registry:
+    type: servicecenter
+    scope: full
+    address: http://127.0.0.1:30100
+    refreshInterval : 30s
+    watch: true
+    register: reg
   protocols:
     rest:
       listenAddress: 127.0.0.1:5001
@@ -88,44 +87,43 @@ ssl:
 	defer msDefFile.Close()
 	_, err = msDefFile.WriteString(`---
 #微服务的私有属性
-service_description:
-  name: nodejs2
-  level: FRONT
-  version: 0.1
-  properties:
-    allowCrossApp: true
-  instance_properties:
-    a: s
-    p: s
+servicecomb:
+  service:
+    name: nodejs2
+    version: 0.1
+    properties:
+      allowCrossApp: true
+    instanceProperties:
+      a: s
+      p: s
 `)
 
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 
 	config.GlobalDefinition = &model.GlobalCfg{}
 
 	config.Init()
 
-	config.GlobalDefinition.Cse.Service.Registry.AutoRegister = "abc"
+	config.GlobalDefinition.ServiceComb.Registry.AutoRegister = "abc"
 
 	chassis.SetDefaultConsumerChains(nil)
 	chassis.SetDefaultProviderChains(nil)
 
 	sigs := []os.Signal{syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT}
 
-	chassis.HajackSignal(sigs...)
+	chassis.HijackSignal(sigs...)
 
-	chassis.InstalPreShutdown("pre_test", func(os.Signal) {
+	chassis.InstallPreShutdown("pre_test", func(os.Signal) {
 		t.Log("pre_shutdown_test")
 	})
 
-	chassis.InstalPostShutdown("post_test", func(os.Signal) {
+	chassis.InstallPostShutdown("post_test", func(os.Signal) {
 		t.Log("post_shutdown_test")
 	})
 
-	chassis.HajackGracefulShutdown(chassis.GracefulShutdown)
+	chassis.HijackGracefulShutdown(chassis.GracefulShutdown)
 
 	err = chassis.Init()
 	assert.NoError(t, err)
@@ -149,7 +147,6 @@ func TestInitError(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", p)
 
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }

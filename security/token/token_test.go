@@ -18,8 +18,8 @@
 package token_test
 
 import (
-	"github.com/go-chassis/go-chassis/security/secret"
-	"github.com/go-chassis/go-chassis/security/token"
+	"github.com/go-chassis/go-chassis/v2/security/secret"
+	"github.com/go-chassis/go-chassis/v2/security/token"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -44,4 +44,12 @@ func TestJWTTokenManager_GetToken(t *testing.T) {
 		assert.NoError(t, err)
 		t.Log(to)
 	})
+	t.Run("verify invalid token", func(t *testing.T) {
+		m, err := token.Verify("any", func(claims interface{}, method token.SigningMethod) (interface{}, error) {
+			return public, nil
+		})
+		assert.Error(t, err)
+		assert.Nil(t, m)
+	})
+
 }

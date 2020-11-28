@@ -1,12 +1,13 @@
 package aes
 
 import (
-	"github.com/go-chassis/go-chassis/security/cipher"
+	"fmt"
+	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	"os"
 
 	security2 "github.com/go-chassis/foundation/security"
-	"github.com/go-chassis/go-chassis/pkg/goplugin"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/pkg/goplugin"
+	"github.com/go-chassis/openlog"
 )
 
 const cipherPlugin = "cipher_plugin.so"
@@ -27,7 +28,7 @@ func init() {
 	if v, exist := os.LookupEnv("CIPHER_ROOT"); exist {
 		err := os.Setenv("PAAS_CRYPTO_PATH", v)
 		if err != nil {
-			openlogging.Warn("can not set env for cipher: " + err.Error())
+			openlog.Warn("can not set env for cipher: " + err.Error())
 		}
 	}
 	cipher.InstallCipherPlugin("aes", new)
@@ -37,15 +38,15 @@ func new() security2.Cipher {
 	cipher, err := goplugin.LookUpSymbolFromPlugin(cipherPlugin, "Cipher")
 	if err != nil {
 		if os.IsNotExist(err) {
-			openlogging.GetLogger().Errorf("%s not found", cipherPlugin)
+			openlog.Error(fmt.Sprintf("%s not found", cipherPlugin))
 		} else {
-			openlogging.GetLogger().Errorf("Load %s failed, err [%s]", cipherPlugin, err.Error())
+			openlog.Error(fmt.Sprintf("Load %s failed, err [%s]", cipherPlugin, err.Error()))
 		}
 		return nil
 	}
 	cipherInstance, ok := cipher.(Cipher)
 	if !ok {
-		openlogging.GetLogger().Infof("E: Expecting Cipher interface, but got something else.")
+		openlog.Info("E: Expecting Cipher interface, but got something else.")
 		return nil
 	}
 	cipherInstance.Init()

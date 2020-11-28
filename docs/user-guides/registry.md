@@ -23,9 +23,6 @@ chassis.yaml中配置使用的注册中心类型、注册中心的地址信息�
 **type**
 > *(optional, string)* 对接服务中心插件类型，默认为servicecenter
 
-**scope**
-> *(optional, bool)* 默认为full，允许跨app发现，填入app以禁止跨应用发现
-
 **address**
 > *(optional, bool)*服务中心地址 允许配置多个以逗号隔开，默认为空
 
@@ -34,9 +31,6 @@ chassis.yaml中配置使用的注册中心类型、注册中心的地址信息�
 
 **refreshInterval**
 > *(optional, string)* 更新实例缓存的时间间隔，格式为数字加单位（s/m/h），如1s/1m/1h，默认为30s
-
-**api.version**
-> *(optional, string)* 访问服务中心的api版本，默认为v4
 
 **watch**
 > *(optional, bool)*  是否watch实例变化事件，默认为false
@@ -71,20 +65,22 @@ InstallPlugin(name string, f func(opts ...Option) Registry)
 服务中心最简化配置只需要registry的address，注册的微服务实例通过appId、服务名和版本决定。
 
 ```yaml
-APPLICATION_ID: default #optional
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       disabled: false            #optional: 默认开启registry模块
       type: servicecenter        #optional: 默认类型为对接服务中心
-      scope: full                #optional: scope为full注册时允许跨app
       address: http://10.0.0.1:30100,http://10.0.0.2:30100 
       register: auto             #optional：默认为自动 [auto manual]
       refeshInterval : 30s       
       watch: true                         
-      api:
-        version: v4
+servicecomb:
+  credentials:
+    account:
+      name: service_account  
+      password: Complicated_password1
+    cipher: default
 ```
+
 
 
 

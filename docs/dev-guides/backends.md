@@ -33,9 +33,8 @@ quota.Install("mock", func() (quota.Manager, error) {
 2.Configure it in chassis.yaml
 ```yaml
 servicecomb:
-  service:
-    quota:
-      plugin: mock
+  quota:
+    plugin: mock
 ```
 
 3. just call API before you create a resource

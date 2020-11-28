@@ -2,20 +2,69 @@ package servicecomb_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/control"
-	_ "github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	_ "github.com/go-chassis/go-chassis/initiator"
+	"github.com/go-chassis/go-chassis/v2/control"
+	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
 func init() {
+	config.HystrixConfig = &model.HystrixConfigWrapper{
+		HystrixConfig: model.HystrixConfig{
+			FallbackPolicyProperties: model.FallbackPolicyWrapper{
+				Consumer: model.FallbackPolicySpec{
+					AnyService: map[string]model.FallbackPolicyPropertyStruct{},
+				},
+				Provider: model.FallbackPolicySpec{
+					AnyService: map[string]model.FallbackPolicyPropertyStruct{},
+				},
+			},
+			FallbackProperties: model.FallbackWrapper{
+				Consumer: model.FallbackSpec{
+					AnyService: map[string]model.FallbackPropertyStruct{},
+				},
+				Provider: model.FallbackSpec{
+					AnyService: map[string]model.FallbackPropertyStruct{},
+				},
+			},
+			IsolationProperties: model.IsolationWrapper{
+				Consumer: model.IsolationSpec{
+					AnyService:            map[string]model.IsolationSpec{},
+					MaxConcurrentRequests: 100,
+				},
+				Provider: model.IsolationSpec{
+					AnyService: map[string]model.IsolationSpec{},
+				},
+			},
+			CircuitBreakerProperties: model.CircuitWrapper{
+				Consumer: model.CircuitBreakerSpec{
+					AnyService: map[string]model.CircuitBreakPropertyStruct{},
+				},
+				Provider: model.CircuitBreakerSpec{
+					AnyService: map[string]model.CircuitBreakPropertyStruct{},
+				},
+			},
+		},
+	}
+	config.GlobalDefinition = &model.GlobalCfg{
+		Panel: model.ControlPanel{
+			Infra: "",
+		},
+	}
 	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("cse.loadbalance.strategy.name", loadbalancer.StrategySessionStickiness)
+	archaius.Set("cse.loadbalance.strategy.Server.name", loadbalancer.StrategySessionStickiness)
+	config.ReadLBFromArchaius()
+}
+
+func TestPanel_GetLoadBalancing(t *testing.T) {
 	archaius.Set("cse.loadbalance.strategy.name", loadbalancer.StrategyRandom)
 	archaius.Set("cse.loadbalance.strategy.Server.name", loadbalancer.StrategyLatency)
 	archaius.Set("cse.loadbalance.strategy.name", loadbalancer.StrategyLatency)
@@ -29,12 +78,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-}
-func TestPanel_GetLoadBalancing(t *testing.T) {
 	opts := control.Options{
 		Infra: "archaius",
 	}
-	err := control.Init(opts)
+	err = control.Init(opts)
 	assert.NoError(t, err)
 
 	inv := invocation.Invocation{
@@ -75,7 +122,7 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 
 func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{
@@ -88,14 +135,12 @@ func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
 		MicroServiceName:   "Server",
 	}
 	for i := 0; i < b.N; i++ {
-
 		control.DefaultPanel.GetLoadBalancing(inv)
-
 	}
 }
 func BenchmarkPanel_GetLoadBalancing2(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{
@@ -115,7 +160,7 @@ func BenchmarkPanel_GetLoadBalancing2(b *testing.B) {
 }
 func BenchmarkPanel_GetCircuitBreaker(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{
@@ -135,7 +180,7 @@ func BenchmarkPanel_GetCircuitBreaker(b *testing.B) {
 }
 func BenchmarkPanel_GetRateLimiting(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
-	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/examples/discovery/client/")
+	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{

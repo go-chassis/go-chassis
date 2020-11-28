@@ -2,22 +2,22 @@ package main
 
 import (
 	"context"
+	"github.com/go-chassis/openlog"
 	"log"
 	"time"
 
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/bootstrap"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
 	//chassis operation
 	if err := chassis.Init(); err != nil {
-		lager.Logger.Error("Init failed." + err.Error())
+		openlog.Error("Init failed." + err.Error())
 		return
 	}
 	restInvoker := core.NewRestInvoker()
@@ -39,8 +39,6 @@ func callRest(invoker *core.RestInvoker, i int) {
 	resp1, err := invoker.ContextDo(context.TODO(), req)
 	if err != nil {
 		log.Println(err)
-		//lager.Logger.Errorf(err, "call request fail (%s) (%d) ", string(resp1.ReadBody()), resp1.GetStatusCode())
-		//return
 	}
 	log.Println(i, "REST SayHello ------------------------------ ", resp1.StatusCode, string(httputil.ReadBody(resp1)))
 

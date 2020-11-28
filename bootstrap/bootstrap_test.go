@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/lager"
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-	_ "github.com/go-chassis/go-chassis/initiator"
+	"github.com/go-chassis/go-chassis/v2/bootstrap"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,7 +24,7 @@ type bootstrapPlugin struct {
 func initialize() {
 	os.Setenv("CHASSIS_HOME", "/tmp/")
 	chassisConf := filepath.Join("/tmp/", "conf")
-	os.MkdirAll(chassisConf, 0600)
+	os.MkdirAll(chassisConf, 0700)
 	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
 	os.Create(filepath.Join(chassisConf, "microservice.yaml"))
 }
@@ -39,14 +39,13 @@ func TestBootstrap(t *testing.T) {
 	config.Init()
 	time.Sleep(1 * time.Second)
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.MicroserviceDefinition = &model.MicroserviceCfg{}
-	config.GlobalDefinition.Cse.Service.Registry.APIVersion.Version = "v2"
+	config.MicroserviceDefinition = &model.ServiceSpec{}
+	config.GlobalDefinition.ServiceComb.Registry.APIVersion.Version = "v2"
 
 	t.Log("Test bootstrap.go")
 
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 	success = make(map[string]bool)
 
@@ -60,7 +59,7 @@ func TestBootstrap(t *testing.T) {
 	t.Log("Install Plugins")
 	bootstrap.InstallPlugin(plugin1.Name, plugin1)
 	bootstrap.InstallPlugin(plugin2.Name, plugin2)
-	config.GlobalDefinition.Cse.Config.Client.ServerURI = ""
+	config.GlobalDefinition.ServiceComb.Config.Client.ServerURI = ""
 	bootstrap.Bootstrap()
 
 	t.Log("verifying Plugins")

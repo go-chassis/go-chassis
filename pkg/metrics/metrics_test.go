@@ -2,8 +2,8 @@ package metrics_test
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/pkg/metrics"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
+	"github.com/go-chassis/openlog"
 	"github.com/prometheus/common/expfmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -121,7 +121,7 @@ type writer struct {
 }
 
 func (w *writer) Write(b []byte) (n int, err error) {
-	openlogging.Error(string(b))
+	openlog.Error(string(b))
 	return len(b), nil
 }
 func TestNewPrometheusExporter(t *testing.T) {

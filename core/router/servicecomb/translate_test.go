@@ -4,8 +4,8 @@ package servicecomb
 import (
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/openlog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -82,7 +82,7 @@ func TestDarkLaunchRule2RouteRule(t *testing.T) {
 
 	//	 DarkLaunchTypeRate
 
-	openlogging.GetLogger().Info("check translate,type DarkLaunchTypeRate")
+	openlog.Info("check translate,type DarkLaunchTypeRate")
 	routeRules = DarkLaunchRule2RouteRule(getRule(DarkLaunchTypeRate,
 		"version=1.0", "50", []string{"1.0"}))
 	for _, routeRule := range routeRules {

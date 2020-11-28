@@ -2,14 +2,14 @@ package restful
 
 import (
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"log"
 	"net/http"
 	"testing"
 
 	rf "github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/server"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/server"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +21,7 @@ func init() {
 		LoggerLevel: "INFO",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.noRefreshSchema", true)
+	archaius.Set("servicecomb.noRefreshSchema", true)
 	config.ReadGlobalConfigFromArchaius()
 }
 func initEnv() {
@@ -36,8 +36,8 @@ func TestRestStart(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
@@ -67,8 +67,8 @@ func TestRestStartFailure(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)

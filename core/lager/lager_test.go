@@ -1,8 +1,8 @@
 package lager_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/lager"
-	//"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/openlog"
 	"os"
 	"path/filepath"
 	"testing"
@@ -10,17 +10,12 @@ import (
 )
 
 func TestInitialize1(t *testing.T) {
-	path := os.Getenv("GOPATH")
-	logDir := filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server")
-	os.Setenv("CHASSIS_HOME", logDir)
-
-	t.Log("Initializing lager")
-	t.Log("creating log/chassis.log")
 	lager.Init(&lager.Options{
-		LoggerFile: filepath.Join("log", "chassis.log"),
+		LoggerFile: filepath.Join("./log", "chassis.log"),
+		Writers:    "file",
 	})
 
-	if _, err := os.Stat(logDir); err != nil {
+	if _, err := os.Stat("log"); err != nil {
 		if os.IsNotExist(err) {
 			t.Error(err)
 		}
@@ -39,9 +34,9 @@ func TestInitialize2(t *testing.T) {
 	t.Log("initializing config for to initialize PassLagerDefinition variable")
 
 	//Initializing lager
-	t.Log("Initializing lager")
-	lager.Init(&lager.Options{})
-
+	lager.Init(&lager.Options{LoggerLevel: "INFO"})
+	openlog.Debug("no output")
+	openlog.Info("output")
 	if _, err := os.Stat(logDir); err != nil {
 		if os.IsNotExist(err) {
 			t.Error(err)

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/openlog"
 )
 
 // constant values for registry parameters
@@ -71,18 +71,18 @@ func enableRegistrator(opts Options) error {
 	}
 
 	if err := RegisterService(); err != nil {
-		openlogging.GetLogger().Errorf("start backoff for register microservice: %s", err)
+		openlog.Error(fmt.Sprintf("start backoff for register microservice: %s", err))
 		startBackOff(RegisterService)
 	}
 
-	openlogging.GetLogger().Infof("enable [%s] registrator.", rt)
+	openlog.Info(fmt.Sprintf("enable [%s] registrator.", rt))
 	return nil
 }
 
 // InstallRegistrator install registrator plugin
 func InstallRegistrator(name string, f func(opts Options) Registrator) {
 	registryFunc[name] = f
-	openlogging.Info("Installed registry plugin: " + name)
+	openlog.Info("Installed registry plugin: " + name)
 }
 
 //NewRegistrator return registrator
@@ -99,7 +99,6 @@ func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 		return
 	}
 	oR.Addrs = hostsR
-	oR.Tenant = config.GetRegistratorTenant()
 	oR.Version = config.GetRegistratorAPIVersion()
 	oR.TLSConfig, err = getTLSConfig(schemeR, RTag)
 	if err != nil {
@@ -113,7 +112,6 @@ func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 		return
 	}
 	oSD.Addrs = hostsSD
-	oSD.Tenant = config.GetServiceDiscoveryTenant()
 	oSD.Version = config.GetServiceDiscoveryAPIVersion()
 	oSD.ConfigPath = config.GetServiceDiscoveryConfigPath()
 	oSD.TLSConfig, err = getTLSConfig(schemeSD, SDTag)
@@ -128,7 +126,6 @@ func getSpecifiedOptions() (oR, oSD, oCD Options, err error) {
 		return
 	}
 	oCD.Addrs = hostsCD
-	oCD.Tenant = config.GetContractDiscoveryTenant()
 	oCD.Version = config.GetContractDiscoveryAPIVersion()
 	oCD.TLSConfig, err = getTLSConfig(schemeCD, CDTag)
 	if err != nil {
@@ -162,7 +159,7 @@ func Enable() (err error) {
 	}
 	enableContractDiscovery(oCD)
 
-	openlogging.Info("Enabled Registry")
+	openlog.Info("Enabled Registry")
 	IsEnabled = true
 	return nil
 }
@@ -183,13 +180,13 @@ func DoRegister() error {
 	default:
 		{
 			tmpErr := fmt.Errorf("parameter incorrect, autoregister: %s", t)
-			openlogging.GetLogger().Error(tmpErr.Error())
+			openlog.Error(tmpErr.Error())
 			return tmpErr
 		}
 	}
 	if isAutoRegister {
 		if err := RegisterServiceInstances(); err != nil {
-			openlogging.GetLogger().Errorf("start back off for register microservice instances background: %s", err)
+			openlog.Error(fmt.Sprintf("start back off for register microservice instances background: %s", err))
 			go startBackOff(RegisterServiceInstances)
 		}
 	}

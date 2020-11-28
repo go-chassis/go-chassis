@@ -7,11 +7,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/openlog"
 )
 
 var i int
@@ -77,7 +77,7 @@ func init() {
 				if useLatencyAware {
 					CalculateAvgLatency()
 					SortLatency()
-					openlogging.Info("Preparing data for Weighted Response Strategy")
+					openlog.Info("Preparing data for Weighted Response Strategy")
 				}
 			}
 

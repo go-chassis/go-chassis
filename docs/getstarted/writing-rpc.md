@@ -94,9 +94,8 @@ chassis.RegisterSchema("grpc", &Server{}, server.WithRPCServiceDesc(&pb.Greeter_
 
 3.修改配置文件chassis.yaml
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100
   protocols:
     grpc:
@@ -104,8 +103,9 @@ cse:
 ```
 4.修改microservice.yaml
 ```yaml
-service_description:
-  name: RPCServer
+servicecomb:
+  service:
+    name: RPCServer
 ```
 5.In main.go import grpc server to enable grpc protocol and start go chassis
 ```go
@@ -134,16 +134,16 @@ client
 
 1.修改配置文件chassis.yaml
 ```yaml
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100
 ```
 
 2.修改microservice.yaml
 ```yaml
-service_description:
-  name: Client
+servicecomb:
+  service:
+    name: Client
 ```
 
 3.5.In main.go import grpc client to enable grpc protocol.

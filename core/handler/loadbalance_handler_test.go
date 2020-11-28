@@ -9,23 +9,23 @@ import (
 	"time"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/control"
-	_ "github.com/go-chassis/go-chassis/control/servicecomb"
-	"github.com/go-chassis/go-chassis/core/config"
-	chassisModel "github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/core/registry"
-	mk "github.com/go-chassis/go-chassis/core/registry/mock"
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
-	_ "github.com/go-chassis/go-chassis/initiator"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/control"
+	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	chassisModel "github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	mk "github.com/go-chassis/go-chassis/v2/core/registry/mock"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
+	_ "github.com/go-chassis/go-chassis/v2/initiator"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,9 +64,10 @@ func (h *handler2) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 
 func TestTLSEndpointLBHandlerWithRetry(t *testing.T) {
 	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
@@ -174,9 +175,10 @@ cse:
 }
 func TestLBHandlerWithRetry(t *testing.T) {
 	microContent := `---
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
@@ -282,9 +284,10 @@ cse:
 func TestTLSLBHandlerWithNoRetry(t *testing.T) {
 	microContent := `---
 #微服务的私有属性
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+    name: Client
+    version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
@@ -304,7 +307,7 @@ cse:
 	assert.NoError(t, err)
 	err = os.MkdirAll(logConf, 0700)
 	assert.NoError(t, err)
-	chassisyaml := filepath.Join(chassisConf, "chassis.yaml")
+	chassisyaml := filepath.Join(chassisConf, "load_balancing.yaml")
 	microserviceyaml := filepath.Join(chassisConf, "microservice.yaml")
 	f1, err := os.Create(chassisyaml)
 	assert.NoError(t, err)
@@ -376,9 +379,10 @@ cse:
 func TestLBHandlerWithNoRetry(t *testing.T) {
 	microContent := `---
 #微服务的私有属性
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+	  name: Client
+	  version: 0.1`
 	var yamlContent = `---
 region:
   name: us-east
@@ -499,8 +503,7 @@ cse:
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func BenchmarkLBHandler_Handle(b *testing.B) {

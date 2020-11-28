@@ -1,8 +1,5 @@
 # Protocol
 ## 概述
-
----
-
 框架支持[grpc协议](https://github.com/go-chassis/go-chassis-protocol)，
 用户可扩展自己的RPC协议，并使用RPCInvoker调用
 
@@ -51,7 +48,7 @@ type Server interface
 * 修改配置文件以启动协议监听
 
 ```
-cse:
+servicecomb:
   protocols:
     grpc:
       listenAddress: 127.0.0.1:5000

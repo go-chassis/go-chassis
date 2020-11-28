@@ -1,7 +1,6 @@
 ---
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
   protocols:
     rest:
@@ -11,9 +10,10 @@ cse:
     chain:
       Provider:
         default: ratelimiter-provider
+cse:
   flowcontrol:
     Provider:
       qps:
         enabled: true  # enable rate limiting or not
         global:
-          limit: 100   # default limit of provider
+          limit: 2   # default limit of provider

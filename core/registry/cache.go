@@ -3,9 +3,9 @@ package registry
 import (
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/openlog"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -75,7 +75,7 @@ func GetProvidersFromCache() []*MicroService {
 	for _, item := range items {
 		microService, ok := item.Object.(MicroService)
 		if !ok {
-			openlogging.Warn("not microService type")
+			openlog.Warn("not microService type")
 			continue
 		}
 		microService.Version = common.AllVersion

@@ -1,7 +1,7 @@
 package registry
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/common"
 )
 
 // MicroService struct having full info about micro-service
@@ -35,6 +35,9 @@ type Framework struct {
 
 // MicroServiceInstance struct having full info about micro-service instance
 type MicroServiceInstance struct {
+	App             string
+	ServiceName     string
+	Version         string
 	InstanceID      string               `json:"instanceID"`
 	HostName        string               `json:"hostName"`
 	ServiceID       string               `json:"serviceID"`

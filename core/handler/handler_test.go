@@ -1,14 +1,15 @@
 package handler_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/config/model"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/provider"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/provider"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
+	"github.com/go-chassis/openlog"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"os"
@@ -43,7 +44,7 @@ type ProviderHandler struct {
 func (ph *ProviderHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	p, err := provider.GetProvider(i.MicroServiceName)
 	if err != nil {
-		lager.Logger.Error("GetProvider failed." + err.Error())
+		openlog.Error("GetProvider failed." + err.Error())
 	}
 	p.Invoke(i)
 }
@@ -98,25 +99,24 @@ func createBizkeeperFakeHandler() handler.Handler {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 func TestGetChain(t *testing.T) {
 	t.Log("getting chain of various service type and chain name")
 
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 	handler.RegisterHandler(BIZKEEPERFAKE, createBizkeeperFakeHandler)
 	handler.RegisterHandler("loadbalancer-fake", createBizkeeperFakeHandler)
-	handler.CreateChains(common.Provider, config.GlobalDefinition.Cse.Handler.Chain.Provider)
-	handler.CreateChains(common.Consumer, config.GlobalDefinition.Cse.Handler.Chain.Consumer)
+	handler.CreateChains(common.Provider, config.GlobalDefinition.ServiceComb.Handler.Chain.Provider)
+	handler.CreateChains(common.Consumer, config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer)
 	c, err := handler.GetChain(common.Consumer, "custom")
 	assert.NoError(t, err)
 	assert.Equal(t, "custom", c.Name)
@@ -131,7 +131,7 @@ func TestGetChain(t *testing.T) {
 
 	t.Log("handler name为空")
 	config.GlobalDefinition = &model.GlobalCfg{}
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = map[string]string{
 		"default": "",
 		"custom":  ",",
 	}
@@ -156,11 +156,11 @@ func BenchmarkPool_GetChain(b *testing.B) {
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.Init()
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 		"custom":  "bizkeeper-fake",
 	}
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = map[string]string{
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = map[string]string{
 		"default": "bizkeeper-fake,loadbalancer-fake",
 	}
 
@@ -171,7 +171,6 @@ func BenchmarkPool_GetChain(b *testing.B) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }

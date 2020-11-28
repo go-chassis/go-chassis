@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/core/router"
-	"github.com/go-chassis/go-chassis/core/status"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/router"
+	"github.com/go-chassis/go-chassis/v2/core/status"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 )
 
 // RouterHandler router handler
@@ -29,7 +29,7 @@ func (ph *RouterHandler) Handle(chain *Chain, i *invocation.Invocation, cb invoc
 	if i.Ctx != nil {
 		at, ok := i.Ctx.Value(common.ContextHeaderKey{}).(map[string]string)
 		if ok {
-			h = map[string]string(at)
+			h = at
 		}
 	}
 

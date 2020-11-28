@@ -29,7 +29,7 @@ config.GlobalDefinition.Cse.Config.Client.Type
 ```
 
 ```go
-cse:
+servicecomb:
   config:
     client:
       type: your_client_name   #config_center/apollo/your_client_name

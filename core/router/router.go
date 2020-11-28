@@ -3,19 +3,16 @@ package router
 
 import (
 	"errors"
-	"github.com/go-chassis/go-chassis/core/config"
-	mr "github.com/go-chassis/go-chassis/core/match"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/marker"
 	"strings"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/registry"
-	wp "github.com/go-chassis/go-chassis/core/router/weightpool"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	wp "github.com/go-chassis/go-chassis/v2/core/router/weightpool"
+	"github.com/go-chassis/openlog"
 )
-
-//Templates is for source match template settings
-var Templates = make(map[string]*config.Match)
 
 //Router return route rule, you can also set custom route rule
 type Router interface {
@@ -34,7 +31,7 @@ var DefaultRouter Router
 
 // InstallRouterPlugin install router plugin
 func InstallRouterPlugin(name string, f func() (Router, error)) {
-	openlogging.Info("install route rule plugin: " + name)
+	openlog.Info("install route rule plugin: " + name)
 	routerServices[name] = f
 }
 
@@ -58,7 +55,7 @@ func BuildRouter(name string) error {
 func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.Invocation) error {
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {
-		if Match(rule.Match, header, si) {
+		if Match(inv, rule.Match, header, si) {
 			tag := FitRate(rule.Routes, inv.MicroServiceName)
 			inv.RouteTags = routeTagToTags(tag)
 			break
@@ -82,18 +79,19 @@ func FitRate(tags []*config.RouteTag, dest string) *config.RouteTag {
 	return pool.PickOne()
 }
 
-// Match check the route rule
-func Match(match config.Match, headers map[string]string, source *registry.SourceInfo) bool {
+// match check the route rule
+func Match(inv *invocation.Invocation, matchConf config.Match, headers map[string]string, source *registry.SourceInfo) bool {
 	//validate template first
-	if refer := match.Refer; refer != "" {
-		return SourceMatch(Templates[refer], headers, source)
+	if refer := matchConf.Refer; refer != "" {
+		marker.Mark(inv)
+		return inv.GetMark() == matchConf.Refer
 	}
-	//match rule is not set
-	if match.Source == "" && match.HTTPHeaders == nil && match.Headers == nil {
+	//matchConf rule is not set
+	if matchConf.Source == "" && matchConf.HTTPHeaders == nil && matchConf.Headers == nil {
 		return true
 	}
 
-	return SourceMatch(&match, headers, source)
+	return SourceMatch(&matchConf, headers, source)
 }
 
 // SourceMatch check the source route
@@ -138,7 +136,7 @@ func isMatch(headers map[string]string, k string, v map[string]string) bool {
 		if op == "caseInsensitive" {
 			continue
 		}
-		if ok, err := mr.Match(op, header, valueToUpper(v["caseInsensitive"], exp)); !ok || err != nil {
+		if ok, err := marker.Match(op, header, valueToUpper(v["caseInsensitive"], exp)); !ok || err != nil {
 			return false
 		}
 	}
@@ -156,7 +154,7 @@ func valueToUpper(b, value string) string {
 // SortRules sort route rules
 func SortRules(name string) []*config.RouteRule {
 	if DefaultRouter == nil {
-		openlogging.Debug("router not available")
+		openlog.Debug("router not available")
 	}
 	slice := DefaultRouter.FetchRouteRuleByServiceName(name)
 	return QuickSort(0, len(slice)-1, slice)

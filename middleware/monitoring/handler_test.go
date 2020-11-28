@@ -20,19 +20,20 @@ package monitoring_test
 import (
 	"errors"
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/pkg/metrics"
+	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
 	"github.com/prometheus/common/expfmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
-	_ "github.com/go-chassis/go-chassis/middleware/monitoring"
-	"github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-chassis/go-chassis/server/restful/restfultest"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	_ "github.com/go-chassis/go-chassis/v2/middleware/monitoring"
+	"github.com/go-chassis/go-chassis/v2/server/restful"
+	"github.com/go-chassis/go-chassis/v2/server/restful/restfultest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -60,7 +61,7 @@ func (r *DummyResource) URLPatterns() []restful.Route {
 
 func TestNewWithChain(t *testing.T) {
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.metrics.enableGoRuntimeMetrics", false)
+	archaius.Set("servicecomb.metrics.enableGoRuntimeMetrics", false)
 	metrics.Init()
 	r, _ := http.NewRequest("GET", "/sayhello/some_user", nil)
 	chain, err := handler.CreateChain(common.Provider, "testChain", "monitoring")
@@ -72,9 +73,14 @@ func TestNewWithChain(t *testing.T) {
 	c.ServeHTTP(resp, r)
 	c.ServeHTTP(resp, r)
 
+	resp2 := httptest.NewRecorder()
 	r, _ = http.NewRequest("GET", "/err", nil)
-	c.ServeHTTP(resp, r)
-	c.ServeHTTP(resp, r)
+	c.ServeHTTP(resp2, r)
+	body, err := ioutil.ReadAll(resp2.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "err", string(body))
+	assert.Equal(t, http.StatusInternalServerError, resp2.Code)
+	c.ServeHTTP(resp2, r)
 
 	mfs, err := metrics.GetSystemPrometheusRegistry().Gather()
 	assert.NoError(t, err)

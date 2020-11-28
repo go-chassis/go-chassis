@@ -18,7 +18,6 @@ jobs:
       run: |
         bash scripts/ci/start_latest_sc.sh
         go get github.com/stretchr/testify
-        go get golang.org/x/tools/cmd/cover
         bash scripts/ci/unit_test.sh
   tests:
     runs-on: ubuntu-latest

@@ -2,13 +2,13 @@ package servicecenter
 
 import (
 	"fmt"
+	scregistry "github.com/go-chassis/cari/discovery"
 
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	"github.com/go-chassis/openlog"
 )
 
 const (
@@ -29,18 +29,18 @@ func (r *Registrator) RegisterService(ms *registry.MicroService) (string, error)
 	microservice := ToSCService(ms)
 	sid, err := r.registryClient.GetMicroServiceID(microservice.AppId, microservice.ServiceName, microservice.Version, microservice.Environment)
 	if err != nil {
-		openlogging.GetLogger().Errorf("Get service [%s] failed, err %s", serviceKey, err)
+		openlog.Error(fmt.Sprintf("Get service [%s] failed, err %s", serviceKey, err))
 		return "", err
 	}
 	if sid == "" {
-		openlogging.Warn(fmt.Sprintf("service [%s] not exists in registry, register it", serviceKey))
+		openlog.Warn(fmt.Sprintf("service [%s] not exists in registry, register it", serviceKey))
 		sid, err = r.registryClient.RegisterService(microservice)
 		if err != nil {
-			openlogging.GetLogger().Errorf("register service [%s] failed, err: %s", serviceKey, err)
+			openlog.Error(fmt.Sprintf("register service [%s] failed, err: %s", serviceKey, err))
 			return "", err
 		}
 	} else {
-		openlogging.GetLogger().Infof("[%s] exists in registry", serviceKey)
+		openlog.Info(fmt.Sprintf("[%s] exists in registry", serviceKey))
 	}
 
 	return sid, nil
@@ -52,7 +52,7 @@ func (r *Registrator) RegisterServiceInstance(sid string, cIns *registry.MicroSe
 	instance.ServiceId = sid
 	instanceID, err := r.registryClient.RegisterMicroServiceInstance(instance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("register instance failed.")
+		openlog.Error("register instance failed.")
 		return "", err
 	}
 	return instanceID, nil
@@ -70,18 +70,18 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 	if microServiceID == "" {
 		microServiceID, err = r.registryClient.RegisterService(microService)
 		if err != nil {
-			openlogging.GetLogger().Errorf("RegisterMicroService failed %s", err)
+			openlog.Error(fmt.Sprintf("RegisterMicroService failed %s", err))
 			return "", "", err
 		}
-		openlogging.GetLogger().Debugf("RegisterMicroService success, microServiceID: %s", microServiceID)
+		openlog.Debug(fmt.Sprintf("RegisterMicroService success, microServiceID: %s", microServiceID))
 	}
 	instance.ServiceId = microServiceID
 	instanceID, err := r.registryClient.RegisterMicroServiceInstance(instance)
 	if err != nil {
-		openlogging.GetLogger().Errorf("register instance failed. %s", err)
+		openlog.Error(fmt.Sprintf("register instance failed. %s", err))
 		return microServiceID, "", err
 	}
-	openlogging.GetLogger().Infof("register instance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID)
+	openlog.Info(fmt.Sprintf("register instance success, microServiceID/instanceID: %s/%s.", microServiceID, instanceID))
 	return microServiceID, instanceID, nil
 }
 
@@ -89,10 +89,10 @@ func (r *Registrator) RegisterServiceAndInstance(cMicroService *registry.MicroSe
 func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error {
 	isSuccess, err := r.registryClient.UnregisterMicroServiceInstance(microServiceID, microServiceInstanceID)
 	if !isSuccess || err != nil {
-		openlogging.GetLogger().Errorf("unregister instance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		openlog.Error(fmt.Sprintf("unregister instance failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID))
 		return err
 	}
-	openlogging.GetLogger().Debugf("unregister instance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	openlog.Debug(fmt.Sprintf("unregister instance success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID))
 	return nil
 }
 
@@ -100,24 +100,27 @@ func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServic
 func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (bool, error) {
 	bo, err := r.registryClient.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
-		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
+		openlog.Error(fmt.Sprintf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s",
+			microServiceID, microServiceInstanceID, err))
 		return false, err
 	}
 	if !bo {
-		openlogging.GetLogger().Errorf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s", microServiceID, microServiceInstanceID, err)
+		openlog.Error(fmt.Sprintf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s",
+			microServiceID, microServiceInstanceID, err))
 		return bo, err
 	}
-	openlogging.GetLogger().Debugf("heartbeat success, microServiceID/instanceID: %s/%s.", microServiceID, microServiceInstanceID)
+	openlog.Debug(fmt.Sprintf("heartbeat success, microServiceID/instanceID: %s/%s.",
+		microServiceID, microServiceInstanceID))
 	return bo, nil
 }
 
 // AddSchemas to service center
 func (r *Registrator) AddSchemas(microServiceID, schemaName, schemaInfo string) error {
 	if err := r.registryClient.AddSchemas(microServiceID, schemaName, schemaInfo); err != nil {
-		openlogging.GetLogger().Errorf("add schemas failed: %s", err)
+		openlog.Error(fmt.Sprintf("add schemas failed: %s", err))
 		return err
 	}
-	openlogging.Info("add all schemas success.")
+	openlog.Info("add all schemas success.")
 	return nil
 }
 
@@ -125,38 +128,44 @@ func (r *Registrator) AddSchemas(microServiceID, schemaName, schemaInfo string) 
 func (r *Registrator) UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error {
 	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status)
 	if !isSuccess {
-		openlogging.GetLogger().Errorf("UpdateMicroServiceInstanceStatus failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		openlog.Error(fmt.Sprintf("UpdateMicroServiceInstanceStatus failed, microServiceID/instanceID = %s/%s.",
+			microServiceID, microServiceInstanceID))
 		return err
 	}
-	openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceStatus success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	openlog.Debug(fmt.Sprintf("UpdateMicroServiceInstanceStatus success, microServiceID/instanceID = %s/%s.",
+		microServiceID, microServiceInstanceID))
 	return nil
 }
 
 // UpdateMicroServiceProperties 更新微服务properties信息
 func (r *Registrator) UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error {
-	microService := &proto.MicroService{
+	microService := &scregistry.MicroService{
 		Properties: properties,
 	}
 	isSuccess, err := r.registryClient.UpdateMicroServiceProperties(microServiceID, microService)
 	if !isSuccess {
-		openlogging.GetLogger().Errorf("UpdateMicroService Properties failed, microServiceID/instanceID = %s.", microServiceID)
+		openlog.Error(
+			fmt.Sprintf("UpdateMicroService Properties failed, microServiceID/instanceID = %s.", microServiceID))
 		return err
 	}
-	openlogging.GetLogger().Debugf("UpdateMicroService Properties success, microServiceID/instanceID = %s.", microServiceID)
+	openlog.Debug(fmt.Sprintf("UpdateMicroService Properties success, microServiceID/instanceID = %s.",
+		microServiceID))
 	return nil
 }
 
 // UpdateMicroServiceInstanceProperties : 更新微服务实例properties信息
 func (r *Registrator) UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID string, properties map[string]string) error {
-	microServiceInstance := &proto.MicroServiceInstance{
+	microServiceInstance := &scregistry.MicroServiceInstance{
 		Properties: properties,
 	}
 	isSuccess, err := r.registryClient.UpdateMicroServiceInstanceProperties(microServiceID, microServiceInstanceID, microServiceInstance)
 	if !isSuccess {
-		openlogging.GetLogger().Errorf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+		openlog.Error(fmt.Sprintf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.",
+			microServiceID, microServiceInstanceID))
 		return err
 	}
-	openlogging.GetLogger().Debugf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.", microServiceID, microServiceInstanceID)
+	openlog.Debug(fmt.Sprintf("UpdateMicroServiceInstanceProperties success, microServiceID/instanceID = %s/%s.",
+		microServiceID, microServiceInstanceID))
 	return nil
 }
 
@@ -172,29 +181,18 @@ type ServiceDiscovery struct {
 	opts           client.Options
 }
 
-// GetMicroServiceID : 获取指定微服务的MicroServiceID
-func (r *ServiceDiscovery) GetMicroServiceID(appID, microServiceName, version, env string) (string, error) {
-	microServiceID, err := r.registryClient.GetMicroServiceID(appID, microServiceName, version, env)
-	if err != nil {
-		openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err.Error())
-		return "", err
-	}
-	openlogging.GetLogger().Debugf("GetMicroServiceID success")
-	return microServiceID, nil
-}
-
 // GetAllMicroServices : Get all MicroService information.
 func (r *ServiceDiscovery) GetAllMicroServices() ([]*registry.MicroService, error) {
 	microServices, err := r.registryClient.GetAllMicroServices()
 	if err != nil {
-		openlogging.GetLogger().Errorf("GetAllMicroServices failed: %s", err)
+		openlog.Error(fmt.Sprintf("GetAllMicroServices failed: %s", err))
 		return nil, err
 	}
-	mss := []*registry.MicroService{}
+	mss := make([]*registry.MicroService, 0)
 	for _, s := range microServices {
 		mss = append(mss, ToMicroService(s))
 	}
-	openlogging.GetLogger().Debugf("GetAllMicroServices success, MicroService: %s", microServices)
+	openlog.Debug(fmt.Sprintf("GetAllMicroServices success, MicroService: %v", microServices))
 	return mss, nil
 }
 
@@ -202,10 +200,10 @@ func (r *ServiceDiscovery) GetAllMicroServices() ([]*registry.MicroService, erro
 func (r *ServiceDiscovery) GetAllApplications() ([]string, error) {
 	apps, err := r.registryClient.GetAllApplications()
 	if err != nil {
-		openlogging.GetLogger().Errorf("GetAllApplications failed: %s", err)
+		openlog.Error(fmt.Sprintf("GetAllApplications failed: %s", err))
 		return nil, err
 	}
-	openlogging.GetLogger().Debugf("GetAllApplications success, Applications: %s", apps)
+	openlog.Debug(fmt.Sprintf("GetAllApplications success, Applications: %s", apps))
 	return apps, nil
 }
 
@@ -213,10 +211,10 @@ func (r *ServiceDiscovery) GetAllApplications() ([]string, error) {
 func (r *ServiceDiscovery) GetMicroService(microServiceID string) (*registry.MicroService, error) {
 	microService, err := r.registryClient.GetMicroService(microServiceID)
 	if err != nil {
-		openlogging.GetLogger().Errorf("GetMicroService failed: %s", err)
+		openlog.Error(fmt.Sprintf("GetMicroService failed: %s", err))
 		return nil, err
 	}
-	openlogging.GetLogger().Debugf("GetMicroServices success, MicroService: %s", microService)
+	openlog.Debug(fmt.Sprintf("GetMicroServices success, MicroService: %v", microService))
 	return ToMicroService(microService), nil
 }
 
@@ -224,11 +222,11 @@ func (r *ServiceDiscovery) GetMicroService(microServiceID string) (*registry.Mic
 func (r *ServiceDiscovery) GetMicroServiceInstances(consumerID, providerID string) ([]*registry.MicroServiceInstance, error) {
 	providerInstances, err := r.registryClient.GetMicroServiceInstances(consumerID, providerID)
 	if err != nil {
-		openlogging.GetLogger().Errorf("GetMicroServiceInstances failed: %s", err)
+		openlog.Error(fmt.Sprintf("GetMicroServiceInstances failed: %s", err))
 		return nil, err
 	}
 	instances := filterInstances(providerInstances)
-	openlogging.GetLogger().Debugf("GetMicroServiceInstances success, consumerID/providerID: %s/%s", consumerID, providerID)
+	openlog.Debug(fmt.Sprintf("GetMicroServiceInstances success, consumerID/providerID: %s/%s", consumerID, providerID))
 	return instances, nil
 }
 
@@ -245,15 +243,16 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	registry.AddProviderToCache(microServiceName, appID)
 	if !boo || microServiceInstance == nil {
 		criteria := GetCriteriaByService(microServiceName)
-		openlogging.GetLogger().Warnf("%s Get instances from remote, key: %s:%s:%s", consumerID, appID, microServiceName, tags.Version())
-		providerInstances, err := r.registryClient.BatchFindInstances(consumerID, criteria)
+		openlog.Warn(fmt.Sprintf("%s Get instances from remote, key: %s:%s:%s", consumerID, appID, microServiceName, tags.Version()))
+		providerInstancesResponse, err := r.registryClient.BatchFindInstances(consumerID, criteria)
 		if err != nil {
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", microServiceName, err)
 		}
+		providerInstances := RegroupInstances(criteria, providerInstancesResponse)
 		filter(providerInstances)
 		microServiceInstance, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 		if !boo || microServiceInstance == nil {
-			openlogging.GetLogger().Debugf("Find no micro service instances for %s from cache", microServiceName)
+			openlog.Debug(fmt.Sprintf("Find no micro service instances for %s from cache", microServiceName))
 			return nil, nil
 		}
 	}
@@ -261,43 +260,37 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	return microServiceInstance, nil
 }
 
-// GetDependentMicroServiceInstances : 获取指定微服务所依赖的所有实例
-func (r *ServiceDiscovery) GetDependentMicroServiceInstances(appID, consumerMicroServiceName, version, env string) ([]*proto.MicroServiceInstance, error) {
-	var instancesAll []*proto.MicroServiceInstance
-	microServiceConsumerID, err := r.GetMicroServiceID(appID, consumerMicroServiceName, version, env)
-	if err != nil {
-		openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err)
-		return nil, err
-	}
-	providers, err := r.registryClient.GetProviders(microServiceConsumerID)
-	if err != nil {
-		openlogging.GetLogger().Errorf("Get Provider failed: %s", err)
-		return nil, err
-	}
-	for _, provider := range providers.Services {
-		microServiceProviderID, err := r.GetMicroServiceID(provider.AppId, provider.ServiceName, provider.Version, env)
-		if err != nil {
-			openlogging.GetLogger().Errorf("GetMicroServiceID failed: %s", err)
-			return nil, err
-		}
-		instances, err := r.GetMicroServiceInstances(microServiceConsumerID, microServiceProviderID)
-		if err != nil {
-			openlogging.GetLogger().Errorf("GetMicroServiceInstances failed: %s", err)
-			return nil, err
-		}
-		for _, value := range instances {
-			instancesAll = append(instancesAll, ToSCInstance(value))
+//RegroupInstances organize raw data to better format
+func RegroupInstances(keys []*scregistry.FindService, response *scregistry.BatchFindInstancesResponse) map[string][]*registry.MicroServiceInstance {
+	instanceMap := make(map[string][]*registry.MicroServiceInstance)
+	if response.Services != nil {
+		for _, result := range response.Services.Updated {
+			if len(result.Instances) == 0 {
+				continue
+			}
+			for _, instance := range result.Instances {
+				ni := ToMicroServiceInstance(instance)
+				ni.App = keys[result.Index].Service.AppId
+				ni.Version = keys[result.Index].Service.Version
+				instances, ok := instanceMap[keys[result.Index].Service.ServiceName]
+				if !ok {
+					instances = []*registry.MicroServiceInstance{ni}
+					instanceMap[keys[result.Index].Service.ServiceName] = instances
+					continue
+				}
+				instanceMap[keys[result.Index].Service.ServiceName] = append(instances, ni)
+			}
+
 		}
 	}
-	openlogging.GetLogger().Debugf("GetDependentMicroServiceInstances success, appID/microServiceName/version: %s/%s/%s", appID, consumerMicroServiceName, version)
-	return instancesAll, nil
+	return instanceMap
 }
 
 // WatchMicroService : 支持用户自调用主动监听实例变化功能
 func (r *ServiceDiscovery) WatchMicroService(selfMicroServiceID string, callback func(*client.MicroServiceInstanceChangedEvent)) {
 	err := r.registryClient.WatchMicroService(selfMicroServiceID, callback)
 	if err != nil {
-		openlogging.Error(err.Error())
+		openlog.Error(err.Error())
 	}
 
 }
@@ -330,10 +323,10 @@ func (r *ContractDiscovery) GetMicroServicesByInterface(interfaceName string) (m
 		value, _ = registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 	}
 
-	microServiceModel, ok := value.([]*proto.MicroService)
+	microServiceModel, ok := value.([]*scregistry.MicroService)
 
 	if !ok {
-		openlogging.GetLogger().Errorf("GetMicroServicesByInterface failed, Type asserts failed")
+		openlog.Error("GetMicroServicesByInterface failed, Type asserts failed")
 	}
 
 	for _, v := range microServiceModel {
@@ -350,7 +343,7 @@ func (r *ContractDiscovery) GetSchemaContentByInterface(interfaceName string) (s
 		return r.fillSchemaInterfaceIndexCache(nil, interfaceName)
 	}
 
-	val, ok := value.([]*proto.MicroService)
+	val, ok := value.([]*scregistry.MicroService)
 
 	if !ok {
 		return schemas
@@ -371,7 +364,7 @@ func (r *ContractDiscovery) GetSchemaContentByServiceName(svcName, version, appI
 		return r.fillSchemaServiceIndexCache(nil, serviceID)
 	}
 
-	val, ok := value.([]*proto.MicroService)
+	val, ok := value.([]*scregistry.MicroService)
 
 	if !ok {
 		return schemas
@@ -382,11 +375,11 @@ func (r *ContractDiscovery) GetSchemaContentByServiceName(svcName, version, appI
 }
 
 // fillSchemaServiceIndexCache fill schema service index cache
-func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*proto.MicroService, serviceID string) (content []*registry.SchemaContent) {
+func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*scregistry.MicroService, serviceID string) (content []*registry.SchemaContent) {
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
-			openlogging.GetLogger().Errorf("Get instances failed: %s", err)
+			openlog.Error(fmt.Sprintf("Get instances failed: %s", err))
 			return content
 		}
 
@@ -397,7 +390,7 @@ func (r *ContractDiscovery) fillSchemaServiceIndexCache(ms []*proto.MicroService
 }
 
 // fillCacheAndGetServiceSchemaContent fill cache and get services schema content
-func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList []*proto.MicroService, serviceID string) (schemaContent []*registry.SchemaContent) {
+func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList []*scregistry.MicroService, serviceID string) (schemaContent []*registry.SchemaContent) {
 
 	for _, ms := range microServiceList {
 
@@ -415,7 +408,7 @@ func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList
 				}
 				_, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
 				if !ok {
-					var allServices []*proto.MicroService
+					var allServices []*scregistry.MicroService
 					allServices = append(allServices, ms)
 					registry.SchemaServiceIndexedCache.Set(serviceID, allServices, 0)
 				}
@@ -428,11 +421,11 @@ func (r *ContractDiscovery) fillCacheAndGetServiceSchemaContent(microServiceList
 }
 
 // fillSchemaInterfaceIndexCache fill schema interface index cache
-func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*proto.MicroService, interfaceName string) (content registry.SchemaContent) {
+func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*scregistry.MicroService, interfaceName string) (content registry.SchemaContent) {
 	if ms == nil {
 		microServiceList, err := r.registryClient.GetAllMicroServices()
 		if err != nil {
-			openlogging.GetLogger().Errorf("Get instances failed: %s", err)
+			openlog.Error(fmt.Sprintf("Get instances failed: %s", err))
 			return content
 		}
 
@@ -443,7 +436,7 @@ func (r *ContractDiscovery) fillSchemaInterfaceIndexCache(ms []*proto.MicroServi
 }
 
 // fillCacheAndGetInterfaceSchemaContent fill cache and get interface schema content
-func (r *ContractDiscovery) fillCacheAndGetInterfaceSchemaContent(microServiceList []*proto.MicroService, interfaceName string) (schemaContent registry.SchemaContent) {
+func (r *ContractDiscovery) fillCacheAndGetInterfaceSchemaContent(microServiceList []*scregistry.MicroService, interfaceName string) (schemaContent registry.SchemaContent) {
 
 	for _, ms := range microServiceList {
 		serviceID, err := r.registryClient.GetMicroServiceID(ms.AppId, ms.ServiceName, ms.Version, ms.Environment)
@@ -469,11 +462,11 @@ func (r *ContractDiscovery) fillCacheAndGetInterfaceSchemaContent(microServiceLi
 
 			value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 			if !ok {
-				var allServices []*proto.MicroService
+				var allServices []*scregistry.MicroService
 				allServices = append(allServices, ms)
 				registry.SchemaInterfaceIndexedCache.Set(interfaceValue, allServices, 0)
 			} else {
-				val, _ := value.([]*proto.MicroService)
+				val, _ := value.([]*scregistry.MicroService)
 				val = append(val, ms)
 				registry.SchemaInterfaceIndexedCache.Set(interfaceValue, val, 0)
 
@@ -493,10 +486,10 @@ func (r *ContractDiscovery) GetSchema(microServiceID, schemaName string) ([]byte
 	var schemaContent []byte
 	var err error
 	if schemaContent, err = r.registryClient.GetSchema(microServiceID, schemaName); err != nil {
-		openlogging.GetLogger().Errorf("GetSchema failed: %s", err)
+		openlog.Error(fmt.Sprintf("GetSchema failed: %s", err))
 		return []byte(""), err
 	}
-	openlogging.GetLogger().Debugf("GetSchema success.")
+	openlog.Debug("GetSchema success.")
 	return schemaContent, nil
 
 }
@@ -511,7 +504,7 @@ func NewRegistrator(options registry.Options) registry.Registrator {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
-		openlogging.GetLogger().Errorf("RegistryClient initialization failed, err %s", err)
+		openlog.Error(fmt.Sprintf("RegistryClient initialization failed, err %s", err))
 	}
 
 	return &Registrator{
@@ -526,7 +519,7 @@ func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
-		openlogging.GetLogger().Errorf("RegistryClient initialization failed. %s", err)
+		openlog.Error(fmt.Sprintf("RegistryClient initialization failed. %s", err))
 	}
 
 	return &ServiceDiscovery{
@@ -539,7 +532,7 @@ func newContractDiscovery(options registry.Options) registry.ContractDiscovery {
 	sco := ToSCOptions(options)
 	r := &client.RegistryClient{}
 	if err := r.Initialize(sco); err != nil {
-		openlogging.GetLogger().Errorf("RegistryClient initialization failed: %s", err)
+		openlog.Error(fmt.Sprintf("RegistryClient initialization failed: %s", err))
 	}
 
 	return &ContractDiscovery{

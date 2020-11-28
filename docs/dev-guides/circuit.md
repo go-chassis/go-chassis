@@ -25,7 +25,7 @@ circuit.RegisterFallback("your_fallback", f)
 3 operate circuit_breaker.yaml to use custom fallback
 
 ```yaml
-cse:
+servicecomb:
   fallbackpolicy:
     Consumer:
       policy: your_fallback

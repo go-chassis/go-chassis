@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	"github.com/go-chassis/openlog"
 )
 
 // constant string for zoneaware
@@ -67,7 +67,7 @@ func BuildStrategy(i *invocation.Invocation,
 	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(i.SourceServiceID, i.MicroServiceName, i.RouteTags)
 	if err != nil {
 		lbErr := LBError{err.Error()}
-		openlogging.GetLogger().Errorf("Lb err: %s", err)
+		openlog.Error(fmt.Sprintf("Lb err: %s", err))
 		return nil, lbErr
 	}
 
@@ -88,7 +88,7 @@ func BuildStrategy(i *invocation.Invocation,
 
 	if len(instances) == 0 {
 		lbErr := LBError{fmt.Sprintf("No available instance, key: %s(%v)", i.MicroServiceName, i.RouteTags)}
-		openlogging.Error(lbErr.Error())
+		openlog.Error(lbErr.Error())
 		return nil, lbErr
 	}
 
@@ -115,16 +115,16 @@ type Filter func(instances []*registry.MicroServiceInstance, criteria []*Criteri
 
 // Enable function is for to enable load balance strategy
 func Enable(strategyName string) error {
-	openlogging.Info("Enable LoadBalancing")
+	openlog.Info("Enable LoadBalancing")
 	InstallStrategy(StrategyRandom, newRandomStrategy)
 	InstallStrategy(StrategyRoundRobin, newRoundRobinStrategy)
 	InstallStrategy(StrategySessionStickiness, newSessionStickinessStrategy)
 
 	if strategyName == "" {
-		openlogging.Info("Empty strategy configuration, use RoundRobin as default")
+		openlog.Info("Empty strategy configuration, use RoundRobin as default")
 		return nil
 	}
-	openlogging.Info("Strategy is " + strategyName)
+	openlog.Info("Strategy is " + strategyName)
 
 	return nil
 }
@@ -151,7 +151,7 @@ func BuildKey(microServiceName, tags, protocol string) string {
 	return strings.Join([]string{microServiceName, tags, protocol}, "/")
 }
 
-// SetLatency for a instance ,it only save latest 10 stats for instance's protocol
+// SetLatency for a instance, it only save latest 10 stats for instance's protocol
 func SetLatency(latency time.Duration, addr, microServiceName string, tags utiltags.Tags, protocol string) {
 	key := BuildKey(microServiceName, tags.String(), protocol)
 

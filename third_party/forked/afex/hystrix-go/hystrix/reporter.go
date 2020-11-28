@@ -2,7 +2,7 @@ package hystrix
 
 import (
 	"errors"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"time"
 )
 
@@ -21,7 +21,7 @@ func InstallReporter(name string, reporter Reporter) error {
 		return ErrDuplicated
 	}
 	reporterPlugins[name] = reporter
-	openlogging.Info("install reporter plugin:" + name)
+	openlog.Info("install reporter plugin:" + name)
 	return nil
 }
 
@@ -34,9 +34,9 @@ func StartReporter() {
 			circuitBreakersMutex.RLock()
 			for _, cb := range circuitBreakers {
 				for k, report := range reporterPlugins {
-					openlogging.Debug("report circuit metrics to " + k)
+					openlog.Debug("report circuit metrics to " + k)
 					if err := report(cb); err != nil {
-						openlogging.Warn("can not report: " + err.Error())
+						openlog.Warn("can not report: " + err.Error())
 					}
 				}
 			}

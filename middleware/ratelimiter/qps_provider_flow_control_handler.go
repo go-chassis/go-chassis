@@ -1,11 +1,11 @@
 package ratelimiter
 
 import (
-	"github.com/go-chassis/go-chassis/control"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/resilience/rate"
+	"github.com/go-chassis/go-chassis/v2/control"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/resilience/rate"
 )
 
 // ProviderRateLimiterHandler provider rate limiter handler
@@ -21,14 +21,14 @@ func (rl *ProviderRateLimiterHandler) Handle(chain *handler.Chain, i *invocation
 	}
 	//qps rate <=0
 	if rlc.Rate <= 0 {
-		r := newErrResponse(i, rlc)
+		r := newErrResponse(i)
 		cb(r)
 		return
 	}
 	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate, rlc.Rate/5) {
 		chain.Next(i, cb)
 	} else {
-		r := newErrResponse(i, rlc)
+		r := newErrResponse(i)
 		cb(r)
 	}
 }

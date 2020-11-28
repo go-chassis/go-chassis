@@ -4,8 +4,8 @@ import (
 	"sync"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
 	"time"
 )
 
@@ -150,28 +150,28 @@ func GetPolicy(service, t string) string {
 	return policy
 }
 
-func getIsolationSpec(command string) *model.IsolationSpec {
+func getIsolationSpec(command string) model.IsolationSpec {
 	if command == common.Consumer {
 		return GetHystrixConfig().IsolationProperties.Consumer
 	}
 	return GetHystrixConfig().IsolationProperties.Provider
 }
 
-func getCircuitBreakerSpec(command string) *model.CircuitBreakerSpec {
+func getCircuitBreakerSpec(command string) model.CircuitBreakerSpec {
 	if command == common.Consumer {
 		return GetHystrixConfig().CircuitBreakerProperties.Consumer
 	}
 	return GetHystrixConfig().CircuitBreakerProperties.Provider
 }
 
-func getFallbackSpec(command string) *model.FallbackSpec {
+func getFallbackSpec(command string) model.FallbackSpec {
 	if command == common.Consumer {
 		return GetHystrixConfig().FallbackProperties.Consumer
 	}
 	return GetHystrixConfig().FallbackProperties.Provider
 }
 
-func getFallbackPolicySpec(command string) *model.FallbackPolicySpec {
+func getFallbackPolicySpec(command string) model.FallbackPolicySpec {
 	if command == common.Consumer {
 		return GetHystrixConfig().FallbackPolicyProperties.Consumer
 	}

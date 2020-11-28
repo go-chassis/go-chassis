@@ -3,8 +3,8 @@ package weightpool
 import (
 	"sync"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 )
 
 var weightPool *SafePool
@@ -42,23 +42,6 @@ func (s *SafePool) Reset(key string) {
 	delete(s.pool, key)
 	s.Unlock()
 }
-
-/* Weighted Round-Robin Scheduling
-http://zh.linuxvirtualserver.org/node/37
-
-while (true) {
-  i = (i + 1) mod n;
-  if (i == 0) {
-     cw = cw - gcd(S);
-     if (cw <= 0) {
-       cw = max(S);
-       if (cw == 0)
-         return NULL;
-     }
-  }
-  if (W(Si) >= cw)
-    return Si;
-}*/
 
 // Pool defines sets of weighted tags
 type Pool struct {

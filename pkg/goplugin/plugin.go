@@ -3,7 +3,7 @@ package goplugin
 import (
 	"os"
 
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 )
 
 // LookupPlugin lookup plugin

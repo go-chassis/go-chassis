@@ -1,12 +1,10 @@
 ---
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100 # If type is File then address will be the path of the file
   protocols:
     rest:
       listenAddress: "127.0.0.1:5001"
-      #advertiseAddress: "internal_ip:5001"
   handler:
     chain:
       Provider:

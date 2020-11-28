@@ -2,28 +2,27 @@ package handler_test
 
 import (
 	"context"
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/util/fileutil"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }
 
@@ -31,14 +30,14 @@ func TestTransportHandler_HandleRest(t *testing.T) {
 	t.Log("testing transport handler with rest protocol")
 	microContent := `---
 #微服务的私有属性
-service_description:
-  name: Client
-  version: 0.1`
+servicecomb:
+  service:
+	  name: Client
+	  version: 0.1`
 
 	yamlContent := `---
-cse:
-  service:
-    registry:
+servicecomb:
+  registry:
       address: http://127.0.0.1:30100
   protocols:
     rest:
@@ -71,7 +70,7 @@ cse:
 	c := &handler.Chain{}
 	i := &invocation.Invocation{}
 	i.Reply = &helloworld.HelloReply{}
-	i.Args, _ = rest.NewRequest(http.MethodGet, "cse://127.0.0.1:9992/path/test", nil)
+	i.Args, _ = rest.NewRequest(http.MethodGet, "http://127.0.0.1:9992/path/test", nil)
 	i.Reply = rest.NewResponse()
 	i.Ctx = context.WithValue(context.TODO(), common.ContextHeaderKey{}, map[string]string{
 		"user": "test",

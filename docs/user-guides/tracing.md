@@ -28,7 +28,7 @@ import _ "github.com/go-chassis/go-chassis-extension/tracing/zipkin"
 this config means send data to zipkin, tracing-provider must to be added in handler chain
 
 ```yaml
-cse:
+servicecomb:
   handler:
     chain:
       Provider:

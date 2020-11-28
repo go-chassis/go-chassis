@@ -1,13 +1,14 @@
 package servicecenter
 
 import (
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
-	"github.com/go-mesh/openlogging"
+	"fmt"
+	scregistry "github.com/go-chassis/cari/discovery"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	"github.com/go-chassis/openlog"
 	"gopkg.in/yaml.v2"
 )
 
@@ -50,7 +51,7 @@ func unmarshalSchemaContent(content []byte) (*registry.SchemaContent, error) {
 }
 
 // filterInstances filter instances
-func filterInstances(providerInstances []*proto.MicroServiceInstance) []*registry.MicroServiceInstance {
+func filterInstances(providerInstances []*scregistry.MicroServiceInstance) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {
 		if ins.Status != client.MSInstanceUP {
@@ -65,10 +66,10 @@ func filterInstances(providerInstances []*proto.MicroServiceInstance) []*registr
 func closeClient(r *client.RegistryClient) error {
 	err := r.Close()
 	if err != nil {
-		openlogging.GetLogger().Errorf("Conn close failed. err %s", err)
+		openlog.Error(fmt.Sprintf("Conn close failed. err %s", err))
 		return err
 	}
-	openlogging.GetLogger().Debugf("Conn close success.")
+	openlog.Debug("Conn close success.")
 	return nil
 }
 
@@ -89,11 +90,11 @@ func wrapTagsForServiceCenter(t utiltags.Tags) utiltags.Tags {
 }
 
 //GetCriteria generate batch find criteria from provider cache
-func GetCriteria() []*proto.FindService {
-	services := make([]*proto.FindService, 0)
+func GetCriteria() []*scregistry.FindService {
+	services := make([]*scregistry.FindService, 0)
 	for _, service := range registry.GetProvidersFromCache() {
-		services = append(services, &proto.FindService{
-			Service: &proto.MicroServiceKey{
+		services = append(services, &scregistry.FindService{
+			Service: &scregistry.MicroServiceKey{
 				ServiceName: service.ServiceName,
 				Version:     service.Version,
 				AppId:       service.AppID,
@@ -104,14 +105,14 @@ func GetCriteria() []*proto.FindService {
 }
 
 //GetCriteriaByService generate batch find criteria from provider cache with same service name and different app
-func GetCriteriaByService(sn string) []*proto.FindService {
-	services := make([]*proto.FindService, 0)
+func GetCriteriaByService(sn string) []*scregistry.FindService {
+	services := make([]*scregistry.FindService, 0)
 	for _, service := range registry.GetProvidersFromCache() {
 		if sn != service.ServiceName {
 			continue
 		}
-		services = append(services, &proto.FindService{
-			Service: &proto.MicroServiceKey{
+		services = append(services, &scregistry.FindService{
+			Service: &scregistry.MicroServiceKey{
 				ServiceName: service.ServiceName,
 				Version:     service.Version,
 				AppId:       service.AppID,

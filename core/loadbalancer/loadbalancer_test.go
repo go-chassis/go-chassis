@@ -3,38 +3,34 @@ package loadbalancer_test
 // Forked from github.com/micro/go-micro
 // Some parts of this file have been modified to make it functional in this package
 import (
-	"github.com/go-chassis/go-chassis/core/config/model"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/core/registry"
-	_ "github.com/go-chassis/go-chassis/core/registry/servicecenter"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/util/tags"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.service.registry.address", "http://127.0.0.1:30100")
+	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")
 	runtime.App = "default"
 	archaius.Set("cse.loadbalance.strategy.name", loadbalancer.StrategyRoundRobin)
+	archaius.Set("servicecomb.service.name", "Client")
+	archaius.Set("servicecomb.service.hostname", "localhost")
 	config.ReadGlobalConfigFromArchaius()
-	archaius.Set("service_description.name", "Client")
-	archaius.Set("service_description.hostname", "localhost")
-	config.MicroserviceDefinition = &model.MicroserviceCfg{}
-	archaius.UnmarshalConfig(config.MicroserviceDefinition)
 	config.ReadLBFromArchaius()
 }
 func TestEnable(t *testing.T) {

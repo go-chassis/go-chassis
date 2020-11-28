@@ -4,7 +4,7 @@ package hystrix
 // Some parts of this file have been modified to make it functional in this package
 import (
 	"fmt"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"sync"
 	"time"
 )
@@ -139,7 +139,7 @@ func Go(name string, run runFunc, fallback fallbackFunc) chan error {
 
 			err := cmd.circuit.ReportEvent(cmd.events, cmd.start, cmd.runDuration)
 			if err != nil {
-				openlogging.GetLogger().Warnf("can not report Metrics [%s]", err.Error())
+				openlog.Warn(fmt.Sprintf("can not report Metrics [%s]", err.Error()))
 			}
 		}()
 

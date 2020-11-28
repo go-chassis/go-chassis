@@ -2,14 +2,15 @@ package main
 
 import (
 	"errors"
+	"github.com/go-chassis/go-chassis/v2/middleware/jwt"
 	"net/http"
 	"strings"
 
-	"github.com/go-chassis/go-chassis"
-	"github.com/go-chassis/go-chassis/middleware/jwt"
-	"github.com/go-chassis/go-chassis/security/token"
-	rf "github.com/go-chassis/go-chassis/server/restful"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/middleware/jwt"
+	"github.com/go-chassis/go-chassis/v2/security/token"
+	rf "github.com/go-chassis/go-chassis/v2/server/restful"
+	"github.com/go-chassis/openlog"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/server/
@@ -30,7 +31,7 @@ func main() {
 	})
 	//start all server you register in server/schemas.
 	if err := chassis.Init(); err != nil {
-		openlogging.Error("Init failed." + err.Error())
+		openlog.Error("Init failed." + err.Error())
 		return
 	}
 	chassis.Run()

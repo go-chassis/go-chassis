@@ -3,8 +3,8 @@ package tracing
 import (
 	"fmt"
 
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/openlog"
 	"github.com/opentracing/opentracing-go"
 )
 
@@ -19,7 +19,7 @@ type NewTracer func(o map[string]string) (opentracing.Tracer, error)
 //InstallTracer install new opentracing tracer
 func InstallTracer(name string, f NewTracer) {
 	TracerFuncMap[name] = f
-	openlogging.Info("installed tracing plugin: " + name)
+	openlog.Info("installed tracing plugin: " + name)
 
 }
 
@@ -34,13 +34,13 @@ func GetTracerFunc(name string) (NewTracer, error) {
 
 // Init initialize the global tracer
 func Init() error {
-	openlogging.Info("Tracing enabled. Start to init tracer.")
+	openlog.Info("Tracing enabled. Start to init tracer.")
 	if config.GlobalDefinition.Tracing.Tracer == "" {
 		config.GlobalDefinition.Tracing.Tracer = "zipkin"
 	}
 	f, err := GetTracerFunc(config.GlobalDefinition.Tracing.Tracer)
 	if err != nil {
-		openlogging.Warn("can not load any opentracing plugin, lost distributed tracing function")
+		openlog.Warn("can not load any opentracing plugin, lost distributed tracing function")
 		return nil
 	}
 	tracer, err := f(config.GlobalDefinition.Tracing.Settings)

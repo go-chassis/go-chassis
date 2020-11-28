@@ -1,12 +1,12 @@
 package provider_test
 
 import (
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/core/provider"
-	"github.com/go-chassis/go-chassis/examples/schemas"
-	pb "github.com/go-chassis/go-chassis/examples/schemas/helloworld"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/provider"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas"
+	pb "github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -92,7 +92,6 @@ func BenchmarkGetProvider(b *testing.B) {
 }
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel:   "INFO",
-		RollingPolicy: "size",
+		LoggerLevel: "INFO",
 	})
 }

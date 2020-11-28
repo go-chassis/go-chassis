@@ -2,19 +2,19 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
 
-	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/bootstrap"
-	"github.com/go-chassis/go-chassis/client/rest"
-	_ "github.com/go-chassis/go-chassis/configserver"
-	"github.com/go-chassis/go-chassis/core"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/lager"
-	"github.com/go-chassis/go-chassis/pkg/util/httputil"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/go-chassis/v2"
+	_ "github.com/go-chassis/go-chassis/v2/bootstrap"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	_ "github.com/go-chassis/go-chassis/v2/configserver"
+	"github.com/go-chassis/go-chassis/v2/core"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
+	"github.com/go-chassis/openlog"
 )
 
 var wg sync.WaitGroup
@@ -23,7 +23,7 @@ var wg sync.WaitGroup
 func main() {
 	//chassis operation
 	if err := chassis.Init(); err != nil {
-		openlogging.Error("Init failed.")
+		openlog.Error("Init failed.")
 		return
 	}
 
@@ -43,7 +43,7 @@ func callRest(invoker *core.RestInvoker) {
 	//use the invoker like http client.
 	resp1, err := invoker.ContextDo(context.TODO(), req)
 	if err != nil {
-		lager.Logger.Errorf("call request fail (%s) (%d) ", string(httputil.ReadBody(resp1)), resp1.StatusCode)
+		openlog.Error(fmt.Sprintf("call request fail (%s) (%d) ", string(httputil.ReadBody(resp1)), resp1.StatusCode))
 		return
 	}
 	log.Printf("Rest Server sayhello[Get] %s", string(httputil.ReadBody(resp1)))

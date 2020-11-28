@@ -6,24 +6,24 @@ import (
 	"log"
 	"testing"
 
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core/client"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/lager"
-	_ "github.com/go-chassis/go-chassis/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/core/server"
-	"github.com/go-chassis/go-chassis/examples/schemas"
-	_ "github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core/client"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	_ "github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/server"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas"
+	_ "github.com/go-chassis/go-chassis/v2/server/restful"
 
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/handler"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/server/restful"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,7 +34,7 @@ func initEnv() {
 		LoggerLevel: "INFO",
 	})
 	archaius.Init(archaius.WithMemorySource())
-	archaius.Set("cse.noRefreshSchema", true)
+	archaius.Set("servicecomb.noRefreshSchema", true)
 	config.ReadGlobalConfigFromArchaius()
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
@@ -49,8 +49,8 @@ func TestNewRestClient_Call(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 	strategyRule := make(map[string]string)
 	strategyRule["sessionTimeoutInSeconds"] = "30"
 
@@ -109,8 +109,8 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)
@@ -158,8 +158,8 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 	defaultChain := make(map[string]string)
 	defaultChain["default"] = ""
 
-	config.GlobalDefinition.Cse.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.Cse.Handler.Chain.Consumer = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
 	handler.CreateChains(common.Provider, defaultChain)
 	f, err := server.GetServerFunc("rest")
 	assert.NoError(t, err)

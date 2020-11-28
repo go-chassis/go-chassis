@@ -1,18 +1,19 @@
 package servicecenter
 
 import (
+	"fmt"
+	scregistry "github.com/go-chassis/cari/discovery"
 	"net/url"
 	"time"
 
 	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/config"
-	"github.com/go-chassis/go-chassis/core/registry"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/scclient"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
 
-	"github.com/go-chassis/go-chassis/pkg/scclient/proto"
-	"github.com/go-mesh/openlogging"
+	"github.com/go-chassis/openlog"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -39,9 +40,9 @@ func (c *CacheManager) AutoSync() {
 	if config.GetServiceDiscoveryWatch() {
 		err := c.registryClient.WatchMicroService(runtime.ServiceID, watch)
 		if err != nil {
-			openlogging.GetLogger().Errorf("Watch failed. Self Micro service Id:%s. %s", runtime.ServiceID, err)
+			openlog.Error(fmt.Sprintf("watch failed. Self Micro service Id:%s. %s", runtime.ServiceID, err))
 		}
-		openlogging.GetLogger().Debugf("Watching Instances change events.")
+		openlog.Debug("Watching Instances change events.")
 	}
 	var ticker *time.Ticker
 	refreshInterval := config.GetServiceDiscoveryRefreshInterval()
@@ -50,7 +51,7 @@ func (c *CacheManager) AutoSync() {
 	} else {
 		timeValue, err := time.ParseDuration(refreshInterval)
 		if err != nil {
-			openlogging.GetLogger().Errorf("refeshInterval is invalid. So use Default value, err %s", err)
+			openlog.Error(fmt.Sprintf("refeshInterval is invalid. So use Default value, err %s", err))
 			timeValue = DefaultRefreshInterval
 		}
 		ticker = time.NewTicker(timeValue)
@@ -64,30 +65,30 @@ func (c *CacheManager) AutoSync() {
 
 // refreshCache refresh cache
 func (c *CacheManager) refreshCache() {
-	if archaius.GetBool("cse.service.registry.autodiscovery", false) {
+	if archaius.GetBool("servicecomb.registry.autodiscovery", false) {
 		err := c.registryClient.SyncEndpoints()
 		if err != nil {
-			openlogging.GetLogger().Errorf("get sc endpoints failed: %s", err)
+			openlog.Error(fmt.Sprintf("get sc endpoints failed: %s", err))
 		}
 	}
 	err := c.pullMicroServiceInstance()
 	if err != nil {
-		openlogging.GetLogger().Errorf("AutoUpdateMicroserviceInstance failed: %s", err)
+		openlog.Error(fmt.Sprintf("AutoUpdateMicroserviceInstance failed: %s", err))
 		//connection with sc may lost, reset the revision
 		c.registryClient.ResetRevision()
 	}
 
-	if archaius.GetBool("cse.service.registry.autoSchemaIndex", false) {
+	if archaius.GetBool("servicecomb.registry.autoSchemaIndex", false) {
 		err = c.MakeSchemaIndex()
 		if err != nil {
-			openlogging.GetLogger().Errorf("MakeSchemaIndex failed: %s", err)
+			openlog.Error(fmt.Sprintf("MakeSchemaIndex failed: %s", err))
 		}
 	}
 
-	if archaius.GetBool("cse.service.registry.autoIPIndex", false) {
+	if archaius.GetBool("servicecomb.registry.autoIPIndex", false) {
 		err = c.MakeIPIndex()
 		if err != nil {
-			openlogging.GetLogger().Errorf("Auto Update IP index failed: %s", err)
+			openlog.Error(fmt.Sprintf("Auto Update IP index failed: %s", err))
 		}
 	}
 
@@ -97,10 +98,10 @@ func (c *CacheManager) refreshCache() {
 // if store instance metadata into tags
 // it will be used in route management
 func (c *CacheManager) MakeIPIndex() error {
-	openlogging.GetLogger().Debug("Make IP index")
+	openlog.Debug("Make IP index")
 	services, err := c.registryClient.GetAllResources("instances")
 	if err != nil {
-		openlogging.GetLogger().Errorf("Get instances failed: %s", err)
+		openlog.Error(fmt.Sprintf("Get instances failed: %s", err))
 		return err
 	}
 	for _, service := range services {
@@ -108,7 +109,7 @@ func (c *CacheManager) MakeIPIndex() error {
 			for _, uri := range inst.Endpoints {
 				u, err := url.Parse(uri)
 				if err != nil {
-					openlogging.GetLogger().Errorf("Wrong URI %s: %s", uri, err)
+					openlog.Error(fmt.Sprintf("Wrong URI %s: %s", uri, err))
 					continue
 				}
 				si := &registry.SourceInfo{}
@@ -131,10 +132,10 @@ func (c *CacheManager) MakeIPIndex() error {
 // MakeSchemaIndex make schema index
 func (c *CacheManager) MakeSchemaIndex() error {
 
-	openlogging.GetLogger().Debug("Make Schema index")
+	openlog.Debug("Make Schema index")
 	microServiceList, err := c.registryClient.GetAllMicroServices()
 	if err != nil {
-		openlogging.GetLogger().Errorf("Get instances failed: %s", err)
+		openlog.Error(fmt.Sprintf("Get instances failed: %s", err))
 		return err
 	}
 
@@ -160,31 +161,31 @@ func (c *CacheManager) MakeSchemaIndex() error {
 			if interfaceName != "" {
 				value, ok := registry.SchemaInterfaceIndexedCache.Get(interfaceName)
 				if !ok {
-					var allMicroServices []*proto.MicroService
+					var allMicroServices []*scregistry.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaInterfaceIndexedCache.Set(interfaceName, allMicroServices, 0)
-					openlogging.GetLogger().Debugf("New Interface added in the Index Cache : %s", interfaceName)
+					openlog.Debug(fmt.Sprintf("New Interface added in the Index Cache : %s", interfaceName))
 				} else {
-					val, _ := value.([]*proto.MicroService)
+					val, _ := value.([]*scregistry.MicroService)
 					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaInterfaceIndexedCache.Set(interfaceName, val, 0)
-						openlogging.GetLogger().Debugf("New Interface added in the Index Cache : %s", interfaceName)
+						openlog.Debug(fmt.Sprintf("New Interface added in the Index Cache : %s", interfaceName))
 					}
 				}
 
 				svcValue, ok := registry.SchemaServiceIndexedCache.Get(serviceID)
 				if !ok {
-					var allMicroServices []*proto.MicroService
+					var allMicroServices []*scregistry.MicroService
 					allMicroServices = append(allMicroServices, ms)
 					registry.SchemaServiceIndexedCache.Set(serviceID, allMicroServices, 0)
-					openlogging.GetLogger().Debugf("New Service added in the Index Cache : %s", serviceID)
+					openlog.Debug(fmt.Sprintf("New Service added in the Index Cache : %s", serviceID))
 				} else {
-					val, _ := svcValue.([]*proto.MicroService)
+					val, _ := svcValue.([]*scregistry.MicroService)
 					if !checkIfMicroServiceExistInList(val, ms.ServiceId) {
 						val = append(val, ms)
 						registry.SchemaServiceIndexedCache.Set(serviceID, val, 0)
-						openlogging.GetLogger().Debugf("New Service added in the Index Cache : %s", serviceID)
+						openlog.Debug(fmt.Sprintf("New Service added in the Index Cache : %s", serviceID))
 					}
 				}
 			}
@@ -194,7 +195,7 @@ func (c *CacheManager) MakeSchemaIndex() error {
 }
 
 // This functions checks if the microservices exist in the list passed in argument
-func checkIfMicroServiceExistInList(microserviceList []*proto.MicroService, serviceID string) bool {
+func checkIfMicroServiceExistInList(microserviceList []*scregistry.MicroService, serviceID string) bool {
 	msIsPresentInList := false
 	for _, interfaceMicroserviceList := range microserviceList {
 		if interfaceMicroserviceList.ServiceId == serviceID {
@@ -211,16 +212,20 @@ func (c *CacheManager) pullMicroServiceInstance() error {
 	services := GetCriteria()
 	serviceNameSet, _ := getServiceSet(services)
 	c.compareAndDeleteOutdatedProviders(serviceNameSet)
-
+	if len(services) == 0 {
+		openlog.Info("no providers")
+		return nil
+	}
 	//fetch remote based on app and service
-	instances, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
+	response, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
 	if err != nil {
 		if err == client.ErrNotModified || err == client.ErrEmptyCriteria {
-			openlogging.Debug(err.Error())
+			openlog.Debug(err.Error())
 		} else {
-			openlogging.Error("Refresh local instance cache failed: " + err.Error())
+			openlog.Error("Refresh local instance cache failed: " + err.Error())
 		}
 	}
+	instances := RegroupInstances(services, response)
 	filter(instances)
 
 	return nil
@@ -231,13 +236,13 @@ func (c *CacheManager) compareAndDeleteOutdatedProviders(newProviders sets.Strin
 	for old := range oldProviders {
 		if !newProviders.Has(old) { //provider is outdated, delete it
 			registry.MicroserviceInstanceIndex.Delete(old)
-			openlogging.GetLogger().Infof("Delete the service [%s] in the cache", old)
+			openlog.Info(fmt.Sprintf("Delete the service [%s] in the cache", old))
 		}
 	}
 }
 
 // getServiceSet regroup the providers by service name
-func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.String) {
+func getServiceSet(exist []*scregistry.FindService) (sets.String, map[string]sets.String) {
 	//get Provider's instances
 	serviceNameSet := sets.NewString()                     // key is serviceName
 	serviceNameAppIDKeySet := make(map[string]sets.String) // key is "serviceName" value is app sets
@@ -246,11 +251,11 @@ func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.Str
 	}
 	for _, service := range exist {
 		if service == nil {
-			openlogging.Warn("FindService info is empty")
+			openlog.Warn("FindService info is empty")
 			continue
 		}
 		if service.Service == nil {
-			openlogging.Warn("provider info is empty")
+			openlog.Warn("provider info is empty")
 			continue
 		}
 		serviceNameSet.Insert(service.Service.ServiceName)
@@ -267,7 +272,7 @@ func getServiceSet(exist []*proto.FindService) (sets.String, map[string]sets.Str
 
 //set app into instance metadata, split instances into ups and downs
 //set instance to cache by service name
-func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
+func filter(providerInstances map[string][]*registry.MicroServiceInstance) {
 	//append instances from different app and same service name into one unified slice
 	downs := make(map[string]struct{})
 	for serviceName, instances := range providerInstances {
@@ -275,15 +280,15 @@ func filter(providerInstances map[string][]*proto.MicroServiceInstance) {
 		for _, ins := range instances {
 			switch {
 			case ins.Version == "":
-				openlogging.Warn("do not support old service center, plz upgrade")
+				openlog.Warn("do not support old service center, plz upgrade")
 				continue
 			case ins.Status != common.DefaultStatus && ins.Status != common.TESTINGStatus:
-				downs[ins.InstanceId] = struct{}{}
-				openlogging.GetLogger().Debugf("do not cache the instance in '%s' status, instanceId = %s/%s",
-					ins.Status, ins.ServiceId, ins.InstanceId)
+				downs[ins.InstanceID] = struct{}{}
+				openlog.Debug(fmt.Sprintf("do not cache the instance in '%s' status, instanceId = %s/%s",
+					ins.Status, ins.ServiceID, ins.InstanceID))
 				continue
 			default:
-				up = append(up, ToMicroServiceInstance(ins).WithAppID(ins.App))
+				up = append(up, ins.WithAppID(ins.App))
 			}
 		}
 		registry.RefreshCache(serviceName, up, downs) //save cache after get all instances of a service name
@@ -304,9 +309,9 @@ func watch(response *client.MicroServiceInstanceChangedEvent) {
 	case client.EventUpdate:
 		updateAction(response)
 	case client.EventError:
-		openlogging.GetLogger().Warnf("MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %s", response)
+		openlog.Warn(fmt.Sprintf("MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %v", response))
 	default:
-		openlogging.GetLogger().Warnf("Do not support this Action = %s", response.Action)
+		openlog.Warn(fmt.Sprintf("Do not support this Action = %s", response.Action))
 		return
 	}
 }
@@ -316,29 +321,29 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
-		openlogging.GetLogger().Errorf("ServiceID does not exist in MicroServiceInstanceCache,action is EVT_CREATE.key = %s", key)
+		openlog.Error(fmt.Sprintf("ServiceID does not exist in MicroServiceInstanceCache,action is EVT_CREATE.key = %s", key))
 		return
 	}
 	if response.Instance.Status != client.MSInstanceUP {
-		openlogging.GetLogger().Warnf("createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %s", response)
+		openlog.Warn(fmt.Sprintf("createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %v", response))
 		return
 	}
-	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
+	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppId)
 	microServiceInstances = append(microServiceInstances, msi)
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	openlogging.GetLogger().Infof("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
+	openlog.Info(fmt.Sprintf("Cached Instances,action is EVT_CREATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances)))
 }
 
 // deleteAction delete micro-service instance
 func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
-	openlogging.GetLogger().Debugf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints)
-	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppID, ToMicroServiceInstance(response.Instance)); err == nil {
+	openlog.Debug(fmt.Sprintf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints))
+	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppId, ToMicroServiceInstance(response.Instance)); err == nil {
 		return
 	}
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
-		openlogging.GetLogger().Errorf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_DELETE, key = %s", key)
+		openlog.Error(fmt.Sprintf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_DELETE, key = %s", key))
 		return
 	}
 	var newInstances = make([]*registry.MicroServiceInstance, 0)
@@ -349,7 +354,7 @@ func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 	}
 
 	registry.MicroserviceInstanceIndex.Set(key, newInstances)
-	openlogging.GetLogger().Debugf("Cached [%d] Instances of service [%s]", len(newInstances), key)
+	openlog.Debug(fmt.Sprintf("Cached [%d] Instances of service [%s]", len(newInstances), key))
 }
 
 // updateAction update micro-service instance event
@@ -357,14 +362,14 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
-		openlogging.GetLogger().Errorf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_UPDATE, sid = %s", key)
+		openlog.Error(fmt.Sprintf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_UPDATE, sid = %s", key))
 		return
 	}
 	if response.Instance.Status != client.MSInstanceUP {
-		openlogging.GetLogger().Warnf("updateAction failed, MicroServiceInstance status is not MSI_UP, MicroServiceInstanceChangedEvent = %s", response)
+		openlog.Warn(fmt.Sprintf("updateAction failed, MicroServiceInstance status is not MSI_UP, MicroServiceInstanceChangedEvent = %v", response))
 		return
 	}
-	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppID)
+	msi := ToMicroServiceInstance(response.Instance).WithAppID(response.Key.AppId)
 	var iidExist = InstanceIDIsNotExist
 	var arrayNum int
 	for k, v := range microServiceInstances {
@@ -379,8 +384,8 @@ func updateAction(response *client.MicroServiceInstanceChangedEvent) {
 	case InstanceIDIsNotExist:
 		microServiceInstances = append(microServiceInstances, msi)
 	default:
-		openlogging.GetLogger().Warnf("updateAction error, iid:%s", response.Instance.InstanceId)
+		openlog.Warn(fmt.Sprintf("updateAction error, iid:%s", response.Instance.InstanceId))
 	}
 	registry.MicroserviceInstanceIndex.Set(key, microServiceInstances)
-	openlogging.GetLogger().Infof("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances))
+	openlog.Info(fmt.Sprintf("Cached Instances,action is EVT_UPDATE, sid = %s, instances length = %d", response.Instance.ServiceId, len(microServiceInstances)))
 }

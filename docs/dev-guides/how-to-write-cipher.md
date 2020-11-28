@@ -1,8 +1,5 @@
 # Cipher
 ## 概述
-
----
-
 Go chassis以插件的形式提供加解密组件功能，用户可以自己定制
 
 ## Configuration
@@ -10,7 +7,7 @@ Go chassis以插件的形式提供加解密组件功能，用户可以自己定�
 you can use cipher in SK and passphase decryption
 
 ```yaml
-cse:
+servicecomb:
   credentials:
     accessKey: xxx
     secretKey: xxx #ecrypted
@@ -25,7 +22,6 @@ ssl:
 
 ## API
 
----
 可通过实现Cipher接口，自定义Cipher
 
 ```go
@@ -64,7 +60,7 @@ to touch any cloud resources.
 ```go
 package plain
 
-import sec "github.com/go-chassis/go-chassis/security"
+import sec "github.com/go-chassis/go-chassis/v2/security"
 import "github.com/go-chassis/foundation/security"
 
 type DefaultCipher struct {
@@ -96,7 +92,7 @@ func (c *DefaultCipher)Decrypt(src string) (string, error) {
 
 3.Set cipher name in auth.yaml to decrypt SK
 ```yaml
-cse:
+servicecomb:
   credentials:
     accessKey: xxx
     secretKey: xxx #ecrypted

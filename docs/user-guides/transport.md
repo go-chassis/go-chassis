@@ -31,7 +31,7 @@ request line. Zero means no limit. It only works for rest protocol.
 ## Example
 The cases of http_500,http_502 are considered as unsuccessful attempts
 ```
-cse:
+servicecomb:
   transport:
     failure:
       rest: http_500,http_502

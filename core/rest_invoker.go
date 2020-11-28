@@ -6,11 +6,11 @@ import (
 
 	"net/http"
 
-	"github.com/go-chassis/go-chassis/client/rest"
-	"github.com/go-chassis/go-chassis/core/common"
-	"github.com/go-chassis/go-chassis/core/invocation"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-chassis/go-chassis/pkg/util"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util"
 )
 
 const (
@@ -40,8 +40,8 @@ func NewRestInvoker(opt ...Option) *RestInvoker {
 // ContextDo is for requesting the API
 // by default if http status is 5XX, then it will return error
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options ...InvocationOption) (*http.Response, error) {
-	if string(req.URL.Scheme) != "cse" && string(req.URL.Scheme) != HTTP {
-		return nil, fmt.Errorf("scheme invalid: %s, only support {cse|http}://", req.URL.Scheme)
+	if req.URL.Scheme != HTTP {
+		return nil, fmt.Errorf("scheme invalid: %s, only support {http}://", req.URL.Scheme)
 	}
 	common.SetXCSEContext(map[string]string{common.HeaderSourceName: runtime.ServiceName}, req)
 	// set headers to Ctx
@@ -75,7 +75,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 	inv.OperationID = req.URL.Path
 	inv.Args = req
 	inv.Reply = resp
-	inv.URLPathFormat = req.URL.Path
+	inv.URLPath = req.URL.Path
 
 	inv.SetMetadata(common.RestMethod, req.Method)
 

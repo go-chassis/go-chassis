@@ -1,3 +1,4 @@
 ---
-service_description:
-  name: JwtExampleService
+servicecomb:
+  service:
+    name: JwtExampleService

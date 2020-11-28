@@ -26,20 +26,16 @@ Service Discovery与Registry只能选择其一进行配置
 当registry type为pilotv2时需要指定pilot的地址address，当registry type为kube时需要指定与kube-apiserver交互所需的kubeconfig的配置文件位置，以下分别为registry的最小示例。
 
 ```yaml
-cse:
-  service:
-    Registry:
-      serviceDiscovery:
+servicecomb:
+  registry:
         type: pilotv2
         address: grpc://istio-pilot.istio-system:15010
         refeshInterval : 30s
 ```
 
 ```yaml
-cse:
-  service:
-    Registry:
-      serviceDiscovery:
+servicecomb:
+  registry:
         type: kube
         configPath: /etc/.kube/config
 ```
