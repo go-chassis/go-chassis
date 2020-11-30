@@ -3,6 +3,7 @@ package router
 import (
 	"crypto/tls"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/v2/core/config"
@@ -100,4 +101,9 @@ func routeTagToTags(t *config.RouteTag) utiltags.Tags {
 		return tag
 	}
 	return tag
+}
+
+// GenWeightPoolKey returns weight pool cache key
+func GenWeightPoolKey(dest string, precedence int) string {
+	return dest + "." + strconv.Itoa(precedence)
 }

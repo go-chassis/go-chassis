@@ -36,3 +36,9 @@ func TestInit(t *testing.T) {
 	})
 
 }
+
+func BenchmarkGenWeightPoolKey(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		router.GenWeightPoolKey("test", 1)
+	}
+}
