@@ -121,7 +121,9 @@ To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
 ![qutoutiao](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG)
 ![Shopee](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png)
 
-
+# Committer
+- ichiro999
+- humingcheng
 # To start developing go chassis
 
 1. Install [go 1.12+](https://golang.org/doc/install) 
