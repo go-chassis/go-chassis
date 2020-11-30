@@ -138,7 +138,7 @@ func TestRoute(t *testing.T) {
 	err := router.Route(header, si, inv)
 	assert.Nil(t, err, "")
 	assert.Equal(t, "HelloWorld", inv.RouteTags.AppID())
-	assert.Equal(t, "1.2", inv.RouteTags.Version())
+	assert.Contains(t, []string{"1.2", "2.0"}, inv.RouteTags.Version())
 	assert.Equal(t, "ShoppingCart", inv.MicroServiceName)
 
 	inv.MicroServiceName = "server"
@@ -193,6 +193,96 @@ func TestRoute2(t *testing.T) {
 	t.Log(inv.RouteTags.Version())
 	assert.Equal(t, "sockshop", inv.RouteTags.AppID())
 	assert.Equal(t, "0.0.1", inv.RouteTags.Version())
+}
+
+func TestRoute3(t *testing.T) {
+
+	d := map[string][]*config.RouteRule{
+		"catalogue": {
+			{
+				Precedence: 2,
+				Routes: []*config.RouteTag{
+					{Weight: 0, Tags: map[string]string{"version": "0.0.1", "app": "sockshop"}},
+					{Weight: 100, Tags: map[string]string{"version": "0.0.2", "app": "sockshop"}},
+				},
+			},
+		},
+	}
+	router.BuildRouter("cse")
+	router.DefaultRouter.SetRouteRule(d)
+
+	header := map[string]string{}
+	inv := new(invocation.Invocation)
+	inv.MicroServiceName = "catalogue"
+
+	err := router.Route(header, nil, inv)
+	assert.Nil(t, err, "")
+	t.Log(inv.RouteTags.AppID())
+	t.Log(inv.RouteTags.Version())
+	assert.Equal(t, "sockshop", inv.RouteTags.AppID())
+	assert.Equal(t, "0.0.2", inv.RouteTags.Version())
+}
+
+func TestRouter3(t *testing.T) {
+	si := &registry.SourceInfo{
+		Tags: map[string]string{},
+	}
+	si.Name = "vmall"
+	si.Tags[common.BuildinTagApp] = "HelloWorld"
+	si.Tags[common.BuildinTagVersion] = "v2"
+	d := map[string][]*config.RouteRule{
+		"ShoppingCart": {
+			{
+				Precedence: 2,
+				Match: config.Match{
+					Headers: map[string]map[string]string{
+						"cookie": {"regex": "^(.*?;)?(user=jason)(;.*)?$"},
+					},
+				},
+				Routes: []*config.RouteTag{
+					{Weight: 80, Tags: map[string]string{"version": "1.2", "app": "HelloWorld"}},
+					{Weight: 20, Tags: map[string]string{"version": "2.0", "app": "HelloWorld"}},
+				},
+			}, {
+				Precedence: 1,
+				Match: config.Match{
+					Headers: map[string]map[string]string{
+						"test": {"regex": "user"},
+					},
+				},
+				Routes: []*config.RouteTag{
+					{Weight: 40, Tags: map[string]string{"version": "v4", "app": "HelloWorld-shopping"}},
+					{Weight: 60, Tags: map[string]string{"version": "v3", "app": "HelloWorld-shopping"}},
+				},
+			},
+		},
+	}
+	router.BuildRouter("cse")
+	router.DefaultRouter.SetRouteRule(d)
+
+	header := map[string]string{
+		"cookie": "user=jason",
+		"X-Age":  "18",
+	}
+
+	inv := new(invocation.Invocation)
+	inv.MicroServiceName = "ShoppingCart"
+
+	err := router.Route(header, si, inv)
+	assert.Nil(t, err, "")
+	assert.Equal(t, "HelloWorld", inv.RouteTags.AppID())
+	assert.Contains(t, []string{"1.2", "2.0"}, inv.RouteTags.Version())
+	assert.Equal(t, "ShoppingCart", inv.MicroServiceName)
+
+	header = map[string]string{
+		"test": "user",
+	}
+	err = router.Route(header, si, inv)
+	assert.Nil(t, err, "")
+
+	assert.Equal(t, "HelloWorld-shopping", inv.RouteTags.AppID())
+	assert.Contains(t, []string{"v3", "v4"}, inv.RouteTags.Version())
+	assert.Equal(t, "ShoppingCart", inv.MicroServiceName)
 }
 
 func TestMatch(t *testing.T) {
@@ -250,9 +340,7 @@ matches:
 
 func TestFitRate(t *testing.T) {
 	tags := InitTags("0.1", "0.2")
-	tag := router.FitRate(tags, "service") //0,0
-	assert.Equal(t, "0.1", tag.Tags["version"])
-	tag = router.FitRate(tags, "service") //100%, 0
+	tag := router.FitRate(tags, "service") //100%, 0
 	assert.Equal(t, "0.2", tag.Tags["version"])
 	tag = router.FitRate(tags, "service") //50%, 50%
 	assert.Equal(t, "0.1", tag.Tags["version"])

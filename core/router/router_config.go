@@ -101,3 +101,8 @@ func routeTagToTags(t *config.RouteTag) utiltags.Tags {
 	}
 	return tag
 }
+
+// GenWeightPoolKey returns weight pool cache key
+func GenWeightPoolKey(dest string, precedence int) string {
+	return fmt.Sprintf("%s.%d", dest, precedence)
+}

@@ -95,6 +95,8 @@ func SaveRouteRule(service string, raw string, isV2 bool) {
 func validateAndUpdate(routeRules []*config.RouteRule, service string) {
 	if router.ValidateRule(map[string][]*config.RouteRule{service: routeRules}) {
 		cseRouter.SetRouteRuleByKey(service, routeRules)
-		wp.GetPool().Reset(service)
+		for _, routeRule := range routeRules {
+			wp.GetPool().Reset(router.GenWeightPoolKey(service, routeRule.Precedence))
+		}
 	}
 }
