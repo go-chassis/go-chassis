@@ -56,7 +56,7 @@ func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.In
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {
 		if Match(inv, rule.Match, header, si) {
-			tag := FitRate(rule.Routes, inv.MicroServiceName)
+			tag := FitRate(rule.Routes, GenWeightPoolKey(inv.MicroServiceName, rule.Precedence))
 			inv.RouteTags = routeTagToTags(tag)
 			break
 		}
@@ -72,9 +72,8 @@ func FitRate(tags []*config.RouteTag, dest string) *config.RouteTag {
 
 	pool, ok := wp.GetPool().Get(dest)
 	if !ok {
-		// first request route to tags[0]
-		wp.GetPool().Set(dest, wp.NewPool(tags...))
-		return tags[0]
+		pool = wp.NewPool(tags...)
+		wp.GetPool().Set(dest, pool)
 	}
 	return pool.PickOne()
 }
