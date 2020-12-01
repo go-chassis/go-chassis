@@ -47,10 +47,10 @@ servicecomb:
 路由规则说明：
 
 - 匹配特定请求由match配置，使用refer字段引用已经定义好的match规则
-- Header中的字段的匹配支持正则, 等于, 小于, 大, 于不等于等匹配方式。
-- 如果未定义match，则可匹配任何请求。
-- 转发权重定义在routeRule.{targetServiceName}.route下，由weight配置。
-- 服务分组定义在routeRule.{targetServiceName}.route下，由tags配置，配置内容有version和app。
+- Header中的字段的匹配支持正则、等于、小于、大于和不等于等匹配方式
+- 如果未定义match，则可匹配任何请求
+- 转发权重定义在routeRule.{targetServiceName}.route下，由weight配置
+- 服务分组定义在routeRule.{targetServiceName}.route下，由tags配置，配置内容有version和app
 - caseInsensitive 配置条件是否区分大小写，默认false区分大小写，true则不区分大小写
 ## API
 

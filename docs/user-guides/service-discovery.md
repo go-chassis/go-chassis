@@ -16,7 +16,7 @@ Service Discovery与Registry只能选择其一进行配置
 **NOTE: 当使用kube registry时，发布的service需要指定port name为以下格式 [protocol]-[suffix]**
 
 **address**
-> *(optional, bool)*服务中心地址 允许配置多个以逗号隔开，默认为空
+> *(optional, bool)* 服务中心地址 允许配置多个以逗号隔开，默认为空
 
 **refreshInterval**
 > *(optional, string)* 更新实例缓存的时间间隔，格式为数字加单位（s/m/h），如1s/1m/1h，默认为30s
@@ -28,15 +28,15 @@ Service Discovery与Registry只能选择其一进行配置
 ```yaml
 servicecomb:
   registry:
-        type: pilotv2
-        address: grpc://istio-pilot.istio-system:15010
-        refeshInterval : 30s
+    type: pilotv2
+    address: grpc://istio-pilot.istio-system:15010
+    refeshInterval: 30s
 ```
 
 ```yaml
 servicecomb:
   registry:
-        type: kube
-        configPath: /etc/.kube/config
+    type: kube
+    configPath: /etc/.kube/config
 ```
 

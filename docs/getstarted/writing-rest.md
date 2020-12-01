@@ -21,16 +21,17 @@ server
 ```go
 type RestFulHello struct {}
 
-func (r *RestFulHello) Sayhello(b *restful.Context) {
+func (r *RestFulHello) SayHello(b *rf.Context) {
     b.Write([]byte("get user id: " + b.ReadPathParameter("userid")))
 }
 ```
 2.Write your url patterns
 ```go
-func (s *RestFulHello) URLPatterns() []restful.Route {
-    return []restful.RouteSpec{
-        {Method: http.MethodGet, Path: ""/sayhello/{userid}"", ResourceFunc: s.Sayhello,
-         			Returns: []*rf.Returns{{Code: 200}}},
+func (r *RestFulHello) URLPatterns() []rf.Route {
+    return []rf.RouteSpec{
+        {Method: http.MethodGet, Path: "/sayhello/{userid}", 
+         ResourceFunc: r.SayHello,
+         Returns: []*rf.Returns{{Code: 200}}},
     }
 }
 ```
@@ -65,9 +66,11 @@ servicecomb:
 6.In main.go init and start the chassis 
 ```go
 func main() {
+    // register struct
+    chassis.RegisterSchema("rest", &RestFulHello{})
     //start all server you register in server/schemas.
     if err := chassis.Init(); err != nil {
-        openlogging.Error("Init failed.", err)
+        openlogging.Error("Init failed. "+err.Error())
         return
     }
     chassis.Run()
@@ -100,7 +103,7 @@ servicecomb:
   service:
     name: RESTClient #name your consumer
 ```
-3.in main.go call your service
+3. in main.go call your service
 ```go
 func main() {
 	//Init framework
@@ -113,7 +116,7 @@ func main() {
 		openlogging.Error("new request failed.")
 		return
 	}
-	resp, err := core.NewRestInvoker().ContextDo(ctx, req)
+	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
 		openlogging.Error("do request failed.")
 		return
@@ -228,7 +231,7 @@ servicecomb:
       address: http://127.0.0.1:30100 
   protocols:
     rest:
-      listenAddress: "127.0.0.1:5003"
+      listenAddress: 127.0.0.1:5003
   noRefreshSchema: true
 ```
 

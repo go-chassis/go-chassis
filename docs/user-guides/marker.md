@@ -30,7 +30,7 @@ servicecomb:
         default: traffic-marker,rate-limiter
 ```
 ## Supported features
-More feature will will support marker, currently support below features:
+More feature will support marker, currently support below features:
 
 - router management
 - rate limiter
