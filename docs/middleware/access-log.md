@@ -1,4 +1,4 @@
-# access log
+# Access log
 record access log as a handler in provider chain
 ## usage
 

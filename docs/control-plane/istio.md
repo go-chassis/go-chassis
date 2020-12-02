@@ -8,12 +8,16 @@ To use istio, the simple 2 steps are needed:
 
 1.edit chassis.yaml.
 
-**registry.disabled** set it to true. 
+**registry.disabled** set it to true. and only reserve transport handler
 
 ```yaml
 servicecomb:
   registry:
     disabled: true
+  handler:
+    chain:
+      Consumer:
+        default: transport
 ```
 
 2.call remote service with Option "WithoutSD" and add port number

@@ -1,7 +1,7 @@
 # Registry
 ## 概述
 
-微服务的注册发现默认通过[服务中心](https://github.com/apache/servicecomb-service-center)完成。
+微服务的注册发现默认通过[service center](https://github.com/apache/servicecomb-service-center)完成。
 用户可以配置与服务中心的通信方式，服务中心地址，以及自身注册到服务中心的信息。
 微服务启动过程中，会自动向服务中心进行注册。
 在微服务运行过程中，go-chassis会周期从服务中心查询其他服务的实例信息缓存到本地.
