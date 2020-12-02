@@ -13,9 +13,10 @@ import (
 	"github.com/go-chassis/go-chassis/v2/pkg/util"
 )
 
+//schemas
 const (
-	//HTTP is url schema name
-	HTTP = "http"
+	HTTP  = "http"
+	HTTPS = "https"
 )
 
 // RestInvoker is rest invoker
@@ -40,8 +41,8 @@ func NewRestInvoker(opt ...Option) *RestInvoker {
 // ContextDo is for requesting the API
 // by default if http status is 5XX, then it will return error
 func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options ...InvocationOption) (*http.Response, error) {
-	if req.URL.Scheme != HTTP {
-		return nil, fmt.Errorf("scheme invalid: %s, only support {http}://", req.URL.Scheme)
+	if req.URL.Scheme != HTTP && req.URL.Scheme != HTTPS {
+		return nil, fmt.Errorf("scheme invalid: %s, only support http(s)://", req.URL.Scheme)
 	}
 	common.SetXCSEContext(map[string]string{common.HeaderSourceName: runtime.ServiceName}, req)
 	// set headers to Ctx
@@ -56,17 +57,20 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 		}
 	}
 
-	opts := getOpts(req.Host, options...)
-	service, port, _ := util.ParseServiceAndPort(req.Host)
+	opts := getOpts(options...)
+	service, port, err := util.ParseServiceAndPort(req.Host)
+	if err != nil {
+		return nil, err
+	}
 	opts.Protocol = common.ProtocolRest
 	opts.Port = port
 
 	resp := rest.NewResponse()
 
 	inv := invocation.New(ctx)
-
-	wrapInvocationWithOpts(inv, opts)
 	inv.MicroServiceName = service
+	wrapInvocationWithOpts(inv, opts)
+
 	//TODO load from openAPI schema
 	inv.SchemaID = port
 	if inv.SchemaID == "" {
@@ -79,8 +83,7 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 
 	inv.SetMetadata(common.RestMethod, req.Method)
 
-	err := ri.invoke(inv)
-
+	err = ri.invoke(inv)
 	if err == nil {
 		setCookieToCache(*inv, getNamespaceFromMetadata(opts.Metadata))
 	}

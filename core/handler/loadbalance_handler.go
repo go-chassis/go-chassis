@@ -74,6 +74,10 @@ func (lb *LBHandler) getEndpoint(i *invocation.Invocation, lbConfig control.Load
 
 // Handle to handle the load balancing
 func (lb *LBHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+	if i.Endpoint != "" {
+		chain.Next(i, cb)
+		return
+	}
 	lbConfig := control.DefaultPanel.GetLoadBalancing(*i)
 	if !lbConfig.RetryEnabled {
 		lb.handleWithNoRetry(chain, i, lbConfig, cb)

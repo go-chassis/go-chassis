@@ -47,7 +47,7 @@ func TestRestInvoker_ContextDo(t *testing.T) {
 	req, _ := rest.NewRequest("GET", "http://Server/sayhello/myidtest", nil)
 	httputil.SetContentType(req, "application/json")
 	//use the invoker like http client.
-	_, err := restinvoker.ContextDo(context.TODO(), req, core.WithEndpoint("0.0.0.0"), core.WithProtocol("rest"), core.WithFilters(""))
+	_, err := restinvoker.ContextDo(context.TODO(), req, core.WithoutSD(), core.WithFilters(""))
 	assert.Error(t, err)
 }
 
@@ -59,7 +59,7 @@ func TestOptions(t *testing.T) {
 	inv := core.StreamingRequest()
 	assert.NotEmpty(t, inv)
 
-	inv = core.WithEndpoint("0.0.0.0")
+	inv = core.WithoutSD()
 	assert.NotEmpty(t, inv)
 
 	inv = core.WithProtocol("0.0")

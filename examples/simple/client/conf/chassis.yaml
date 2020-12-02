@@ -1,0 +1,4 @@
+---
+servicecomb:
+  registry:
+    disabled: true
