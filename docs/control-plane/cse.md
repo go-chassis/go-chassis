@@ -1,5 +1,6 @@
 # ServiceStage
-ServiceStage 是华为云推出的云服务，通过其中的CSE(cloud service engine)子服务，你可以快速启动ServiceComb service center服务，配置中心或是其他面向云原生开发的服务。每个服务集群被称为engine。
+ServiceStage 是华为云推出的云服务，通过其中的CSE(cloud service engine)子服务，
+你可以快速启动ServiceComb service center服务，配置中心或是其他面向云原生开发的服务。每个集群实例被称为engine。
 
 ## 如何使用
 ### 通过配置文件配置AK SK
