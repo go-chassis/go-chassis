@@ -1,7 +1,7 @@
 # Filter
 ## 概述
 
-负载均衡过滤器实现在负载均衡模块中，它允许开发者定制自己的过滤器，使得经过负载均衡策略选择实例前，预先对实例进行筛选。在一次请求调用过程中可以使用多个过滤策略，对从本地cache或服务中心获取的实例组进行过滤，将经过精简的实例组交给负载均衡策略做后续处理。
+负载均衡过滤器实现在负载均衡模块中，它允许开发者定制自己的过滤器，在经过负载均衡策略选择实例前，预先对实例进行筛选。在一次请求调用过程中可以使用多个过滤策略，对从本地cache或服务中心获取的实例组进行过滤，将经过精简的实例组交给负载均衡策略做后续处理。
 
 ## 配置
 
@@ -23,7 +23,7 @@ region:
 
 ## API
 
-Go-chassis支持多种实现Filter接口的过滤器。FilterEndpoint支持通过实例访问地址过滤，FilterMD支持通过元数据过滤，FilterProtocol支持通过协议过滤，FilterAvailableZoneAffinity支持根据Zone过滤。
+go-chassis支持多种实现Filter接口的过滤器。FilterEndpoint支持通过实例访问地址过滤，FilterMD支持通过元数据过滤，FilterProtocol支持通过协议过滤，FilterAvailableZoneAffinity支持根据Zone过滤。
 
 ```go
 type Filter func([]*registry.MicroServiceInstance) []*registry.MicroServiceInstance
@@ -31,7 +31,7 @@ type Filter func([]*registry.MicroServiceInstance) []*registry.MicroServiceInsta
 
 ## 示例
 
-客户端实例过滤器Filter的使用支持用户通过API调用传入，并且可以一次传入多个Filter，
+客户端实例过滤器Filter的使用，支持用户通过API调用传入，并且可以一次传入多个Filter，
 
 ```go
 invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",

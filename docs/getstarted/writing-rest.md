@@ -21,16 +21,17 @@ server
 ```go
 type RestFulHello struct {}
 
-func (r *RestFulHello) Sayhello(b *restful.Context) {
+func (r *RestFulHello) SayHello(b *rf.Context) {
     b.Write([]byte("get user id: " + b.ReadPathParameter("userid")))
 }
 ```
 2.Write your url patterns
 ```go
-func (s *RestFulHello) URLPatterns() []restful.Route {
-    return []restful.RouteSpec{
-        {Method: http.MethodGet, Path: ""/sayhello/{userid}"", ResourceFunc: s.Sayhello,
-         			Returns: []*rf.Returns{{Code: 200}}},
+func (r *RestFulHello) URLPatterns() []rf.Route {
+    return []rf.RouteSpec{
+        {Method: http.MethodGet, Path: "/sayhello/{userid}", 
+         ResourceFunc: r.SayHello,
+         Returns: []*rf.Returns{{Code: 200}}},
     }
 }
 ```
@@ -65,9 +66,11 @@ servicecomb:
 6.In main.go init and start the chassis 
 ```go
 func main() {
+    // register struct
+    chassis.RegisterSchema("rest", &RestFulHello{})
     //start all server you register in server/schemas.
     if err := chassis.Init(); err != nil {
-        openlogging.Error("Init failed.", err)
+        openlog.Error("Init failed. "+err.Error())
         return
     }
     chassis.Run()
@@ -88,13 +91,13 @@ client
     
     +-- microservice.yaml
 ```
-1. modify chassis.yaml
+1.modify chassis.yaml
 ```yaml
 servicecomb:
   registry:
       address: http://127.0.0.1:30100
 ```
-2. modify microservice.yaml
+2.modify microservice.yaml
 ```yaml
 servicecomb:
   service:
@@ -105,21 +108,21 @@ servicecomb:
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
-		openlogging.Error("Init failed." + err.Error())
+		openlog.Error("Init failed." + err.Error())
 		return
 	}
 	req, err := rest.NewRequest("GET", "http://RESTServer/sayhello/world", nil)
 	if err != nil {
-		openlogging.Error("new request failed.")
+		openlog.Error("new request failed.")
 		return
 	}
-	resp, err := core.NewRestInvoker().ContextDo(ctx, req)
+	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
-		openlogging.Error("do request failed.")
+		openlog.Error("do request failed.")
 		return
 	}
 	defer resp.Body.Close()
-	openlogging.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
+	openlog.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 }
 ```
 
@@ -228,7 +231,7 @@ servicecomb:
       address: http://127.0.0.1:30100 
   protocols:
     rest:
-      listenAddress: "127.0.0.1:5003"
+      listenAddress: 127.0.0.1:5003
   noRefreshSchema: true
 ```
 

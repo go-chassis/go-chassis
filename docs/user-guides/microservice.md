@@ -13,20 +13,20 @@ you can consider a project as an micro service, after compile, build and run, it
 ## Configurations
 
 **name**
-> *(required, string)* Micro service name
+> *(required, string)* micro service name
 
 **hostname**
 > *(optional, string)* hostname of host, it can be IP, $INTERNAL_IP placeholder or hostname, default is hostname return by os.hostname()
 > When specify `hostname: $INTERNAL_IP` go-chassis will report ip address instead of hostname to service center, this is useful when hostname is meaningless in some scenes, such as a docker host.
 
 **app**
-> *(optional, string)* Application ID, default value is "default"
+> *(optional, string)* application id, default value is "default"
 
 **version**
 > *(optional, string)* version number default is 0.0.1
 
 **properties**
-> *(optional, map)* micro service metadata ，usually it is defined in project, and never changed
+> *(optional, map)* micro service metadata, usually it is defined in project, and never changed
 
 **instanceProperties**
 > *(optional, map)* instance metadata, during runtime, it can be different based on environment

@@ -21,26 +21,25 @@ Provider表示，当你被别人调用人，会通过的处理链
 
 ### Consumer的默认chain为
 
-名称	功能
+名称 功能
 
+ratelimiter-consumer 客户端限流
 
-ratelimiter-consumer	客户端限流
+router 路由策略
 
-router	路由策略
+loadbalance 负载均衡 
 
-loadbalance	负载均衡
+tracing-consumer 客户端调用链追踪 
 
-tracing-consumer	客户端调用链追踪
-
-transport	各协议客户端处理请求，如果你使用自定义处理链配置，那么结尾处必须加入这个handler
+transport 各协议客户端处理请求,如果使用自定义处理链配置结尾处必须加入这个handler
 
 ### Provider的默认chain为
 
-名称	功能
+名称 功能
 
-ratelimiter-provider	服务端限流
+ratelimiter-provider 服务端限流
 
-tracing-provider	服务端调用链追踪
+tracing-provider 服务端调用链追踪 
 
 ## API
 当处理链配置为空，用户也可自定义自己的默认处理链
