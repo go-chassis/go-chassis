@@ -23,13 +23,13 @@ you can consider a project as an micro service, after compile, build and run, it
 > *(optional, string)* application id, default value is "default"
 
 **version**
-> *(optional, string)* version number default is 0.0.1
+> *(optional, string)* version number, default is 0.0.1
 
 **properties**
 > *(optional, map)* micro service metadata, usually it is defined in project, and never changed
 
 **instanceProperties**
-> *(optional, map)* instance metadata, during runtime, it can be different based on environment
+> *(optional, map)* instance metadata, it can be different based on runtime
 
 **paths**
 > *(optional, array)* micro service API paths, will be registered with servicecenter
@@ -50,8 +50,6 @@ servicecomb:
       nodeIP: 192.168.0.111
     paths:
       - path: /rest/demoservice
-        property:
-          checksession: true
     schemas:
       - "schema"
       - "schema1"
