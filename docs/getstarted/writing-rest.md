@@ -70,7 +70,7 @@ func main() {
     chassis.RegisterSchema("rest", &RestFulHello{})
     //start all server you register in server/schemas.
     if err := chassis.Init(); err != nil {
-        openlogging.Error("Init failed. "+err.Error())
+        openlog.Error("Init failed. "+err.Error())
         return
     }
     chassis.Run()
@@ -91,38 +91,38 @@ client
     
     +-- microservice.yaml
 ```
-1. modify chassis.yaml
+1.modify chassis.yaml
 ```yaml
 servicecomb:
   registry:
       address: http://127.0.0.1:30100
 ```
-2. modify microservice.yaml
+2.modify microservice.yaml
 ```yaml
 servicecomb:
   service:
     name: RESTClient #name your consumer
 ```
-3. in main.go call your service
+3.in main.go call your service
 ```go
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {
-		openlogging.Error("Init failed." + err.Error())
+		openlog.Error("Init failed." + err.Error())
 		return
 	}
 	req, err := rest.NewRequest("GET", "http://RESTServer/sayhello/world", nil)
 	if err != nil {
-		openlogging.Error("new request failed.")
+		openlog.Error("new request failed.")
 		return
 	}
 	resp, err := core.NewRestInvoker().ContextDo(context.TODO(), req)
 	if err != nil {
-		openlogging.Error("do request failed.")
+		openlog.Error("do request failed.")
 		return
 	}
 	defer resp.Body.Close()
-	openlogging.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
+	openlog.Info("REST Server sayhello[GET]: " + string(httputil.ReadBody(resp)))
 }
 ```
 
