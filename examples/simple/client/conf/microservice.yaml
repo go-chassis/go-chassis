@@ -1,0 +1,3 @@
+servicecomb:
+  service:
+    name: RESTClient

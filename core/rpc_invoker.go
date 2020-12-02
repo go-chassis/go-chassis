@@ -25,21 +25,19 @@ func NewRPCInvoker(opt ...Option) *RPCInvoker {
 			opts: opts,
 		},
 	}
-	//clientPluginName := os.Getenv("rpc_client_plugin")
-	//clientF := client.GetClientNewFunc(clientPluginName)
 	return ri
 }
 
 // Invoke is for to invoke the functions during API calls
 func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, operationID string, arg interface{}, reply interface{}, options ...InvocationOption) error {
-	opts := getOpts(microServiceName, options...)
+	opts := getOpts(options...)
 	if opts.Protocol == "" {
 		opts.Protocol = common.ProtocolHighway
 	}
 
 	i := invocation.New(ctx)
-	wrapInvocationWithOpts(i, opts)
 	i.MicroServiceName = microServiceName
+	wrapInvocationWithOpts(i, opts)
 	i.SchemaID = schemaID
 	i.OperationID = operationID
 	i.Args = arg
