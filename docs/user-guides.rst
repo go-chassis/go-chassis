@@ -9,16 +9,15 @@ User guides
    user-guides/registry
    user-guides/protocols
    user-guides/handler-chain
-   user-guides/marker
-   user-guides/healthz
    user-guides/invoker
+   user-guides/marker
+   user-guides/router
    user-guides/strategy
    user-guides/filter
-   user-guides/dynamic-conf
-   user-guides/router
-   user-guides/fault-tolerance
+   user-guides/healthz
    user-guides/transport
-   user-guides/tracing
+   user-guides/dynamic-conf
+   user-guides/fault-tolerance
    user-guides/metrics
    user-guides/profile
    user-guides/log
