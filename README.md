@@ -41,22 +41,32 @@ your don't need to investigate, implement and integrate many solutions yourself.
 
 
 # Features
- - **Pluggable discovery service**: Support Service center, istio pilot, kubernetes registry. 
+ - **Pluggable discovery service**: Support Service center, kubernetes.
  fit both client side discovery and server side discovery pattern, 
- and you can disable it in local to test service easily
+ and you can disable service discovery to use end to end communication.
  - **Pluggable Protocol**: 
- You can customize protocol, by default support http and grpc, go chassis define standardized [model](https://github.com/go-chassis/go-chassis/blob/master/core/invocation/invocation.go) to makes all request of different protocol leverage same features
+ You can customize protocol, by default support http and grpc, 
+ go chassis define standardized [model](https://github.com/go-chassis/go-chassis/blob/master/core/invocation/invocation.go) to makes all request of different protocol leverage same features
  - **Multiple server management**: you can separate API by protocols and ports
  - **Handler Chain**: Able to add your own code during service calling for client and server side
- - **rich middleware**: based on handler chain, supply circuit breaker, rate limiting, monitoring, auth features. [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
+ - **rich middleware**: based on handler chain, 
+ supply circuit breaker, rate limiting, monitoring, auth features. 
+ [see](https://go-chassis.readthedocs.io/en/latest/middleware.html)
  - **Traffic marker** Traffic marker module is able to mark requests in both client(consumer) or server(provider) side,
 with marker, you can govern traffic based on it.
  - **Traffic management**: Able to route to different service based on weight and match rule, it can be used in many scenario, such as canary release
  - **Security**: build in cipher, authentication, RSA related funtions
- - **Safty and reslience**: support fault-tolerant(with expotential backoff policy), rate limiting, client-side load-balancing, circuit breaker to makes your service facing any unpredictable situation.
- - **Telemetry**: Able to expose Prometheus metric API automatically and customize metrics reporte. Use opentracing-go as standard library, easy to integrate tracing system
- - **Backing services**: use [backend service](https://go-chassis.readthedocs.io/en/latest/dev-guides/backends.html) as a plugin, so that your app can be easily test, and swap to another plugin.
- - **Hot re-configuration**: Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, rate limiting, developer is also able to develop a service which has hot-reconfiguration feature easily. [see](https://go-chassis.readthedocs.io/en/latest/user-guides/dynamic-conf.html#)
+ - **Safety and resilience**: 
+ support fault-tolerant(retry, rate limiting, client-side load-balancing, circuit breaker) to makes your service facing any unpredictable situation.
+ - **Telemetry**: Able to expose Prometheus metric API automatically and customize metrics report. 
+ Use opentracing-go as standard library.
+ - **Backing services**: 
+ use [backend service](https://go-chassis.readthedocs.io/en/latest/dev-guides/backends.html) as a plugin, 
+ so that your app can be easily tested, and swap to another plugin.
+ - **Hot re-configuration**: 
+ Powered by go-archaius, configurations can be reload in runtime, like load balancing, circuit breaker, 
+ rate limiting, developer is also able to develop a service which has hot-reconfiguration feature easily. 
+ [see](https://go-chassis.readthedocs.io/en/latest/user-guides/dynamic-conf.html#)
  - **API first** go chassis will automatically generate Open API 2.0 doc and register it to service center. you can manage all the API docs in one place
  - **Spring Cloud** integrate with servicecomb, go chassis can work together with [spring cloud](https://github.com/huaweicloud/spring-cloud-huawei).
  - **Service mesh**: you can introduce multi-language to your microservice system. powered by [servicecomb-mesher](https://github.com/apache/servicecomb-mesher). 
@@ -87,8 +97,8 @@ You can check examples [here](examples)
 
 NOTICE: Now examples is migrating to [here](https://github.com/go-chassis/go-chassis-examples)
 # Communication Protocols
-Go-Chassis supports 3 types of communication protocol.
-1. Rest - REST is an approach that leverages the HTTP protocol for communication.
+Go-Chassis supports 2 types of communication protocol.
+1. http - an approach that leverages the HTTP protocol for communication.
 3. gRPC - native grpc protocol, go chassis bring circuit breaker, route management etc to grpc.
 ## Debug suggestion for dlv:
 Add `-tags debug` into go build arguments before debugging, if your go version is go1.10 onward.
@@ -121,34 +131,12 @@ To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
 ![qutoutiao](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG)
 ![Shopee](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png)
 
+# Contributing
+If you're interested in being a contributor and want to get involved in developing, 
+please check [CONTRIBUTING](CONTRIBUTING.md) and [wiki](https://github.com/go-chassis/go-chassis/wiki) for details.
+
 # Committer
 - ichiro999
 - humingcheng
-# To start developing go chassis
 
-1. Install [go 1.12+](https://golang.org/doc/install) 
-
-2. Clone the project
-
-```sh
-git clone git@github.com:go-chassis/go-chassis.git
-```
-
-3. Download vendors
-```shell
-cd go-chassis
-export GO111MODULE=on 
-go mod download
-#optional
-export GO111MODULE=on 
-go mod vendor
-```
-NOTICE：if you do not use mod, We can not ensure you the compatibility. 
-however you can still maintain your own vendor, 
-which means you have to solve compiling issue your own.
-
-
-4. Install [service-center](http://servicecomb.apache.org/release/)
-
-For more information about go chassis, read github wiki page
 

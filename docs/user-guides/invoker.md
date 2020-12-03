@@ -1,18 +1,20 @@
 # Invoker
 ## Introduction
-Invoker is the entry point for a developer to call remote service
-
-## API
-
-#### Rest Invoker
-
-使用NewRestInvoker创建一个invoker实例，可接受chain等自定义选项
-
-ContextDo可以接受一个http request作为参数，开发者可通过request的API对request进行操作，并作为参数传入该方法
-
+Invoker is the entry point to call remote service.
+support 2 kinds of invoker, rpc and http
+## http
+支持传入原生net/http提供的request，将request传入invoker即可将请求交由go chassis内核处理，
+最终返回net/http原生response。
 ```go
-func NewRestInvoker(opt ...Option) *RestInvoker
-func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options ...InvocationOption) (*rest.Response, error)
+invoker:= core.NewRestInvoker()
+req, _ := rest.NewRequest("GET", "http://orderService/hello", nil)
+invoker.ContextDo(context.TODO(), req)
+```
+如果你不想引入service center,consul这类注册发现组件，甚至连kubernetes的发现插件也不想用，
+而是想使用kubernetes的原生容器网络，或者结合任意服务网格，可传入WithoutSD, 另外需要添加端口信息。
+```go
+req, _ := rest.NewRequest("GET", "http://orderService:8080/hello", nil)
+invoker.ContextDo(context.TODO(), req, core.WithoutSD())
 ```
 
 #### RPC Invoker
@@ -22,13 +24,14 @@ func (ri *RestInvoker) ContextDo(ctx context.Context, req *http.Request, options
 指定远端的服务名，struct name，以及func name，以及请求参数和返回接口即可进行调用
 
 最终结果会赋值到reply参数中
-
 ```go
-func NewRPCInvoker(opt ...Option) *RPCInvoker 
-func (ri *RPCInvoker) Invoke(ctx context.Context, microServiceName, schemaID, operationID string, arg interface{}, reply interface{}, options ...InvocationOption) error
+// declare reply struct
+reply := &helloworld.HelloReply{}
+// use WithProtocol to specify rpc plugin
+core.NewRPCInvoker().Invoke(context.Background(), "RPCServer", "helloworld.Greeter", "SayHello",
+		&helloworld.HelloRequest{Name: "Peter"}, reply, core.WithProtocol("grpc"))
 ```
-
-无论Rest还是RPC调用方法都能够接受多种选项对一次调用进行控制，参考options.go查看更多选项
+无论Rest还是RPC调用都能够接受多种选项对一次调用进行控制，参考options.go查看更多选项
 
 ## Examples
 
@@ -44,10 +47,7 @@ invoker.Invoke(ctx, "Server", "HelloServer", "SayHello",
 ```
 
 #### Rest
-
-
 在初始化invoker时还指定了这次请求要经过的处理链名称custom
-
 ```go
 req, _ := rest.NewRequest("GET", "http://RESTServer/sayhello/world")
 defer req.Close()
