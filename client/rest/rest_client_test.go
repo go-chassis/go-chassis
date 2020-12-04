@@ -41,6 +41,59 @@ func initEnv() {
 
 }
 
+func TestNewRestClient_Close(t *testing.T) {
+	initEnv()
+	runtime.ServiceName = "Server"
+	schema := "schema2"
+
+	defaultChain := make(map[string]string)
+	defaultChain["default"] = ""
+
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
+	strategyRule := make(map[string]string)
+	strategyRule["sessionTimeoutInSeconds"] = "30"
+
+	f, err := server.GetServerFunc("rest")
+	assert.NoError(t, err)
+	s := f(
+		server.Options{
+			Address:   "127.0.0.1:8041",
+			ChainName: "default",
+		})
+	_, err = s.Register(&schemas.RestFulHello{},
+		server.WithSchemaID(schema))
+	assert.NoError(t, err)
+	err = s.Start()
+	assert.NoError(t, err)
+
+	c, err := rest.NewRestClient(client.Options{})
+	if err != nil {
+		t.Errorf("Unexpected dial err: %v", err)
+	}
+
+	reply := rest.NewResponse()
+	arg, _ := rest.NewRequest("GET", "http://Server/instances", nil)
+	req := &invocation.Invocation{
+		MicroServiceName: "Server",
+		Args:             arg,
+		Metadata:         nil,
+	}
+
+	log.Println("protocol name:", "rest")
+	err = c.Call(context.TODO(), addrRest, req, reply)
+	if err != nil {
+		assert.Error(t, err)
+	} else {
+		assert.NoError(t, err)
+	}
+	log.Println("hellp reply", &reply)
+
+	err = c.Close()
+	assert.Nil(t, err)
+	log.Println("close client")
+}
+
 func TestNewRestClient_Call(t *testing.T) {
 	initEnv()
 	runtime.ServiceName = "Server"
