@@ -25,7 +25,7 @@ const (
 	//DefaultKeepAliveSecond defines the connection time
 	DefaultKeepAliveSecond = 60 * time.Second
 	//DefaultMaxConnsPerHost defines the maximum number of concurrent connections
-	DefaultMaxConnsPerHost = 512
+	DefaultMaxConnsPerHost = 512 * 20
 	//SchemaHTTP represents the http schema
 	SchemaHTTP = "http"
 	//SchemaHTTPS represents the https schema
@@ -121,8 +121,6 @@ func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocati
 		reqSend.URL.Host = addr
 	}
 
-	//increase the max connection per host to prevent error "no free connection available" error while sending more requests.
-	c.c.Transport.(*http.Transport).MaxIdleConnsPerHost = 512 * 20
 	var temp *http.Response
 	errChan := make(chan error, 1)
 	go func() {
@@ -146,8 +144,9 @@ func (c *Client) String() string {
 	return "rest_client"
 }
 
-// Close is noop
+// Close release the idle connection
 func (c *Client) Close() error {
+	c.c.CloseIdleConnections()
 	return nil
 }
 

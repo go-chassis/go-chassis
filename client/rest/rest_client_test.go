@@ -41,6 +41,54 @@ func initEnv() {
 
 }
 
+func TestNewRestClient_Close(t *testing.T) {
+	initEnv()
+	//runtime.ServiceName = "Server"
+	addr := "127.0.0.1:8041"
+	schema := "schema2"
+
+	defaultChain := make(map[string]string)
+	defaultChain["default"] = ""
+
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
+	strategyRule := make(map[string]string)
+	strategyRule["sessionTimeoutInSeconds"] = "30"
+
+	f, err := server.GetServerFunc("rest")
+	assert.NoError(t, err)
+	s := f(
+		server.Options{
+			Address:   addr,
+			ChainName: "default",
+		})
+	_, err = s.Register(&schemas.RestFulHello{},
+		server.WithSchemaID(schema))
+	assert.NoError(t, err)
+	err = s.Start()
+	assert.NoError(t, err)
+
+	c, err := rest.NewRestClient(client.Options{})
+	assert.Nil(t, err)
+
+	reply := rest.NewResponse()
+	arg, _ := rest.NewRequest("POST", "http://Server2/sayhi", nil)
+	req := &invocation.Invocation{
+		MicroServiceName: "Server2",
+		Args:             arg,
+		Metadata:         nil,
+	}
+
+	t.Log("protocol name:", "rest")
+	err = c.Call(context.TODO(), addr, req, reply)
+	assert.Nil(t, err)
+	t.Logf("help reply: %v", reply)
+
+	err = c.Close()
+	assert.Nil(t, err)
+	log.Println("close client")
+}
+
 func TestNewRestClient_Call(t *testing.T) {
 	initEnv()
 	runtime.ServiceName = "Server"
@@ -68,6 +116,7 @@ func TestNewRestClient_Call(t *testing.T) {
 	assert.NoError(t, err)
 
 	c, err := rest.NewRestClient(client.Options{})
+	assert.Nil(t, err)
 	if err != nil {
 		t.Errorf("Unexpected dial err: %v", err)
 	}
@@ -80,14 +129,10 @@ func TestNewRestClient_Call(t *testing.T) {
 		Metadata:         nil,
 	}
 
-	log.Println("protocol name:", "rest")
+	t.Log("protocol name:", "rest")
 	err = c.Call(context.TODO(), addrRest, req, reply)
-	if err != nil {
-		assert.Error(t, err)
-	} else {
-		assert.NoError(t, err)
-	}
-	log.Println("hellp reply", &reply)
+	assert.Nil(t, err)
+	t.Logf("help reply: %v", reply)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -95,9 +140,8 @@ func TestNewRestClient_Call(t *testing.T) {
 
 	err = c.Call(ctx, addrRest, req, reply)
 	expectedError := client.ErrCanceled
-	if assert.Error(t, err) {
-		assert.Equal(t, expectedError, err)
-	}
+	assert.NotNil(t, err)
+	assert.Equal(t, expectedError, err)
 }
 
 func TestNewRestClient_ParseDurationFailed(t *testing.T) {
@@ -125,9 +169,7 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	assert.NoError(t, err)
 
 	c, err := rest.NewRestClient(client.Options{})
-	if err != nil {
-		t.Errorf("Unexpected dial err: %v", err)
-	}
+	assert.Nil(t, err)
 
 	reply := rest.NewResponse()
 	arg, _ := rest.NewRequest("GET", "http://Server1/instances", nil)
@@ -138,15 +180,10 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 	}
 
 	name := c.String()
-	log.Println("protocol name:", name)
+	t.Log("protocol name: ", name)
 	err = c.Call(context.TODO(), "127.0.0.1:8040", req, reply)
-	log.Println("hellp reply", reply)
-	if err != nil {
-		assert.Error(t, err)
-	} else {
-		assert.NoError(t, err)
-	}
-
+	t.Logf("hellp reply: %v", reply)
+	assert.Nil(t, err)
 }
 
 func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
