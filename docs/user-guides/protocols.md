@@ -11,7 +11,7 @@ you can extend your own protocol in go chassis, currently support rest(http) and
 
 **protocols.{protocol_server_name}.advertiseAddress**
 > *(optional, string)* server advertise address, if you use registry like service center, 
-this address will be registered in registry, so that other service can discover your address
+this address will be registered in service center, so that other service can discover your address
 
 **protocols.{protocol_server_name}.listenAddress**
 > *(required, string)* server listen address, recommend to use 0.0.0.0:{port}, 

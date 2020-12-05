@@ -14,17 +14,25 @@ sudo pip install sphinx_rtd_theme
 In windows
 ```shell
 pip install recommonmark
+pip install sphinx-markdown-tables
+
 cd docs
 make.bat html
 ```
 
 In linux
 ```shell
+pip install recommonmark
+pip install sphinx-markdown-tables
+
 cd docs
-sphinx-autobuild . _build/html
+
+sphinx-build . _build/html
+or
+make html
 ```
 
 ## Check the result
 
-1. See html pages in _build folder
-1. Access http://127.0.0.1:8000
+1. See html pages in _build/html folder
+2. Open this file in your web browser to see docs.
