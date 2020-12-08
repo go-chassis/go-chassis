@@ -18,7 +18,7 @@ chassis.yaml中配置使用的注册中心类型、注册中心的地址信息�
 
 
 **disabled**
-> *(optional, bool)* 是否开启服务注册发现模块，默认为false
+> *(optional, bool)* 是否关闭服务注册发现模块，设为 true 之后关闭服务自动注册。 默认为false
 
 **type**
 > *(optional, string)* 对接服务中心插件类型，默认为servicecenter
