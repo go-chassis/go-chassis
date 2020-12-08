@@ -135,8 +135,10 @@ To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
 If you're interested in being a contributor and want to get involved in developing, 
 please check [CONTRIBUTING](CONTRIBUTING.md) and [wiki](https://github.com/go-chassis/go-chassis/wiki) for details.
 
+[Join slack](https://go-chassis.slack.com/)
 # Committer
 - ichiro999
 - humingcheng
+
 
 
