@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	security2 "github.com/go-chassis/foundation/security"
+	"github.com/go-chassis/cari/security"
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	stringutil "github.com/go-chassis/go-chassis/v2/pkg/string"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
@@ -58,7 +58,7 @@ func GetX509CACertPool(caCertFile string) (*x509.CertPool, error) {
 }
 
 //LoadTLSCertificate function loads the TLS certificate
-func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security2.Cipher) ([]tls.Certificate, error) {
+func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cipher) ([]tls.Certificate, error) {
 	certContent, err := ioutil.ReadFile(certFile)
 	if err != nil {
 		return nil, fmt.Errorf("read cert file %s failed", certFile)
@@ -133,7 +133,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	// certificate is necessary for server, optional for client
 	var certs []tls.Certificate
 	if !(role == common.Client && sslConfig.KeyFile == "" && sslConfig.CertFile == "") {
-		var cipherPlugin security2.Cipher
+		var cipherPlugin security.Cipher
 		if f, err := cipher.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
 			return nil, fmt.Errorf("get cipher plugin [%s] failed, %v", sslConfig.CipherPlugin, err)
 		} else if cipherPlugin = f(); cipherPlugin == nil {

@@ -11,9 +11,8 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
-
 	"github.com/go-chassis/openlog"
+	"github.com/go-chassis/sc-client"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -31,7 +30,7 @@ const (
 
 // CacheManager cache manager
 type CacheManager struct {
-	registryClient *client.RegistryClient
+	registryClient *sc.Client
 }
 
 // AutoSync automatically sync the running instances
@@ -219,7 +218,7 @@ func (c *CacheManager) pullMicroServiceInstance() error {
 	//fetch remote based on app and service
 	response, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
 	if err != nil {
-		if err == client.ErrNotModified || err == client.ErrEmptyCriteria {
+		if err == sc.ErrNotModified || err == sc.ErrEmptyCriteria {
 			openlog.Debug(err.Error())
 		} else {
 			openlog.Error("Refresh local instance cache failed: " + err.Error())
@@ -297,18 +296,18 @@ func filter(providerInstances map[string][]*registry.MicroServiceInstance) {
 }
 
 // watch watching micro-service instance status
-func watch(response *client.MicroServiceInstanceChangedEvent) {
-	if response.Instance.Status != client.MSInstanceUP {
+func watch(response *sc.MicroServiceInstanceChangedEvent) {
+	if response.Instance.Status != sc.MSInstanceUP {
 		response.Action = common.Delete
 	}
 	switch response.Action {
-	case client.EventCreate:
+	case sc.EventCreate:
 		createAction(response)
-	case client.EventDelete:
+	case sc.EventDelete:
 		deleteAction(response)
-	case client.EventUpdate:
+	case sc.EventUpdate:
 		updateAction(response)
-	case client.EventError:
+	case sc.EventError:
 		openlog.Warn(fmt.Sprintf("MicroServiceInstanceChangedEvent action is error, MicroServiceInstanceChangedEvent = %v", response))
 	default:
 		openlog.Warn(fmt.Sprintf("Do not support this Action = %s", response.Action))
@@ -317,14 +316,14 @@ func watch(response *client.MicroServiceInstanceChangedEvent) {
 }
 
 // createAction added micro-service instance to the cache
-func createAction(response *client.MicroServiceInstanceChangedEvent) {
+func createAction(response *sc.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
 		openlog.Error(fmt.Sprintf("ServiceID does not exist in MicroServiceInstanceCache,action is EVT_CREATE.key = %s", key))
 		return
 	}
-	if response.Instance.Status != client.MSInstanceUP {
+	if response.Instance.Status != sc.MSInstanceUP {
 		openlog.Warn(fmt.Sprintf("createAction failed,MicroServiceInstance status is not MSI_UP,MicroServiceInstanceChangedEvent = %v", response))
 		return
 	}
@@ -335,7 +334,7 @@ func createAction(response *client.MicroServiceInstanceChangedEvent) {
 }
 
 // deleteAction delete micro-service instance
-func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
+func deleteAction(response *sc.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	openlog.Debug(fmt.Sprintf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints))
 	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppId, ToMicroServiceInstance(response.Instance)); err == nil {
@@ -358,14 +357,14 @@ func deleteAction(response *client.MicroServiceInstanceChangedEvent) {
 }
 
 // updateAction update micro-service instance event
-func updateAction(response *client.MicroServiceInstanceChangedEvent) {
+func updateAction(response *sc.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)
 	if !ok {
 		openlog.Error(fmt.Sprintf("ServiceID does not exist in MicroserviceInstanceCache, action is EVT_UPDATE, sid = %s", key))
 		return
 	}
-	if response.Instance.Status != client.MSInstanceUP {
+	if response.Instance.Status != sc.MSInstanceUP {
 		openlog.Warn(fmt.Sprintf("updateAction failed, MicroServiceInstance status is not MSI_UP, MicroServiceInstanceChangedEvent = %v", response))
 		return
 	}

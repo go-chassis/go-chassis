@@ -4,18 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	scregistry "github.com/go-chassis/cari/discovery"
-	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
+	"github.com/go-chassis/sc-client"
 	"log"
 	"os"
 	"time"
 )
 
 func main() {
-	registryClient := &client.RegistryClient{}
 
-	err := registryClient.Initialize(
-		client.Options{
-			Addrs: []string{"127.0.0.1:30100"},
+	registryClient, err := sc.NewClient(
+		sc.Options{
+			Endpoints: []string{"127.0.0.1:30100"},
 		})
 	if err != nil {
 		fmt.Printf("err[%v]\n", err)
@@ -48,7 +47,7 @@ func main() {
 	}
 }
 
-func printEvent(event *client.MicroServiceInstanceChangedEvent) {
+func printEvent(event *sc.MicroServiceInstanceChangedEvent) {
 	content, _ := json.Marshal(event)
 	fmt.Printf("event[%v]\n", string(content))
 }

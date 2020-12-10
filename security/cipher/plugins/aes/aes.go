@@ -5,7 +5,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	"os"
 
-	security2 "github.com/go-chassis/foundation/security"
+	"github.com/go-chassis/cari/security"
 	"github.com/go-chassis/go-chassis/v2/pkg/goplugin"
 	"github.com/go-chassis/openlog"
 )
@@ -34,7 +34,7 @@ func init() {
 	cipher.InstallCipherPlugin("aes", new)
 }
 
-func new() security2.Cipher {
+func new() security.Cipher {
 	cipher, err := goplugin.LookUpSymbolFromPlugin(cipherPlugin, "Cipher")
 	if err != nil {
 		if os.IsNotExist(err) {

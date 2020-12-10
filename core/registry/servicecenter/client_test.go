@@ -3,9 +3,9 @@ package servicecenter_test
 import (
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/lager"
-	client "github.com/go-chassis/go-chassis/v2/pkg/scclient"
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	"github.com/go-chassis/openlog"
+	"github.com/go-chassis/sc-client"
 	"github.com/stretchr/testify/assert"
 	"net/url"
 	"os"
@@ -23,10 +23,9 @@ func TestRegistryClient_Health(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
 	config.Init()
-	registryClient := &client.RegistryClient{}
-	err := registryClient.Initialize(
-		client.Options{
-			Addrs: []string{"127.0.0.1:30100"},
+	registryClient, err := sc.NewClient(
+		sc.Options{
+			Endpoints: []string{"127.0.0.1:30100"},
 		})
 	assert.NoError(t, err)
 	instances, err := registryClient.Health()
