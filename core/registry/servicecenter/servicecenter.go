@@ -3,10 +3,10 @@ package servicecenter
 import (
 	"fmt"
 	scregistry "github.com/go-chassis/cari/discovery"
+	"github.com/go-chassis/sc-client"
 
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/go-chassis/openlog"
 )
@@ -19,8 +19,8 @@ const (
 // Registrator to represent the object of service center to call the APIs of service center
 type Registrator struct {
 	Name           string
-	registryClient *client.RegistryClient
-	opts           client.Options
+	registryClient *sc.Client
+	opts           sc.Options
 }
 
 // RegisterService : 注册微服务
@@ -177,8 +177,8 @@ func (r *Registrator) Close() error {
 // ServiceDiscovery to represent the object of service center to call the APIs of service center
 type ServiceDiscovery struct {
 	Name           string
-	registryClient *client.RegistryClient
-	opts           client.Options
+	registryClient *sc.Client
+	opts           sc.Options
 }
 
 // GetAllMicroServices : Get all MicroService information.
@@ -287,7 +287,7 @@ func RegroupInstances(keys []*scregistry.FindService, response *scregistry.Batch
 }
 
 // WatchMicroService : 支持用户自调用主动监听实例变化功能
-func (r *ServiceDiscovery) WatchMicroService(selfMicroServiceID string, callback func(*client.MicroServiceInstanceChangedEvent)) {
+func (r *ServiceDiscovery) WatchMicroService(selfMicroServiceID string, callback func(*sc.MicroServiceInstanceChangedEvent)) {
 	err := r.registryClient.WatchMicroService(selfMicroServiceID, callback)
 	if err != nil {
 		openlog.Error(err.Error())
@@ -311,8 +311,8 @@ func (r *ServiceDiscovery) Close() error {
 // ContractDiscovery to represent the object of service center to call the APIs of service center
 type ContractDiscovery struct {
 	Name           string
-	registryClient *client.RegistryClient
-	opts           client.Options
+	registryClient *sc.Client
+	opts           sc.Options
 }
 
 // GetMicroServicesByInterface get micro-services by interface
@@ -502,9 +502,9 @@ func (r *ContractDiscovery) Close() error {
 //NewRegistrator new Service center registrator
 func NewRegistrator(options registry.Options) registry.Registrator {
 	sco := ToSCOptions(options)
-	r := &client.RegistryClient{}
-	if err := r.Initialize(sco); err != nil {
-		openlog.Error(fmt.Sprintf("RegistryClient initialization failed, err %s", err))
+	r, err := sc.NewClient(sco)
+	if err != nil {
+		openlog.Error(fmt.Sprintf("Client initialization failed, err %s", err))
 	}
 
 	return &Registrator{
@@ -517,9 +517,9 @@ func NewRegistrator(options registry.Options) registry.Registrator {
 //NewServiceDiscovery new service center discovery
 func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 	sco := ToSCOptions(options)
-	r := &client.RegistryClient{}
-	if err := r.Initialize(sco); err != nil {
-		openlog.Error(fmt.Sprintf("RegistryClient initialization failed. %s", err))
+	r, err := sc.NewClient(sco)
+	if err != nil {
+		openlog.Error(fmt.Sprintf("Client initialization failed. %s", err))
 	}
 
 	return &ServiceDiscovery{
@@ -530,9 +530,9 @@ func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 }
 func newContractDiscovery(options registry.Options) registry.ContractDiscovery {
 	sco := ToSCOptions(options)
-	r := &client.RegistryClient{}
-	if err := r.Initialize(sco); err != nil {
-		openlog.Error(fmt.Sprintf("RegistryClient initialization failed: %s", err))
+	r, err := sc.NewClient(sco)
+	if err != nil {
+		openlog.Error(fmt.Sprintf("Client initialization failed: %s", err))
 	}
 
 	return &ContractDiscovery{

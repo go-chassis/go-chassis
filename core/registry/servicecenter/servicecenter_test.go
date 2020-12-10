@@ -1,18 +1,19 @@
 package servicecenter_test
 
 import (
+	scregistry "github.com/go-chassis/cari/discovery"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
+	"github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
+	"github.com/go-chassis/sc-client"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/go-chassis/go-chassis/v2/core/config"
-	"github.com/go-chassis/go-chassis/v2/core/registry"
-	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
-	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
-	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
-	"github.com/stretchr/testify/assert"
 )
 
 func init() {
@@ -39,7 +40,7 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 		AppID:       "CSE",
 		ServiceName: "DSFtestAppThree",
 		Version:     "2.0.3",
-		Status:      client.MicorserviceUp,
+		Status:      sc.MicorserviceUp,
 		Level:       "FRONT",
 		Schemas:     []string{"dsfapp.HelloHuawei"},
 	}
@@ -51,7 +52,7 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 			},
 		},
 		HostName: "default",
-		Status:   client.MSInstanceUP,
+		Status:   sc.MSInstanceUP,
 	}
 	sid, insID, err := scc.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
@@ -79,4 +80,38 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 	heartBeatSvc := registry.HeartbeatService{}
 	heartBeatSvc.Stop()
 	scc.Close()
+}
+func TestRegroupInstances(t *testing.T) {
+	keys := []*scregistry.FindService{
+		{
+			Service: &scregistry.MicroServiceKey{
+				ServiceName: "Service1",
+			},
+		},
+		{
+			Service: &scregistry.MicroServiceKey{
+				ServiceName: "Service2",
+			},
+		},
+		{
+			Service: &scregistry.MicroServiceKey{
+				ServiceName: "Service3",
+			},
+		},
+	}
+	resp := &scregistry.BatchFindInstancesResponse{
+		Services: &scregistry.BatchFindResult{
+			Updated: []*scregistry.FindResult{
+				{Index: 2,
+					Instances: []*scregistry.MicroServiceInstance{{
+						InstanceId: "1",
+					}}},
+			},
+		},
+	}
+	m := servicecenter.RegroupInstances(keys, resp)
+	t.Log(m)
+	assert.Equal(t, 1, len(m["Service3"]))
+	assert.Equal(t, 0, len(m["Service1"]))
+	assert.Equal(t, 0, len(m["Service2"]))
 }

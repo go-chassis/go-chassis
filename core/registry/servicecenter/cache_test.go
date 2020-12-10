@@ -2,6 +2,7 @@ package servicecenter_test
 
 import (
 	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/sc-client"
 	"os"
 	"testing"
 	"time"
@@ -10,7 +11,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	"github.com/hashicorp/go-version"
@@ -41,7 +41,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "Server",
 		Version:     "0.1",
-		Status:      client.MicorserviceUp,
+		Status:      sc.MicorserviceUp,
 		Level:       "FRONT",
 	}
 	microServiceInstance := &registry.MicroServiceInstance{
@@ -53,7 +53,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 		},
 		InstanceID: "event1",
 		HostName:   "event_test",
-		Status:     client.MSInstanceUP,
+		Status:     sc.MSInstanceUP,
 	}
 	sid, instanceID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
 	assert.NoError(t, err)
@@ -89,7 +89,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_UPDATE操作")
 
 	exist = false
-	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", client.MSIinstanceDown)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", sc.MSIinstanceDown)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -100,7 +100,7 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	t.Log("测试EVT_DELETE操作")
 
 	exist = false
-	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", client.MSInstanceUP)
+	err = registry.DefaultRegistrator.UpdateMicroServiceInstanceStatus(sid, "event1", sc.MSInstanceUP)
 	assert.NoError(t, err)
 	if err != nil {
 		exist = true
@@ -157,12 +157,12 @@ func TestCacheManager_MakeSchemaIndex(t *testing.T) {
 		AppID:       "default",
 		ServiceName: "AutoIndexServer",
 		Version:     "0.1",
-		Status:      client.MicorserviceUp,
+		Status:      sc.MicorserviceUp,
 		Level:       "FRONT",
 	}
 	sid, _ := registry.DefaultRegistrator.RegisterService(microservice)
 	schemaName := rand.String(10)
-	schemaInfoString := "swagger: \"2.0\"\ninfo:\n  version: \"1.0.0\"\n  title: \"swagger definition for org.apache.servicecomb.samples.demo.client.ClientApi\"\n  x-java-interface: \"cse.gen.huaweidemo.DemoClient2.helloclient." + schemaName + "\"\nbasePath: \"/\"\nconsumes:\n- \"application/json\"\nproduces:\n- \"application/json\"\npaths:\n  /sayhello:\n    get:\n      operationId: \"sayHello\"\n      parameters: []\n      responses:\n        200:\n          description: \"response of 200\"\n          schema:\n            type: \"string\"\n"
+	schemaInfoString := "swagger: \"2.0\"\ninfo:\n  version: \"1.0.0\"\n  title: \"swagger definition for org.apache.servicecomb.samples.demo.sc.ClientApi\"\n  x-java-interface: \"cse.gen.huaweidemo.DemoClient2.hellosc." + schemaName + "\"\nbasePath: \"/\"\nconsumes:\n- \"application/json\"\nproduces:\n- \"application/json\"\npaths:\n  /sayhello:\n    get:\n      operationId: \"sayHello\"\n      parameters: []\n      responses:\n        200:\n          description: \"response of 200\"\n          schema:\n            type: \"string\"\n"
 	registry.DefaultRegistrator.AddSchemas(sid, schemaName, schemaInfoString)
 	registry.DefaultServiceDiscoveryService.AutoSync()
 	time.Sleep(time.Second * 3)

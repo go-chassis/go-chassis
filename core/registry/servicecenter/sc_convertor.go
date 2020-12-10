@@ -3,7 +3,7 @@ package servicecenter
 import (
 	scregistry "github.com/go-chassis/cari/discovery"
 	"github.com/go-chassis/go-chassis/v2/core/registry"
-	"github.com/go-chassis/go-chassis/v2/pkg/scclient"
+	"github.com/go-chassis/sc-client"
 )
 
 // ToMicroService assign sc micro-service to go chassis micro-service
@@ -105,11 +105,11 @@ func ToSCInstance(msi *registry.MicroServiceInstance) *scregistry.MicroServiceIn
 }
 
 //ToSCOptions convert registry opstions into sc client options
-func ToSCOptions(options registry.Options) client.Options {
-	sco := client.Options{}
+func ToSCOptions(options registry.Options) sc.Options {
+	sco := sc.Options{}
 	sco.Timeout = options.Timeout
 	sco.TLSConfig = options.TLSConfig
-	sco.Addrs = options.Addrs
+	sco.Endpoints = options.Addrs
 	sco.Compressed = options.Compressed
 	sco.EnableSSL = options.EnableSSL
 	sco.Verbose = options.Verbose

@@ -17,7 +17,7 @@
 package plain
 
 import (
-	security2 "github.com/go-chassis/foundation/security"
+	"github.com/go-chassis/cari/security"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 )
 
@@ -28,7 +28,7 @@ type DefaultCipher struct {
 func init() {
 	cipher.InstallCipherPlugin("default", new)
 }
-func new() security2.Cipher {
+func new() security.Cipher {
 
 	return &DefaultCipher{}
 }
