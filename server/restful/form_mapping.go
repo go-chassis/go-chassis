@@ -42,7 +42,7 @@ func mapForm(ptr interface{}, form map[string][]string) error {
 		if structFieldKind == reflect.Slice && numElems > 0 {
 			sliceOf := structField.Type().Elem().Kind()
 			slice := reflect.MakeSlice(structField.Type(), numElems, numElems)
-			for i := 0; i < numElems; i++ {
+			for i = 0; i < numElems; i++ {
 				if err := setWithProperType(sliceOf, inputValue[i], slice.Index(i)); err != nil {
 					return err
 				}

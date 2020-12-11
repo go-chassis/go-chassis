@@ -1,6 +1,7 @@
 package servicecenter
 
 import (
+	"errors"
 	"fmt"
 	scregistry "github.com/go-chassis/cari/discovery"
 	"net/url"
@@ -218,10 +219,11 @@ func (c *CacheManager) pullMicroServiceInstance() error {
 	//fetch remote based on app and service
 	response, err := c.registryClient.BatchFindInstances(runtime.ServiceID, services)
 	if err != nil {
-		if err == sc.ErrNotModified || err == sc.ErrEmptyCriteria {
+		if errors.Is(err, sc.ErrNotModified) || errors.Is(err, sc.ErrEmptyCriteria) {
 			openlog.Debug(err.Error())
 		} else {
 			openlog.Error("Refresh local instance cache failed: " + err.Error())
+			return fmt.Errorf("refresh local instance cache failed: %w", err)
 		}
 	}
 	instances := RegroupInstances(services, response)

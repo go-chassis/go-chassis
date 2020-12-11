@@ -66,7 +66,7 @@ func Mark(inv *invocation.Invocation) {
 			return true
 		}
 		for _, mp := range mps.Matches {
-			if isMatch(inv, &mp) {
+			if isMatch(inv, mp) {
 				if name, ok := k.(string); ok {
 					matchName = name
 					policy = mp.TrafficMarkPolicy
@@ -86,7 +86,7 @@ func Mark(inv *invocation.Invocation) {
 	}
 }
 
-func isMatch(inv *invocation.Invocation, matchPolicy *config.MatchPolicy) bool {
+func isMatch(inv *invocation.Invocation, matchPolicy config.MatchPolicy) bool {
 	if !headsMatch(inv.Headers(), matchPolicy.Headers) {
 		return false
 	}

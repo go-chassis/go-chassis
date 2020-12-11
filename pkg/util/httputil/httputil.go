@@ -39,7 +39,7 @@ func SetCookie(req *http.Request, k, v string) {
 //GetCookie is a method which gets cookie from a request
 func GetCookie(req *http.Request, key string) string {
 	cookie, err := req.Cookie(key)
-	if err == http.ErrNoCookie {
+	if errors.Is(err, http.ErrNoCookie) {
 		return ""
 	}
 	return cookie.Value

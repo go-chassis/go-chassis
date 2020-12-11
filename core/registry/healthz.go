@@ -130,7 +130,7 @@ func RefreshCache(service string, ups []*MicroServiceInstance, downs map[string]
 		} else {
 			for p, ep := range exp.EndpointsMap {
 				if err := chassisClient.Close(p, service, ep.GenEndpoint()); err != nil {
-					if err != chassisClient.ErrClientNotExist {
+					if errors.Is(err, chassisClient.ErrClientNotExist) {
 						openlog.Error(fmt.Sprintf("can not close [%s] client for service [%s],intance [%s,%s,%s]: %s",
 							p, service, exp.InstanceID, ep, exp.HostName, err))
 					}

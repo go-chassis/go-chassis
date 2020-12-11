@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -49,7 +50,7 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	}
 	if err != nil {
 		r.Err = err
-		if err != client.ErrCanceled {
+		if !errors.Is(err, client.ErrCanceled) {
 			openlog.Error(fmt.Sprintf("call err [%s]", err.Error()))
 		}
 		if i.Strategy == loadbalancer.StrategySessionStickiness {

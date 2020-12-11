@@ -117,9 +117,10 @@ func (j *jwtTokenManager) Verify(tokenString string, f SecretFunc, opts ...Optio
 	if err != nil {
 		return nil, err
 	}
+	var ve *jwt.ValidationError
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
-	} else if ve, ok := err.(*jwt.ValidationError); ok {
+	} else if ok := errors.As(err, ve); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 			openlog.Error("not a valid jwt")
 			return nil, err

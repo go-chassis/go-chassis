@@ -2,6 +2,7 @@ package rest
 
 import (
 	"bytes"
+	"context"
 	"github.com/go-chassis/go-chassis/v2/core/client"
 	"io"
 	"net/http"
@@ -14,7 +15,7 @@ func NewRequest(method, urlStr string, body []byte) (*http.Request, error) {
 		r = bytes.NewReader(body)
 	}
 
-	req, err := http.NewRequest(method, urlStr, r)
+	req, err := http.NewRequestWithContext(context.Background(), method, urlStr, r)
 	if err != nil {
 		return nil, err
 	}

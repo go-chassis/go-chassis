@@ -123,7 +123,7 @@ func checkPassLagerDefinition(option *Options) {
 func createLogFile(localPath, out string) error {
 	_, err := os.Stat(strings.Replace(filepath.Dir(filepath.Join(localPath, out)), "\\", "/", -1))
 	if err != nil && os.IsNotExist(err) {
-		err := os.MkdirAll(strings.Replace(filepath.Dir(filepath.Join(localPath, out)), "\\", "/", -1), os.ModePerm)
+		err = os.MkdirAll(strings.Replace(filepath.Dir(filepath.Join(localPath, out)), "\\", "/", -1), os.ModePerm)
 		if err != nil {
 			return err
 		}

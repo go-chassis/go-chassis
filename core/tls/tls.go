@@ -49,7 +49,7 @@ func getDefaultSslConfigMap() map[string]string {
 		common.SslCaFileKey:       "",
 		common.SslCertFileKey:     "",
 		common.SslKeyFileKey:      "",
-		common.SslCertPwdFileKey:  "",
+		common.SslCertPwdFilePath: "",
 		common.SslServerNameKey:   "",
 	}
 	return defaultSslConfigMap
@@ -115,7 +115,7 @@ func parseSSLConfig(sslConfigMap map[string]string) (*SSLConfig, error) {
 	sslConfig.CAFile = sslConfigMap[common.SslCaFileKey]
 	sslConfig.CertFile = sslConfigMap[common.SslCertFileKey]
 	sslConfig.KeyFile = sslConfigMap[common.SslKeyFileKey]
-	sslConfig.CertPWDFile = sslConfigMap[common.SslCertPwdFileKey]
+	sslConfig.CertPWDFile = sslConfigMap[common.SslCertPwdFilePath]
 	sslConfig.ServerName = sslConfigMap[common.SslServerNameKey]
 
 	return sslConfig, nil
@@ -197,7 +197,7 @@ func GetTLSConfigByService(svcName, protocol, svcType string) (*tls.Config, *SSL
 
 // IsSSLConfigNotExist check the status of ssl configurations
 func IsSSLConfigNotExist(e error) bool {
-	return e == errSSLConfigNotExist
+	return errors.Is(e, errSSLConfigNotExist)
 }
 
 // GetTLSConfig returns tls config from scheme and type

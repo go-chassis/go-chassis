@@ -47,12 +47,11 @@ func init() {
 }
 
 type restfulServer struct {
-	microServiceName string
-	container        *restful.Container
-	ws               *restful.WebService
-	opts             server.Options
-	mux              sync.RWMutex
-	server           *http.Server
+	container *restful.Container
+	ws        *restful.WebService
+	opts      server.Options
+	mux       sync.RWMutex
+	server    *http.Server
 }
 
 func newRestfulServer(opts server.Options) server.ProtocolServer {
@@ -259,7 +258,7 @@ func (r *restfulServer) Start() error {
 	l, lIP, lPort, err := iputil.StartListener(config.Address, config.TLSConfig)
 
 	if err != nil {
-		return fmt.Errorf("failed to start listener: %s", err.Error())
+		return fmt.Errorf("failed to start listener: %w", err)
 	}
 
 	registry.InstanceEndpoints[config.ProtocolServerName] = net.JoinHostPort(lIP, lPort) + sslFlag
@@ -301,11 +300,11 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	} else {
 		if err := os.RemoveAll(path); err != nil {
 			openlog.Error(err.Error())
-			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+			return fmt.Errorf("failed to generate swagger doc: %w", err)
 		}
 		if err := os.MkdirAll(path, 0700); err != nil {
 			openlog.Error(err.Error())
-			return fmt.Errorf("failed to generate swagger doc: %s", err.Error())
+			return fmt.Errorf("failed to generate swagger doc: %w", err)
 		}
 		swaggerConfig.OutFilePath = filepath.Join(path, runtime.ServiceName+".yaml")
 	}
@@ -314,7 +313,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	//set schema information when create local schema file
 	err := schema.SetSchemaInfo(sws)
 	if err != nil {
-		return fmt.Errorf("set schema information,%s", err.Error())
+		return fmt.Errorf("set schema information,%w", err)
 	}
 	return nil
 }

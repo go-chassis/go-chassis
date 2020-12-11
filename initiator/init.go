@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
@@ -51,7 +52,7 @@ func ParseLoggerConfig(file string) error {
 }
 
 func unmarshalYamlFile(file string, target interface{}) error {
-	content, err := ioutil.ReadFile(file)
+	content, err := ioutil.ReadFile(filepath.Clean(file))
 	if err != nil {
 		return err
 	}

@@ -143,7 +143,7 @@ func loadSchemaFileContent(schemaPath string) (*MicroserviceMeta, error) {
 
 	for _, fullPath := range schemaFiles {
 		schemaFile := filepath.Base(fullPath)
-		dat, err := ioutil.ReadFile(fullPath)
+		dat, err := ioutil.ReadFile(filepath.Clean(fullPath))
 		if err != nil {
 			return nil, errors.New("cannot find the schema file")
 		}

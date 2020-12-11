@@ -202,10 +202,9 @@ func Test_restfulServer_register2GoRestful(t *testing.T) {
 	initEnv()
 
 	rest := &restfulServer{
-		microServiceName: "rest",
-		container:        rf.NewContainer(),
-		ws:               new(rf.WebService),
-		server:           &http.Server{},
+		container: rf.NewContainer(),
+		ws:        new(rf.WebService),
+		server:    &http.Server{},
 	}
 
 	_, err := rest.Register(&SchemaTest{})
