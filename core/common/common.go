@@ -58,7 +58,7 @@ const (
 	SslCaFileKey       = "caFile"
 	SslCertFileKey     = "certFile"
 	SslKeyFileKey      = "keyFile"
-	SslCertPwdFileKey  = "certPwdFile"
+	SslCertPwdFilePath = "certPwdFile"
 	AKSKCustomCipher   = "servicecomb.credentials.akskCustomCipher"
 	SslServerNameKey   = "serverName"
 )

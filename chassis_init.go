@@ -129,12 +129,12 @@ func (c *chassis) initialize() error {
 	}
 	bootstrap.Bootstrap()
 	if !archaius.GetBool("servicecomb.registry.disabled", false) {
-		err := registry.Enable()
+		err = registry.Enable()
 		if err != nil {
 			return err
 		}
 		strategyName := archaius.GetString("cse.loadbalance.strategy.name", "")
-		if err := loadbalancer.Enable(strategyName); err != nil {
+		if err = loadbalancer.Enable(strategyName); err != nil {
 			return err
 		}
 	}
@@ -152,7 +152,7 @@ func (c *chassis) initialize() error {
 		Infra:   config.GlobalDefinition.Panel.Infra,
 		Address: config.GlobalDefinition.Panel.Settings["address"],
 	}
-	if err := control.Init(opts); err != nil {
+	if err = control.Init(opts); err != nil {
 		return err
 	}
 

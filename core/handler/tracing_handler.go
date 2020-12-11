@@ -22,14 +22,6 @@ func (t *TracingProviderHandler) Handle(chain *Chain, i *invocation.Invocation, 
 	)
 	// extract span context
 	// header stored in context
-
-	switch err {
-	case nil:
-	case opentracing.ErrSpanContextNotFound:
-		openlog.Debug(err.Error())
-	default:
-		openlog.Error(fmt.Sprintf("Extract span failed, err [%s]", err.Error()))
-	}
 	wireContext, err = opentracing.GlobalTracer().Extract(opentracing.TextMap, opentracing.TextMapCarrier(i.Headers()))
 	if err != nil {
 		span = opentracing.StartSpan(i.OperationID, ext.RPCServerOption(wireContext))

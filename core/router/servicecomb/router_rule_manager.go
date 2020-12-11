@@ -50,10 +50,11 @@ func processV2Rule(ruleV2Map map[string]interface{}, destinations map[string][]*
 		r, err := config.NewServiceRule(value)
 		if err != nil {
 			openlog.Error("convert failed: " + err.Error())
+			return nil, err
 		}
 		destinations[service] = r.Value()
 	}
-	return nil, nil
+	return destinations, nil
 }
 
 func processV1Rule(ruleV1Map map[string]interface{}, destinations map[string][]*config.RouteRule) (map[string][]*config.RouteRule, error) {
@@ -67,10 +68,11 @@ func processV1Rule(ruleV1Map map[string]interface{}, destinations map[string][]*
 		r, err := ConvertJSON2RouteRule(value)
 		if err != nil {
 			openlog.Error("convert failed: " + err.Error())
+			return nil, err
 		}
 		destinations[service] = r
 	}
-	return nil, nil
+	return destinations, nil
 }
 
 func prepareRule(configMap map[string]interface{}, ruleV1Map map[string]interface{}, ruleV2Map map[string]interface{}) {

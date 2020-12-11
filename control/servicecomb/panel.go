@@ -28,7 +28,7 @@ func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string)
 	command := control.NewCircuitName(serviceType, config.GetHystrixConfig().CircuitBreakerProperties.Scope, inv)
 	c, ok := CBConfigCache.Get(key)
 	if !ok {
-		c, _ := CBConfigCache.Get(serviceType)
+		c, _ = CBConfigCache.Get(serviceType)
 		return command, c.(hystrix.CommandConfig)
 
 	}
@@ -39,7 +39,7 @@ func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string)
 func (p *Panel) GetLoadBalancing(inv invocation.Invocation) control.LoadBalancingConfig {
 	c, ok := LBConfigCache.Get(inv.MicroServiceName)
 	if !ok {
-		c, ok := LBConfigCache.Get("")
+		c, ok = LBConfigCache.Get("")
 		if !ok {
 			return DefaultLB
 

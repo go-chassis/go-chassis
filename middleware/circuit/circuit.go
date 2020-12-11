@@ -72,7 +72,10 @@ func FallbackNil(inv *invocation.Invocation, finish chan *invocation.Response) f
 					if err != nil {
 						openlog.Error(err.Error())
 					}
-					resp.Body.Close()
+					err := resp.Body.Close()
+					if err != nil {
+						openlog.Error(err.Error())
+					}
 				}
 			}
 			select {
@@ -124,7 +127,10 @@ func FallbackErr(inv *invocation.Invocation, finish chan *invocation.Response) f
 				if err != nil {
 					openlog.Error(err.Error())
 				}
-				resp.Body.Close()
+				err = resp.Body.Close()
+				if err != nil {
+					openlog.Error(err.Error())
+				}
 			}
 		}
 		select {

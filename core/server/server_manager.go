@@ -62,7 +62,7 @@ func StartServer() error {
 		err := server.Start()
 		if err != nil {
 			openlog.Error(fmt.Sprintf("servers failed to start, err %s", err))
-			return fmt.Errorf("can not start [%s] server,%s", name, err.Error())
+			return fmt.Errorf("can not start [%s] server,%w", name, err)
 		}
 		openlog.Debug(name + " server start success")
 	}

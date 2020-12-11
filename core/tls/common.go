@@ -7,11 +7,12 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-chassis/cari/security"
+	"github.com/go-chassis/foundation/stringutil"
 	"github.com/go-chassis/go-chassis/v2/core/common"
-	stringutil "github.com/go-chassis/go-chassis/v2/pkg/string"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 
 	//this import used for plain cipher
@@ -48,7 +49,7 @@ var TLSVersionMap = map[string]uint16{
 //GetX509CACertPool read a certificate file and gets the certificate configuration
 func GetX509CACertPool(caCertFile string) (*x509.CertPool, error) {
 	pool := x509.NewCertPool()
-	caCert, err := ioutil.ReadFile(caCertFile)
+	caCert, err := ioutil.ReadFile(filepath.Clean(caCertFile))
 	if err != nil {
 		return nil, fmt.Errorf("read ca cert file %s failed", caCert)
 	}
@@ -59,12 +60,12 @@ func GetX509CACertPool(caCertFile string) (*x509.CertPool, error) {
 
 //LoadTLSCertificate function loads the TLS certificate
 func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cipher) ([]tls.Certificate, error) {
-	certContent, err := ioutil.ReadFile(certFile)
+	certContent, err := ioutil.ReadFile(filepath.Clean(certFile))
 	if err != nil {
 		return nil, fmt.Errorf("read cert file %s failed", certFile)
 	}
 
-	keyContent, err := ioutil.ReadFile(keyFile)
+	keyContent, err := ioutil.ReadFile(filepath.Clean(keyFile))
 	if err != nil {
 		return nil, fmt.Errorf("read key file %s failed", keyFile)
 	}
@@ -73,9 +74,9 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cip
 	if keyBlock == nil {
 		return nil, fmt.Errorf("decode key file %s failed", keyFile)
 	}
-
+	var plainpass string
 	if x509.IsEncryptedPEMBlock(keyBlock) {
-		plainpass, err := cipher.Decrypt(passphase)
+		plainpass, err = cipher.Decrypt(passphase)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +86,7 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cip
 		defer stringutil.ClearByteMemory(plainPassphaseBytes)
 		keyData, err := x509.DecryptPEMBlock(keyBlock, plainPassphaseBytes)
 		if err != nil {
-			return nil, fmt.Errorf("decrypt key file %s failed: %s", keyFile, err)
+			return nil, fmt.Errorf("decrypt key file %s failed: %w", keyFile, err)
 		}
 
 		// 解密成功，重新编码为无加密的PEM格式文件
@@ -99,7 +100,7 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cip
 
 	cert, err := tls.X509KeyPair(certContent, keyContent)
 	if err != nil {
-		return nil, fmt.Errorf("load X509 key pair from cert file %s with key file %s failed: %s", certFile, keyFile, err)
+		return nil, fmt.Errorf("load X509 key pair from cert file %s with key file %s failed: %w", certFile, keyFile, err)
 	}
 
 	var certs []tls.Certificate
@@ -126,7 +127,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	if sslConfig.CertPWDFile != "" {
 		keyPassphase, err = ioutil.ReadFile(sslConfig.CertPWDFile)
 		if err != nil {
-			return nil, fmt.Errorf("read cert pwd %s failed: %s", sslConfig.CertPWDFile, err)
+			return nil, fmt.Errorf("read cert pwd %s failed: %w", sslConfig.CertPWDFile, err)
 		}
 	}
 
@@ -134,8 +135,9 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	var certs []tls.Certificate
 	if !(role == common.Client && sslConfig.KeyFile == "" && sslConfig.CertFile == "") {
 		var cipherPlugin security.Cipher
-		if f, err := cipher.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
-			return nil, fmt.Errorf("get cipher plugin [%s] failed, %v", sslConfig.CipherPlugin, err)
+		var f func() security.Cipher
+		if f, err = cipher.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
+			return nil, fmt.Errorf("get cipher plugin [%s] failed, %w", sslConfig.CipherPlugin, err)
 		} else if cipherPlugin = f(); cipherPlugin == nil {
 			return nil, errors.New("invalid cipher plugin")
 		}

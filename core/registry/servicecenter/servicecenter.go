@@ -246,7 +246,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 		openlog.Warn(fmt.Sprintf("%s Get instances from remote, key: %s:%s:%s", consumerID, appID, microServiceName, tags.Version()))
 		providerInstancesResponse, err := r.registryClient.BatchFindInstances(consumerID, criteria)
 		if err != nil {
-			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %s", microServiceName, err)
+			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %w", microServiceName, err)
 		}
 		providerInstances := RegroupInstances(criteria, providerInstancesResponse)
 		filter(providerInstances)

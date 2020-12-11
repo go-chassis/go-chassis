@@ -101,7 +101,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 					"panic": r,
 					"stack": stacktrace,
 				}))
-				if err := resp.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
+				if err = resp.WriteErrorString(http.StatusInternalServerError, "server got a panic, plz check log."); err != nil {
 					openlog.Error("write response failed when handler panic.", openlog.WithTags(openlog.Tags{
 						"err": err.Error(),
 					}))
@@ -116,7 +116,7 @@ func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts 
 					"err": err.Error(),
 				}))
 				resp.AddHeader("Content-Type", "text/plain")
-				err := resp.WriteErrorString(http.StatusInternalServerError, err.Error())
+				err = resp.WriteErrorString(http.StatusInternalServerError, err.Error())
 				if err != nil {
 					openlog.Error(err.Error())
 				}

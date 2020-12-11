@@ -1,8 +1,8 @@
 package config_test
 
 import (
+	"github.com/go-chassis/foundation/stringutil"
 	"github.com/go-chassis/go-chassis/v2/core/config"
-	stringutil "github.com/go-chassis/go-chassis/v2/pkg/string"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 	"strings"

@@ -166,7 +166,7 @@ func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req 
 
 	var sessionIDStr string
 
-	if c, err := req.Cookie(common.LBSessionID); err != http.ErrNoCookie && c != nil {
+	if c, err := req.Cookie(common.LBSessionID); !errors.Is(err, http.ErrNoCookie) && c != nil {
 		sessionIDStr = c.Value
 	}
 

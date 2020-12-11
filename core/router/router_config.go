@@ -26,7 +26,7 @@ func Init() error {
 	}
 	op, err := getSpecifiedOptions()
 	if err != nil {
-		return fmt.Errorf("router options error: %v", err)
+		return fmt.Errorf("router options error: %w", err)
 	}
 	err = DefaultRouter.Init(op)
 	if err != nil {

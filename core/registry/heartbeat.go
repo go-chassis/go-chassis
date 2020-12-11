@@ -102,8 +102,10 @@ func reRegisterSelfMSI(sid, iid string) error {
 	}
 	if len(InstanceEndpoints) != 0 {
 		eps = make(map[string]*Endpoint, len(InstanceEndpoints))
+		var epObj *Endpoint
 		for m, ep := range InstanceEndpoints {
-			epObj, err := NewEndPoint(ep)
+
+			epObj, err = NewEndPoint(ep)
 			if err != nil {
 				continue
 			}

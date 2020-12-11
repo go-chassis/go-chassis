@@ -113,7 +113,7 @@ func RegisterServiceInstances() error {
 
 	for _, schemaID := range runtime.Schemas {
 		schemaInfo := schema.GetContent(schemaID)
-		err := DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
+		err = DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
 		if err != nil {
 			openlog.Warn("upload contract to registry failed: " + err.Error())
 		}
@@ -127,8 +127,9 @@ func RegisterServiceInstances() error {
 	openlog.Info(fmt.Sprintf("service support protocols %v", config.GlobalDefinition.ServiceComb.Protocols))
 	if len(InstanceEndpoints) != 0 {
 		eps = make(map[string]*Endpoint, len(InstanceEndpoints))
+		var epObj *Endpoint
 		for m, ep := range InstanceEndpoints {
-			epObj, err := NewEndPoint(ep)
+			epObj, err = NewEndPoint(ep)
 			if err != nil {
 				openlog.Error(fmt.Sprintf("parser instance protocol %s endpoint error %s", m, err))
 				continue
