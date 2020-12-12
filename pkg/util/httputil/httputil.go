@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/openlog"
-	"io/ioutil"
-	"net/http"
 )
 
 //ErrInvalidReq invalid input

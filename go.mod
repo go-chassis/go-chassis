@@ -12,7 +12,6 @@ require (
 	github.com/go-chassis/sc-client v0.5.1-0.20201210070107-dab095cfc60a
 	github.com/go-chassis/seclog v1.3.0
 	github.com/golang/protobuf v1.4.2
-	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible

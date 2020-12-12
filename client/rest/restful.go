@@ -3,7 +3,6 @@ package rest
 import (
 	"bytes"
 	"context"
-	"github.com/go-chassis/go-chassis/v2/core/client"
 	"io"
 	"net/http"
 )
@@ -28,10 +27,4 @@ func NewResponse() *http.Response {
 		Header: http.Header{},
 	}
 	return resp
-}
-
-//Client is a struct
-type Client struct {
-	c    *http.Client
-	opts client.Options
 }

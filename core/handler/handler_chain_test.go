@@ -46,11 +46,6 @@ func TestCreateChain(t *testing.T) {
 	chopt(ch)
 	assert.Equal(t, "chainName", ch.Name)
 }
-func init() {
-	lager.Init(&lager.Options{
-		LoggerLevel: "INFO",
-	})
-}
 func BenchmarkChain_Next(b *testing.B) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))

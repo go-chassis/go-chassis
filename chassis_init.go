@@ -19,9 +19,10 @@ package chassis
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/v2/core/governance"
 	"os"
 	"sync"
+
+	"github.com/go-chassis/go-chassis/v2/core/governance"
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/v2/bootstrap"

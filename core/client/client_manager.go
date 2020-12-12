@@ -1,18 +1,17 @@
 package client
 
 import (
-	"fmt"
-	"github.com/go-chassis/go-chassis/v2/core/invocation"
-	"strings"
-	"sync"
-
 	"crypto/tls"
 	"errors"
+	"fmt"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	chassisTLS "github.com/go-chassis/go-chassis/v2/core/tls"
 	"github.com/go-chassis/openlog"
 )

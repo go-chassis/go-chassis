@@ -1,16 +1,21 @@
-package handler_test
+package client_test
 
 import (
 	"context"
-	"github.com/go-chassis/go-chassis/v2/client/rest"
-	"github.com/go-chassis/go-chassis/v2/core/common"
-	"github.com/go-chassis/go-chassis/v2/core/lager"
-	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core/client"
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config/model"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/handler"
@@ -24,10 +29,16 @@ func init() {
 	lager.Init(&lager.Options{
 		LoggerLevel: "INFO",
 	})
+	archaius.Init(archaius.WithMemorySource())
+	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")
+	archaius.Set("servicecomb.service.name", "Client")
+	runtime.HostName = "localhost"
+	config.MicroserviceDefinition = &model.ServiceSpec{}
+	archaius.UnmarshalConfig(config.MicroserviceDefinition)
+	config.ReadGlobalConfigFromArchaius()
 }
 
 func TestTransportHandler_HandleRest(t *testing.T) {
-	t.Log("testing transport handler with rest protocol")
 	microContent := `---
 #微服务的私有属性
 servicecomb:
@@ -42,7 +53,6 @@ servicecomb:
   protocols:
     rest:
       listenAddress: 127.0.0.1:5001
-      workerNumber: 1
       advertiseAddress: 127.0.0.1:5001`
 
 	wd, _ := fileutil.GetWorkDir()
@@ -79,7 +89,7 @@ servicecomb:
 	i.Endpoint = "127.0.0.1:9992"
 	i.Protocol = "rest"
 
-	h := &handler.TransportHandler{}
+	h := &client.TransportHandler{}
 	c.Handlers = append(c.Handlers, h)
 
 	c.Next(i, func(r *invocation.Response) {
