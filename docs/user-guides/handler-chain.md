@@ -25,7 +25,7 @@ servicecomb:
 * 当handler配置为空，那么框架会自动为Consumer与Provider加载默认的handlers，chain的名称为default  
 * 当handler配置不为空，那么在Provider链中，如果protocol有相同名称的chain，对应的protocol服务将加载相同名称的chain，如果protocol没有配置相同名称的chain，那么该协议将默认加载名称为default的chain
 
-### Consumer的默认chain为
+### Consumer 默认chain包括如下handler
 
 | 名称                    | 功能           |
 |------------------------|---------------|
@@ -36,7 +36,7 @@ servicecomb:
 
 transport 各协议客户端处理请求,如果使用自定义处理链配置结尾处必须加入这个handler
 
-### Provider的默认chain为
+### Provider 默认chain包括如下handler
 
 名称 | 功能
 ----|----
