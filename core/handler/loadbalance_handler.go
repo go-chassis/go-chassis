@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/v2/core/registry"
-	"github.com/go-chassis/go-chassis/v2/resilience/retry"
 	"io/ioutil"
 	"net/http"
 
@@ -13,8 +11,10 @@ import (
 	"github.com/go-chassis/go-chassis/v2/control"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/core/status"
 	"github.com/go-chassis/go-chassis/v2/pkg/util"
+	"github.com/go-chassis/go-chassis/v2/resilience/retry"
 	"github.com/go-chassis/openlog"
 )
 

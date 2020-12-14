@@ -3,7 +3,10 @@ package servicecenter
 import (
 	"errors"
 	"fmt"
+
 	scregistry "github.com/go-chassis/cari/discovery"
+	"github.com/go-chassis/go-chassis/v2/health"
+
 	"net/url"
 	"time"
 
@@ -292,7 +295,7 @@ func filter(providerInstances map[string][]*registry.MicroServiceInstance) {
 				up = append(up, ins.WithAppID(ins.App))
 			}
 		}
-		registry.RefreshCache(serviceName, up, downs) //save cache after get all instances of a service name
+		health.RefreshCache(serviceName, up, downs) //save cache after get all instances of a service name
 	}
 
 }
@@ -339,7 +342,7 @@ func createAction(response *sc.MicroServiceInstanceChangedEvent) {
 func deleteAction(response *sc.MicroServiceInstanceChangedEvent) {
 	key := response.Key.ServiceName
 	openlog.Debug(fmt.Sprintf("Received event EVT_DELETE, sid = %s, endpoints = %s", response.Instance.ServiceId, response.Instance.Endpoints))
-	if err := registry.HealthCheck(key, response.Key.Version, response.Key.AppId, ToMicroServiceInstance(response.Instance)); err == nil {
+	if err := health.HealthCheck(key, response.Key.Version, response.Key.AppId, ToMicroServiceInstance(response.Instance)); err == nil {
 		return
 	}
 	microServiceInstances, ok := registry.MicroserviceInstanceIndex.Get(key, nil)

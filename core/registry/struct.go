@@ -49,8 +49,8 @@ type MicroServiceInstance struct {
 	DataCenterInfo  *DataCenterInfo      `json:"dataCenterInfo"`
 }
 
-func (m *MicroServiceInstance) appID() string   { return m.Metadata[common.BuildinTagApp] }
-func (m *MicroServiceInstance) version() string { return m.Metadata[common.BuildinTagVersion] }
+func (m *MicroServiceInstance) AppID() string      { return m.Metadata[common.BuildinTagApp] }
+func (m *MicroServiceInstance) GetVersion() string { return m.Metadata[common.BuildinTagVersion] }
 
 // Has return whether microservice has tags
 func (m *MicroServiceInstance) Has(tags map[string]string) bool {

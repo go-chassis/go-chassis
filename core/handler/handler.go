@@ -12,39 +12,32 @@ var errViolateBuildIn = errors.New("can not replace build-in handler func")
 
 //ErrDuplicatedHandler means you registered more than 1 handler with same name
 var ErrDuplicatedHandler = errors.New("duplicated handler registration")
-var buildIn = []string{Loadbalance, Router, TracingConsumer,
-	TracingProvider, Transport, FaultInject}
+var buildIn = []string{LoadBalancing, Router, TracingConsumer,
+	TracingProvider, FaultInject}
 
-// HandlerFuncMap handler function map
-var HandlerFuncMap = make(map[string]func() Handler)
+// funcMap saves handler functions
+var funcMap = make(map[string]func() Handler)
 
 // constant keys for handlers
 const (
 	//consumer chain
 	Transport       = "transport"
-	Loadbalance     = "loadbalance"
+	LoadBalancing   = "loadbalance"
+	Router          = "router"
+	FaultInject     = "fault-inject"
 	TracingConsumer = "tracing-consumer"
-
-	Router             = "router"
-	FaultInject        = "fault-inject"
-	SkyWalkingConsumer = "skywalking-consumer"
-
-	//provider chain
-	RateLimiterProvider = "ratelimiter-provider"
-	TracingProvider     = "tracing-provider"
-	SkyWalkingProvider  = "skywalking-provider"
+	TracingProvider = "tracing-provider"
 )
 
 // init is for to initialize the all handlers at boot time
 func init() {
 	//register build-in handler,don't need to call RegisterHandlerFunc
-	HandlerFuncMap[Transport] = newTransportHandler
-	HandlerFuncMap[Loadbalance] = newLBHandler
-	HandlerFuncMap[TracingProvider] = newTracingProviderHandler
-	HandlerFuncMap[TracingConsumer] = newTracingConsumerHandler
-	HandlerFuncMap[Router] = newRouterHandler
-	HandlerFuncMap[FaultInject] = newFaultHandler
-	HandlerFuncMap[TrafficMarker] = newMarkHandler
+	funcMap[LoadBalancing] = newLBHandler
+	funcMap[Router] = newRouterHandler
+	funcMap[TracingProvider] = newTracingProviderHandler
+	funcMap[TracingConsumer] = newTracingConsumerHandler
+	funcMap[FaultInject] = newFaultHandler
+	funcMap[TrafficMarker] = newMarkHandler
 }
 
 // Handler interface for handlers
@@ -68,17 +61,17 @@ func RegisterHandler(name string, f func() Handler) error {
 	if stringutil.StringInSlice(name, buildIn) {
 		return errViolateBuildIn
 	}
-	_, ok := HandlerFuncMap[name]
+	_, ok := funcMap[name]
 	if ok {
 		return ErrDuplicatedHandler
 	}
-	HandlerFuncMap[name] = f
+	funcMap[name] = f
 	return nil
 }
 
 // CreateHandler create a new handler by name your registered
 func CreateHandler(name string) (Handler, error) {
-	f := HandlerFuncMap[name]
+	f := funcMap[name]
 	if f == nil {
 		return nil, fmt.Errorf("don't have handler [%s]", name)
 	}

@@ -2,21 +2,26 @@ package chassis
 
 import (
 	"fmt"
-	"github.com/go-chassis/openlog"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 
+	"github.com/go-chassis/openlog"
 	//init logger first
 	_ "github.com/go-chassis/go-chassis/v2/initiator"
+
+	// transport handler
+	_ "github.com/go-chassis/go-chassis/v2/core/client"
+
 	//load balancing
 	_ "github.com/go-chassis/go-chassis/v2/pkg/loadbalancing"
+
 	//protocols
 	_ "github.com/go-chassis/go-chassis/v2/client/rest"
 	_ "github.com/go-chassis/go-chassis/v2/server/restful"
-	//routers
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/handler"
@@ -167,7 +172,7 @@ func Init() error {
 	if goChassis.DefaultConsumerChainNames == nil {
 		defaultChain := strings.Join([]string{
 			handler.Router,
-			handler.Loadbalance,
+			handler.LoadBalancing,
 			handler.TracingConsumer,
 			handler.Transport,
 		}, ",")
@@ -176,9 +181,7 @@ func Init() error {
 		}
 	}
 	if goChassis.DefaultProviderChainNames == nil {
-		defaultChain := strings.Join([]string{
-			handler.TracingProvider,
-		}, ",")
+		defaultChain := strings.Join([]string{handler.TracingProvider}, ",")
 		goChassis.DefaultProviderChainNames = map[string]string{
 			common.DefaultKey: defaultChain,
 		}

@@ -1,4 +1,4 @@
-package handler
+package client
 
 import (
 	"context"
@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chassis/go-chassis/v2/core/client"
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/handler"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/v2/session"
@@ -32,9 +32,9 @@ func errNotNil(err error, cb invocation.ResponseCallBack) {
 }
 
 // Handle is to handle transport related things
-func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
+func (th *TransportHandler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 
-	c, err := client.GetClient(i)
+	c, err := GetClient(i)
 	if err != nil {
 		errNotNil(err, cb)
 		return
@@ -45,22 +45,25 @@ func (th *TransportHandler) Handle(chain *Chain, i *invocation.Invocation, cb in
 	//taking the time elapsed to check for latency aware strategy
 	timeBefore := time.Now()
 	err = c.Call(i.Ctx, i.Endpoint, i, i.Reply)
-	if resp, ok := i.Reply.(*http.Response); ok {
-		r.Status = resp.StatusCode
-	}
 	if err != nil {
 		r.Err = err
-		if !errors.Is(err, client.ErrCanceled) {
+		if !errors.Is(err, ErrCanceled) {
 			openlog.Error(fmt.Sprintf("call err [%s]", err.Error()))
 		}
 		if i.Strategy == loadbalancer.StrategySessionStickiness {
 			ProcessSpecialProtocol(i)
 			ProcessSuccessiveFailure(i)
 		}
+		r.Status, _ = c.Status(i.Reply)
 		cb(r)
 		return
 	}
-
+	r.Status, err = c.Status(i.Reply)
+	if err != nil {
+		r.Err = err
+		cb(r)
+		return
+	}
 	if i.Strategy == loadbalancer.StrategyLatency {
 		timeAfter := time.Since(timeBefore)
 		loadbalancer.SetLatency(timeAfter, i.Endpoint, i.MicroServiceName, i.RouteTags, i.Protocol)
@@ -121,6 +124,12 @@ func ProcessSuccessiveFailure(i *invocation.Invocation) {
 	}
 }
 
-func newTransportHandler() Handler {
+func newTransportHandler() handler.Handler {
 	return &TransportHandler{}
+}
+func init() {
+	err := handler.RegisterHandler(handler.Transport, newTransportHandler)
+	if err != nil {
+		openlog.Fatal("can not init chassis" + err.Error())
+	}
 }

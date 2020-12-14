@@ -45,10 +45,10 @@ func (ic *IndexCache) Set(k string, instances []*MicroServiceInstance) {
 	latestV, _ := version.NewVersion("0.0.0")
 	for _, instance := range instances {
 		//update latest version number
-		v, _ := version.NewVersion(instance.version())
+		v, _ := version.NewVersion(instance.GetVersion())
 		if v != nil && latestV.LessThan(v) {
 			ic.muxLatestV.Lock()
-			ic.latestV[k] = instance.version()
+			ic.latestV[k] = instance.GetVersion()
 			ic.muxLatestV.Unlock()
 			latestV = v
 		}
