@@ -11,6 +11,7 @@ bin/
 *.log
 *.zip
 *.lnk
+.DS_Store
 
 release
 *.tar.gz

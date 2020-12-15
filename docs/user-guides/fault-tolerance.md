@@ -44,8 +44,8 @@ servicecomb:
     retryOnSame: 3
     backoff:
       kind: exponential
-      MinMs: 200
-      MaxMs: 400
+      minMs: 200
+      maxMs: 400
 ```
 
 
