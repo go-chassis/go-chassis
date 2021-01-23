@@ -9,7 +9,7 @@ require (
 	github.com/go-chassis/go-archaius v1.3.6-0.20201210061741-7450779aaeb8
 	github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f
 	github.com/go-chassis/openlog v1.1.2
-	github.com/go-chassis/sc-client v0.5.1-0.20201210070107-dab095cfc60a
+	github.com/go-chassis/sc-client v0.5.1-0.20210122055720-44b8ac6a939d
 	github.com/go-chassis/seclog v1.3.0
 	github.com/golang/protobuf v1.4.2
 	github.com/hashicorp/go-version v1.0.0
