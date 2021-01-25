@@ -99,4 +99,5 @@ go mod vendor
 ![huawei](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/huawei.PNG) 
 ![qutoutiao](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG)
 ![Shopee](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png)
+![ieg](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/tencent-ieg.png)
 
