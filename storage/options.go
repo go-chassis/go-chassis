@@ -8,6 +8,7 @@ type Options struct {
 	RootCA     string `yaml:"rootCAFile"`
 	Timeout    string `yaml:"timeout"`
 	VerifyPeer bool   `yaml:"verifyPeer"`
+	CertFile   string `yaml:"certFile"`
 	KeyFile    string `yaml:"keyFile"`
 }
 
@@ -40,6 +41,12 @@ func Timeout(timeout string) Option {
 func VerifyPeer(verifyPeer bool) Option {
 	return func(opt *Options) {
 		opt.VerifyPeer = verifyPeer
+	}
+}
+
+func CertFile(certFile string) Option {
+	return func(opt *Options) {
+		opt.CertFile = certFile
 	}
 }
 
