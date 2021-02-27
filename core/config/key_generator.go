@@ -4,8 +4,7 @@ import "strings"
 
 // constant for hystrix keys
 const (
-	FixedPrefix = "servicecomb"
-
+	FixedPrefix                       = "cse"
 	NamespaceIsolation                = "isolation"
 	NamespaceCircuitBreaker           = "circuitBreaker"
 	NamespaceFallback                 = "fallback" //降级
