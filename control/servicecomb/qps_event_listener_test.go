@@ -18,5 +18,9 @@ func TestQpsEvent(t *testing.T) {
 
 	e2 := &event.Event{EventType: "DELETE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: 199}
 	eventListen.Event(e2)
+	t.Run("given rate in string, should be valid", func(t *testing.T) {
+		e3 := &event.Event{EventType: "DELETE", Key: "cse.flowcontrol.Consumer.qps.limit.Server", Value: "299"}
+		eventListen.Event(e3)
+	})
 
 }
