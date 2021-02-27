@@ -3,24 +3,6 @@ region:
   name: us-east
   availableZone: us-east-1
 servicecomb:
-#  flowcontrol:
-#    Provider:
-#      qps:
-#        enabled: true  # enable rate limiting or not
-#        global:
-#          limit: 100   # default limit of provider
-#        limit:
-#          benchmark: 200  # rate limit for request from a consumer
-  loadbalance:
-    strategy:
-      name: RoundRobin
-    retryEnabled: false
-    retryOnNext: 2
-    retryOnSame: 3
-    backoff:
-      kind: constant
-      minMs: 200
-      maxMs: 400
   registry:
     type: servicecenter           #optional:可选zookeeper/servicecenter，zookeeper供中软使用，不配置的情况下默认为servicecenter
     scope: full                   #optional:scope不为full时，只允许在本app间访问，不允许跨app访问；为full就是注册时允许跨app，并且发现本租户全部微服务

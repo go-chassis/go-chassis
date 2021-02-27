@@ -16,7 +16,7 @@ import (
 )
 
 var yamlContent = `---
-servicecomb:
+cse:
   governance:
     Consumer:
       service1:
