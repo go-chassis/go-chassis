@@ -1,14 +1,14 @@
 package servicecomb
 
 import (
-	"fmt"
 	"github.com/go-chassis/go-archaius/event"
 	"github.com/go-chassis/go-chassis/v2/resilience/rate"
 	"github.com/go-chassis/openlog"
+	"strconv"
 
-	"strings"
-
+	"fmt"
 	"github.com/go-chassis/go-chassis/v2/core/common"
+	"strings"
 )
 
 //QPSEventListener is a struct used for Event listener
@@ -24,9 +24,23 @@ func (el *QPSEventListener) Event(e *event.Event) {
 	if strings.Contains(e.Key, "enabled") {
 		return
 	}
+	if e.Value == nil {
+		openlog.Error(fmt.Sprintf("nil qps value %s", e.Key))
+		return
+	}
 	qps, ok := e.Value.(int)
 	if !ok {
-		openlog.Error(fmt.Sprintf("invalid qps config %s", e.Value))
+		var err error
+		qpsString, ok := e.Value.(string)
+		if !ok {
+			openlog.Error(fmt.Sprintf("invalid qps config %s", e.Value))
+			return
+		}
+		qps, err = strconv.Atoi(qpsString)
+		if err != nil {
+			openlog.Error(fmt.Sprintf("invalid qps config %s", e.Value))
+			return
+		}
 	}
 	openlog.Info("update rate limiter", openlog.WithTags(openlog.Tags{
 		"module": "RateLimiting",
