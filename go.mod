@@ -5,8 +5,8 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emicklei/go-restful v2.12.0+incompatible
 	github.com/go-chassis/cari v0.0.0-20201210041921-7b6fbef2df11
-	github.com/go-chassis/foundation v0.2.2
-	github.com/go-chassis/go-archaius v1.5.0
+	github.com/go-chassis/foundation v0.3.0
+	github.com/go-chassis/go-archaius v1.5.1
 	github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f
 	github.com/go-chassis/openlog v1.1.2
 	github.com/go-chassis/sc-client v0.5.1-0.20210122055720-44b8ac6a939d

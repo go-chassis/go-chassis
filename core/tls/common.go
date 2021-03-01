@@ -3,15 +3,14 @@ package tls
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/go-chassis/foundation/tlsutil"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
 
 	"github.com/go-chassis/cari/security"
-	"github.com/go-chassis/foundation/stringutil"
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 
@@ -58,57 +57,6 @@ func GetX509CACertPool(caCertFile string) (*x509.CertPool, error) {
 	return pool, nil
 }
 
-//LoadTLSCertificate function loads the TLS certificate
-func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cipher) ([]tls.Certificate, error) {
-	certContent, err := ioutil.ReadFile(filepath.Clean(certFile))
-	if err != nil {
-		return nil, fmt.Errorf("read cert file %s failed", certFile)
-	}
-
-	keyContent, err := ioutil.ReadFile(filepath.Clean(keyFile))
-	if err != nil {
-		return nil, fmt.Errorf("read key file %s failed", keyFile)
-	}
-
-	keyBlock, _ := pem.Decode(keyContent)
-	if keyBlock == nil {
-		return nil, fmt.Errorf("decode key file %s failed", keyFile)
-	}
-	var plainpass string
-	if x509.IsEncryptedPEMBlock(keyBlock) {
-		plainpass, err = cipher.Decrypt(passphase)
-		if err != nil {
-			return nil, err
-		}
-
-		plainPassphaseBytes := stringutil.Str2bytes(plainpass)
-		defer stringutil.ClearStringMemory(&plainpass)
-		defer stringutil.ClearByteMemory(plainPassphaseBytes)
-		keyData, err := x509.DecryptPEMBlock(keyBlock, plainPassphaseBytes)
-		if err != nil {
-			return nil, fmt.Errorf("decrypt key file %s failed: %w", keyFile, err)
-		}
-
-		// 解密成功，重新编码为无加密的PEM格式文件
-		plainKeyBlock := &pem.Block{
-			Type:  "RSA PRIVATE KEY",
-			Bytes: keyData,
-		}
-
-		keyContent = pem.EncodeToMemory(plainKeyBlock)
-	}
-
-	cert, err := tls.X509KeyPair(certContent, keyContent)
-	if err != nil {
-		return nil, fmt.Errorf("load X509 key pair from cert file %s with key file %s failed: %w", certFile, keyFile, err)
-	}
-
-	var certs []tls.Certificate
-	certs = append(certs, cert)
-
-	return certs, nil
-}
-
 func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err error) {
 	clientAuthMode := tls.NoClientCert
 	var pool *x509.CertPool
@@ -141,7 +89,9 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 		} else if cipherPlugin = f(); cipherPlugin == nil {
 			return nil, errors.New("invalid cipher plugin")
 		}
-		certs, err = LoadTLSCertificate(sslConfig.CertFile, sslConfig.KeyFile, strings.TrimSpace(string(keyPassphase)), cipherPlugin)
+		certs, err = tlsutil.LoadTLSCertificate(sslConfig.CertFile, sslConfig.KeyFile, strings.TrimSpace(string(keyPassphase)), func(src string) (string, error) {
+			return cipherPlugin.Decrypt(src)
+		})
 		if err != nil {
 			return nil, err
 		}
