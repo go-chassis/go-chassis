@@ -36,8 +36,11 @@ func (rl *ConsumerRateLimiterHandler) Handle(chain *handler.Chain, i *invocation
 		cb(r)
 		return
 	}
-	//get operation meta info ms.schema, ms.schema.operation, ms
-	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate, rlc.Rate/5) {
+	burst := rlc.Rate / 5
+	if burst == 0 {
+		burst = control.DefaultBurst
+	}
+	if rate.GetRateLimiters().TryAccept(rlc.Key, rlc.Rate, burst) {
 		chain.Next(i, cb)
 	} else {
 		r := newErrResponse(i)

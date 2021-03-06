@@ -24,6 +24,10 @@ const (
 	ScopeInstanceAPI = "instance-api"
 )
 
+var (
+	DefaultBurst = 10
+)
+
 //Panel is a abstraction of pulling configurations from various of systems, and transfer different configuration into standardized model
 //you can use different panel implementation to pull different of configs from Istio or Archaius
 //TODO able to set configs
