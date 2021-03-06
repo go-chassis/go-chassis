@@ -2,6 +2,7 @@ package servicecomb
 
 import (
 	"github.com/go-chassis/go-archaius/event"
+	"github.com/go-chassis/go-chassis/v2/control"
 	"github.com/go-chassis/go-chassis/v2/resilience/rate"
 	"github.com/go-chassis/openlog"
 	"strconv"
@@ -47,11 +48,15 @@ func (el *QPSEventListener) Event(e *event.Event) {
 		"event":  e.EventType,
 		"value":  qps,
 	}))
+	burst := qps / 5
+	if burst == 0 {
+		burst = control.DefaultBurst
+	}
 	switch e.EventType {
 	case common.Update:
-		qpsLimiter.UpdateRateLimit(e.Key, qps, qps/5)
+		qpsLimiter.UpdateRateLimit(e.Key, qps, burst)
 	case common.Create:
-		qpsLimiter.UpdateRateLimit(e.Key, qps, qps/5)
+		qpsLimiter.UpdateRateLimit(e.Key, qps, burst)
 	case common.Delete:
 		qpsLimiter.DeleteRateLimiter(e.Key)
 	}

@@ -48,7 +48,7 @@ func TestLimiters_TryAccept(t *testing.T) {
 			fmt.Println(count)
 			stop = true
 		default:
-			pass := rate.GetRateLimiters().TryAccept("serviceName", 100, 2)
+			pass := rate.GetRateLimiters().TryAccept("serviceName", 1000, 10)
 			if pass {
 				count++
 			}
