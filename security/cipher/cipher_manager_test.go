@@ -2,7 +2,6 @@ package cipher_test
 
 import (
 	"github.com/go-chassis/cari/security"
-	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/aes"
 	"github.com/stretchr/testify/assert"
@@ -34,9 +33,8 @@ func (c *DefaultCipher) Decrypt(src string) (string, error) {
 func TestInstallCipherPlugin(t *testing.T) {
 
 	cipher.InstallCipherPlugin("test", new)
-	f, err := cipher.GetCipherNewFunc("test")
+	c, err := cipher.NewCipher("test")
 	assert.NoError(t, err)
-	c := f()
 	r, _ := c.Encrypt("test")
 	assert.Equal(t, "test", r)
 	_, err = cipher.GetCipherNewFunc("asd")
@@ -44,9 +42,4 @@ func TestInstallCipherPlugin(t *testing.T) {
 
 	_, err = cipher.GetCipherNewFunc("aes")
 	assert.NoError(t, err)
-}
-func init() {
-	lager.Init(&lager.Options{
-		LoggerLevel: "INFO",
-	})
 }

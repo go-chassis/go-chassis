@@ -83,10 +83,9 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	var certs []tls.Certificate
 	if !(role == common.Client && sslConfig.KeyFile == "" && sslConfig.CertFile == "") {
 		var cipherPlugin security.Cipher
-		var f func() security.Cipher
-		if f, err = cipher.GetCipherNewFunc(sslConfig.CipherPlugin); err != nil {
+		if cipherPlugin, err = cipher.NewCipher(sslConfig.CipherPlugin); err != nil {
 			return nil, fmt.Errorf("get cipher plugin [%s] failed, %w", sslConfig.CipherPlugin, err)
-		} else if cipherPlugin = f(); cipherPlugin == nil {
+		} else if cipherPlugin == nil {
 			return nil, errors.New("invalid cipher plugin")
 		}
 		certs, err = tlsutil.LoadTLSCertificate(sslConfig.CertFile, sslConfig.KeyFile, strings.TrimSpace(string(keyPassphase)), func(src string) (string, error) {
