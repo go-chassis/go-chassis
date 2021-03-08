@@ -19,6 +19,8 @@ package chassis
 
 import (
 	"fmt"
+	"github.com/go-chassis/go-chassis/v2/core/tracing"
+	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	"os"
 	"sync"
 
@@ -35,8 +37,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/core/router"
 	"github.com/go-chassis/go-chassis/v2/core/server"
-	"github.com/go-chassis/go-chassis/v2/core/tracing"
-
 	"github.com/go-chassis/go-chassis/v2/pkg/backends/quota"
 	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
@@ -149,27 +149,29 @@ func (c *chassis) initialize() error {
 	if err = router.Init(); err != nil {
 		return err
 	}
-	opts := control.Options{
-		Infra:   config.GlobalDefinition.Panel.Infra,
-		Address: config.GlobalDefinition.Panel.Settings["address"],
-	}
-	if err = control.Init(opts); err != nil {
-		return err
-	}
-
-	if err = tracing.Init(); err != nil {
-		return err
-	}
 
 	if err := initBackendPlugins(); err != nil {
+		return err
+	}
+	if err := cipher.Init(); err != nil {
 		return err
 	}
 	governance.Init()
 	c.Initialized = true
 	return nil
 }
-
 func initBackendPlugins() error {
+	opts := control.Options{
+		Infra:   config.GlobalDefinition.Panel.Infra,
+		Address: config.GlobalDefinition.Panel.Settings["address"],
+	}
+
+	if err := control.Init(opts); err != nil {
+		return err
+	}
+	if err := tracing.Init(); err != nil {
+		return err
+	}
 	if err := quota.Init(quota.Options{
 		Plugin:   archaius.GetString("servicecomb.quota.plugin", ""),
 		Endpoint: archaius.GetString("servicecomb.quota.endpoint", ""),

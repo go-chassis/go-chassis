@@ -40,7 +40,7 @@ func GetServerListFilters() (filters []string) {
 }
 
 // GetStrategyName get strategy name
-func GetStrategyName(source, service string) string {
+func GetStrategyName(service string) string {
 	lbMutex.RLock()
 	r := GetLoadBalancing().AnyService[service].Strategy["name"]
 	if r == "" {
@@ -105,7 +105,7 @@ func GetRetryOnSame(source, service string) int {
 }
 
 //BackOffKind get kind
-func BackOffKind(source, service string) string {
+func BackOffKind(service string) string {
 	r := GetLoadBalancing().AnyService[service].Backoff.Kind
 	if r == "" {
 		r = GetLoadBalancing().Backoff.Kind
