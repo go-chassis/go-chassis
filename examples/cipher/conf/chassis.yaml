@@ -1,0 +1,9 @@
+---
+servicecomb:
+  registry:
+      disabled: true
+  protocols:
+    rest:
+      listenAddress: "127.0.0.1:5001"
+  cipher:
+    plugin: default

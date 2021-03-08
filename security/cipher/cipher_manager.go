@@ -3,6 +3,7 @@ package cipher
 import (
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-archaius"
 	"os"
 
 	"github.com/go-chassis/cari/security"
@@ -13,7 +14,8 @@ import (
 const pluginSuffix = ".so"
 
 //CipherPlugins is a map
-var cipherPlugins map[string]func() security.Cipher
+var cipherPlugins = make(map[string]func() security.Cipher)
+var defaultCipher security.Cipher
 
 //InstallCipherPlugin is a function
 func InstallCipherPlugin(name string, f func() security.Cipher) {
@@ -61,6 +63,17 @@ func loadCipherFromPlugin(name string) (func() security.Cipher, error) {
 	return f, nil
 }
 
-func init() {
-	cipherPlugins = make(map[string]func() security.Cipher)
+func Init() error {
+	pn := archaius.GetString("servicecomb.cipher.plugin", "default")
+	c, err := NewCipher(pn)
+	if err != nil {
+		return fmt.Errorf("init cipher [%s] failed, %w", pn, err)
+	}
+	defaultCipher = c
+	return nil
+}
+
+//Decrypt do not guarantee concurrency-safety, it depends on the plugin implementation.
+func Decrypt(src string) (string, error) {
+	return defaultCipher.Decrypt(src)
 }

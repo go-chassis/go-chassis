@@ -72,7 +72,7 @@ export GOPROXY=https://goproxy.io
 
 ## 开发 go chassis
 
-1. 安装[go 1.12+](https://golang.org/doc/install) 
+1. 安装[go](https://golang.org/doc/install) 
 
 2. Clone 工程
 

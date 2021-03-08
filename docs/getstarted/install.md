@@ -1,6 +1,6 @@
 Minimize Installation
 =====
-1.Install [go 1.13+](https://golang.org/doc/install) 
+1.Install [go](https://golang.org/doc/install) 
 
 2.Generate go mod
 ```bash

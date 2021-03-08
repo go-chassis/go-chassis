@@ -16,7 +16,7 @@ func TestLbEventError(t *testing.T) {
 
 	archaius.Set("cse.loadbalance.strategy.Server.name", loadbalancer.StrategySessionStickiness)
 	config.ReadLBFromArchaius()
-	assert.Equal(t, loadbalancer.StrategySessionStickiness, config.GetStrategyName("", ""))
+	assert.Equal(t, loadbalancer.StrategySessionStickiness, config.GetStrategyName(""))
 
 	archaius.Delete("cse.loadbalance.strategy.name")
 	assert.NotEqual(t, loadbalancer.StrategySessionStickiness, archaius.GetString("cse.loadbalance.strategy.name", ""))

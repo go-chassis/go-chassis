@@ -2,6 +2,7 @@ package cipher_test
 
 import (
 	"github.com/go-chassis/cari/security"
+	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/aes"
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,6 @@ func (c *DefaultCipher) Decrypt(src string) (string, error) {
 }
 
 func TestInstallCipherPlugin(t *testing.T) {
-
 	cipher.InstallCipherPlugin("test", new)
 	c, err := cipher.NewCipher("test")
 	assert.NoError(t, err)
@@ -42,4 +42,13 @@ func TestInstallCipherPlugin(t *testing.T) {
 
 	_, err = cipher.GetCipherNewFunc("aes")
 	assert.NoError(t, err)
+	t.Run("Init", func(t *testing.T) {
+		archaius.Init(archaius.WithMemorySource())
+		archaius.Set("servicecomb.cipher.plugin", "default")
+		err := cipher.Init()
+		assert.NoError(t, err)
+		s, err := cipher.Decrypt("text")
+		assert.NoError(t, err)
+		assert.Equal(t, "text", s)
+	})
 }

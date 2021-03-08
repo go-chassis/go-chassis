@@ -12,7 +12,7 @@ import (
 
 func TestGetStrategyName(t *testing.T) {
 	config.ReadLBFromArchaius()
-	check := config.GetStrategyName("source", "service")
+	check := config.GetStrategyName("service")
 	assert.Equal(t, "WeightedResponse", check)
 
 	t.Run("TestGetRetryOnNext", func(t *testing.T) {
@@ -26,8 +26,8 @@ func TestGetStrategyName(t *testing.T) {
 	})
 
 	t.Run("TestBackOffKind", func(t *testing.T) {
-		s := config.BackOffKind("source", "service")
-		assert.Equal(t, retry.KindExponential, s)
+		s := config.BackOffKind("service")
+		assert.Equal(t, retry.KindConstant, s)
 	})
 
 	t.Run("TestBackOffMaxMs", func(t *testing.T) {
@@ -77,9 +77,9 @@ func BenchmarkGetStrategyName(b *testing.B) {
 	err := config.InitArchaius()
 	assert.NoError(b, err)
 	config.ReadLBFromArchaius()
-	b.Log(config.GetStrategyName("", ""))
+	b.Log(config.GetStrategyName(""))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = config.GetStrategyName("", "")
+		_ = config.GetStrategyName("")
 	}
 }

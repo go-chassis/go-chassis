@@ -18,6 +18,7 @@
 package monitoring
 
 import (
+	"fmt"
 	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/v2/core/handler"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
@@ -72,7 +73,7 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 				"version":  runtime.Version,
 				"app":      runtime.App,
 				"env":      runtime.Environment,
-				"code":     string(resp.Status),
+				"code":     fmt.Sprintf("%d", resp.Status),
 			}
 			err := metrics.CounterAdd(MetricsErrors, 1, m)
 			if err != nil {
