@@ -50,5 +50,8 @@ func TestInstallCipherPlugin(t *testing.T) {
 		s, err := cipher.Decrypt("text")
 		assert.NoError(t, err)
 		assert.Equal(t, "text", s)
+		s, err = cipher.Encrypt("text")
+		assert.NoError(t, err)
+		assert.Equal(t, "text", s)
 	})
 }
