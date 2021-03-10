@@ -15,7 +15,6 @@ const pluginSuffix = ".so"
 
 //CipherPlugins is a map
 var cipherPlugins = make(map[string]func() security.Cipher)
-var defaultCipher security.Cipher
 
 //InstallCipherPlugin is a function
 func InstallCipherPlugin(name string, f func() security.Cipher) {
@@ -71,9 +70,4 @@ func Init() error {
 	}
 	defaultCipher = c
 	return nil
-}
-
-//Decrypt do not guarantee concurrency-safety, it depends on the plugin implementation.
-func Decrypt(src string) (string, error) {
-	return defaultCipher.Decrypt(src)
 }
