@@ -72,6 +72,7 @@ type Quota struct {
 
 //Manager could be a quota management system
 type Manager interface {
+	GetQuota(service, domain, resource string) (*Quota, error)
 	GetQuotas(service, domain string) ([]*Quota, error)
 	IncreaseUsed(service, domain, resource string, used int64) error
 	DecreaseUsed(service, domain, resource string, used int64) error
