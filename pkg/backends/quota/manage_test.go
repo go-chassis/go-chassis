@@ -33,6 +33,9 @@ func (im *inMemory) IncreaseUsed(service, domain, resource string, used int64) e
 func (im *inMemory) DecreaseUsed(service, domain, resource string, used int64) error {
 	return nil
 }
+func (im *inMemory) GetQuota(service, domain, resource string) (*quota.Quota, error) {
+	return &quota.Quota{ResourceName: "cpu", Used: 10, Limit: 20}, nil
+}
 func (im *inMemory) GetQuotas(service, domain string) ([]*quota.Quota, error) {
 	return []*quota.Quota{
 		{ResourceName: "cpu", Used: 10, Limit: 20}, {ResourceName: "mem", Used: 10, Limit: 256},
