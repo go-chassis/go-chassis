@@ -77,6 +77,8 @@ github.com/go-chassis/go-archaius v1.5.1 h1:1FrNyzzmD6o6BIjPF8uQ4Cc+u7qYIgQTpDk8
 github.com/go-chassis/go-archaius v1.5.1/go.mod h1:QPwvvtBxvwiC48rmydoAqxopqOr93RCQ6syWsIkXPXQ=
 github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f h1:5QmmNpVcGqIc6tuKNe5EAI4PA8Yn2EL9Oee7YdcJ4PE=
 github.com/go-chassis/go-restful-swagger20 v1.0.3-0.20200310030431-17d80f34264f/go.mod h1:eW62fYuzlNFDvIacB6AV8bhUDCTy4myfTCv0bT9Gbb0=
+github.com/go-chassis/go-restful-swagger20 v1.0.3 h1:kWfeLwMwJZVkXP1zNyFpkmR41UZ55UTcOptTteXhvEs=
+github.com/go-chassis/go-restful-swagger20 v1.0.3/go.mod h1:eW62fYuzlNFDvIacB6AV8bhUDCTy4myfTCv0bT9Gbb0=
 github.com/go-chassis/kie-client v0.0.0-20201210060018-938c7680a9ab h1:3vZbK1AZjYiOOXrRUdrcTNKvM1MP2qk73UyRLxaKWbI=
 github.com/go-chassis/kie-client v0.0.0-20201210060018-938c7680a9ab/go.mod h1:UTdbtyN5ge/v9DmQzdVRxQP7z51Q4z6hyl+W6ZpUHFM=
 github.com/go-chassis/openlog v1.1.2 h1:LgGfwwOhpU8c6URV6ADpaRBPVY7Ph1C28jCQ6zzQawQ=
