@@ -90,7 +90,9 @@ func getSchemaNames(confDir string) ([]string, error) {
 	err := filepath.Walk(confDir,
 		func(path string, info os.FileInfo, err error) error {
 			if info == nil {
-				return err
+				// 跳过错误目录(例如:ROOT权限)
+				openlog.Warn("stat schema file err")
+				return nil
 			}
 			// 仅读取负一级目录
 			if !info.IsDir() || filepath.Dir(path) != confDir {
@@ -109,7 +111,9 @@ func SetMicroServiceNames(confDir string) error {
 	err := filepath.Walk(confDir,
 		func(path string, info os.FileInfo, err error) error {
 			if info == nil {
-				return err
+				// 跳过错误目录(例如:ROOT权限)
+				openlog.Warn("stat schema file err")
+				return nil
 			}
 			// 仅读取负一级目录
 			if !info.IsDir() || filepath.Dir(path) != confDir {
@@ -174,7 +178,9 @@ func getFiles(fPath string) ([]string, error) {
 	err = filepath.Walk(fPath,
 		func(path string, info os.FileInfo, err error) error {
 			if info == nil {
-				return err
+				// 跳过错误目录(例如:ROOT权限)
+				openlog.Warn("stat schema file err")
+				return nil
 			}
 			// 仅读取负一级文件
 			if info.IsDir() || filepath.Dir(path) != fPath {
