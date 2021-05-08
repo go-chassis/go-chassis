@@ -16,4 +16,4 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: v1.29
-          args: --skip-dirs=examples --out-format=colored-line-number --skip-files=.*_test.go$
+          args: --skip-dirs=examples --skip-files=.*_test.go$
