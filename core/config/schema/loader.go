@@ -173,8 +173,9 @@ func getFiles(fPath string) ([]string, error) {
 	// 遍历schemaPath下的schema文件
 	err = filepath.Walk(fPath,
 		func(path string, info os.FileInfo, err error) error {
-			if info == nil {
-				return err
+			if err != nil {
+				openlog.Warn(fmt.Sprintf("stat schema file %s err %s", path, err))
+				return nil
 			}
 			// 仅读取负一级文件
 			if info.IsDir() || filepath.Dir(path) != fPath {
