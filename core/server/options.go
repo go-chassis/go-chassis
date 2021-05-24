@@ -17,6 +17,12 @@ type Options struct {
 	BodyLimit          int64
 	HeaderLimit        int
 	Timeout            time.Duration
+
+	ProfilingEnable bool
+	ProfilingAPI    string
+
+	MetricsEnable bool
+	MetricsAPI    string
 }
 
 //RegisterOptions is options when you register a schema to chassis

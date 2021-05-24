@@ -4,7 +4,7 @@ require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emicklei/go-restful v2.12.0+incompatible
-	github.com/go-chassis/cari v0.0.0-20201210041921-7b6fbef2df11
+	github.com/go-chassis/cari v0.3.0
 	github.com/go-chassis/foundation v0.3.0
 	github.com/go-chassis/go-archaius v1.5.1
 	github.com/go-chassis/go-restful-swagger20 v1.0.3
