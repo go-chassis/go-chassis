@@ -14,7 +14,6 @@ import (
 	"sync"
 
 	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	globalconfig "github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/config/schema"
@@ -31,9 +30,8 @@ import (
 // constants for metric path and name
 const (
 	//Name is a variable of type string which indicates the protocol being used
-	Name                    = "rest"
-	DefaultMetricPath       = "metrics"
-	DefaultProfilePath      = "profile"
+	Name = "rest"
+
 	ProfileRouteRuleSubPath = "route-rule"
 	ProfileDiscoverySubPath = "discovery"
 	MimeFile                = "application/octet-stream"
@@ -56,15 +54,15 @@ type restfulServer struct {
 
 func newRestfulServer(opts server.Options) server.ProtocolServer {
 	ws := new(restful.WebService)
-	if archaius.GetBool("servicecomb.metrics.enable", false) {
-		metricPath := archaius.GetString("servicecomb.metrics.apiPath", DefaultMetricPath)
+	if opts.MetricsEnable {
+		metricPath := opts.MetricsAPI
 		if !strings.HasPrefix(metricPath, "/") {
 			metricPath = "/" + metricPath
 		}
 		openlog.Info("Enabled metrics API on " + metricPath)
 		ws.Route(ws.GET(metricPath).To(api.PrometheusHandleFunc))
 	}
-	addProfileRoutes(ws)
+	addProfileRoutes(ws, opts)
 	return &restfulServer{
 		opts:      opts,
 		container: restful.NewContainer(),
@@ -72,11 +70,11 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 	}
 }
 
-func addProfileRoutes(ws *restful.WebService) {
-	if !archaius.GetBool("servicecomb.profile.enable", false) {
+func addProfileRoutes(ws *restful.WebService, opts server.Options) {
+	if !opts.ProfilingEnable {
 		return
 	}
-	profilePath := archaius.GetString("servicecomb.profile.apiPath", DefaultProfilePath)
+	profilePath := opts.ProfilingAPI
 	if !strings.HasPrefix(profilePath, "/") {
 		profilePath = "/" + profilePath
 	}

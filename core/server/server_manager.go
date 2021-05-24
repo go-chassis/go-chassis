@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/go-chassis/go-archaius"
 	"log"
 	"time"
 
@@ -15,6 +16,12 @@ import (
 	"github.com/go-chassis/go-chassis/v2/pkg/util"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/iputil"
 	"github.com/go-chassis/openlog"
+)
+
+// constants for server
+const (
+	DefaultMetricPath  = "metrics"
+	DefaultProfilePath = "profile"
 )
 
 //NewFunc returns a ProtocolServer
@@ -137,6 +144,10 @@ func initialServer(providerMap map[string]string, p model.Protocol, name string)
 		TLSConfig:          tlsConfig,
 		BodyLimit:          config.GlobalDefinition.ServiceComb.Transport.MaxBodyBytes[protocolName],
 		HeaderLimit:        config.GlobalDefinition.ServiceComb.Transport.MaxHeaderBytes[protocolName],
+		ProfilingAPI:       archaius.GetString("servicecomb.profile.apiPath", DefaultProfilePath),
+		ProfilingEnable:    archaius.GetBool("servicecomb.profile.enable", false),
+		MetricsAPI:         archaius.GetString("servicecomb.metrics.apiPath", DefaultMetricPath),
+		MetricsEnable:      archaius.GetBool("servicecomb.metrics.enable", false),
 	}
 	if t := config.GlobalDefinition.ServiceComb.Transport.Timeout[protocolName]; len(t) > 0 {
 		timeout, err := time.ParseDuration(t)
