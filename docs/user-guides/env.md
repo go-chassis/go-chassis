@@ -20,3 +20,6 @@ the path format is {SCHEMA_ROOT}/{SERVICE_NAME}/{schema_id}.yaml
 
 **PAAS_CSE_ENDPOINT**
 > address of config center and service center
+
+**ENVIRONMENT**
+> environment name registered to service center
