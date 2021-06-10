@@ -4,14 +4,15 @@ require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emicklei/go-restful v2.12.0+incompatible
-	github.com/go-chassis/cari v0.3.0
+	github.com/go-chassis/cari v0.4.0
 	github.com/go-chassis/foundation v0.3.0
 	github.com/go-chassis/go-archaius v1.5.1
 	github.com/go-chassis/go-restful-swagger20 v1.0.3
 	github.com/go-chassis/openlog v1.1.2
-	github.com/go-chassis/sc-client v0.5.1-0.20210122055720-44b8ac6a939d
+	github.com/go-chassis/sc-client v0.6.1-0.20210615014358-a45e9090c751
 	github.com/go-chassis/seclog v1.3.0
 	github.com/golang/protobuf v1.4.2
+	github.com/gorilla/websocket v1.4.3-0.20210424162022-e8629af678b7
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible

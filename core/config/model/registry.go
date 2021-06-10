@@ -13,12 +13,19 @@ type RegistryStruct struct {
 	AutoRegister    string                   `yaml:"register"`
 	APIVersion      RegistryAPIVersionStruct `yaml:"api"`
 
-	HealthCheck bool   `yaml:"healthCheck"`
-	CacheIndex  bool   `yaml:"cacheIndex"`
-	ConfigPath  string `yaml:"configPath"`
+	HealthCheck bool      `yaml:"healthCheck"`
+	CacheIndex  bool      `yaml:"cacheIndex"`
+	ConfigPath  string    `yaml:"configPath"`
+	Heartbeat   Heartbeat `yaml:"heartbeat"`
 }
 
 // RegistryAPIVersionStruct registry api version structure
 type RegistryAPIVersionStruct struct {
 	Version string `yaml:"version"`
+}
+
+// Heartbeat indicates heartbeat information
+type Heartbeat struct {
+	Mode     string `yaml:"mode"`
+	Interval string `yaml:"interval"`
 }

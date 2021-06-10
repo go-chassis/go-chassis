@@ -62,11 +62,11 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 	assert.NoError(t, err)
 	assert.Equal(t, "test", microservice2.Metadata["test"])
 
-	success, err := scc.Heartbeat(sid, insID)
+	success, err := scc.Heartbeat(sid, insID, "non-keep-alive")
 	assert.Equal(t, success, true)
 	assert.NoError(t, err)
 
-	_, err = scc.Heartbeat("jdfhbh", insID)
+	_, err = scc.Heartbeat("jdfhbh", insID, "non-keep-alive")
 	assert.Error(t, err)
 
 	err = scc.UpdateMicroServiceInstanceStatus(sid, insID, "UP")
@@ -81,6 +81,47 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 	heartBeatSvc.Stop()
 	scc.Close()
 }
+
+func TestInstanceWSHeartbeat(t *testing.T) {
+	var serviceID, instanceID string
+	t.Run("register service & instance, should success", func(t *testing.T) {
+		microservice := &registry.MicroService{
+			AppID:       "CSE",
+			ServiceName: "testService",
+			Version:     "2.0.3",
+			Status:      sc.MicorserviceUp,
+			Level:       "FRONT",
+			Schemas:     []string{"dsfapp.HelloHuawei"},
+		}
+		microServiceInstance := &registry.MicroServiceInstance{
+			EndpointsMap: map[string]*registry.Endpoint{
+				"rest": {
+					false,
+					"11.11.11.11:8080",
+				},
+			},
+			HostName: "default",
+			Status:   sc.MSInstanceUP,
+		}
+		sid, insID, err := registry.DefaultRegistrator.RegisterServiceAndInstance(microservice, microServiceInstance)
+		assert.NoError(t, err)
+		serviceID, instanceID = sid, insID
+	})
+	t.Run("send heartbeat,should success", func(t *testing.T) {
+		success, err := registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "non-keep-alive")
+		assert.Equal(t, success, true)
+		assert.NoError(t, err)
+
+		success, err = registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "ping-pong")
+		assert.Equal(t, success, true)
+		assert.NoError(t, err)
+	})
+	t.Run("unregister service & instance", func(t *testing.T) {
+		err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(serviceID, instanceID)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRegroupInstances(t *testing.T) {
 	keys := []*scregistry.FindService{
 		{

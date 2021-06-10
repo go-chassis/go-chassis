@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/openlog"
@@ -20,6 +21,10 @@ const (
 	RTag                           = "registrator"
 	Auto                           = "auto"
 	Manual                         = "manual"
+	PersistenceHeartBeat           = "ping-pong"
+	NonPersistenceHeartBeat        = "non-keep-alive"
+	DefaultInterval                = 30 * time.Second
+	MinInterval                    = 10 * time.Second
 )
 
 // IsEnabled check enable
@@ -47,7 +52,7 @@ type Registrator interface {
 	//RegisterServiceInstance register a microservice instance to registry
 	RegisterServiceInstance(sid string, instance *MicroServiceInstance) (string, error)
 	RegisterServiceAndInstance(microService *MicroService, instance *MicroServiceInstance) (string, string, error)
-	Heartbeat(microServiceID, microServiceInstanceID string) (bool, error)
+	Heartbeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string) (bool, error)
 	UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error
 	UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error
 	UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error
@@ -167,9 +172,24 @@ func Enable() (err error) {
 // DoRegister for registering micro-service instances
 func DoRegister() error {
 	var (
-		isAutoRegister bool
-		t              = config.GetRegistratorAutoRegister()
+		isAutoRegister        bool
+		t                     = config.GetRegistratorAutoRegister()
+		instanceHeartbeatMode = config.GlobalDefinition.ServiceComb.Registry.Heartbeat.Mode
+		interval              = config.GlobalDefinition.ServiceComb.Registry.Heartbeat.Interval
 	)
+	switch instanceHeartbeatMode {
+	case PersistenceHeartBeat:
+		HBService.HeartbeatMode = PersistenceHeartBeat
+	case NonPersistenceHeartBeat:
+		HBService.HeartbeatMode = NonPersistenceHeartBeat
+	default:
+		HBService.HeartbeatMode = NonPersistenceHeartBeat
+	}
+	HBService.Interval = GetDuration(interval, DefaultInterval)
+	if HBService.Interval.Seconds() < MinInterval.Seconds() {
+		openlog.Warn("the heartbeat interval is less than 10s")
+		HBService.Interval = MinInterval
+	}
 	switch t {
 	case "":
 		isAutoRegister = true
