@@ -1,13 +1,15 @@
 package registry
 
 import (
+	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/v2/core/config"
 	"time"
 
 	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	"github.com/go-chassis/openlog"
+	"github.com/gorilla/websocket"
 )
 
 // DefaultRetryTime default retry time
@@ -23,7 +25,9 @@ type HeartbeatTask struct {
 
 // HeartbeatService heartbeat service
 type HeartbeatService struct {
-	shutdown bool
+	HeartbeatMode string
+	shutdown      bool
+	Interval      time.Duration
 }
 
 // Start start the heartbeat system
@@ -38,19 +42,42 @@ func (s *HeartbeatService) Stop() {
 }
 
 // DoHeartBeat do heartbeat for each instance
-func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID string) {
-	_, err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID)
+func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string) error {
+	_, err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID, instanceHeartbeatMode)
 	if err != nil {
 		openlog.Error(fmt.Sprintf("heartbeat fail,try to recover, err: %s", err))
 		s.RetryRegister(microServiceID, microServiceInstanceID)
+		return err
 	}
+	return nil
 }
 
 // run runs the heartbeat system
 func (s *HeartbeatService) run() {
+	if s.HeartbeatMode == PersistenceHeartBeat {
+		err := s.DoHeartBeat(runtime.ServiceID, runtime.InstanceID, s.HeartbeatMode)
+		if err != nil {
+			openlog.Error("send persistence heartbeat failed: " + err.Error())
+			if errors.Is(err, websocket.ErrBadHandshake) {
+				openlog.Info("send non-persistence heartbeat")
+				s.HeartbeatMode = NonPersistenceHeartBeat
+				s.sendNonPersistenceHeartBeat()
+			}
+		}
+		return
+	}
+	s.sendNonPersistenceHeartBeat()
+}
+
+// sendNonPersistenceHeartBeat use http to send heartbeat
+func (s *HeartbeatService) sendNonPersistenceHeartBeat() {
 	for !s.shutdown {
-		s.DoHeartBeat(runtime.ServiceID, runtime.InstanceID)
-		time.Sleep(30 * time.Second)
+		// first, wait for the successful registration, and then send the heartbeat to slow down the pressure of SC
+		time.Sleep(s.Interval)
+		err := s.DoHeartBeat(runtime.ServiceID, runtime.InstanceID, s.HeartbeatMode)
+		if err != nil {
+			openlog.Error("send heartbeat failed: " + err.Error())
+		}
 	}
 }
 

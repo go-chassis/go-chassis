@@ -97,7 +97,19 @@ func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServic
 }
 
 // Heartbeat : Keep instance heartbeats.
-func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string) (bool, error) {
+func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string) (bool, error) {
+	if instanceHeartbeatMode == registry.PersistenceHeartBeat {
+		err := r.registryClient.WSHeartbeat(microServiceID, microServiceInstanceID)
+		if err != nil {
+			openlog.Error(fmt.Sprintf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s",
+				microServiceID, microServiceInstanceID, err))
+			return false, err
+		}
+		openlog.Debug(fmt.Sprintf("heartbeat success, microServiceID/instanceID: %s/%s.",
+			microServiceID, microServiceInstanceID))
+		return true, nil
+	}
+	// use http
 	bo, err := r.registryClient.Heartbeat(microServiceID, microServiceInstanceID)
 	if err != nil {
 		openlog.Error(fmt.Sprintf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s",

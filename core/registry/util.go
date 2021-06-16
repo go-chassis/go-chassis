@@ -207,3 +207,16 @@ func getTLSConfig(scheme, t string) (*tls.Config, error) {
 	}
 	return tlsConfig, nil
 }
+
+// GetDuration return the time.Duration type value by specified key
+func GetDuration(key string, def time.Duration) time.Duration {
+	str := strings.TrimSpace(key)
+	if str == "" {
+		return def
+	}
+	d, err := time.ParseDuration(str)
+	if err != nil {
+		return def
+	}
+	return d
+}

@@ -48,7 +48,7 @@ func TestServicecenter_Heartbeat(t *testing.T) {
 	assert.NoError(t, err)
 
 	heartBeatService := registry.HeartbeatService{}
-	heartBeatService.DoHeartBeat(sid, insID)
+	heartBeatService.DoHeartBeat(sid, insID, "non-keep-alive")
 	heartBeatService.RetryRegister(sid, insID)
 	err = heartBeatService.ReRegisterSelfMSandMSI()
 	assert.NoError(t, err)

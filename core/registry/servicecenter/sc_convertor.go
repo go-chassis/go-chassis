@@ -113,6 +113,5 @@ func ToSCOptions(options registry.Options) sc.Options {
 	sco.Compressed = options.Compressed
 	sco.EnableSSL = options.EnableSSL
 	sco.Verbose = options.Verbose
-	sco.Version = options.Version
 	return sco
 }
