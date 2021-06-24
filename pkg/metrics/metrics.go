@@ -22,9 +22,12 @@ type Registry interface {
 	CreateHistogram(opts HistogramOpts) error
 
 	GaugeSet(name string, val float64, labels map[string]string) error
+	GaugeAdd(name string, val float64, labels map[string]string) error
 	CounterAdd(name string, val float64, labels map[string]string) error
 	SummaryObserve(name string, val float64, Labels map[string]string) error
 	HistogramObserve(name string, val float64, labels map[string]string) error
+
+	Reset(name string) error
 }
 
 var defaultRegistry Registry
@@ -54,6 +57,11 @@ func GaugeSet(name string, val float64, labels map[string]string) error {
 	return defaultRegistry.GaugeSet(name, val, labels)
 }
 
+//GaugeAdd set a new value to a collector
+func GaugeAdd(name string, val float64, labels map[string]string) error {
+	return defaultRegistry.GaugeAdd(name, val, labels)
+}
+
 //CounterAdd increase value of a collector
 func CounterAdd(name string, val float64, labels map[string]string) error {
 	return defaultRegistry.CounterAdd(name, val, labels)
@@ -69,8 +77,15 @@ func HistogramObserve(name string, val float64, labels map[string]string) error 
 	return defaultRegistry.HistogramObserve(name, val, labels)
 }
 
+//Reset clear collector metrics
+func Reset(name string) error {
+	return defaultRegistry.Reset(name)
+}
+
 //CounterOpts is options to create a counter options
 type CounterOpts struct {
+	// Key is the key set joining with '_', Name will be ignored when Key is not empty
+	Key    string
 	Name   string
 	Help   string
 	Labels []string
@@ -78,6 +93,7 @@ type CounterOpts struct {
 
 //GaugeOpts is options to create a gauge collector
 type GaugeOpts struct {
+	Key    string
 	Name   string
 	Help   string
 	Labels []string
@@ -85,6 +101,7 @@ type GaugeOpts struct {
 
 //SummaryOpts is options to create summary collector
 type SummaryOpts struct {
+	Key        string
 	Name       string
 	Help       string
 	Labels     []string
@@ -93,6 +110,7 @@ type SummaryOpts struct {
 
 //HistogramOpts is options to create histogram collector
 type HistogramOpts struct {
+	Key     string
 	Name    string
 	Help    string
 	Labels  []string
