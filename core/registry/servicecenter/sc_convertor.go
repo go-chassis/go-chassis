@@ -48,7 +48,7 @@ func ToSCService(cs *registry.MicroService) *scregistry.MicroService {
 	}
 	scs.Paths = regpaths
 	if cs.Framework != nil {
-		scs.Framework = &scregistry.FrameWorkProperty{}
+		scs.Framework = &scregistry.FrameWork{}
 		scs.Framework.Version = cs.Framework.Version
 		scs.Framework.Name = cs.Framework.Name
 	}
