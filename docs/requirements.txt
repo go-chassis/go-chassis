@@ -1,0 +1,4 @@
+# Defining the exact version will make sure things don't break
+sphinx
+myst_parser
+sphinx_markdown_tables
