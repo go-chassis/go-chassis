@@ -192,7 +192,7 @@ ssl:
   TLSService.rest.Consumer.certFile: client.crt
   TLSService.rest.Consumer.keyFile: client.key
   TLSService.rest.Consumer.serverName: xxx
-  TLSService.rest.Provider.verifyPeer: true
+  TLSService.rest.Consumer.verifyPeer: true
 ```
 In most cases, as a consumer, the certificates you use to access multiple services are the same.
 So we provide general configuration to avoid redundant configuration.
@@ -207,5 +207,5 @@ ssl:
   rest.Consumer.certFile: client.crt
   rest.Consumer.keyFile: client.key
   rest.Consumer.serverName: xxx
-  rest.Provider.verifyPeer: true
+  rest.Consumer.verifyPeer: true
 ```
