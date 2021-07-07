@@ -55,7 +55,7 @@ func getDefaultSslConfigMap() map[string]string {
 	return defaultSslConfigMap
 }
 
-func getSSLConfigMap(tag string) map[string]string {
+func getSSLConfigMap(tag, protocol, svcType, svcName string) map[string]string {
 	sslConfigMap := config.GlobalDefinition.Ssl
 	defaultSslConfigMap := getDefaultSslConfigMap()
 	result := make(map[string]string)
@@ -72,6 +72,14 @@ func getSSLConfigMap(tag string) map[string]string {
 		if r, exist := sslConfigMap[k]; exist && r != "" {
 			result[k] = r
 			sslSet = true
+		}
+        // consumer如果配置了通配 生效级别为全局配置之上 指定配置之下 且不为自己代理的服务设置证书配置
+		if common.Consumer == svcType && svcName != config.GlobalDefinition.ServiceComb.ServiceDescription.Name {
+			consumerKey := protocol + "." + common.Consumer + "." + k
+			if c, exist := sslConfigMap[consumerKey]; exist && c != "" {
+				result[k] = c
+				sslSet = true
+			}
 		}
 		// 若配置了指定交互方的配置项，则覆盖全局配置
 		keyWithTag := tag + k
@@ -128,7 +136,7 @@ func GetSSLConfigByService(svcName, protocol, svcType string) (*SSLConfig, error
 		return nil, err
 	}
 
-	sslConfigMap := getSSLConfigMap(tag)
+	sslConfigMap := getSSLConfigMap(tag, protocol, svcType, svcName)
 	if len(sslConfigMap) == 0 {
 		return nil, errSSLConfigNotExist
 	}
