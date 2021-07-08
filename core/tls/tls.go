@@ -98,7 +98,7 @@ func getSSLConfigMap(tag, protocol, svcType, svcName string) map[string]string {
 
 // use general TLSConfig
 func useGeneralTLSConfig(svcType, svcName string) bool {
-	return common.Consumer == svcType && svcName != config.MicroserviceDefinition.ServiceDescription.Name
+	return common.Consumer == svcType && svcName != config.GlobalDefinition.ServiceComb.ServiceDescription.Name
 }
 
 func parseSSLConfig(sslConfigMap map[string]string) (*SSLConfig, error) {
