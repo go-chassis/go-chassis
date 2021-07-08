@@ -74,7 +74,7 @@ func getSSLConfigMap(tag, protocol, svcType, svcName string) map[string]string {
 			sslSet = true
 		}
 		// consumer如果配置了通配 生效级别为全局配置之上 指定配置之下 且不为自己代理的服务设置证书配置
-		if common.Consumer == svcType && svcName != config.GlobalDefinition.ServiceComb.ServiceDescription.Name {
+		if useGeneralTLSConfig(svcType, svcName) {
 			consumerKey := protocol + "." + common.Consumer + "." + k
 			if c, exist := sslConfigMap[consumerKey]; exist && c != "" {
 				result[k] = c
@@ -94,6 +94,11 @@ func getSSLConfigMap(tag, protocol, svcType, svcName string) map[string]string {
 	}
 
 	return result
+}
+
+// use general TLSConfig
+func useGeneralTLSConfig(svcType, svcName string) bool {
+	return common.Consumer == svcType && svcName != config.MicroserviceDefinition.ServiceDescription.Name
 }
 
 func parseSSLConfig(sslConfigMap map[string]string) (*SSLConfig, error) {
