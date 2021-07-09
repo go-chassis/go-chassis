@@ -192,5 +192,20 @@ ssl:
   TLSService.rest.Consumer.certFile: client.crt
   TLSService.rest.Consumer.keyFile: client.key
   TLSService.rest.Consumer.serverName: xxx
-  TLSService.rest.Provider.verifyPeer: true
+  TLSService.rest.Consumer.verifyPeer: true
+```
+In most cases, as a consumer, the certificates you use to access multiple services are the same.
+So we provide general configuration to avoid redundant configuration.
+If you need a different certificate to access a service, 
+you can configure it separately in combination with the method described above, 
+and its effective priority is higher than the general configuration
+```yaml
+ssl:
+  rest.Consumer.cipherSuits: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  rest.Consumer.protocol: TLSv1.2
+  rest.Consumer.caFile: server.crt,xxx.crt
+  rest.Consumer.certFile: client.crt
+  rest.Consumer.keyFile: client.key
+  rest.Consumer.serverName: xxx
+  rest.Consumer.verifyPeer: true
 ```
