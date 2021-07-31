@@ -19,8 +19,8 @@ package token
 
 import (
 	"errors"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chassis/openlog"
+	"github.com/golang-jwt/jwt"
 	"time"
 )
 
