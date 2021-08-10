@@ -72,20 +72,20 @@ type Quota struct {
 
 //Manager could be a quota management system
 type Manager interface {
-	GetQuota(service, domain, resource string) (*Quota, error)
-	GetQuotas(service, domain string) ([]*Quota, error)
-	IncreaseUsed(service, domain, resource string, used int64) error
-	DecreaseUsed(service, domain, resource string, used int64) error
+	GetQuota(service, domain, project, resource string) (*Quota, error)
+	GetQuotas(service, domain, project string) ([]*Quota, error)
+	IncreaseUsed(service, domain, project, resource string, used int64) error
+	DecreaseUsed(service, domain, project, resource string, used int64) error
 }
 
-//PreCreate only check quota usage before creating a resource for a domain/tenant.
+//PreCreate only check quota usage before creating a resource for a domain/tenant and project.
 //is will not increase resource usage number after check, you have to increase after resource actually created
-func PreCreate(service, domain, resource string, number int64) error {
+func PreCreate(service, domain, project, resource string, number int64) error {
 	if defaultManager == nil {
 		openlog.Debug("quota management not available")
 		return nil
 	}
-	qs, err := defaultManager.GetQuotas(service, domain)
+	qs, err := defaultManager.GetQuotas(service, domain, project)
 	if err != nil {
 		openlog.Error(err.Error())
 		return ErrGetFailed
