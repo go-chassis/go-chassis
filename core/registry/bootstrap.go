@@ -102,22 +102,24 @@ func RegisterService() error {
 func RegisterServiceInstances() error {
 	var err error
 	service := config.MicroserviceDefinition
-	runtime.Schemas, err = schema.GetSchemaIDs(service.Name)
-	if err != nil || len(runtime.Schemas) == 0 {
-		runtime.Schemas = make([]string, 0)
-		// from yaml setting
-		if len(service.Schemas) != 0 {
-			runtime.Schemas = service.Schemas
+	if config.GetServiceDiscoveryUploadSchema() {
+		runtime.Schemas, err = schema.GetSchemaIDs(service.Name)
+		if err != nil || len(runtime.Schemas) == 0 {
+			runtime.Schemas = make([]string, 0)
+			// from yaml setting
+			if len(service.Schemas) != 0 {
+				runtime.Schemas = service.Schemas
+			}
 		}
-	}
 
-	for _, schemaID := range runtime.Schemas {
-		schemaInfo := schema.GetContent(schemaID)
-		err = DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
-		if err != nil {
-			openlog.Warn("upload contract to registry failed: " + err.Error())
+		for _, schemaID := range runtime.Schemas {
+			schemaInfo := schema.GetContent(schemaID)
+			err = DefaultRegistrator.AddSchemas(runtime.ServiceID, schemaID, schemaInfo)
+			if err != nil {
+				openlog.Warn("upload contract to registry failed: " + err.Error())
+			}
+			openlog.Debug("upload contract to registry, " + schemaID)
 		}
-		openlog.Debug("upload contract to registry, " + schemaID)
 	}
 	openlog.Debug("start to register instance.")
 	eps, err := MakeEndpointMap(config.GlobalDefinition.ServiceComb.Protocols)
@@ -162,7 +164,7 @@ func RegisterServiceInstances() error {
 	//Set to runtime
 	runtime.InstanceID = instanceID
 	runtime.InstanceStatus = runtime.StatusRunning
-	if service.InstanceProperties != nil {
+	if service.InstanceProperties != nil && len(service.InstanceProperties) != 0 {
 		if err := DefaultRegistrator.UpdateMicroServiceInstanceProperties(runtime.ServiceID, instanceID, service.InstanceProperties); err != nil {
 			openlog.Error(fmt.Sprintf("UpdateMicroServiceInstanceProperties failed, microServiceID/instanceID = %s/%s.", runtime.ServiceID, instanceID))
 			return err

@@ -37,6 +37,11 @@ func GetServiceDiscoveryHealthCheck() bool {
 	return archaius.GetBool("servicecomb.registry.healthCheck", false)
 }
 
+// GetServiceDiscoveryUploadSchema returns if should register schema of SD registry
+func GetServiceDiscoveryUploadSchema() bool {
+	return archaius.GetBool("servicecomb.registry.uploadSchema", false)
+}
+
 // DefaultConfigPath set the default config path
 const DefaultConfigPath = "/etc/.kube/config"
 
