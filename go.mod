@@ -3,12 +3,12 @@ module github.com/go-chassis/go-chassis/v2
 require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/emicklei/go-restful v2.12.0+incompatible
-	github.com/go-chassis/cari v0.5.0
+	github.com/go-chassis/cari v0.5.1-0.20210823023004-74041d1363c4
 	github.com/go-chassis/foundation v0.3.0
 	github.com/go-chassis/go-archaius v1.5.1
 	github.com/go-chassis/go-restful-swagger20 v1.0.3
 	github.com/go-chassis/openlog v1.1.2
-	github.com/go-chassis/sc-client v0.6.1-0.20210615014358-a45e9090c751
+	github.com/go-chassis/sc-client v0.6.1-0.20210823062851-be3910369148
 	github.com/go-chassis/seclog v1.3.0
 	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/golang/protobuf v1.4.2
