@@ -8,27 +8,27 @@ user can custom metrics plugin to replace prometheus.
 
 ## 配置
 
-**cse.metrics.enable**
+**servicecomb.metrics.enable**
 > *(optional, bool)* if it is true, 
-a new http API defined in "cse.metrics.apiPath" will serve for client
+a new http API defined in "servicecomb.metrics.apiPath" will serve for client
 default is *false*
 
-**cse.metrics.apiPath**
+**servicecomb.metrics.apiPath**
 > *(optional, string)* metrics接口，默认为*/metrics*
 
-**cse.metrics.enableGoRuntimeMetrics**
+**servicecomb.metrics.enableGoRuntimeMetrics**
 >*(optional, bool)* 是否开启go runtime监测，默认为*true*
 
-**cse.metrics.enableCircuitMetrics**
+**servicecomb.metrics.enableCircuitMetrics**
 >*(optional, bool)* report circuit breaker metrics to go-metrics, default is *true*
 
-**cse.metrics.flushInterval**
+**servicecomb.metrics.flushInterval**
 > *(optional, string)* interval flush metrics from go-metrics to prometheus exporter, 
 for example 10s, 1m
 
-**cse.metrics.circuitMetricsConsumerNum**
+**servicecomb.metrics.circuitMetricsConsumerNum**
 > *(optional, int)* should be careful about this option, default is 3, 
-there is 3 go routines consume metrics, if there is so many consumers, during high concurrency, 
+there is 3 go routines consume metrics, if there is so many consumers, during a high concurrency, 
 it will affect service performance
 
 ## Custom Metrics
@@ -38,7 +38,7 @@ github.com/go-chassis/go-chassis/v2/pkg/metrics/metrics.go
 ``` 
 
 
-## 示例
+## Example
 
 ```yaml
 servicecomb:
