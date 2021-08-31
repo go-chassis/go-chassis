@@ -29,3 +29,8 @@ accessLogFile: xxx
 // should import after import go-chassis
 	_ "github.com/go-chassis/go-chassis/v2/middleware/accesslog"
 ```
+
+4.verify
+```shell
+2021-08-30 10:02:56.684 +08:00 INFO accesslog/access_log.go:90 POST /v1/default/kie/kv from 127.0.0.1 409 5ms
+```
