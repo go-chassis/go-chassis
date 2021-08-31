@@ -38,11 +38,12 @@ var TLSCipherSuiteMap = map[string]uint16{
 	"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384": tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 }
 
-//TLSVersionMap is a map with key of type string and value of type unsigned integer
-var TLSVersionMap = map[string]uint16{
+//VersionMap is a map with key of type string and value of type unsigned integer
+var VersionMap = map[string]uint16{
 	"TLSv1.0": tls.VersionTLS10,
 	"TLSv1.1": tls.VersionTLS11,
 	"TLSv1.2": tls.VersionTLS12,
+	"TLSv1.3": tls.VersionTLS13,
 }
 
 //GetX509CACertPool read a certificate file and gets the certificate configuration
@@ -156,7 +157,7 @@ func ParseSSLCipherSuites(ciphers string) ([]uint16, error) {
 //ParseSSLProtocol function parses SSL protocols
 func ParseSSLProtocol(sprotocol string) (uint16, error) {
 	var result uint16 = tls.VersionTLS12
-	if protocol, ok := TLSVersionMap[sprotocol]; ok {
+	if protocol, ok := VersionMap[sprotocol]; ok {
 		result = protocol
 	} else {
 		return result, fmt.Errorf("invalid ssl minimal version invalid(%s)", sprotocol)
