@@ -34,6 +34,7 @@ func TestInit(t *testing.T) {
 
 	_, _, err = chassisTLS.GetTLSConfigByService("svcname", "protocol", "svctype")
 	assert.Error(t, err)
-	defaultCnfg := chassisTLS.GetDefaultSSLConfig()
-	assert.NotEmpty(t, defaultCnfg)
+	defaultCfg := chassisTLS.GetDefaultSSLConfig()
+	assert.NotEmpty(t, defaultCfg)
+	assert.Equal(t, uint16(tls.VersionTLS13), defaultCfg.MaxVersion)
 }
