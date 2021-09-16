@@ -62,11 +62,17 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 	assert.NoError(t, err)
 	assert.Equal(t, "test", microservice2.Metadata["test"])
 
-	success, err := scc.Heartbeat(sid, insID, "non-keep-alive")
-	assert.Equal(t, success, true)
+	heartBeatService := registry.HeartbeatService{}
+	callbackOne := func() {
+		heartBeatService.RetryRegister(sid, insID)
+	}
+	err = scc.Heartbeat(sid, insID, "non-keep-alive", callbackOne)
 	assert.NoError(t, err)
 
-	_, err = scc.Heartbeat("jdfhbh", insID, "non-keep-alive")
+	callbackTwo := func() {
+		heartBeatService.RetryRegister("jdfhbh", insID)
+	}
+	err = scc.Heartbeat("jdfhbh", insID, "non-keep-alive", callbackTwo)
 	assert.Error(t, err)
 
 	err = scc.UpdateMicroServiceInstanceStatus(sid, insID, "UP")
@@ -84,6 +90,9 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 
 func TestInstanceWSHeartbeat(t *testing.T) {
 	var serviceID, instanceID string
+	runtime.Init()
+	registry.Enable()
+	registry.DoRegister()
 	t.Run("register service & instance, should success", func(t *testing.T) {
 		microservice := &registry.MicroService{
 			AppID:       "CSE",
@@ -108,12 +117,16 @@ func TestInstanceWSHeartbeat(t *testing.T) {
 		serviceID, instanceID = sid, insID
 	})
 	t.Run("send heartbeat,should success", func(t *testing.T) {
-		success, err := registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "non-keep-alive")
-		assert.Equal(t, success, true)
+		heartBeatService := registry.HeartbeatService{}
+		callback := func() {
+			heartBeatService.RetryRegister(serviceID, instanceID)
+		}
+		err := registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "non-keep-alive", callback)
+
 		assert.NoError(t, err)
 
-		success, err = registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "ping-pong")
-		assert.Equal(t, success, true)
+		err = registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "ping-pong", callback)
+
 		assert.NoError(t, err)
 	})
 	t.Run("unregister service & instance", func(t *testing.T) {

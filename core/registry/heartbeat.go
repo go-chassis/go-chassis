@@ -43,13 +43,13 @@ func (s *HeartbeatService) Stop() {
 
 // DoHeartBeat do heartbeat for each instance
 func (s *HeartbeatService) DoHeartBeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string) error {
-	_, err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID, instanceHeartbeatMode)
-	if err != nil {
-		openlog.Error(fmt.Sprintf("heartbeat fail,try to recover, err: %s", err))
+	callback := func() {
+		openlog.Error("heartbeat fail,try to recover")
+		// register instance
 		s.RetryRegister(microServiceID, microServiceInstanceID)
-		return err
 	}
-	return nil
+	err := DefaultRegistrator.Heartbeat(microServiceID, microServiceInstanceID, instanceHeartbeatMode, callback)
+	return err
 }
 
 // run runs the heartbeat system

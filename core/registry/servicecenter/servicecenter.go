@@ -97,33 +97,29 @@ func (r *Registrator) UnRegisterMicroServiceInstance(microServiceID, microServic
 }
 
 // Heartbeat : Keep instance heartbeats.
-func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string) (bool, error) {
+func (r *Registrator) Heartbeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string, callback func()) error {
 	if instanceHeartbeatMode == registry.PersistenceHeartBeat {
-		err := r.registryClient.WSHeartbeat(microServiceID, microServiceInstanceID)
+		err := r.registryClient.WSHeartbeat(microServiceID, microServiceInstanceID, callback)
 		if err != nil {
 			openlog.Error(fmt.Sprintf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s",
 				microServiceID, microServiceInstanceID, err))
-			return false, err
+			return err
 		}
 		openlog.Debug(fmt.Sprintf("heartbeat success, microServiceID/instanceID: %s/%s.",
 			microServiceID, microServiceInstanceID))
-		return true, nil
+		return nil
 	}
 	// use http
 	bo, err := r.registryClient.Heartbeat(microServiceID, microServiceInstanceID)
-	if err != nil {
+	if err != nil || !bo {
 		openlog.Error(fmt.Sprintf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s",
 			microServiceID, microServiceInstanceID, err))
-		return false, err
-	}
-	if !bo {
-		openlog.Error(fmt.Sprintf("Heartbeat failed, microServiceID/instanceID: %s/%s. %s",
-			microServiceID, microServiceInstanceID, err))
-		return bo, err
+		go callback()
+		return err
 	}
 	openlog.Debug(fmt.Sprintf("heartbeat success, microServiceID/instanceID: %s/%s.",
 		microServiceID, microServiceInstanceID))
-	return bo, nil
+	return nil
 }
 
 // AddSchemas to service center
