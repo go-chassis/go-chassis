@@ -38,6 +38,7 @@ type Options struct {
 	LoggerLevel   string `yaml:"logLevel"`
 	LoggerFile    string `yaml:"logFile"`
 	LogFormatText bool   `yaml:"logFormatText"`
+	LogColorMode  string `yaml:"logColorMode"`
 
 	LogRotateDisable  bool `yaml:"logRotateDisable"`
 	LogRotateCompress bool `yaml:"logRotateCompress"`
@@ -81,6 +82,7 @@ func NewLog(option *Options) (lager.Logger, error) {
 	seclog.Init(seclog.Config{
 		LoggerLevel:   option.LoggerLevel,
 		LogFormatText: option.LogFormatText,
+		LogColorMode:  option.LogColorMode,
 		Writers:       writers,
 		LoggerFile:    logFilePath,
 		RotateDisable: option.LogRotateDisable,
@@ -116,6 +118,9 @@ func checkPassLagerDefinition(option *Options) {
 	}
 	if option.Writers == "" {
 		option.Writers = "file,stdout"
+	}
+	if option.LogColorMode == "" {
+		option.LogColorMode = lager.ColorModeAuto
 	}
 }
 
