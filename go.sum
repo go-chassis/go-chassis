@@ -68,6 +68,8 @@ github.com/go-chassis/sc-client v0.6.1-0.20210615014358-a45e9090c751 h1:hpWN/MZB
 github.com/go-chassis/sc-client v0.6.1-0.20210615014358-a45e9090c751/go.mod h1:TBS9g7OaIeu1OR/9tVPJEl6BgHFcYEdbuJlgVDQczbc=
 github.com/go-chassis/sc-client v0.6.1-0.20210917073514-7078937694c7 h1:RXRlKv+b2nIZ26opy/I9l4xlwX0PDt8kNzdZnZAPbO0=
 github.com/go-chassis/sc-client v0.6.1-0.20210917073514-7078937694c7/go.mod h1:njEnGErgKB1aem5slUPzntnS74IduZWLMZFFakzdBnU=
+github.com/go-chassis/sc-client v0.6.1-0.20210918130508-2b9daad232da h1:NwRzmqX1UImlw9RRFReEjtVBXl+zw0NqMCA7Ikyu+v8=
+github.com/go-chassis/sc-client v0.6.1-0.20210918130508-2b9daad232da/go.mod h1:njEnGErgKB1aem5slUPzntnS74IduZWLMZFFakzdBnU=
 github.com/go-chassis/seclog v1.3.0 h1:ofjF+GpDd7YFdxa6xk13brZfVSKMdZoQVPoCWjFHGUk=
 github.com/go-chassis/seclog v1.3.0/go.mod h1:a/zGvX5BRiwtq/O0fRqS6VWjrBaXYtqFJBx3EX9xzSE=
 github.com/go-chassis/seclog v1.3.1-0.20210917082355-52c40864f240 h1:sa4aHe3Rsc7DNzkKhsgCNjQi+iYC9gw6ASV+ieLZI54=
