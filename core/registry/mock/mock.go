@@ -33,8 +33,14 @@ func (m *RegistratorMock) RegisterServiceAndInstance(microService *registry.Micr
 }
 
 // Heartbeat heart beat
-func (m *RegistratorMock) Heartbeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string) (bool, error) {
-	args := m.Called(microServiceID, microServiceInstanceID, instanceHeartbeatMode)
+func (m *RegistratorMock) Heartbeat(microServiceID, microServiceInstanceID string) (bool, error) {
+	args := m.Called(microServiceID, microServiceInstanceID)
+	return args.Bool(0), args.Error(1)
+}
+
+// Heartbeat heart beat
+func (m *RegistratorMock) WSHeartbeat(microServiceID, microServiceInstanceID string, callback func()) (bool, error) {
+	args := m.Called(microServiceID, microServiceInstanceID, callback)
 	return args.Bool(0), args.Error(1)
 }
 

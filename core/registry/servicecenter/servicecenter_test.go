@@ -62,11 +62,11 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 	assert.NoError(t, err)
 	assert.Equal(t, "test", microservice2.Metadata["test"])
 
-	success, err := scc.Heartbeat(sid, insID, "non-keep-alive")
+	success, err := scc.Heartbeat(sid, insID)
 	assert.Equal(t, success, true)
 	assert.NoError(t, err)
 
-	_, err = scc.Heartbeat("jdfhbh", insID, "non-keep-alive")
+	_, err = scc.Heartbeat("jdfhbh", insID)
 	assert.Error(t, err)
 
 	err = scc.UpdateMicroServiceInstanceStatus(sid, insID, "UP")
@@ -108,11 +108,11 @@ func TestInstanceWSHeartbeat(t *testing.T) {
 		serviceID, instanceID = sid, insID
 	})
 	t.Run("send heartbeat,should success", func(t *testing.T) {
-		success, err := registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "non-keep-alive")
+		success, err := registry.DefaultRegistrator.Heartbeat(serviceID, instanceID)
 		assert.Equal(t, success, true)
 		assert.NoError(t, err)
 
-		success, err = registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "ping-pong")
+		success, err = registry.DefaultRegistrator.WSHeartbeat(serviceID, instanceID, func() {})
 		assert.Equal(t, success, true)
 		assert.NoError(t, err)
 	})
