@@ -17,37 +17,37 @@ import (
 
 func init() {
 	config.HystrixConfig = &model.HystrixConfigWrapper{
-		HystrixConfig: model.HystrixConfig{
-			FallbackPolicyProperties: model.FallbackPolicyWrapper{
-				Consumer: model.FallbackPolicySpec{
+		HystrixConfig: &model.HystrixConfig{
+			FallbackPolicyProperties: &model.FallbackPolicyWrapper{
+				Consumer: &model.FallbackPolicySpec{
 					AnyService: map[string]model.FallbackPolicyPropertyStruct{},
 				},
-				Provider: model.FallbackPolicySpec{
+				Provider: &model.FallbackPolicySpec{
 					AnyService: map[string]model.FallbackPolicyPropertyStruct{},
 				},
 			},
-			FallbackProperties: model.FallbackWrapper{
-				Consumer: model.FallbackSpec{
+			FallbackProperties: &model.FallbackWrapper{
+				Consumer: &model.FallbackSpec{
 					AnyService: map[string]model.FallbackPropertyStruct{},
 				},
-				Provider: model.FallbackSpec{
+				Provider: &model.FallbackSpec{
 					AnyService: map[string]model.FallbackPropertyStruct{},
 				},
 			},
-			IsolationProperties: model.IsolationWrapper{
-				Consumer: model.IsolationSpec{
+			IsolationProperties: &model.IsolationWrapper{
+				Consumer: &model.IsolationSpec{
 					AnyService:            map[string]model.IsolationSpec{},
 					MaxConcurrentRequests: 100,
 				},
-				Provider: model.IsolationSpec{
+				Provider: &model.IsolationSpec{
 					AnyService: map[string]model.IsolationSpec{},
 				},
 			},
-			CircuitBreakerProperties: model.CircuitWrapper{
-				Consumer: model.CircuitBreakerSpec{
+			CircuitBreakerProperties: &model.CircuitWrapper{
+				Consumer: &model.CircuitBreakerSpec{
 					AnyService: map[string]model.CircuitBreakPropertyStruct{},
 				},
-				Provider: model.CircuitBreakerSpec{
+				Provider: &model.CircuitBreakerSpec{
 					AnyService: map[string]model.CircuitBreakPropertyStruct{},
 				},
 			},
