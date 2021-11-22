@@ -40,8 +40,8 @@ func TestInit(t *testing.T) {
 
 func TestNewCircuitCmd(t *testing.T) {
 	config.HystrixConfig = &model.HystrixConfigWrapper{
-		HystrixConfig: model.HystrixConfig{
-			CircuitBreakerProperties: model.CircuitWrapper{
+		HystrixConfig: &model.HystrixConfig{
+			CircuitBreakerProperties: &model.CircuitWrapper{
 				Scope: "",
 			},
 		},
