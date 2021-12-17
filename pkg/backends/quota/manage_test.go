@@ -27,18 +27,22 @@ import (
 type inMemory struct {
 }
 
-func (im *inMemory) IncreaseUsed(service, domain, project, resource string, used int64) error {
+func (im *inMemory) SetLimit(domain, project, resourceType string, limit int64) error {
+	panic("implement me")
+}
+
+func (im *inMemory) IncreaseUsed(domain, project, resource string, used int64) error {
 	return nil
 }
-func (im *inMemory) DecreaseUsed(service, domain, project, resource string, used int64) error {
+func (im *inMemory) DecreaseUsed(domain, project, resource string, used int64) error {
 	return nil
 }
-func (im *inMemory) GetQuota(service, domain, project, resource string) (*quota.Quota, error) {
-	return &quota.Quota{ResourceName: "cpu", Used: 10, Limit: 20}, nil
+func (im *inMemory) GetQuota(domain, project, resource string) (*quota.Quota, error) {
+	return &quota.Quota{ResourceType: "cpu", Used: 10, Limit: 20}, nil
 }
-func (im *inMemory) GetQuotas(service, domain, project string) ([]*quota.Quota, error) {
+func (im *inMemory) GetQuotas(domain, project string) ([]*quota.Quota, error) {
 	return []*quota.Quota{
-		{ResourceName: "cpu", Used: 10, Limit: 20}, {ResourceName: "mem", Used: 10, Limit: 256},
+		{ResourceType: "cpu", Used: 10, Limit: 20}, {ResourceType: "mem", Used: 10, Limit: 256},
 	}, nil
 }
 func TestInit(t *testing.T) {
@@ -50,7 +54,7 @@ func TestInit(t *testing.T) {
 			Plugin:   "",
 		})
 		assert.NoError(t, err)
-		err = quota.PreCreate("", "", "", "some", 1)
+		err = quota.PreCreate("", "", "some", 1)
 		assert.NoError(t, err)
 	})
 	t.Run("install and init", func(t *testing.T) {
@@ -64,15 +68,15 @@ func TestInit(t *testing.T) {
 		assert.NoError(t, err)
 	})
 	t.Run("pre create,should success", func(t *testing.T) {
-		err := quota.PreCreate("", "", "", "cpu", 2)
+		err := quota.PreCreate("", "", "cpu", 2)
 		assert.NoError(t, err)
 	})
 	t.Run("pre create reached maximum,should success", func(t *testing.T) {
-		err := quota.PreCreate("", "", "", "cpu", 12)
+		err := quota.PreCreate("", "", "cpu", 12)
 		assert.Error(t, err)
 	})
 	t.Run("no limits", func(t *testing.T) {
-		err := quota.PreCreate("", "", "", "other", 12)
+		err := quota.PreCreate("", "", "other", 12)
 		assert.NoError(t, err)
 	})
 
