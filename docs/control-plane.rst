@@ -5,9 +5,8 @@ Control panels
    :maxdepth: 4
    :glob:
 
-   control-plane/kube-discovery
    control-plane/servicecomb
-   control-plane/cse
+   control-plane/kube-discovery
    control-plane/istio
    control-plane/apollo
 

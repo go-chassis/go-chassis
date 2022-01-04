@@ -10,8 +10,7 @@ servicecomb:
     client:
       serverUri: http://127.0.0.1:8080          # This should be the address of your Apollo Server
       type: apollo                              # The type should be Apollo
-      refreshMode: 1                            # Refresh Mode should be 1 so that Chassis-pulls the Configuration periodically
-      refreshInterval: 10                       # Chassis retrives the configurations from Apollo at this interval
+      refreshInterval: 10                       # Chassis retrieves the configurations from Apollo at this interval
       serviceName: apollo-chassis-demo          # This the name of the project in Apollo Server
       env: DEV                                  # This is the name of environment to which configurations belong in Apollo
       cluster: demo                             # This is the name of cluster to which your Project belongs in Apollo
