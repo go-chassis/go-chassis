@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/v2/server/restful/api"
 	"net"
 	"net/http"
 	"os"
@@ -12,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+
+	"github.com/go-chassis/go-chassis/v2/server/restful/api"
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/v2/core/common"
@@ -63,9 +64,25 @@ func newRestfulServer(opts server.Options) server.ProtocolServer {
 		ws.Route(ws.GET(metricPath).To(api.PrometheusHandleFunc))
 	}
 	addProfileRoutes(ws, opts)
+	container := restful.NewContainer()
+	corsCfg := globalconfig.GlobalDefinition.ServiceComb.Protocols[opts.ProtocolServerName].Cors
+	openlog.Debug(fmt.Sprintf("corscfg is %+v", corsCfg))
+	if corsCfg.Enable {
+		corsOpt := restful.CrossOriginResourceSharing{
+			ExposeHeaders:  corsCfg.ExposeHeaders,
+			AllowedHeaders: corsCfg.AllowedHeaders,
+			AllowedMethods: corsCfg.AllowedMethods,
+			CookiesAllowed: corsCfg.CookiesAllowed,
+			AllowedDomains: corsCfg.AllowedDomains,
+			Container:      container}
+		container.Filter(corsOpt.Filter)
+
+		// Add container filter to respond to OPTIONS
+		container.Filter(container.OPTIONSFilter)
+	}
 	return &restfulServer{
 		opts:      opts,
-		container: restful.NewContainer(),
+		container: container,
 		ws:        ws,
 	}
 }

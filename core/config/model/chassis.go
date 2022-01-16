@@ -120,6 +120,7 @@ type Protocol struct {
 	Advertise    string `yaml:"advertiseAddress"`
 	WorkerNumber int    `yaml:"workerNumber"`
 	Transport    string `yaml:"transport"`
+	Cors         Cors   `yaml:"cors"`
 }
 
 // ServiceSpec 设置微服务的私有属性

@@ -27,6 +27,14 @@ servicecomb:
   protocols:
     rest:
       listenAddress: 0.0.0.0:5000
+      cors:
+        enable: true
+        exposeHeaders: ["Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"]
+        allowedHeaders: ["Origin", "Accept", "Content-Type", "Authorization"]
+        allowedDomains: [""]
+        allowedMethods: ["GET", "POST", "PUT", "DELETE", "PATCH"]        
+        cookiesAllowed: false
+        maxAge        : 5
     rest-admin:
       listenAddress: 0.0.0.0:5001
     grpc:
