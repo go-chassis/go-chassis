@@ -34,9 +34,11 @@ func SaveToLBCache(raw *model.LoadBalancing) {
 	}
 
 }
+
 func saveDefaultLB(raw *model.LoadBalancing) string { // return updated key
 	c := control.LoadBalancingConfig{
 		Strategy:                raw.Strategy["name"],
+		Filters:                 parseFilters(raw.Filters),
 		RetryEnabled:            raw.RetryEnabled,
 		RetryOnSame:             raw.RetryOnSame,
 		RetryOnNext:             raw.RetryOnNext,
@@ -46,11 +48,24 @@ func saveDefaultLB(raw *model.LoadBalancing) string { // return updated key
 		SessionTimeoutInSeconds: raw.SessionStickinessRule.SessionTimeoutInSeconds,
 		SuccessiveFailedTimes:   raw.SessionStickinessRule.SuccessiveFailedTimes,
 	}
-
 	setDefaultLBValue(&c)
 	LBConfigCache.Set("", c, 0)
 	return ""
 }
+
+func parseFilters(filters string) []string {
+	formatNames := strings.Replace(strings.TrimSpace(filters), " ", "", -1)
+	filterNames := strings.Split(formatNames, ",")
+	var s []string
+	//delete empty string
+	for _, v := range filterNames {
+		if v != "" {
+			s = append(s, v)
+		}
+	}
+	return s
+}
+
 func saveEachLB(k string, raw model.LoadBalancingSpec) string { // return updated key
 	c := control.LoadBalancingConfig{
 		Strategy:                raw.Strategy["name"],
