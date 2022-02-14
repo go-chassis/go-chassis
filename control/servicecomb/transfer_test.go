@@ -18,6 +18,7 @@ func TestSaveToLBCache(t *testing.T) {
 		Strategy: map[string]string{
 			"name": loadbalancer.StrategyRoundRobin,
 		},
+		Filters: "zoneaware, zoneawareXXX",
 		AnyService: map[string]model.LoadBalancingSpec{
 			"test": {
 				Strategy: map[string]string{
@@ -28,6 +29,9 @@ func TestSaveToLBCache(t *testing.T) {
 	})
 	c, _ := servicecomb.LBConfigCache.Get("test")
 	assert.Equal(t, loadbalancer.StrategyRoundRobin, c.(control.LoadBalancingConfig).Strategy)
+	c, _ = servicecomb.LBConfigCache.Get("")
+	filters := []string{"zoneaware", "zoneawareXXX"}
+	assert.Equal(t, filters, c.(control.LoadBalancingConfig).Filters)
 }
 func init() {
 	lager.Init(&lager.Options{
