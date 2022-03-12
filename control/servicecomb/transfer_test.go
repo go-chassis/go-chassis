@@ -14,28 +14,38 @@ import (
 )
 
 func TestSaveToLBCache(t *testing.T) {
-	servicecomb.SaveToLBCache(&model.LoadBalancing{
-		Strategy: map[string]string{
-			"name": loadbalancer.StrategyRoundRobin,
-		},
-		Filters: "zoneaware, zoneawareXXX",
-		AnyService: map[string]model.LoadBalancingSpec{
-			"test": {
-				Strategy: map[string]string{
-					"name": loadbalancer.StrategyRoundRobin,
+	t.Run("loadbalacne Strategy", func(t *testing.T) {
+		servicecomb.SaveToLBCache(&model.LoadBalancing{
+			Strategy: map[string]string{
+				"name": loadbalancer.StrategyRoundRobin,
+			},
+			AnyService: map[string]model.LoadBalancingSpec{
+				"test": {
+					Strategy: map[string]string{
+						"name": loadbalancer.StrategyRoundRobin,
+					},
 				},
 			},
-		},
+		})
+		c, _ := servicecomb.LBConfigCache.Get("test")
+		assert.Equal(t, loadbalancer.StrategyRoundRobin, c.(control.LoadBalancingConfig).Strategy)
 	})
-	c, _ := servicecomb.LBConfigCache.Get("test")
-	assert.Equal(t, loadbalancer.StrategyRoundRobin, c.(control.LoadBalancingConfig).Strategy)
 	t.Run("loadbalance filters", func(t *testing.T) {
-		c, _ = servicecomb.LBConfigCache.Get("")
+		servicecomb.SaveToLBCache(&model.LoadBalancing{
+			Filters: "zoneaware, zoneawareXXX",
+			AnyService: map[string]model.LoadBalancingSpec{
+				"test": {
+					Strategy: map[string]string{
+						"name": loadbalancer.StrategyRoundRobin,
+					},
+				},
+			},
+		})
+		c, _ := servicecomb.LBConfigCache.Get("")
 		filters := []string{"zoneaware", "zoneawareXXX"}
 		assert.Equal(t, filters, c.(control.LoadBalancingConfig).Filters)
 	})
 }
-
 func init() {
 	lager.Init(&lager.Options{
 		LoggerLevel: "INFO",
