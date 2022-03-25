@@ -46,16 +46,16 @@ func (r *RestFulHello) Sayhi(b *rf.Context) {
 
 // SayJSON is a method used to reply user hello in json format
 func (r *RestFulHello) SayJSON(b *rf.Context) {
-	reslut := struct {
+	result := struct {
 		Name string
 	}{}
-	err := b.ReadEntity(&reslut)
+	err := b.ReadEntity(&result)
 	if err != nil {
-		b.WriteHeaderAndJSON(http.StatusInternalServerError, reslut, "application/json")
+		b.WriteHeaderAndJSON(http.StatusInternalServerError, result, "application/json")
 		return
 	}
-	reslut.Name = "hello " + reslut.Name
-	b.WriteJSON(reslut, "application/json")
+	result.Name = "hello " + result.Name
+	b.WriteJSON(result, "application/json")
 	return
 }
 
@@ -93,15 +93,15 @@ func (r *RestFulMessage) Saymessage(b *rf.Context) {
 
 //Sayhi is a method used to reply request user with hello world text
 func (r *RestFulMessage) Sayhi(b *rf.Context) {
-	reslut := struct {
+	result := struct {
 		Name string
 	}{}
-	err := b.ReadEntity(&reslut)
+	err := b.ReadEntity(&result)
 	if err != nil {
 		b.Write([]byte(err.Error() + ":hello world"))
 		return
 	}
-	b.Write([]byte(reslut.Name + ":hello world"))
+	b.Write([]byte(result.Name + ":hello world"))
 	return
 }
 
