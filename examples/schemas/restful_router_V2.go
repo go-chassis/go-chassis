@@ -37,22 +37,22 @@ func (r *RestFulRouterB) Equal(context *restful.Context) {
 
 // Say is method to reply version B say some info
 func (r *RestFulRouterB) Say(context *restful.Context) {
-	reslut := struct {
+	result := struct {
 		Name  string
 		Addr  string
 		Age   int
 		Phone string
 	}{}
-	err := context.ReadEntity(&reslut)
+	err := context.ReadEntity(&result)
 	if err != nil {
 		context.Write([]byte(err.Error()))
 		return
 	}
-	if reslut.Phone == "" {
-		reslut.Phone = "13800138000"
+	if result.Phone == "" {
+		result.Phone = "13800138000"
 	}
-	context.Write([]byte("version V2 : " + reslut.Name + " say : he is " + strconv.Itoa(reslut.Age) +
-		" years ago , live in " + reslut.Addr + " ,phone is " + reslut.Phone))
+	context.Write([]byte("version V2 : " + result.Name + " say : he is " + strconv.Itoa(result.Age) +
+		" years ago , live in " + result.Addr + " ,phone is " + result.Phone))
 }
 
 // Operation is method to calculate  two num product

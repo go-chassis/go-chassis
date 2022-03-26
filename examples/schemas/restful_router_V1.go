@@ -36,18 +36,18 @@ func (r *RestFulRouterA) Equal(context *restful.Context) {
 
 // Say is method to reply version A say some info
 func (r *RestFulRouterA) Say(context *restful.Context) {
-	reslut := struct {
+	result := struct {
 		Name string
 		Addr string
 		Age  int
 	}{}
-	err := context.ReadEntity(&reslut)
+	err := context.ReadEntity(&result)
 	if err != nil {
 		context.Write([]byte(err.Error()))
 		return
 	}
-	context.Write([]byte("version V1 : " + reslut.Name + " say : he is " +
-		strconv.Itoa(reslut.Age) + " years ago ,live in " + reslut.Addr))
+	context.Write([]byte("version V1 : " + result.Name + " say : he is " +
+		strconv.Itoa(result.Age) + " years ago ,live in " + result.Addr))
 }
 
 // Operation is method to add two num sum
