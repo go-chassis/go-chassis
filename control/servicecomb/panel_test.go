@@ -1,6 +1,9 @@
 package servicecomb_test
 
 import (
+	"os"
+	"testing"
+
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/v2/control"
 	_ "github.com/go-chassis/go-chassis/v2/control/servicecomb"
@@ -11,8 +14,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
 	_ "github.com/go-chassis/go-chassis/v2/initiator"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 func init() {
@@ -123,6 +124,7 @@ func TestPanel_GetLoadBalancing(t *testing.T) {
 func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
+	defer os.Unsetenv("CHASSIS_HOME")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{
@@ -141,6 +143,7 @@ func BenchmarkPanel_GetLoadBalancing(b *testing.B) {
 func BenchmarkPanel_GetLoadBalancing2(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
+	defer os.Unsetenv("CHASSIS_HOME")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{
@@ -161,6 +164,7 @@ func BenchmarkPanel_GetLoadBalancing2(b *testing.B) {
 func BenchmarkPanel_GetCircuitBreaker(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
+	defer os.Unsetenv("CHASSIS_HOME")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{
@@ -181,6 +185,7 @@ func BenchmarkPanel_GetCircuitBreaker(b *testing.B) {
 func BenchmarkPanel_GetRateLimiting(b *testing.B) {
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/client/")
+	defer os.Unsetenv("CHASSIS_HOME")
 	config.Init()
 	config.GlobalDefinition.Panel.Infra = "archaius"
 	opts := control.Options{

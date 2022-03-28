@@ -30,6 +30,7 @@ func TestInitialize1(t *testing.T) {
 func TestInitialize2(t *testing.T) {
 	homeDir := t.TempDir()
 	os.Setenv("CHASSIS_HOME", homeDir)
+	defer os.Unsetenv("CHASSIS_HOME")
 	logDir := filepath.Join(homeDir, "log")
 
 	//initializing config for to initialize PassLagerDefinition variable

@@ -1,6 +1,11 @@
 package handler_test
 
 import (
+	"log"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/config/model"
@@ -8,10 +13,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func init() {
@@ -49,6 +50,7 @@ func TestCreateChain(t *testing.T) {
 func BenchmarkChain_Next(b *testing.B) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.Init()
 	iv := &invocation.Invocation{}

@@ -1,6 +1,10 @@
 package servicecenter_test
 
 import (
+	"os"
+	"path/filepath"
+	"testing"
+
 	scregistry "github.com/go-chassis/cari/discovery"
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/lager"
@@ -11,9 +15,6 @@ import (
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	"github.com/go-chassis/sc-client"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func init() {
@@ -24,6 +25,7 @@ func init() {
 func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	t.Log("Test servercenter.go")
 	config.Init()
 	runtime.Init()

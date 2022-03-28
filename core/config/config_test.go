@@ -3,16 +3,17 @@ package config_test
 import (
 	"testing"
 
+	"io"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/config/model"
 	"github.com/go-chassis/go-chassis/v2/core/loadbalancer"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
-	"io"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 func TestInit1(t *testing.T) {
@@ -63,6 +64,7 @@ servicecomb:
 	assert.NoError(t, err)
 
 	os.Setenv(fileutil.ChassisConfDir, d)
+	defer os.Unsetenv(fileutil.ChassisConfDir)
 	err = config.Init()
 	assert.NoError(t, err)
 	time.Sleep(1 * time.Second)
@@ -182,7 +184,10 @@ cse:
 
 func TestInitErrorWithBlankEnv(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "")
+	defer os.Unsetenv("CHASSIS_HOME")
 	os.Setenv("CHASSIS_CONF_DIR", "")
+	defer os.Unsetenv("CHASSIS_CONF_DIR")
+
 	err := config.Init()
 	t.Log(err)
 	assert.Error(t, err)

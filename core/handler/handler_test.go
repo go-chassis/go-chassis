@@ -1,6 +1,11 @@
 package handler_test
 
 import (
+	"io"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/config/model"
@@ -11,10 +16,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/go-chassis/openlog"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func prepareConfDir(t *testing.T) string {
@@ -154,6 +155,7 @@ func TestGetChain(t *testing.T) {
 func BenchmarkPool_GetChain(b *testing.B) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	config.GlobalDefinition = &model.GlobalCfg{}
 	config.Init()
 	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = map[string]string{

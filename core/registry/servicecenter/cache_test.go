@@ -1,17 +1,18 @@
 package servicecenter_test
 
 import (
-	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/sc-client"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/sc-client"
 
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	utiltags "github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	"github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/assert"
@@ -28,6 +29,7 @@ func init() {
 	archaius.Set("servicecomb.service.name", "Server")
 	archaius.Set("servicecomb.service.hostname", "localhost")
 	os.Setenv("HTTP_DEBUG", "1")
+	defer os.Unsetenv("HTTP_DEBUG")
 	config.ReadGlobalConfigFromArchaius()
 }
 func TestCacheManager_AutoSync(t *testing.T) {
