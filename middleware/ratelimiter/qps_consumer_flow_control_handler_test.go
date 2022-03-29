@@ -69,6 +69,7 @@ func TestConsumerRateLimiterDisable(t *testing.T) {
 	t.Log("testing consumerratelimiter handler with qps enabled as false")
 	gopath := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", gopath+"/src/github.com/go-chassis/go-chassis/v2/examples/discovery/server/")
+	defer os.Unsetenv("CHASSIS_HOME")
 
 	config.Init()
 	opts := control.Options{

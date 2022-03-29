@@ -12,9 +12,10 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/server"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 
+	"syscall"
+
 	"github.com/go-chassis/go-chassis/v2/core/config/model"
 	"github.com/stretchr/testify/assert"
-	"syscall"
 )
 
 const (
@@ -26,9 +27,10 @@ func TestInit(t *testing.T) {
 	defer syscall.Umask(mask)
 	t.Log("Testing Chassis Init function")
 	os.Setenv("CHASSIS_HOME", filepath.Join(os.Getenv("GOPATH"), "test", "chassisInit"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	err := os.MkdirAll(fileutil.GetConfDir(), 0700)
 	assert.NoError(t, err)
-	globalDefFile, err := os.OpenFile(fileutil.GlobalConfigPath(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
+	globalDefFile, _ := os.OpenFile(fileutil.GlobalConfigPath(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
 	defer globalDefFile.Close()
 
 	// write some text line-by-line to file
@@ -85,7 +87,7 @@ ssl:
 	msDefFile, err := os.OpenFile(fileutil.MicroServiceConfigPath(), os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0700)
 	assert.NoError(t, err)
 	defer msDefFile.Close()
-	_, err = msDefFile.WriteString(`---
+	msDefFile.WriteString(`---
 #微服务的私有属性
 servicecomb:
   service:
@@ -145,6 +147,7 @@ func TestInitError(t *testing.T) {
 	t.Log("Testing chassis Init function for errors")
 	p := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "go-chassis", "go-chassis", "examples", "communication/client")
 	os.Setenv("CHASSIS_HOME", p)
+	defer os.Unsetenv("CHASSIS_HOME")
 
 	lager.Init(&lager.Options{
 		LoggerLevel: "INFO",

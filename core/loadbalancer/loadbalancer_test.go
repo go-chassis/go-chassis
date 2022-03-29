@@ -16,7 +16,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	utiltags "github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -93,6 +93,7 @@ func TestBuildStrategy(t *testing.T) {
 		},
 	}
 	os.Setenv("HTTP_DEBUG", "1")
+	defer os.Unsetenv("HTTP_DEBUG")
 	registry.Enable()
 	registry.DoRegister()
 	t.Log("System init finished")

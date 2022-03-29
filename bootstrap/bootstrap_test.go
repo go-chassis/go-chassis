@@ -21,8 +21,11 @@ type bootstrapPlugin struct {
 	Name string
 }
 
-func initialize() {
+func initialize(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "/tmp/")
+	t.Cleanup(func() {
+		os.Unsetenv("CHASSIS_HOME")
+	})
 	chassisConf := filepath.Join("/tmp/", "conf")
 	os.MkdirAll(chassisConf, 0700)
 	os.Create(filepath.Join(chassisConf, "chassis.yaml"))
@@ -35,7 +38,7 @@ func (b *bootstrapPlugin) Init() error {
 }
 
 func TestBootstrap(t *testing.T) {
-	initialize()
+	initialize(t)
 	config.Init()
 	time.Sleep(1 * time.Second)
 	config.GlobalDefinition = &model.GlobalCfg{}

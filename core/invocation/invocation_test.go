@@ -2,9 +2,10 @@ package invocation_test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestChain(t *testing.T) {
@@ -77,6 +78,7 @@ func (h *transportHandler) Handle(c *handler.Chain, i *invocation.Invocation, cb
 func TestChain(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "communication", "client"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	lager.Initialize()
 	config.Init()
 	c := &handler.Chain{}
@@ -113,6 +115,7 @@ func TestChain(t *testing.T) {
 func BenchmarkChainNext(b *testing.B) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "communication", "client"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	lager.Initialize()
 	config.Init()
 	c := &handler.Chain{}

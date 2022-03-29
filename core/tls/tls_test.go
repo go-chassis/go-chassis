@@ -15,6 +15,7 @@ import (
 
 func TestInit(t *testing.T) {
 	os.Setenv("CHASSIS_HOME", "/tmp")
+	defer os.Unsetenv("CHASSIS_HOME")
 
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("ssl.test.Consumer.certFile", "test.cer")

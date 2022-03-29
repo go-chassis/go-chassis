@@ -1,14 +1,15 @@
 package schema
 
 import (
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/emicklei/go-restful"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func TestLoadSchema(t *testing.T) {
@@ -27,6 +28,7 @@ func TestLoadSchema(t *testing.T) {
 
 	//Fix the root directory otherwise the Schema dir will be created inside /tmp/go-buildXXX///
 	os.Setenv("CHASSIS_HOME", os.Getenv("GOPATH"))
+	defer os.Unsetenv("CHASSIS_HOME")
 
 	schemaDirOfMs1 := fileutil.SchemaDir(microserviceName1)
 
@@ -66,6 +68,7 @@ func TestLoadSchema(t *testing.T) {
 func TestSetSchemaIDs(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	config := swagger.Config{
 		WebServices: restful.DefaultContainer.RegisteredWebServices(),
 		OpenService: true,
