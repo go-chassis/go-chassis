@@ -39,6 +39,11 @@ func GetConfigServerConf() model.ConfigClient {
 	return GlobalDefinition.ServiceComb.Config.Client
 }
 
+//GetCredentialsConf return credentials conf
+func GetCredentialsConf() model.CredentialStruct {
+	return GlobalDefinition.ServiceComb.Credentials
+}
+
 //GetTransportConf return transport settings
 func GetTransportConf() model.Transport {
 	return GlobalDefinition.ServiceComb.Transport

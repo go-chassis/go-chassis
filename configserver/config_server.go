@@ -139,6 +139,7 @@ func initConfigServer(endpoint string, enableSSL bool, tlsConfig *tls.Config, in
 		AutoDiscovery:   config.GetConfigServerConf().AutoDiscovery,
 		APIVersion:      config.GetConfigServerConf().APIVersion.Version,
 		RefreshPort:     config.GetConfigServerConf().RefreshPort,
+		ProjectID:       config.GetCredentialsConf().Project,
 	}
 
 	err := archaius.EnableRemoteSource(remoteSourceType, ri)
