@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -27,13 +28,14 @@ const DefaultPoolSize = 512
 
 //Options is configs for client creation
 type Options struct {
-	Service   string
-	PoolSize  int
-	Timeout   time.Duration
-	Endpoint  string
-	PoolTTL   time.Duration
-	TLSConfig *tls.Config
-	Failure   map[string]bool
+	Service       string
+	PoolSize      int
+	Timeout       time.Duration
+	Endpoint      string
+	PoolTTL       time.Duration
+	TLSConfig     *tls.Config
+	Failure       map[string]bool
+	CheckRedirect func(req *http.Request, via []*http.Request) error
 }
 
 // GetFailureMap return failure map
@@ -60,7 +62,7 @@ func GetMaxIdleCon(p string) int {
 }
 
 // CreateClient is for to create client based on protocol and the service name
-func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolClient, error) {
+func CreateClient(protocol, service, endpoint string, sslEnable bool, checkRedirect func(req *http.Request, via []*http.Request) error) (ProtocolClient, error) {
 	f, err := GetClientNewFunc(protocol)
 	if err != nil {
 		openlog.Error(fmt.Sprintf("do not support [%s] client", protocol))
@@ -86,12 +88,13 @@ func CreateClient(protocol, service, endpoint string, sslEnable bool) (ProtocolC
 		command = strings.Join([]string{common.Consumer, service}, ".")
 	}
 	return f(Options{
-		Service:   service,
-		TLSConfig: tlsConfig,
-		PoolSize:  GetMaxIdleCon(protocol),
-		Failure:   GetFailureMap(protocol),
-		Timeout:   config.GetTimeoutDurationFromArchaius(command, common.Consumer),
-		Endpoint:  endpoint,
+		Service:       service,
+		TLSConfig:     tlsConfig,
+		PoolSize:      GetMaxIdleCon(protocol),
+		Failure:       GetFailureMap(protocol),
+		Timeout:       config.GetTimeoutDurationFromArchaius(command, common.Consumer),
+		Endpoint:      endpoint,
+		CheckRedirect: checkRedirect,
 	})
 }
 func generateKey(protocol, service, endpoint string) string {
@@ -108,7 +111,7 @@ func GetClient(i *invocation.Invocation) (ProtocolClient, error) {
 	sl.RUnlock()
 	if !ok {
 		openlog.Info("Create client for " + i.Protocol + ":" + i.MicroServiceName + ":" + i.Endpoint)
-		c, err = CreateClient(i.Protocol, i.MicroServiceName, i.Endpoint, i.SSLEnable)
+		c, err = CreateClient(i.Protocol, i.MicroServiceName, i.Endpoint, i.SSLEnable, i.CheckRedirect)
 		if err != nil {
 			return nil, err
 		}
@@ -169,5 +172,6 @@ func EqualOpts(oldOpts, newOpts Options) Options {
 		oldOpts.TLSConfig = newOpts.TLSConfig
 	}
 	oldOpts.Failure = newOpts.Failure
+	oldOpts.CheckRedirect = newOpts.CheckRedirect
 	return oldOpts
 }

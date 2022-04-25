@@ -2,6 +2,7 @@ package invocation
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
@@ -63,6 +64,8 @@ type Invocation struct {
 	Metadata map[string]interface{} // can save local data, will not send in header on network
 	Strategy string                 // load balancing strategy
 	Filters  []string
+	// http.CheckRedirect
+	CheckRedirect func(req *http.Request, via []*http.Request) error
 }
 
 // GetMark return match rule name that request matches
