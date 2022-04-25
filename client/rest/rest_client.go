@@ -65,6 +65,9 @@ func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 		c: &http.Client{
 			Timeout:   opts.Timeout,
 			Transport: tp,
+			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				return http.ErrUseLastResponse
+			},
 		},
 	}
 	return rc, nil
