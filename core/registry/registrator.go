@@ -52,7 +52,8 @@ type Registrator interface {
 	//RegisterServiceInstance register a microservice instance to registry
 	RegisterServiceInstance(sid string, instance *MicroServiceInstance) (string, error)
 	RegisterServiceAndInstance(microService *MicroService, instance *MicroServiceInstance) (string, string, error)
-	Heartbeat(microServiceID, microServiceInstanceID string, instanceHeartbeatMode string) (bool, error)
+	Heartbeat(microServiceID, microServiceInstanceID string) (bool, error)
+	WSHeartbeat(microServiceID, microServiceInstanceID string, callback func()) (bool, error)
 	UnRegisterMicroServiceInstance(microServiceID, microServiceInstanceID string) error
 	UpdateMicroServiceInstanceStatus(microServiceID, microServiceInstanceID, status string) error
 	UpdateMicroServiceProperties(microServiceID string, properties map[string]string) error

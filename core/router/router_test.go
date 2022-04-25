@@ -2,11 +2,12 @@ package router_test
 
 import (
 	"context"
-	"github.com/go-chassis/go-chassis/v2/core/marker"
 	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/go-chassis/go-chassis/v2/core/marker"
 
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 
@@ -28,6 +29,7 @@ func init() {
 func TestBuildRouter(t *testing.T) {
 	path := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(path, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	defer os.Unsetenv("CHASSIS_HOME")
 
 	config.Init()
 	router.BuildRouter("cse")

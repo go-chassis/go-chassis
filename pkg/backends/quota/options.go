@@ -19,6 +19,10 @@ package quota
 
 //Options is init options
 type Options struct {
-	Endpoint string
-	Plugin   string
+	// optional, namespace for resourceType,
+	// for example you service provide cpu resource. but other service has a resourceType also use name cpu,
+	// then you need to separate them by namespace
+	Namespace string
+	Endpoint  string //optional
+	Plugin    string //required
 }

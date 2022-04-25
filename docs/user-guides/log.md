@@ -11,6 +11,7 @@
 - logWriters: 表示日志的输出方式，默认为文件和标准输出。
 - logFile: 日志路径
 - logFormatText: 默认为false，即设定日志的输出格式为 json。若为true则输出格式为plaintext，类似log4j。建议使用json格式输出的日志。
+- LogColorMode: 设定日志的输出是否带颜色，auto: 自动，只有writer是stdout是才带颜色；always：带颜色；never：不带颜色；默认auto
 - logRotateDisable: 是否开启日志绕接.
 - logRotateCompress: 是否压缩旧的日志
 - logRotateAge: 日志rotate时间配置，单位"day"，范围为(0, 10)。

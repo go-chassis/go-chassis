@@ -1,3 +1,4 @@
+//go:build !go1.10 || !debug
 // +build !go1.10 !debug
 
 package goplugin

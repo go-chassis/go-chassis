@@ -25,7 +25,7 @@ import (
 	_ "github.com/go-chassis/go-chassis/v2/initiator"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
-	"github.com/go-chassis/go-chassis/v2/pkg/util/tags"
+	utiltags "github.com/go-chassis/go-chassis/v2/pkg/util/tags"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -509,6 +509,7 @@ func init() {
 func BenchmarkLBHandler_Handle(b *testing.B) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "client"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	config.Init()
 	opts := control.Options{
 		Infra:   config.GlobalDefinition.Panel.Infra,

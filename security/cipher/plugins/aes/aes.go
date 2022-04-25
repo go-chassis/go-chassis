@@ -2,8 +2,9 @@ package aes
 
 import (
 	"fmt"
-	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	"os"
+
+	"github.com/go-chassis/go-chassis/v2/security/cipher"
 
 	"github.com/go-chassis/cari/security"
 	"github.com/go-chassis/go-chassis/v2/pkg/goplugin"

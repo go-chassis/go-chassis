@@ -124,7 +124,7 @@ func parseSSLConfig(sslConfigMap map[string]string) (*SSLConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	sslConfig.MaxVersion = TLSVersionMap["TLSv1.2"]
+	sslConfig.MaxVersion = VersionMap["TLSv1.3"]
 	sslConfig.CAFile = sslConfigMap[common.SslCaFileKey]
 	sslConfig.CertFile = sslConfigMap[common.SslCertFileKey]
 	sslConfig.KeyFile = sslConfigMap[common.SslKeyFileKey]

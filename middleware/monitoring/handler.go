@@ -32,9 +32,9 @@ import (
 
 //errors
 const (
-	MetricsLatency = "request_process_duration"
-	MetricsRequest = "request_count"
-	MetricsErrors  = "error_response_count"
+	MetricsLatency = "scb_request_process_duration"
+	MetricsRequest = "scb_request_count"
+	MetricsErrors  = "scb_error_response_count"
 	Name           = "monitoring"
 )
 

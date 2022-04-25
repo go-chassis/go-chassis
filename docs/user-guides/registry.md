@@ -37,6 +37,9 @@
 **heartbeat.interval**
 > *(optional, string)* 当mode模式设置为non-keep-alive时，interval为实例心跳上报的时间间隔,格式为数字加单位（s/m/h），如1s/1m/1h，默认为30s。
 
+**uploadSchema**
+> *(optional, bool)*  是否注册schema到注册中心，默认为false
+
 ## 示例
 
 服务中心最简化配置只需要registry的address, 或者disabled设置为true。
@@ -50,6 +53,7 @@ servicecomb:
     register: auto             #optional：默认为自动 [auto manual]
     refeshInterval: 30s
     watch: true
+    uploadSchema: false 
     heartbeat:
       mode: non-keep-alive
       interval: 30s

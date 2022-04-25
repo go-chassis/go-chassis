@@ -38,13 +38,15 @@ func init() {
 	} else {
 		var err error
 		opts := &lager.Options{
-			Writers:        lager.File,
-			LoggerLevel:    lager.LevelInfo,
-			LoggerFile:     initiator.LoggerOptions.AccessLogFile,
-			LogFormatText:  initiator.LoggerOptions.LogFormatText,
-			LogRotateAge:   initiator.LoggerOptions.LogRotateAge,
-			LogRotateSize:  initiator.LoggerOptions.LogRotateSize,
-			LogBackupCount: initiator.LoggerOptions.LogBackupCount,
+			Writers:           lager.File,
+			LoggerLevel:       lager.LevelInfo,
+			LoggerFile:        initiator.LoggerOptions.AccessLogFile,
+			LogFormatText:     initiator.LoggerOptions.LogFormatText,
+			LogRotateAge:      initiator.LoggerOptions.LogRotateAge,
+			LogRotateSize:     initiator.LoggerOptions.LogRotateSize,
+			LogBackupCount:    initiator.LoggerOptions.LogBackupCount,
+			LogRotateCompress: initiator.LoggerOptions.LogRotateCompress,
+			LogRotateDisable:  initiator.LoggerOptions.LogRotateDisable,
 		}
 		log, err = lager.NewLog(opts)
 		if err != nil {

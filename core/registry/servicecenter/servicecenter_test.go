@@ -1,6 +1,10 @@
 package servicecenter_test
 
 import (
+	"os"
+	"path/filepath"
+	"testing"
+
 	scregistry "github.com/go-chassis/cari/discovery"
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/lager"
@@ -11,9 +15,6 @@ import (
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	"github.com/go-chassis/sc-client"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func init() {
@@ -24,6 +25,7 @@ func init() {
 func TestServicecenter_RegisterServiceAndInstance(t *testing.T) {
 	p := os.Getenv("GOPATH")
 	os.Setenv("CHASSIS_HOME", filepath.Join(p, "src", "github.com", "go-chassis", "go-chassis", "examples", "discovery", "server"))
+	defer os.Unsetenv("CHASSIS_HOME")
 	t.Log("Test servercenter.go")
 	config.Init()
 	runtime.Init()
@@ -62,11 +64,11 @@ func testRegisterServiceAndInstance(t *testing.T, scc registry.Registrator, sd r
 	assert.NoError(t, err)
 	assert.Equal(t, "test", microservice2.Metadata["test"])
 
-	success, err := scc.Heartbeat(sid, insID, "non-keep-alive")
+	success, err := scc.Heartbeat(sid, insID)
 	assert.Equal(t, success, true)
 	assert.NoError(t, err)
 
-	_, err = scc.Heartbeat("jdfhbh", insID, "non-keep-alive")
+	_, err = scc.Heartbeat("jdfhbh", insID)
 	assert.Error(t, err)
 
 	err = scc.UpdateMicroServiceInstanceStatus(sid, insID, "UP")
@@ -108,11 +110,11 @@ func TestInstanceWSHeartbeat(t *testing.T) {
 		serviceID, instanceID = sid, insID
 	})
 	t.Run("send heartbeat,should success", func(t *testing.T) {
-		success, err := registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "non-keep-alive")
+		success, err := registry.DefaultRegistrator.Heartbeat(serviceID, instanceID)
 		assert.Equal(t, success, true)
 		assert.NoError(t, err)
 
-		success, err = registry.DefaultRegistrator.Heartbeat(serviceID, instanceID, "ping-pong")
+		success, err = registry.DefaultRegistrator.WSHeartbeat(serviceID, instanceID, func() {})
 		assert.Equal(t, success, true)
 		assert.NoError(t, err)
 	})

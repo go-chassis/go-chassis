@@ -180,11 +180,12 @@ func ReadMonitorFromArchaius() error {
 
 // ReadHystrixFromArchaius is unmarshal hystrix configuration file(circuit_breaker.yaml)
 func ReadHystrixFromArchaius() error {
-	HystrixConfig = &model.HystrixConfigWrapper{}
-	err := archaius.UnmarshalConfig(&HystrixConfig)
+	hystrixCnf := model.HystrixConfigWrapper{}
+	err := archaius.UnmarshalConfig(&hystrixCnf)
 	if err != nil {
 		return err
 	}
+	HystrixConfig = &hystrixCnf
 	return nil
 }
 
@@ -199,7 +200,7 @@ func GetLoadBalancing() *model.LoadBalancing {
 //GetHystrixConfig return cb config
 func GetHystrixConfig() *model.HystrixConfig {
 	if HystrixConfig != nil {
-		return &HystrixConfig.HystrixConfig
+		return HystrixConfig.HystrixConfig
 	}
 	return nil
 }

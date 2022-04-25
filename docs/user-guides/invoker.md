@@ -2,7 +2,7 @@
 ## Introduction
 Invoker is the entry point to call remote service.
 support 2 kinds of invoker, rpc and http
-## http
+## http Invoker
 支持传入原生net/http提供的request，将request传入invoker即可将请求交由go chassis内核处理，
 最终返回net/http原生response。
 ```go
@@ -32,6 +32,20 @@ core.NewRPCInvoker().Invoke(context.Background(), "RPCServer", "helloworld.Greet
 		&helloworld.HelloRequest{Name: "Peter"}, reply, core.WithProtocol("grpc"))
 ```
 无论Rest还是RPC调用都能够接受多种选项对一次调用进行控制，参考options.go查看更多选项
+
+## Native Call
+**go chassis支持无需任何注册中心服务即可运行**，只需要加入WithoutSD()选项，那么调用过程中就会跳过客户端负载均衡。
+比如利用kubernetes的原生容器网络，或者结合任意服务网格
+```go
+req, _ := rest.NewRequest("GET", "http://orderService:8080/hello", nil)
+invoker.ContextDo(context.TODO(), req, core.WithoutSD())
+```
+
+比如本地调试时，直接使用网络地址
+```go
+req, _ := rest.NewRequest("GET", "http://127.0.0.1:8080/hello", nil)
+invoker.ContextDo(context.TODO(), req, core.WithoutSD())
+```
 
 ## Examples
 

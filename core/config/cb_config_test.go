@@ -6,13 +6,14 @@ import (
 
 	_ "github.com/go-chassis/go-chassis/v2/initiator"
 
+	"io"
+	"path/filepath"
+	"time"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"path/filepath"
-	"time"
 )
 
 func TestCBInit(t *testing.T) {
@@ -106,6 +107,7 @@ servicecomb:
 	assert.NoError(t, err)
 
 	os.Setenv(fileutil.ChassisConfDir, d)
+	defer os.Unsetenv(fileutil.ChassisConfDir)
 	err = config.Init()
 	assert.NoError(t, err)
 
