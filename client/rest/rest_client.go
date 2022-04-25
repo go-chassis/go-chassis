@@ -94,7 +94,12 @@ func newTransport(opts client.Options) *http.Transport {
 
 // If a request fails, we generate an error.
 func (c *Client) failure2Error(e error, r *http.Response, addr string) error {
-	defer r.Body.Close()
+	defer func() {
+		if r == nil {
+			return
+		}
+		r.Body.Close()
+	}()
 	if e != nil {
 		return e
 	}
