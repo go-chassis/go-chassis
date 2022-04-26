@@ -159,11 +159,12 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 	hosts := make([]string, 0)
 	var scheme string
 	var URIRegex = "(\\.*://.*)"
+	reg, err := regexp.Compile(URIRegex)
+	if err != nil {
+		return nil, "", err
+	}
 	for _, addr := range uris {
-		ok, err := regexp.MatchString(URIRegex, addr)
-		if err != nil {
-			return nil, "", err
-		}
+		ok := reg.MatchString(addr)
 		if ok {
 			u, e := url.Parse(addr)
 			if e != nil {
