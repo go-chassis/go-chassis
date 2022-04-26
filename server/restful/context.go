@@ -24,10 +24,7 @@ func NewBaseServer(ctx context.Context) *Context {
 // write is the response writer.
 func (bs *Context) Write(body []byte) error {
 	_, err := bs.Resp.Write(body)
-	if err != nil {
-		return nil
-	}
-	return nil
+	return err
 }
 
 //WriteHeader is the response head writer
