@@ -40,7 +40,7 @@ servicecomb:
 ---
 servicecomb:
   service:
-	  name: Client
+    name: Client
 
 `)
 	d, _ = os.Getwd()
