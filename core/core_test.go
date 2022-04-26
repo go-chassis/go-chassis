@@ -74,6 +74,9 @@ func TestOptions(t *testing.T) {
 	inv = core.WithMetadata(nil)
 	assert.NotEmpty(t, inv)
 
+	inv = core.WithCheckRedirect()
+	assert.NotEmpty(t, inv)
+
 	t.Log("with router tag")
 	testKey := "testKey"
 	testValue := "testValue"

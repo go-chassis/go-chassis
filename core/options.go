@@ -1,6 +1,7 @@
 package core
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
@@ -36,6 +37,8 @@ type InvokeOptions struct {
 	Metadata map[string]interface{}
 	// tags for router
 	RouteTags utiltags.Tags
+	//http.CheckRedirect
+	CheckRedirect func(req *http.Request, via []*http.Request) error
 }
 
 //TODO a lot of options
@@ -98,6 +101,15 @@ func WithProtocol(p string) InvocationOption {
 	}
 }
 
+// WithCheckRedirect is a request option
+func WithCheckRedirect() InvocationOption {
+	return func(o *InvokeOptions) {
+		o.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
+	}
+}
+
 // WithStrategy is a request option
 func WithStrategy(s string) InvocationOption {
 	return func(o *InvokeOptions) {
@@ -155,4 +167,5 @@ func wrapInvocationWithOpts(i *invocation.Invocation, opts InvokeOptions) {
 	}
 
 	i.RouteTags = opts.RouteTags
+	i.CheckRedirect = opts.CheckRedirect
 }
