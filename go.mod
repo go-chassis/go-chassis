@@ -20,6 +20,7 @@ require (
 	github.com/prometheus/common v0.2.0
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/stretchr/testify v1.6.1
+	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.17.0
 	k8s.io/client-go v0.17.0

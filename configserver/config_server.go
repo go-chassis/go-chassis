@@ -34,7 +34,7 @@ func Init() error {
 	configServerURL, err := GetConfigServerEndpoint()
 	if err != nil {
 		openlog.Warn("can not get config server endpoint: " + err.Error())
-		return nil
+		return err
 	}
 
 	var enableSSL bool

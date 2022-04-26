@@ -3,8 +3,11 @@ package servicecomb
 import (
 	"encoding/json"
 	"fmt"
+	"golang.org/x/text/language"
 	"strconv"
 	"strings"
+
+	"golang.org/x/text/cases"
 
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
@@ -119,6 +122,6 @@ func setHeadersAndHTTPHeaders(match *config.Match, isCaseInsensitive bool, cKey,
 }
 func toCamelCase(s string) string {
 	s = strings.Replace(s, "_", " ", -1)
-	s = strings.Title(s)
-	return strings.Replace(s, " ", "", -1)
+	caser := cases.Title(language.English)
+	return strings.Replace(caser.String(s), " ", "", -1)
 }

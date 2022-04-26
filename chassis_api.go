@@ -115,11 +115,12 @@ func Run() error {
 }
 
 func waitingSignal() {
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	if len(goChassis.sigs) > 0 {
 		signal.Notify(c, goChassis.sigs...)
 	} else {
-		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM,
+			syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP, syscall.SIGABRT)
 	}
 
 	var s os.Signal
