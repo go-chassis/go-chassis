@@ -10,17 +10,17 @@ require (
 	github.com/go-chassis/openlog v1.1.2
 	github.com/go-chassis/sc-client v0.6.1-0.20210918130508-2b9daad232da
 	github.com/go-chassis/seclog v1.3.1-0.20210917082355-52c40864f240
-	github.com/golang-jwt/jwt v3.2.1+incompatible
-	github.com/golang/protobuf v1.4.2
+	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/websocket v1.4.3-0.20210424162022-e8629af678b7
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/prometheus/client_golang v0.9.1
-	github.com/prometheus/common v0.2.0
+	github.com/prometheus/client_golang v1.12.1
+	github.com/prometheus/common v0.34.0
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/stretchr/testify v1.6.1
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/text v0.3.7
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.17.0
 	k8s.io/client-go v0.17.0

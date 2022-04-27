@@ -4,9 +4,10 @@ package provider_test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/v2/core/config/model"
-	"testing"
 
 	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
@@ -70,7 +71,7 @@ func init() {
 	proto.RegisterType((*HelloReply)(nil), "helloworld.HelloReply")
 }
 
-func init() { proto.RegisterFile("test.proto", fileDescriptor0) }
+func init() { proto.RegisterFile("test2.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
 	// 142 bytes of a gzipped FileDescriptorProto

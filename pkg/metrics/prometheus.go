@@ -2,8 +2,11 @@ package metrics
 
 import (
 	"fmt"
+
 	"github.com/go-chassis/openlog"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+
 	"strings"
 	"sync"
 	"time"
@@ -48,8 +51,8 @@ func NewPrometheusExporter(options Options) Registry {
 
 // EnableRunTimeMetrics enable runtime metrics
 func EnableRunTimeMetrics() {
-	GetSystemPrometheusRegistry().MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
-	GetSystemPrometheusRegistry().MustRegister(prometheus.NewGoCollector())
+	GetSystemPrometheusRegistry().MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+	GetSystemPrometheusRegistry().MustRegister(collectors.NewGoCollector())
 }
 
 //CreateGauge create collector
