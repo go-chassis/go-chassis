@@ -193,6 +193,8 @@ func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful
 		rb = ws.PATCH(routeSpec.Path)
 	case http.MethodDelete:
 		rb = ws.DELETE(routeSpec.Path)
+	case http.MethodOptions:
+		rb = ws.OPTIONS(routeSpec.Path)
 	default:
 		return errors.New("method [" + routeSpec.Method + "] do not support")
 	}
