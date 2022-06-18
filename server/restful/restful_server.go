@@ -312,6 +312,7 @@ func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	}
 	if globalconfig.GlobalDefinition.ServiceComb.NoRefreshSchema {
 		openlog.Info("will not create schema file. if you want to change it, please update chassis.yaml->NoRefreshSchema=true")
+		return nil
 	} else {
 		if err := os.RemoveAll(path); err != nil {
 			openlog.Error(err.Error())
