@@ -237,6 +237,8 @@ func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder 
 			p = restful.BodyParameter(param.Name, param.Desc)
 		case restful.FormParameterKind:
 			p = restful.FormParameter(param.Name, param.Desc)
+		case restful.MultiPartFormParameterKind:
+			p = restful.MultiPartFormParameter(param.Name, param.Desc)
 		}
 		rb = rb.Param(p.Required(param.Required).DataType(param.DataType))
 
