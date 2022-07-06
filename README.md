@@ -131,7 +131,7 @@ To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
 ![qutoutiao](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG)
 ![Shopee](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png)
 ![ieg](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/tencent-ieg.png)
-
+![changhong](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/changhong.png)
 # Contributing
 If you're interested in being a contributor and want to get involved in developing, 
 please check [CONTRIBUTING](CONTRIBUTING.md) and [wiki](https://github.com/go-chassis/go-chassis/wiki) for details.
