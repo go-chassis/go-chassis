@@ -127,10 +127,16 @@ it is able to run as a [API gateway](https://mesher.readthedocs.io/en/latest/con
 # Known Users
 To register your self, go to https://github.com/go-chassis/go-chassis/issues/592
 
-![huawei](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/huawei.PNG) 
-![qutoutiao](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG)
-![Shopee](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png)
-![ieg](https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/tencent-ieg.png)
+<table><tr>
+<td><img src="https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/huawei.PNG" alt="huawei"></td>
+<td><img src="https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/qutoutiao.PNG" alt="qutoutiao"></td>
+<td><img src="https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/Shopee.png" alt="Shopee"></td>
+</tr>
+<tr>
+<td><img src="https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/tencent-ieg.png" alt="tencent-ieg"></td>
+<td><img src="https://raw.githubusercontent.com/go-chassis/go-chassis.github.io/master/known_users/changhong.png" alt="changhong"></td>
+</tr>
+</table>
 
 # Contributing
 If you're interested in being a contributor and want to get involved in developing, 
