@@ -2,27 +2,27 @@ package rest_test
 
 import (
 	"context"
-	"github.com/go-chassis/go-archaius"
-	"log"
-	"testing"
-
-	"github.com/go-chassis/go-chassis/v2/client/rest"
-	"github.com/go-chassis/go-chassis/v2/core/client"
-	"github.com/go-chassis/go-chassis/v2/core/config"
-	"github.com/go-chassis/go-chassis/v2/core/lager"
-	_ "github.com/go-chassis/go-chassis/v2/core/loadbalancer"
-	"github.com/go-chassis/go-chassis/v2/core/server"
-	"github.com/go-chassis/go-chassis/v2/examples/schemas"
-	_ "github.com/go-chassis/go-chassis/v2/server/restful"
-
 	"fmt"
+	"log"
 	"net/http"
+	"testing"
 	"time"
 
+	_ "github.com/go-chassis/go-chassis/v2/core/loadbalancer"
+	_ "github.com/go-chassis/go-chassis/v2/server/restful"
+
+	"github.com/go-chassis/go-archaius"
+	"github.com/go-chassis/go-chassis/v2/client/rest"
+	"github.com/go-chassis/go-chassis/v2/core/client"
 	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/handler"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/core/lager"
+	"github.com/go-chassis/go-chassis/v2/core/server"
+	"github.com/go-chassis/go-chassis/v2/examples/schemas"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
 	"github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/stretchr/testify/assert"
 )
@@ -187,27 +187,28 @@ func TestNewRestClient_ParseDurationFailed(t *testing.T) {
 }
 
 func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
-	t.Log("Testing NewRestClient call function for error scenarios")
 	initEnv()
-	runtime.ServiceName = "Server2"
-	schema := "schema2"
 
-	defaultChain := make(map[string]string)
-	defaultChain["default"] = ""
-
-	config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
-	config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
-	handler.CreateChains(common.Provider, defaultChain)
-	f, err := server.GetServerFunc("rest")
-	assert.NoError(t, err)
-	s := f(server.Options{
-		Address:   "127.0.0.1:8092",
-		ChainName: "default",
+	t.Run("prepare http server and schema", func(t *testing.T) {
+		runtime.ServiceName = "Server2"
+		schema := "schema2"
+		defaultChain := make(map[string]string)
+		defaultChain["default"] = ""
+		config.GlobalDefinition.ServiceComb.Handler.Chain.Provider = defaultChain
+		config.GlobalDefinition.ServiceComb.Handler.Chain.Consumer = defaultChain
+		handler.CreateChains(common.Provider, defaultChain)
+		f, err := server.GetServerFunc("rest")
+		assert.NoError(t, err)
+		s := f(server.Options{
+			Address:   "127.0.0.1:8092",
+			ChainName: "default",
+		})
+		_, err = s.Register(&TestSchema{}, server.WithSchemaID(schema))
+		assert.NoError(t, err)
+		err = s.Start()
+		assert.NoError(t, err)
 	})
-	_, err = s.Register(&TestSchema{}, server.WithSchemaID(schema))
-	assert.NoError(t, err)
-	err = s.Start()
-	assert.NoError(t, err)
+
 	fail := make(map[string]bool)
 	fail["http_500"] = true
 	c, _ := rest.NewRestClient(client.Options{
@@ -233,7 +234,8 @@ func TestNewRestClient_Call_Error_Scenarios(t *testing.T) {
 		name := c.String()
 		t.Log("protocol plugin name:", name)
 		err = c.Call(context.TODO(), "127.0.0.1:8092", req, reply)
-		t.Log("hello reply", reply)
+		assert.Equal(t, 200, reply.StatusCode)
+		assert.NotEmpty(t, httputil.ReadBody(reply))
 		assert.NoError(t, err)
 	})
 	t.Run("call error API with failure map settings, client should return err,",
