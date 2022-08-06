@@ -8,7 +8,7 @@ require (
 	github.com/go-chassis/go-archaius v1.5.1
 	github.com/go-chassis/go-restful-swagger20 v1.0.4-0.20220704025524-9243cbee26b7
 	github.com/go-chassis/openlog v1.1.2
-	github.com/go-chassis/sc-client v0.6.1-0.20210918130508-2b9daad232da
+	github.com/go-chassis/sc-client v0.6.1-0.20220728072125-dacdd0c834bf
 	github.com/go-chassis/seclog v1.3.1-0.20210917082355-52c40864f240
 	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/golang/protobuf v1.4.2

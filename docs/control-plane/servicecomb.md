@@ -17,6 +17,11 @@ servicecomb:
     client:
       serverUri: http://127.0.0.1:30110         # This should be the address of your Kie Server
       #type: kie
+  credentials:
+    account:
+      name: service_account
+      password: Complicated_password1
+    cipher: default
 ```
 
 ## Config Servers
