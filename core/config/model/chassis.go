@@ -154,12 +154,19 @@ type ChainStruct struct {
 	Provider map[string]string `yaml:"Provider"`
 }
 
+type Account struct {
+	Username string `yaml:"name"`
+	Password string `yaml:"password"`
+}
+
 // CredentialStruct aksk信息
 type CredentialStruct struct {
 	AccessKey        string `yaml:"accessKey"`
 	SecretKey        string `yaml:"secretKey"`
 	AkskCustomCipher string `yaml:"akskCustomCipher"`
 	Project          string `yaml:"project"`
+	Account             Account `yaml:"account"`
+	AccountCustomCipher string  `yaml:"cipher"`
 }
 
 // TracingStruct tracing structure

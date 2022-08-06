@@ -2,6 +2,7 @@ package servicecenter
 
 import (
 	scregistry "github.com/go-chassis/cari/discovery"
+	"github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/sc-client"
 )
@@ -113,5 +114,9 @@ func ToSCOptions(options registry.Options) sc.Options {
 	sco.Compressed = options.Compressed
 	sco.EnableSSL = options.EnableSSL
 	sco.Verbose = options.Verbose
+	sco.AuthUser = config.GetRegistratorRbacAccount()
+	if sco.AuthUser != nil {
+		sco.EnableAuth = true
+	}
 	return sco
 }
