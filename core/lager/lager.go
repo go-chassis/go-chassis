@@ -12,7 +12,7 @@ import (
 
 // constant values for log rotate parameters
 const (
-	LogRotateDate  = 0
+	LogRotateDate  = 1
 	LogRotateSize  = 10
 	LogBackupCount = 7
 )
