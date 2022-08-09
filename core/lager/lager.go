@@ -105,7 +105,7 @@ func checkPassLagerDefinition(option *Options) {
 		option.LoggerFile = "log/chassis.log"
 	}
 
-	if option.LogRotateAge <= 0 || option.LogRotateAge > 10 {
+	if option.LogRotateAge < 0 || option.LogRotateAge > 10 {
 		option.LogRotateAge = LogRotateDate
 	}
 
