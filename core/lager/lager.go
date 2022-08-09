@@ -12,7 +12,7 @@ import (
 
 // constant values for log rotate parameters
 const (
-	LogRotateDate  = 1
+	LogRotateDate  = 0
 	LogRotateSize  = 10
 	LogBackupCount = 7
 )
@@ -105,7 +105,7 @@ func checkPassLagerDefinition(option *Options) {
 		option.LoggerFile = "log/chassis.log"
 	}
 
-	if option.LogRotateAge <= 0 || option.LogRotateAge > 10 {
+	if option.LogRotateAge < 0 || option.LogRotateAge > 10 {
 		option.LogRotateAge = LogRotateDate
 	}
 
