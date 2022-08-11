@@ -39,7 +39,7 @@ servicecomb:
 	config.ReadGlobalConfigFromArchaius()
 	c := config.GetRegistratorRbacAccount()
 	assert.Equal(t, "service_account", c.Username)
-	assert.Equal(t, "Complicated_password1", c.Password)
+	assert.Equal(t, "d:Complicated_password1", c.Password)
 }
 
 //DefaultCipher is a struct
