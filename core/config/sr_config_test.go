@@ -17,17 +17,6 @@ import (
 func TestGetRegistratorRbacAccount(t *testing.T) {
 	b := []byte(`
 servicecomb:
-  registry:
-    disabled: false            #optional: 默认开启registry模块
-    type: servicecenter        #optional: 默认类型为对接服务中心
-    address: http://10.0.0.1:30100,http://10.0.0.2:30100
-    register: auto             #optional：默认为自动 [auto manual]
-    refeshInterval: 30s
-    watch: true
-    uploadSchema: false 
-    heartbeat:
-      mode: non-keep-alive
-      interval: 30s
   credentials:
     account:
       name: service_account
@@ -68,5 +57,5 @@ func (c *DefaultCipher) Encrypt(src string) (string, error) {
 
 //Decrypt is method used for decryption
 func (c *DefaultCipher) Decrypt(src string) (string, error) {
-	return "d: " + src, nil
+	return src, nil
 }
