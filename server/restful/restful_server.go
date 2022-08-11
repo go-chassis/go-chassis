@@ -254,11 +254,12 @@ func (r *restfulServer) Start() error {
 	r.container.Add(r.ws)
 	sslFlag := ""
 	r.server = &http.Server{
-		Addr:         config.Address,
-		Handler:      r.container,
-		ReadTimeout:  r.opts.Timeout,
-		WriteTimeout: r.opts.Timeout,
-		IdleTimeout:  r.opts.Timeout,
+		Addr:              config.Address,
+		Handler:           r.container,
+		ReadTimeout:       r.opts.Timeout,
+		WriteTimeout:      r.opts.Timeout,
+		IdleTimeout:       r.opts.Timeout,
+		ReadHeaderTimeout: r.opts.Timeout,
 	}
 	if r.opts.HeaderLimit > 0 {
 		r.server.MaxHeaderBytes = r.opts.HeaderLimit

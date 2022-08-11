@@ -7,7 +7,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix"
 	"github.com/go-chassis/openlog"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -68,7 +67,7 @@ func FallbackNil(inv *invocation.Invocation, finish chan *invocation.Response) f
 				resp.StatusCode = http.StatusOK
 				//make sure body is empty
 				if resp.Body != nil {
-					_, err = io.Copy(ioutil.Discard, resp.Body)
+					_, err = io.Copy(io.Discard, resp.Body)
 					if err != nil {
 						openlog.Error(err.Error())
 					}
@@ -123,7 +122,7 @@ func FallbackErr(inv *invocation.Invocation, finish chan *invocation.Response) f
 			resp.StatusCode = http.StatusInternalServerError
 			//make sure body is empty
 			if resp.Body != nil {
-				_, err = io.Copy(ioutil.Discard, resp.Body)
+				_, err = io.Copy(io.Discard, resp.Body)
 				if err != nil {
 					openlog.Error(err.Error())
 				}

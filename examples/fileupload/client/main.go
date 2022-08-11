@@ -14,7 +14,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/client/rest"
 	"github.com/go-chassis/go-chassis/v2/core"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
-	"io/ioutil"
 )
 
 //if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/client/
@@ -96,7 +95,7 @@ func uploadform(filename string) {
 		openlog.Error("new request failed." + err.Error())
 		return
 	}
-	req.Body = ioutil.NopCloser(bodyReader)
+	req.Body = io.NopCloser(bodyReader)
 	req.Header.Set("Content-Type", headBufWriter.FormDataContentType())
 	req.ContentLength = int64(headBuf.Len()) + fs.Size() + int64(lastBoundary.Len())
 

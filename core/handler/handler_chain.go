@@ -25,10 +25,7 @@ func (c *Chain) Clone() Chain {
 		Name:        c.Name,
 		Handlers:    make([]Handler, len(c.Handlers)),
 	}
-
-	for i, h := range c.Handlers {
-		clone.Handlers[i] = h
-	}
+	copy(clone.Handlers, c.Handlers)
 	return clone
 }
 

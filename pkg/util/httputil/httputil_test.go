@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -67,7 +66,7 @@ func TestSetBody(t *testing.T) {
 	req := &http.Request{}
 	t.Run("set data of body to request", func(t *testing.T) {
 		httputil.SetBody(req, nil)
-		body, err := ioutil.ReadAll(req.Body)
+		body, err := io.ReadAll(req.Body)
 		assert.Nil(t, err)
 		assert.NotNil(t, body)
 		assert.Zero(t, len(body))
@@ -79,7 +78,7 @@ func TestSetBody(t *testing.T) {
 		b, err := json.Marshal(data)
 		assert.Nil(t, err)
 		httputil.SetBody(req, b)
-		body, err = ioutil.ReadAll(req.Body)
+		body, err = io.ReadAll(req.Body)
 		assert.NotNil(t, body)
 		assert.NotZero(t, len(body))
 		assert.Equal(t, b, body)
@@ -161,7 +160,7 @@ func TestRespBody(t *testing.T) {
 		bb = bytes.NewReader(bodies)
 		rc, ok := bb.(io.ReadCloser)
 		if !ok && bodies != nil {
-			rc = ioutil.NopCloser(bb)
+			rc = io.NopCloser(bb)
 		}
 		resp.Body = rc
 		b := httputil.ReadBody(resp)

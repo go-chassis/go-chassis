@@ -18,9 +18,7 @@
 package restfultest_test
 
 import (
-	"github.com/go-chassis/openlog"
-	log "github.com/go-chassis/seclog"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,6 +28,8 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/go-chassis/go-chassis/v2/server/restful/restfultest"
+	"github.com/go-chassis/openlog"
+	log "github.com/go-chassis/seclog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -90,19 +90,19 @@ func TestNew(t *testing.T) {
 	assert.NoError(t, err)
 	resp := httptest.NewRecorder()
 	c.ServeHTTP(resp, r)
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, "some_user", string(body))
 
 	r, _ = http.NewRequest("GET", "/demo/sayhello2/another_user", nil)
 	c.ServeHTTP(resp, r)
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, "another_user", string(body))
 
 	r, _ = http.NewRequest("GET", "/demo/panic", nil)
 	c.ServeHTTP(resp, r)
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, "server got a panic, plz check log.", string(body))
 }
@@ -116,7 +116,7 @@ func TestNewWithChain(t *testing.T) {
 	assert.NoError(t, err)
 	resp := httptest.NewRecorder()
 	c.ServeHTTP(resp, r)
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	t.Log(resp)
 	assert.NoError(t, err)
 	assert.Equal(t, "some_user", string(body))

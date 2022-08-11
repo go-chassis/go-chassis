@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/go-chassis/go-chassis/v2/core/common"
@@ -25,7 +25,7 @@ func SetURI(req *http.Request, url string) {
 
 //SetBody is a method used for setting body for a request
 func SetBody(req *http.Request, body []byte) {
-	req.Body = ioutil.NopCloser(bytes.NewReader(body))
+	req.Body = io.NopCloser(bytes.NewReader(body))
 }
 
 //SetCookie set key value in request cookie
@@ -72,7 +72,7 @@ func HTTPRequest(inv *invocation.Invocation) (*http.Request, error) {
 // ReadBody read body from the from the response
 func ReadBody(resp *http.Response) []byte {
 	if resp != nil && resp.Body != nil {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			openlog.Error(fmt.Sprintf("read body failed: %s", err.Error()))
 			return nil

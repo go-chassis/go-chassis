@@ -5,12 +5,12 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"github.com/go-chassis/foundation/tlsutil"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/go-chassis/cari/security"
+	"github.com/go-chassis/foundation/tlsutil"
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 
@@ -49,7 +49,7 @@ var VersionMap = map[string]uint16{
 //GetX509CACertPool read a certificate file and gets the certificate configuration
 func GetX509CACertPool(caCertFile string) (*x509.CertPool, error) {
 	pool := x509.NewCertPool()
-	caCert, err := ioutil.ReadFile(filepath.Clean(caCertFile))
+	caCert, err := os.ReadFile(filepath.Clean(caCertFile))
 	if err != nil {
 		return nil, fmt.Errorf("read ca cert file %s failed", caCert)
 	}
@@ -74,7 +74,7 @@ func getTLSConfig(sslConfig *SSLConfig, role string) (tlsConfig *tls.Config, err
 	// if cert pwd file is set, get the pwd
 	var keyPassphase []byte
 	if sslConfig.CertPWDFile != "" {
-		keyPassphase, err = ioutil.ReadFile(sslConfig.CertPWDFile)
+		keyPassphase, err = os.ReadFile(sslConfig.CertPWDFile)
 		if err != nil {
 			return nil, fmt.Errorf("read cert pwd %s failed: %w", sslConfig.CertPWDFile, err)
 		}
