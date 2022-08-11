@@ -4,15 +4,14 @@ package initiator
 
 import (
 	"fmt"
-	"github.com/go-chassis/openlog"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
+	"github.com/go-chassis/openlog"
+	"gopkg.in/yaml.v2"
 )
 
 // LoggerOptions has the configuration about logging
@@ -52,7 +51,7 @@ func ParseLoggerConfig(file string) error {
 }
 
 func unmarshalYamlFile(file string, target interface{}) error {
-	content, err := ioutil.ReadFile(filepath.Clean(file))
+	content, err := os.ReadFile(filepath.Clean(file))
 	if err != nil {
 		return err
 	}

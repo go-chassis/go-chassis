@@ -23,7 +23,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
 	"github.com/prometheus/common/expfmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -76,7 +75,7 @@ func TestNewWithChain(t *testing.T) {
 	resp2 := httptest.NewRecorder()
 	r, _ = http.NewRequest("GET", "/err", nil)
 	c.ServeHTTP(resp2, r)
-	body, err := ioutil.ReadAll(resp2.Body)
+	body, err := io.ReadAll(resp2.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, "err", string(body))
 	assert.Equal(t, http.StatusInternalServerError, resp2.Code)

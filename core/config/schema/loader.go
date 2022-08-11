@@ -3,16 +3,16 @@ package schema
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/fileutil"
 	swagger "github.com/go-chassis/go-restful-swagger20"
 	"github.com/go-chassis/openlog"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 // MicroserviceMeta is the struct for micro service meta
@@ -143,7 +143,7 @@ func loadSchemaFileContent(schemaPath string) (*MicroserviceMeta, error) {
 
 	for _, fullPath := range schemaFiles {
 		schemaFile := filepath.Base(fullPath)
-		dat, err := ioutil.ReadFile(filepath.Clean(fullPath))
+		dat, err := os.ReadFile(filepath.Clean(fullPath))
 		if err != nil {
 			return nil, errors.New("cannot find the schema file")
 		}

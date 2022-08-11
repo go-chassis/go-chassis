@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/cenkalti/backoff"
@@ -107,7 +107,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 	if req, ok := i.Args.(*http.Request); ok {
 		if req != nil {
 			if req.Body != nil {
-				reqBytes, _ = ioutil.ReadAll(req.Body)
+				reqBytes, _ = io.ReadAll(req.Body)
 			}
 		}
 	}
@@ -129,7 +129,7 @@ func (lb *LBHandler) handleWithRetry(chain *Chain, i *invocation.Invocation, lbC
 		i.HandlerIndex = handlerIndex
 
 		if _, ok := i.Args.(*http.Request); ok {
-			i.Args.(*http.Request).Body = ioutil.NopCloser(bytes.NewBuffer(reqBytes))
+			i.Args.(*http.Request).Body = io.NopCloser(bytes.NewBuffer(reqBytes))
 		}
 
 		chain.Next(i, func(r *invocation.Response) {
