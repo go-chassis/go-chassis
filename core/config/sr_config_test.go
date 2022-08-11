@@ -17,17 +17,6 @@ import (
 func TestGetRegistratorRbacAccount(t *testing.T) {
 	b := []byte(`
 servicecomb:
-  registry:
-    disabled: false            #optional: 默认开启registry模块
-    type: servicecenter        #optional: 默认类型为对接服务中心
-    address: http://10.0.0.1:30100,http://10.0.0.2:30100
-    register: auto             #optional：默认为自动 [auto manual]
-    refeshInterval: 30s
-    watch: true
-    uploadSchema: false 
-    heartbeat:
-      mode: non-keep-alive
-      interval: 30s
   credentials:
     account:
       name: service_account
@@ -50,7 +39,7 @@ servicecomb:
 	config.ReadGlobalConfigFromArchaius()
 	c := config.GetRegistratorRbacAccount()
 	assert.Equal(t, "service_account", c.Username)
-	assert.Equal(t, "Complicated_password1", c.Password)
+	assert.Equal(t, "d:Complicated_password1", c.Password)
 }
 
 //DefaultCipher is a struct

@@ -15,5 +15,5 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.45.2
-          args: --skip-dirs=examples --skip-files=.*_test.go$ --disable=nilerr
+          version: v1.48.0
+          args: --enable gofmt,gocyclo,goimports,dupl,gosec --timeout 5m --skip-dirs=examples,test --skip-files=.*_test.go$
