@@ -28,6 +28,8 @@ type Options struct {
 //RegisterOptions is options when you register a schema to chassis
 type RegisterOptions struct {
 	SchemaID   string
+	Method     string
+	Path       string
 	RPCSvcDesc interface{}
 }
 
@@ -38,6 +40,20 @@ type RegisterOption func(*RegisterOptions)
 func WithSchemaID(schemaID string) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.SchemaID = schemaID
+	}
+}
+
+//WithPah specify a url pattern
+func WithPah(Path string) RegisterOption {
+	return func(o *RegisterOptions) {
+		o.Path = Path
+	}
+}
+
+//WithPah specify a method
+func WithMethod(Method string) RegisterOption {
+	return func(o *RegisterOptions) {
+		o.Method = Method
 	}
 }
 
