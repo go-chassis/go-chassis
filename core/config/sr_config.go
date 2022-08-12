@@ -48,7 +48,7 @@ func GetRegistratorRbacAccount() *rbac.AuthUser {
 		openlog.Error(fmt.Sprintf("get cipher plugin [%s] failed, %v", cipherName, err))
 		return nil
 	} else if cipherPlugin == nil {
-		openlog.Error(fmt.Sprintf("invalid cipher plugin"))
+		openlog.Error("invalid cipher plugin")
 		return nil
 	}
 
