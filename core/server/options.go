@@ -43,8 +43,8 @@ func WithSchemaID(schemaID string) RegisterOption {
 	}
 }
 
-//WithPah specify a url pattern
-func WithPah(Path string) RegisterOption {
+//WithPath specify a url pattern
+func WithPath(Path string) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.Path = Path
 	}
