@@ -33,7 +33,7 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // The request message containing the user's name.
 type HelloRequest struct {
-	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Name string
 }
 
 func (m *HelloRequest) Reset()                    { *m = HelloRequest{} }
@@ -50,7 +50,7 @@ func (m *HelloRequest) GetName() string {
 
 // The response message containing the greetings
 type HelloReply struct {
-	Message string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
+	Message string
 }
 
 func (m *HelloReply) Reset()                    { *m = HelloReply{} }
@@ -64,13 +64,6 @@ func (m *HelloReply) GetMessage() string {
 	}
 	return ""
 }
-
-func init() {
-	proto.RegisterType((*HelloRequest)(nil), "helloworld.HelloRequest")
-	proto.RegisterType((*HelloReply)(nil), "helloworld.HelloReply")
-}
-
-func init() { proto.RegisterFile("test.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
 	// 142 bytes of a gzipped FileDescriptorProto
