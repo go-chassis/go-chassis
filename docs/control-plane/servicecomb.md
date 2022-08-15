@@ -17,6 +17,12 @@ servicecomb:
     client:
       serverUri: http://127.0.0.1:30110         # This should be the address of your Kie Server
       #type: kie
+  credentials:
+    account:    
+      name: service_account
+      password: Complicated_password1
+    cipher: default
+    #type:rbac
 ```
 
 ## Config Servers
@@ -28,3 +34,6 @@ Go-Chassis leverage [go-archaius](https://github.com/go-chassis/go-archaius) to 
 
 use this [guide](https://kie.readthedocs.io/en/latest/get-started.html) to set up a ServiceComb-Kie server.
 
+### ServiceComb-rbac
+if add this config, you need to enable RBAC feature on service-center.
+use this [guide](https://service-center.readthedocs.io/en/latest/user-guides/rbac.html) to set up rbac auth for service-center.
