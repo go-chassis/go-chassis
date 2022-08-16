@@ -55,6 +55,7 @@ func Init(opts Options) error {
 	if err != nil {
 		return err
 	}
+	openlog.Info(fmt.Sprintf("codec [%s] enabled", opts.Plugin))
 	return nil
 }
 

@@ -30,7 +30,7 @@ type Person struct {
 func TestInit(t *testing.T) {
 	t.Run("init codec, should success", func(t *testing.T) {
 		err := codec.Init(codec.Options{
-			Plugin: "json",
+			Plugin: "encoding/json",
 		})
 		assert.NoError(t, err)
 	})
