@@ -15,7 +15,7 @@ func Get(sid string) (ep interface{}, ok bool) {
 	return
 }
 
-//ClearExpired delete all expired session
+// ClearExpired delete all expired session
 func ClearExpired() {
 	Cache.DeleteExpired()
 }

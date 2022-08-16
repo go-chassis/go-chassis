@@ -89,7 +89,7 @@ func wrapTagsForServiceCenter(t utiltags.Tags) utiltags.Tags {
 	return utiltags.NewDefaultTag(common.LatestVersion, runtime.App)
 }
 
-//GetCriteria generate batch find criteria from provider cache
+// GetCriteria generate batch find criteria from provider cache
 func GetCriteria() []*scregistry.FindService {
 	services := make([]*scregistry.FindService, 0)
 	for _, service := range registry.GetProvidersFromCache() {
@@ -104,7 +104,7 @@ func GetCriteria() []*scregistry.FindService {
 	return services
 }
 
-//GetCriteriaByService generate batch find criteria from provider cache with same service name and different app
+// GetCriteriaByService generate batch find criteria from provider cache with same service name and different app
 func GetCriteriaByService(sn string) []*scregistry.FindService {
 	services := make([]*scregistry.FindService, 0)
 	for _, service := range registry.GetProvidersFromCache() {

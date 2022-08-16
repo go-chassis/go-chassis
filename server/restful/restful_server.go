@@ -177,7 +177,7 @@ func Invocation2HTTPRequest(inv *invocation.Invocation, req *restful.Request) {
 
 }
 
-//Register2GoRestful register http handler to go-restful framework
+// Register2GoRestful register http handler to go-restful framework
 func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful.RouteFunction) error {
 	var rb *restful.RouteBuilder
 	switch routeSpec.Method {
@@ -222,7 +222,7 @@ func Register2GoRestful(routeSpec Route, ws *restful.WebService, handler restful
 	return nil
 }
 
-//fillParam is for handle parameter by type
+// fillParam is for handle parameter by type
 func fillParam(routeSpec Route, rb *restful.RouteBuilder) *restful.RouteBuilder {
 	for _, param := range routeSpec.Parameters {
 		p := &restful.Parameter{}
@@ -294,7 +294,7 @@ func (r *restfulServer) Start() error {
 	return nil
 }
 
-//register to swagger ui,Whether to create a schema, you need to refer to the configuration.
+// register to swagger ui,Whether to create a schema, you need to refer to the configuration.
 func (r *restfulServer) CreateLocalSchema(opts server.Options) error {
 	var path string
 	if path = schema.GetSchemaPath(runtime.ServiceName); path == "" {

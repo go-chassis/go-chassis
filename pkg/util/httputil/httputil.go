@@ -12,23 +12,23 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//ErrInvalidReq invalid input
+// ErrInvalidReq invalid input
 var ErrInvalidReq = errors.New("rest consumer call arg is not *http.Request type")
 
-//SetURI sets host for the request.
-//set http(s)://{domain}/xxx
+// SetURI sets host for the request.
+// set http(s)://{domain}/xxx
 func SetURI(req *http.Request, url string) {
 	if tempURL, err := req.URL.Parse(url); err == nil {
 		req.URL = tempURL
 	}
 }
 
-//SetBody is a method used for setting body for a request
+// SetBody is a method used for setting body for a request
 func SetBody(req *http.Request, body []byte) {
 	req.Body = io.NopCloser(bytes.NewReader(body))
 }
 
-//SetCookie set key value in request cookie
+// SetCookie set key value in request cookie
 func SetCookie(req *http.Request, k, v string) {
 	c := &http.Cookie{
 		Name:  k,
@@ -37,7 +37,7 @@ func SetCookie(req *http.Request, k, v string) {
 	req.AddCookie(c)
 }
 
-//GetCookie is a method which gets cookie from a request
+// GetCookie is a method which gets cookie from a request
 func GetCookie(req *http.Request, key string) string {
 	cookie, err := req.Cookie(key)
 	if errors.Is(err, http.ErrNoCookie) {
@@ -56,7 +56,7 @@ func GetContentType(req *http.Request) string {
 	return req.Header.Get("Content-Type")
 }
 
-//HTTPRequest convert invocation to http request
+// HTTPRequest convert invocation to http request
 func HTTPRequest(inv *invocation.Invocation) (*http.Request, error) {
 	reqSend, ok := inv.Args.(*http.Request)
 	if !ok {

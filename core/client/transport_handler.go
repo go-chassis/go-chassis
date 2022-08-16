@@ -77,7 +77,7 @@ func (th *TransportHandler) Handle(chain *handler.Chain, i *invocation.Invocatio
 	cb(r)
 }
 
-//ProcessSpecialProtocol handles special logic for protocol
+// ProcessSpecialProtocol handles special logic for protocol
 func ProcessSpecialProtocol(inv *invocation.Invocation) {
 	switch inv.Protocol {
 	case common.ProtocolRest:
@@ -92,7 +92,7 @@ func ProcessSpecialProtocol(inv *invocation.Invocation) {
 	}
 }
 
-//ProcessSuccessiveFailure handles special logic for protocol
+// ProcessSuccessiveFailure handles special logic for protocol
 func ProcessSuccessiveFailure(i *invocation.Invocation) {
 	var cookie string
 	var reply *http.Response

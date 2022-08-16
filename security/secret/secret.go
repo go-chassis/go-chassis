@@ -26,7 +26,7 @@ import (
 	"errors"
 )
 
-//GenRSAPrivateKey generate a rsa private key
+// GenRSAPrivateKey generate a rsa private key
 func GenRSAPrivateKey(bits int) ([]byte, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
@@ -46,7 +46,7 @@ func GenRSAPrivateKey(bits int) ([]byte, error) {
 	return b, nil
 }
 
-//GenRSAKeyPair create rsa key pair
+// GenRSAKeyPair create rsa key pair
 func GenRSAKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	private, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
@@ -57,7 +57,7 @@ func GenRSAKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	return private, public, nil
 }
 
-//RSAPrivate2Bytes expose bytes of private key
+// RSAPrivate2Bytes expose bytes of private key
 func RSAPrivate2Bytes(privateKey *rsa.PrivateKey) ([]byte, error) {
 	k := x509.MarshalPKCS1PrivateKey(privateKey)
 	block := &pem.Block{
@@ -73,7 +73,7 @@ func RSAPrivate2Bytes(privateKey *rsa.PrivateKey) ([]byte, error) {
 	return b, nil
 }
 
-//RSAPublicKey2Bytes expose bytes of public key
+// RSAPublicKey2Bytes expose bytes of public key
 func RSAPublicKey2Bytes(publicKey *rsa.PublicKey) ([]byte, error) {
 	k, err := x509.MarshalPKIXPublicKey(publicKey)
 	if err != nil {
@@ -89,7 +89,7 @@ func RSAPublicKey2Bytes(publicKey *rsa.PublicKey) ([]byte, error) {
 	return b, nil
 }
 
-//ParseRSAPrivateKey convert string to private key
+// ParseRSAPrivateKey convert string to private key
 func ParseRSAPrivateKey(key string) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
@@ -104,7 +104,7 @@ func ParseRSAPrivateKey(key string) (*rsa.PrivateKey, error) {
 	return p, nil
 }
 
-//ParseRSAPPublicKey convert string to pub key
+// ParseRSAPPublicKey convert string to pub key
 func ParseRSAPPublicKey(key string) (*rsa.PublicKey, error) {
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {

@@ -10,29 +10,29 @@ import (
 
 var l sync.Mutex
 
-//RestFulMessage is a struct used to implement restful message
+// RestFulMessage is a struct used to implement restful message
 type RestFulMessage struct {
 }
 
-//DeadLock is used to simulate deadlock
+// DeadLock is used to simulate deadlock
 func (r *RestFulMessage) DeadLock(b *rf.Context) {
 	l.Lock()
 	b.Write([]byte("hello world"))
 }
 
-//Sayhi is a method used to reply request user with hello world text
+// Sayhi is a method used to reply request user with hello world text
 func (r *RestFulMessage) Sayhi(b *rf.Context) {
 	b.Write([]byte("hello world"))
 	return
 }
 
-//Sayerror is a method used to reply request user with error
+// Sayerror is a method used to reply request user with error
 func (r *RestFulMessage) Sayerror(b *rf.Context) {
 	_ = b.WriteError(http.StatusInternalServerError, errors.New("test hystric"))
 	return
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *RestFulMessage) URLPatterns() []rf.Route {
 	return []rf.Route{
 		{Method: http.MethodGet, Path: "/lock", ResourceFunc: r.DeadLock},

@@ -50,28 +50,28 @@ func init() {
 	goChassis = &chassis{}
 }
 
-//RegisterSchema Register a API service to specific server by name
-//You must register API first before Call Init
+// RegisterSchema Register a API service to specific server by name
+// You must register API first before Call Init
 func RegisterSchema(serverName string, structPtr interface{}, opts ...server.RegisterOption) {
 	goChassis.registerSchema(serverName, structPtr, opts...)
 }
 
-//SetDefaultConsumerChains your custom chain map for Consumer,if there is no config, this default chain will take affect
+// SetDefaultConsumerChains your custom chain map for Consumer,if there is no config, this default chain will take affect
 func SetDefaultConsumerChains(c map[string]string) {
 	goChassis.DefaultConsumerChainNames = c
 }
 
-//SetDefaultProviderChains set your custom chain map for Provider,if there is no config, this default chain will take affect
+// SetDefaultProviderChains set your custom chain map for Provider,if there is no config, this default chain will take affect
 func SetDefaultProviderChains(c map[string]string) {
 	goChassis.DefaultProviderChainNames = c
 }
 
-//HijackSignal set signals that want to hijack.
+// HijackSignal set signals that want to hijack.
 func HijackSignal(sigs ...os.Signal) {
 	goChassis.sigs = sigs
 }
 
-//InstallPreShutdown instal what you want to achieve before graceful shutdown
+// InstallPreShutdown instal what you want to achieve before graceful shutdown
 func InstallPreShutdown(name string, f func(os.Signal)) {
 	// lazy init
 	if goChassis.preShutDownFuncs == nil {
@@ -80,7 +80,7 @@ func InstallPreShutdown(name string, f func(os.Signal)) {
 	goChassis.preShutDownFuncs[name] = f
 }
 
-//InstallPostShutdown instal what you want to achieve after graceful shutdown
+// InstallPostShutdown instal what you want to achieve after graceful shutdown
 func InstallPostShutdown(name string, f func(os.Signal)) {
 	// lazy init
 	if goChassis.postShutDownFuncs == nil {
@@ -89,13 +89,13 @@ func InstallPostShutdown(name string, f func(os.Signal)) {
 	goChassis.postShutDownFuncs[name] = f
 }
 
-//HijackGracefulShutdown reset GracefulShutdown
+// HijackGracefulShutdown reset GracefulShutdown
 func HijackGracefulShutdown(f func(os.Signal)) {
 	goChassis.hijackGracefulShutdown = f
 }
 
-//Run bring up the service,it waits for os signal,and shutdown gracefully
-//before all protocol server start successfully, it may return error.
+// Run bring up the service,it waits for os signal,and shutdown gracefully
+// before all protocol server start successfully, it may return error.
 func Run() error {
 	err := goChassis.start()
 	if err != nil {
@@ -146,7 +146,7 @@ func waitingSignal() {
 	}
 }
 
-//GracefulShutdown graceful shut down api
+// GracefulShutdown graceful shut down api
 func GracefulShutdown(s os.Signal) {
 	if !config.GetRegistratorDisable() {
 		registry.HBService.Stop()
@@ -168,7 +168,7 @@ func GracefulShutdown(s os.Signal) {
 	openlog.Info("go chassis server gracefully shutdown")
 }
 
-//Init prepare the chassis framework runtime
+// Init prepare the chassis framework runtime
 func Init() error {
 	if goChassis.DefaultConsumerChainNames == nil {
 		defaultChain := strings.Join([]string{

@@ -105,7 +105,7 @@ func ToSCInstance(msi *registry.MicroServiceInstance) *scregistry.MicroServiceIn
 	return si
 }
 
-//ToSCOptions convert registry opstions into sc client options
+// ToSCOptions convert registry opstions into sc client options
 func ToSCOptions(options registry.Options) sc.Options {
 	sco := sc.Options{}
 	sco.Timeout = options.Timeout

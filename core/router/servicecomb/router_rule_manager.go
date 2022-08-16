@@ -18,8 +18,8 @@ const (
 	DarkLaunchTypeRate = "RATE"
 )
 
-//MergeLocalAndRemoteConfig get router config from archaius,
-//including local file,memory and config server
+// MergeLocalAndRemoteConfig get router config from archaius,
+// including local file,memory and config server
 func MergeLocalAndRemoteConfig() (map[string][]*config.RouteRule, error) {
 	destinations := make(map[string][]*config.RouteRule)
 	//then get config from archaius and simply overwrite rule from file

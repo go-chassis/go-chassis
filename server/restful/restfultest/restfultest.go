@@ -29,13 +29,13 @@ import (
 	chassisRestful "github.com/go-chassis/go-chassis/v2/server/restful"
 )
 
-//Container is unit test solution for rest api method
+// Container is unit test solution for rest api method
 type Container struct {
 	container *restful.Container
 	ws        *restful.WebService
 }
 
-//New create a isolated test container,
+// New create a isolated test container,
 // you can register a struct, and it will be registered to a isolated container
 func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 	chainName := ""
@@ -70,7 +70,7 @@ func New(schema interface{}, chain *handler.Chain) (*Container, error) {
 	return c, nil
 }
 
-//ServeHTTP accept native httptest, after process, response writer will write response
+// ServeHTTP accept native httptest, after process, response writer will write response
 func (c *Container) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	c.container.ServeHTTP(resp, req)
 }

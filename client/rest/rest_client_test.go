@@ -276,7 +276,7 @@ func (r *TestSchema) Error(b *restful.Context) {
 	b.WriteHeader(http.StatusInternalServerError)
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *TestSchema) URLPatterns() []restful.Route {
 	return []restful.Route{
 		{Method: http.MethodGet, Path: "/", ResourceFunc: r.Root,

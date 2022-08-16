@@ -48,10 +48,10 @@ var DefaultOptions = Options{
 	ChainName: "default",
 }
 
-//ChainName is able to custom handler chain for a invoker.
-//you can specify a handler chain name under "servicecomb.handler.chain.Consumer" in chassis.yaml file.
-//so that you can define different invoker with different handler chain.
-//a handler chain is bind to a invoker instance.
+// ChainName is able to custom handler chain for a invoker.
+// you can specify a handler chain name under "servicecomb.handler.chain.Consumer" in chassis.yaml file.
+// so that you can define different invoker with different handler chain.
+// a handler chain is bind to a invoker instance.
 func ChainName(name string) Option {
 	return func(o *Options) {
 		o.ChainName = name

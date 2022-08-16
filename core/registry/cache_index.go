@@ -21,7 +21,7 @@ type IndexCache struct {
 	CriteriaStore []map[string]string //all criteria need to be saved in here so that we can update indexedCache, during Set process
 }
 
-//NewIndexCache create a cache which saves and manage instances
+// NewIndexCache create a cache which saves and manage instances
 func NewIndexCache() *IndexCache {
 	return &IndexCache{
 		simpleCache:  cache.New(DefaultExpireTime, 0),
@@ -31,16 +31,16 @@ func NewIndexCache() *IndexCache {
 	}
 }
 
-//FullCache return all instances
+// FullCache return all instances
 func (ic *IndexCache) FullCache() *cache.Cache { return ic.simpleCache }
 
-//Delete remove one service's instances
+// Delete remove one service's instances
 func (ic *IndexCache) Delete(k string) {
 	ic.simpleCache.Delete(k)
 	ic.indexedCache.Delete(k)
 }
 
-//Set overwrite instances cache
+// Set overwrite instances cache
 func (ic *IndexCache) Set(k string, instances []*MicroServiceInstance) {
 	latestV, _ := version.NewVersion("0.0.0")
 	for _, instance := range instances {
@@ -73,7 +73,7 @@ func (ic *IndexCache) Set(k string, instances []*MicroServiceInstance) {
 
 }
 
-//Get return instances cache by criteria
+// Get return instances cache by criteria
 func (ic *IndexCache) Get(k string, tags map[string]string) ([]*MicroServiceInstance, bool) {
 	value, ok := ic.simpleCache.Get(k)
 	if !ok {
@@ -118,7 +118,7 @@ func (ic *IndexCache) setTagsBeforeQuery(k string, tags map[string]string) {
 	ic.muxLatestV.RUnlock()
 }
 
-//GetIndexedCacheKey combine keys in order, use sets to return sorted list
+// GetIndexedCacheKey combine keys in order, use sets to return sorted list
 func GetIndexedCacheKey(service string, tags map[string]string) (ss string) {
 	ss = "service:" + service
 	keys := sets.NewString()

@@ -274,7 +274,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 	return microServiceInstance, nil
 }
 
-//RegroupInstances organize raw data to better format
+// RegroupInstances organize raw data to better format
 func RegroupInstances(keys []*scregistry.FindService, response *scregistry.BatchFindInstancesResponse) map[string][]*registry.MicroServiceInstance {
 	instanceMap := make(map[string][]*registry.MicroServiceInstance)
 	if response.Services != nil {
@@ -508,12 +508,12 @@ func (r *ContractDiscovery) GetSchema(microServiceID, schemaName string) ([]byte
 
 }
 
-//Close close client connection
+// Close close client connection
 func (r *ContractDiscovery) Close() error {
 	return closeClient(r.registryClient)
 }
 
-//NewRegistrator new Service center registrator
+// NewRegistrator new Service center registrator
 func NewRegistrator(options registry.Options) registry.Registrator {
 	sco := ToSCOptions(options)
 	r, err := sc.NewClient(sco)
@@ -528,7 +528,7 @@ func NewRegistrator(options registry.Options) registry.Registrator {
 	}
 }
 
-//NewServiceDiscovery new service center discovery
+// NewServiceDiscovery new service center discovery
 func NewServiceDiscovery(options registry.Options) registry.ServiceDiscovery {
 	sco := ToSCOptions(options)
 	r, err := sc.NewClient(sco)

@@ -12,7 +12,7 @@ import (
 
 var onceEnable sync.Once
 
-//PrometheusExporter is a prom exporter for go chassis
+// PrometheusExporter is a prom exporter for go chassis
 type PrometheusExporter struct {
 	FlushInterval time.Duration
 	lc            sync.RWMutex
@@ -25,7 +25,7 @@ type PrometheusExporter struct {
 	histograms    map[string]*prometheus.HistogramVec
 }
 
-//NewPrometheusExporter create a prometheus exporter
+// NewPrometheusExporter create a prometheus exporter
 func NewPrometheusExporter(options Options) Registry {
 	if options.EnableGoRuntimeMetrics {
 		onceEnable.Do(func() {
@@ -53,7 +53,7 @@ func EnableRunTimeMetrics() {
 	GetSystemPrometheusRegistry().MustRegister(collectors.NewGoCollector())
 }
 
-//CreateGauge create collector
+// CreateGauge create collector
 func (c *PrometheusExporter) CreateGauge(opts GaugeOpts) error {
 	key := opts.Key
 	ns, sub, name := Split(key)
@@ -79,7 +79,7 @@ func (c *PrometheusExporter) CreateGauge(opts GaugeOpts) error {
 	return nil
 }
 
-//GaugeSet set value
+// GaugeSet set value
 func (c *PrometheusExporter) GaugeSet(name string, val float64, labels map[string]string) error {
 	c.lg.RLock()
 	gVec, ok := c.gauges[name]
@@ -91,7 +91,7 @@ func (c *PrometheusExporter) GaugeSet(name string, val float64, labels map[strin
 	return nil
 }
 
-//GaugeAdd add value, can be negative
+// GaugeAdd add value, can be negative
 func (c *PrometheusExporter) GaugeAdd(name string, val float64, labels map[string]string) error {
 	c.lg.RLock()
 	gVec, ok := c.gauges[name]
@@ -103,7 +103,7 @@ func (c *PrometheusExporter) GaugeAdd(name string, val float64, labels map[strin
 	return nil
 }
 
-//CreateCounter create collector
+// CreateCounter create collector
 func (c *PrometheusExporter) CreateCounter(opts CounterOpts) error {
 	key := opts.Key
 	ns, sub, name := Split(key)
@@ -129,7 +129,7 @@ func (c *PrometheusExporter) CreateCounter(opts CounterOpts) error {
 	return nil
 }
 
-//CounterAdd increase value
+// CounterAdd increase value
 func (c *PrometheusExporter) CounterAdd(name string, val float64, labels map[string]string) error {
 	c.lc.RLock()
 	v, ok := c.counters[name]
@@ -141,7 +141,7 @@ func (c *PrometheusExporter) CounterAdd(name string, val float64, labels map[str
 	return nil
 }
 
-//CreateSummary create collector
+// CreateSummary create collector
 func (c *PrometheusExporter) CreateSummary(opts SummaryOpts) error {
 	key := opts.Key
 	ns, sub, name := Split(key)
@@ -168,7 +168,7 @@ func (c *PrometheusExporter) CreateSummary(opts SummaryOpts) error {
 	return nil
 }
 
-//SummaryObserve set value
+// SummaryObserve set value
 func (c *PrometheusExporter) SummaryObserve(name string, val float64, labels map[string]string) error {
 	c.ls.RLock()
 	v, ok := c.summaries[name]
@@ -180,7 +180,7 @@ func (c *PrometheusExporter) SummaryObserve(name string, val float64, labels map
 	return nil
 }
 
-//CreateHistogram create collector
+// CreateHistogram create collector
 func (c *PrometheusExporter) CreateHistogram(opts HistogramOpts) error {
 	key := opts.Key
 	ns, sub, name := Split(key)
@@ -207,7 +207,7 @@ func (c *PrometheusExporter) CreateHistogram(opts HistogramOpts) error {
 	return nil
 }
 
-//HistogramObserve set value
+// HistogramObserve set value
 func (c *PrometheusExporter) HistogramObserve(name string, val float64, labels map[string]string) error {
 	c.lh.RLock()
 	v, ok := c.histograms[name]
@@ -219,7 +219,7 @@ func (c *PrometheusExporter) HistogramObserve(name string, val float64, labels m
 	return nil
 }
 
-//Reset reset a collector metrics
+// Reset reset a collector metrics
 func (c *PrometheusExporter) Reset(name string) error {
 	c.lc.RLock()
 	ct, ok := c.counters[name]

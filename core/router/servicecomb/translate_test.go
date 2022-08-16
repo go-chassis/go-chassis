@@ -1,4 +1,4 @@
-//Package servicecomb pull route rule policy from servicecomb control panel
+// Package servicecomb pull route rule policy from servicecomb control panel
 package servicecomb
 
 import (

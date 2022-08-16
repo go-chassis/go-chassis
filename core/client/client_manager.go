@@ -20,13 +20,13 @@ import (
 var clients = make(map[string]ProtocolClient)
 var sl sync.RWMutex
 
-//ErrClientNotExist happens if client do not exist
+// ErrClientNotExist happens if client do not exist
 var ErrClientNotExist = errors.New("client not exists")
 
-//DefaultPoolSize is 500
+// DefaultPoolSize is 500
 const DefaultPoolSize = 512
 
-//Options is configs for client creation
+// Options is configs for client creation
 type Options struct {
 	Service       string
 	PoolSize      int
@@ -51,8 +51,8 @@ func GetFailureMap(p string) map[string]bool {
 	return failureMap
 }
 
-//GetMaxIdleCon get max idle connection number you defined
-//default is 512
+// GetMaxIdleCon get max idle connection number you defined
+// default is 512
 func GetMaxIdleCon(p string) int {
 	n, ok := config.GetTransportConf().MaxIdlCons[p]
 	if !ok {
@@ -122,7 +122,7 @@ func GetClient(i *invocation.Invocation) (ProtocolClient, error) {
 	return c, nil
 }
 
-//Close close a client conn
+// Close close a client conn
 func Close(protocol, service, endpoint string) error {
 	key := generateKey(protocol, service, endpoint)
 	sl.RLock()

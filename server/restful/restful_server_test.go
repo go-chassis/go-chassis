@@ -110,7 +110,7 @@ func (r *TestSchema) Patch(b *Context) {
 func (r *TestSchema) Post(b *Context) {
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *TestSchema) URLPatterns() []Route {
 	return []Route{
 		{Method: http.MethodGet, Path: "/", ResourceFunc: r.Get,

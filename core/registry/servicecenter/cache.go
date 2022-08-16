@@ -274,8 +274,8 @@ func getServiceSet(exist []*scregistry.FindService) (sets.String, map[string]set
 	return serviceNameSet, serviceNameAppIDKeySet
 }
 
-//set app into instance metadata, split instances into ups and downs
-//set instance to cache by service name
+// set app into instance metadata, split instances into ups and downs
+// set instance to cache by service name
 func filter(providerInstances map[string][]*registry.MicroServiceInstance) {
 	//append instances from different app and same service name into one unified slice
 	downs := make(map[string]struct{})

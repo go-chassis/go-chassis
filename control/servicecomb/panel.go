@@ -11,7 +11,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/third_party/forked/afex/hystrix-go/hystrix"
 )
 
-//Panel pull configs from archaius
+// Panel pull configs from archaius
 type Panel struct {
 }
 
@@ -22,7 +22,7 @@ func newPanel(options control.Options) control.Panel {
 	return &Panel{}
 }
 
-//GetCircuitBreaker return command , and circuit breaker settings
+// GetCircuitBreaker return command , and circuit breaker settings
 func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string) (string, hystrix.CommandConfig) {
 	key := GetCBCacheKey(inv.MicroServiceName, serviceType)
 	command := control.NewCircuitName(serviceType, config.GetHystrixConfig().CircuitBreakerProperties.Scope, inv)
@@ -35,7 +35,7 @@ func (p *Panel) GetCircuitBreaker(inv invocation.Invocation, serviceType string)
 	return command, c.(hystrix.CommandConfig)
 }
 
-//GetLoadBalancing get load balancing config
+// GetLoadBalancing get load balancing config
 func (p *Panel) GetLoadBalancing(inv invocation.Invocation) control.LoadBalancingConfig {
 	c, ok := LBConfigCache.Get(inv.MicroServiceName)
 	if !ok {
@@ -51,7 +51,7 @@ func (p *Panel) GetLoadBalancing(inv invocation.Invocation) control.LoadBalancin
 
 }
 
-//GetRateLimiting get rate limiting config
+// GetRateLimiting get rate limiting config
 func (p *Panel) GetRateLimiting(inv invocation.Invocation, serviceType string) control.RateLimitingConfig {
 	rl := control.RateLimitingConfig{}
 	rl.Enabled = archaius.GetBool("cse.flowcontrol."+serviceType+".qps.enabled", true)
@@ -68,13 +68,13 @@ func (p *Panel) GetRateLimiting(inv invocation.Invocation, serviceType string) c
 	return rl
 }
 
-//GetFaultInjection get Fault injection config
+// GetFaultInjection get Fault injection config
 func (p *Panel) GetFaultInjection(inv invocation.Invocation) model.Fault {
 	return model.Fault{}
 
 }
 
-//GetEgressRule get egress config
+// GetEgressRule get egress config
 func (p *Panel) GetEgressRule() []control.EgressConfig {
 	return []control.EgressConfig{}
 }

@@ -99,7 +99,7 @@ const BuildinLabelVersion = BuildinTagVersion + ":" + LatestVersion
 // CallerKey caller key
 const CallerKey = "caller"
 
-//service comb headers
+// service comb headers
 const (
 	HeaderSourceName = "x-cse-src-microservice"
 	// HeaderXCseContent is constant for header , get some json msg about HeaderSourceName like {"k":"v"}
@@ -125,7 +125,7 @@ const (
 	DefaultHBInterval = 30
 )
 
-//constant used
+// constant used
 const (
 	HTTP   = "http"
 	HTTPS  = "https"
@@ -153,8 +153,8 @@ const (
 	DefaultRefreshMode = remote.ModeInterval
 )
 
-//ContextHeaderKey is the unified key of header value in context
-//all protocol integrated with go chassis must set protocol header into context in this context key
+// ContextHeaderKey is the unified key of header value in context
+// all protocol integrated with go chassis must set protocol header into context in this context key
 type ContextHeaderKey struct{}
 
 // NewContext transforms a metadata to context object

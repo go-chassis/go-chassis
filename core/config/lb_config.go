@@ -86,7 +86,7 @@ func RetryEnabled(source, service string) bool {
 	return ms
 }
 
-//GetRetryOnNext return value of GetRetryOnNext
+// GetRetryOnNext return value of GetRetryOnNext
 func GetRetryOnNext(source, service string) int {
 	lbMutex.RLock()
 	global := GetLoadBalancing().RetryOnNext
@@ -95,7 +95,7 @@ func GetRetryOnNext(source, service string) int {
 	return ms
 }
 
-//GetRetryOnSame return value of RetryOnSame
+// GetRetryOnSame return value of RetryOnSame
 func GetRetryOnSame(source, service string) int {
 	lbMutex.RLock()
 	global := GetLoadBalancing().RetryOnSame
@@ -104,7 +104,7 @@ func GetRetryOnSame(source, service string) int {
 	return ms
 }
 
-//BackOffKind get kind
+// BackOffKind get kind
 func BackOffKind(service string) string {
 	r := GetLoadBalancing().AnyService[service].Backoff.Kind
 	if r == "" {
@@ -116,14 +116,14 @@ func BackOffKind(service string) string {
 	return r
 }
 
-//BackOffMinMs get min time
+// BackOffMinMs get min time
 func BackOffMinMs(source, service string) int {
 	global := GetLoadBalancing().Backoff.MinMs
 	ms := archaius.GetInt(genKey(lbPrefix, service, propertyBackoffMinMs), global)
 	return ms
 }
 
-//BackOffMaxMs get max time
+// BackOffMaxMs get max time
 func BackOffMaxMs(source, service string) int {
 	global := GetLoadBalancing().Backoff.MaxMs
 	ms := archaius.GetInt(genKey(lbPrefix, service, propertyBackoffMaxMs), global)

@@ -2,7 +2,7 @@ package model
 
 import "github.com/go-chassis/go-chassis/v2/storage"
 
-//GlobalCfg chassis.yaml 配置项
+// GlobalCfg chassis.yaml 配置项
 type GlobalCfg struct {
 	ServiceComb ServiceComb       `yaml:"servicecomb"`
 	Panel       ControlPanel      `yaml:"control"`
@@ -18,7 +18,7 @@ type DataCenterInfo struct {
 	AvailableZone string `yaml:"availableZone"`
 }
 
-//ServiceComb 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
+// ServiceComb 设置注册中心SC的地址，要开哪些传输协议， 调用链信息等
 type ServiceComb struct {
 	Registry           RegistryStruct      `yaml:"registry"`
 	Config             Config              `yaml:"config"`
@@ -34,8 +34,8 @@ type ServiceComb struct {
 	Options            storage.Options     `yaml:"options"`
 }
 
-//Transport defines failure
-//TODO support TLS config
+// Transport defines failure
+// TODO support TLS config
 type Transport struct {
 	Failure        map[string]string `yaml:"failure"`
 	MaxIdlCons     map[string]int    `yaml:"maxIdleCon"`

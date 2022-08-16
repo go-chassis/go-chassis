@@ -20,7 +20,7 @@ func init() {
 	successiveFailureCount = make(map[string]int)
 }
 
-//DeleteSuccessiveFailureCount deleting cookie from failure count map
+// DeleteSuccessiveFailureCount deleting cookie from failure count map
 func DeleteSuccessiveFailureCount(cookieValue string) {
 	successiveFailureCountMutex.Lock()
 	//	successiveFailureCount[ep] = 0
@@ -28,14 +28,14 @@ func DeleteSuccessiveFailureCount(cookieValue string) {
 	successiveFailureCountMutex.Unlock()
 }
 
-//ResetSuccessiveFailureMap make map again
+// ResetSuccessiveFailureMap make map again
 func ResetSuccessiveFailureMap() {
 	successiveFailureCountMutex.Lock()
 	successiveFailureCount = make(map[string]int)
 	successiveFailureCountMutex.Unlock()
 }
 
-//IncreaseSuccessiveFailureCount increase failure count
+// IncreaseSuccessiveFailureCount increase failure count
 func IncreaseSuccessiveFailureCount(cookieValue string) {
 	successiveFailureCountMutex.Lock()
 	c, ok := successiveFailureCount[cookieValue]
@@ -48,14 +48,14 @@ func IncreaseSuccessiveFailureCount(cookieValue string) {
 	successiveFailureCountMutex.Unlock()
 }
 
-//GetSuccessiveFailureCount get failure count
+// GetSuccessiveFailureCount get failure count
 func GetSuccessiveFailureCount(cookieValue string) int {
 	successiveFailureCountMutex.RLock()
 	defer successiveFailureCountMutex.RUnlock()
 	return successiveFailureCount[cookieValue]
 }
 
-//SessionStickinessStrategy is strategy
+// SessionStickinessStrategy is strategy
 type SessionStickinessStrategy struct {
 	instances []*registry.MicroServiceInstance
 	mtx       sync.Mutex

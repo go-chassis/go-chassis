@@ -132,11 +132,11 @@ func TestProvider_Invoke(t *testing.T) {
 
 }
 
-//HelloServer is a struct
+// HelloServer is a struct
 type HelloServer struct {
 }
 
-//SayHello is a method used to reply message
+// SayHello is a method used to reply message
 func (s *HelloServer) SayHello(ctx context.Context, in *HelloRequest) (*HelloReply, error) {
 	return &HelloReply{Message: "Go Hello  " + in.Name}, nil
 }

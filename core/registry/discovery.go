@@ -12,13 +12,13 @@ var sdFunc = make(map[string]func(opts Options) ServiceDiscovery)
 
 var cdFunc = make(map[string]func(opts Options) ContractDiscovery)
 
-//InstallServiceDiscovery install service discovery client
+// InstallServiceDiscovery install service discovery client
 func InstallServiceDiscovery(name string, f func(opts Options) ServiceDiscovery) {
 	sdFunc[name] = f
 	openlog.Info("Installed service discovery plugin: " + name)
 }
 
-//NewDiscovery create discovery service
+// NewDiscovery create discovery service
 func NewDiscovery(name string, opts Options) (ServiceDiscovery, error) {
 	f := sdFunc[name]
 	if f == nil {
@@ -27,13 +27,13 @@ func NewDiscovery(name string, opts Options) (ServiceDiscovery, error) {
 	return f(opts), nil
 }
 
-//InstallContractDiscovery install contract service client
+// InstallContractDiscovery install contract service client
 func InstallContractDiscovery(name string, f func(opts Options) ContractDiscovery) {
 	cdFunc[name] = f
 	openlog.Info("Installed contract discovery plugin: " + name)
 }
 
-//ServiceDiscovery fetch service and instances from remote or local
+// ServiceDiscovery fetch service and instances from remote or local
 type ServiceDiscovery interface {
 	GetMicroService(microServiceID string) (*MicroService, error)
 	FindMicroServiceInstances(consumerID, microServiceName string, tags utiltags.Tags) ([]*MicroServiceInstance, error)
@@ -41,13 +41,13 @@ type ServiceDiscovery interface {
 	Close() error
 }
 
-//DefaultServiceDiscoveryService supplies service discovery
+// DefaultServiceDiscoveryService supplies service discovery
 var DefaultServiceDiscoveryService ServiceDiscovery
 
 // DefaultContractDiscoveryService supplies contract discovery
 var DefaultContractDiscoveryService ContractDiscovery
 
-//ContractDiscovery fetch schema content from remote or local
+// ContractDiscovery fetch schema content from remote or local
 type ContractDiscovery interface {
 	GetMicroServicesByInterface(interfaceName string) (microservices []*MicroService)
 	GetSchemaContentByInterface(interfaceName string) SchemaContent

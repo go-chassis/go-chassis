@@ -10,7 +10,7 @@ import (
 
 var errViolateBuildIn = errors.New("can not replace build-in handler func")
 
-//ErrDuplicatedHandler means you registered more than 1 handler with same name
+// ErrDuplicatedHandler means you registered more than 1 handler with same name
 var ErrDuplicatedHandler = errors.New("duplicated handler registration")
 var buildIn = []string{LoadBalancing, Router, TracingConsumer,
 	TracingProvider, FaultInject}
@@ -47,7 +47,7 @@ type Handler interface {
 	Name() string
 }
 
-//WriteBackErr write err and callback
+// WriteBackErr write err and callback
 func WriteBackErr(err error, status int, cb invocation.ResponseCallBack) {
 	r := &invocation.Response{
 		Err:    err,

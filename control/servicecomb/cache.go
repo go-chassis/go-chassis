@@ -7,7 +7,7 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-//save configs
+// save configs
 var (
 	//key is service name
 	LBConfigCache = cache.New(0, 0)
@@ -18,7 +18,7 @@ var (
 	FIConfigCache     = cache.New(0, 0)
 )
 
-//Default values
+// Default values
 var (
 	DefaultLB = control.LoadBalancingConfig{
 		Strategy:    loadbalancer.StrategyRoundRobin,

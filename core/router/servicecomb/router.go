@@ -10,27 +10,27 @@ import (
 
 var cseRouter *Router
 
-//Router is cse router service
+// Router is cse router service
 type Router struct {
 	routeRule map[string][]*config.RouteRule
 	lock      sync.RWMutex
 }
 
-//SetRouteRule set rules
+// SetRouteRule set rules
 func (r *Router) SetRouteRule(rr map[string][]*config.RouteRule) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	r.routeRule = rr
 }
 
-//FetchRouteRuleByServiceName get rules for service
+// FetchRouteRuleByServiceName get rules for service
 func (r *Router) FetchRouteRuleByServiceName(service string) []*config.RouteRule {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
 	return r.routeRule[service]
 }
 
-//ListRouteRule get rules for all service
+// ListRouteRule get rules for all service
 func (r *Router) ListRouteRule() map[string][]*config.RouteRule {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
@@ -41,7 +41,7 @@ func (r *Router) ListRouteRule() map[string][]*config.RouteRule {
 	return rr
 }
 
-//Init init router config
+// Init init router config
 func (r *Router) Init(o router.Options) error {
 	err := archaius.RegisterListener(&routeRuleEventListener{}, DarkLaunchKey, DarkLaunchKeyV2)
 	if err != nil {

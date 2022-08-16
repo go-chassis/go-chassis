@@ -1,6 +1,6 @@
 package tracing
 
-//const for tracing
+// const for tracing
 const (
 	HTTPMethod     = "http.method"
 	HTTPPath       = "http.path"

@@ -14,7 +14,7 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//Router return route rule, you can also set custom route rule
+// Router return route rule, you can also set custom route rule
 type Router interface {
 	Init(Options) error
 	SetRouteRule(map[string][]*config.RouteRule)
@@ -35,7 +35,7 @@ func InstallRouterPlugin(name string, f func() (Router, error)) {
 	routerServices[name] = f
 }
 
-//BuildRouter create a router
+// BuildRouter create a router
 func BuildRouter(name string) error {
 	f, ok := routerServices[name]
 	if !ok {
@@ -49,9 +49,9 @@ func BuildRouter(name string) error {
 	return nil
 }
 
-//Route decide the target service metadata
-//it decide based on configuration of route rule
-//it will set RouteTag to invocation
+// Route decide the target service metadata
+// it decide based on configuration of route rule
+// it will set RouteTag to invocation
 func Route(header map[string]string, si *registry.SourceInfo, inv *invocation.Invocation) error {
 	rules := SortRules(inv.MicroServiceName)
 	for _, rule := range rules {

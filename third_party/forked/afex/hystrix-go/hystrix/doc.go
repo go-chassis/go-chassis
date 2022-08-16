@@ -6,7 +6,7 @@ failure is inevitable.
 
 Based on the java project of the same name, by Netflix. https://github.com/Netflix/Hystrix
 
-Execute code as a Hystrix command
+# Execute code as a Hystrix command
 
 Define your application logic which relies on external systems, passing your function to Go. When that system is healthy this will be the only thing which executes.
 
@@ -15,7 +15,7 @@ Define your application logic which relies on external systems, passing your fun
 		return nil
 	}, nil)
 
-Defining fallback behavior
+# Defining fallback behavior
 
 If you want code to execute during a service outage, pass in a second function to Go. Ideally, the logic here will allow your application to gracefully handle external services being unavailable.
 
@@ -29,7 +29,7 @@ This triggers when your code returns an error, or whenever it is unable to compl
 		return nil
 	})
 
-Waiting for output
+# Waiting for output
 
 Calling Go is like launching a goroutine, except you receive a channel of errors you can choose to monitor.
 
@@ -47,7 +47,7 @@ Calling Go is like launching a goroutine, except you receive a channel of errors
 		// failure
 	}
 
-Synchronous API
+# Synchronous API
 
 Since calling a command and immediately waiting for it to finish is a common pattern, a synchronous API is available with the Do function which returns a single error.
 
@@ -56,7 +56,7 @@ Since calling a command and immediately waiting for it to finish is a common pat
 		return nil
 	}, nil)
 
-Configure settings
+# Configure settings
 
 During application boot, you can call ConfigureCommand to tweak the settings for each command.
 
@@ -68,7 +68,7 @@ During application boot, you can call ConfigureCommand to tweak the settings for
 
 You can also use Configure which accepts a map[string]CommandConfig.
 
-Enable dashboard Metrics
+# Enable dashboard Metrics
 
 In your main.go, register the event stream HTTP handler on a port and launch it in a goroutine.  Once you configure turbine for your Hystrix Dashboard https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard to start streaming events, your commands will automatically begin appearing.
 

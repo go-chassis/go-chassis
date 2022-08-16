@@ -23,21 +23,21 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/marker"
 )
 
-//TrafficMarker
+// TrafficMarker
 const (
 	TrafficMarker = "traffic-marker"
 )
 
-//MarkHandler compares the match rule with invocation and mark this invocation
+// MarkHandler compares the match rule with invocation and mark this invocation
 type MarkHandler struct {
 }
 
-//Name return the handler name
+// Name return the handler name
 func (m *MarkHandler) Name() string {
 	return TrafficMarker
 }
 
-//Handle to handle the mart invocation
+// Handle to handle the mart invocation
 func (m *MarkHandler) Handle(chain *Chain, inv *invocation.Invocation, cb invocation.ResponseCallBack) {
 	markInHeader := inv.Header(common.HeaderMark)
 	if markInHeader != "" {

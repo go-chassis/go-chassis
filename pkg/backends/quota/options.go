@@ -17,7 +17,7 @@
 
 package quota
 
-//Options is init options
+// Options is init options
 type Options struct {
 	// optional, namespace for resourceType,
 	// for example you service provide cpu resource. but other service has a resourceType also use name cpu,

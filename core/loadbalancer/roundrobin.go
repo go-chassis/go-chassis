@@ -18,13 +18,13 @@ func newRoundRobinStrategy() Strategy {
 	return &RoundRobinStrategy{}
 }
 
-//ReceiveData receive data
+// ReceiveData receive data
 func (r *RoundRobinStrategy) ReceiveData(inv *invocation.Invocation, instances []*registry.MicroServiceInstance, serviceKey string) {
 	r.instances = instances
 	r.key = serviceKey
 }
 
-//Pick return instance
+// Pick return instance
 func (r *RoundRobinStrategy) Pick() (*registry.MicroServiceInstance, error) {
 	if len(r.instances) == 0 {
 		return nil, ErrNoneAvailableInstance

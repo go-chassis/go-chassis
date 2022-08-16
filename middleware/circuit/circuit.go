@@ -19,29 +19,29 @@ const (
 
 var fallbackFuncMap = make(map[string]Fallback)
 
-//ErrFallbackNotExists happens if fallback implementation does not exist
+// ErrFallbackNotExists happens if fallback implementation does not exist
 var ErrFallbackNotExists = errors.New("fallback func does not exist")
 
-//Fallback defines how to return response if remote call fails.
-//a implementation should return a closure to handle the error.
-//in this closure, if you fallback logic should handle the original error,
-//you can return a fallback error to replace the original error
-//you can assemble invocation.Response on demand
-//in summary the closure defines, "if err happens, how to handle it".
+// Fallback defines how to return response if remote call fails.
+// a implementation should return a closure to handle the error.
+// in this closure, if you fallback logic should handle the original error,
+// you can return a fallback error to replace the original error
+// you can assemble invocation.Response on demand
+// in summary the closure defines, "if err happens, how to handle it".
 type Fallback func(inv *invocation.Invocation, finish chan *invocation.Response) func(error) error
 
-//Init init functions
+// Init init functions
 func Init() {
 	fallbackFuncMap[ReturnErr] = FallbackErr
 	fallbackFuncMap[ReturnNil] = FallbackNil
 }
 
-//RegisterFallback register custom logic
+// RegisterFallback register custom logic
 func RegisterFallback(name string, f Fallback) {
 	fallbackFuncMap[name] = f
 }
 
-//GetFallback return function
+// GetFallback return function
 func GetFallback(name string) (Fallback, error) {
 	f, ok := fallbackFuncMap[name]
 	if !ok {
@@ -50,7 +50,7 @@ func GetFallback(name string) (Fallback, error) {
 	return f, nil
 }
 
-//FallbackNil return empty response
+// FallbackNil return empty response
 func FallbackNil(inv *invocation.Invocation, finish chan *invocation.Response) func(error) error {
 	return func(err error) error {
 		// if err is type of hystrix error, return a new response
@@ -88,7 +88,7 @@ func FallbackNil(inv *invocation.Invocation, finish chan *invocation.Response) f
 	}
 }
 
-//FallbackErr set err in response
+// FallbackErr set err in response
 func FallbackErr(inv *invocation.Invocation, finish chan *invocation.Response) func(error) error {
 	return func(err error) error {
 		// if err is type of hystrix error, return a new response

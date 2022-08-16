@@ -91,10 +91,11 @@ func NewProvider(microserviceName string) Provider {
 
 // Register publishes in the server the set of methods of the
 // receiver value that satisfy the following conditions:
-//	- exported method of exported type
-//	- two arguments, both of exported type
-//	- the second argument is a pointer
-//	- one return value, of type error
+//   - exported method of exported type
+//   - two arguments, both of exported type
+//   - the second argument is a pointer
+//   - one return value, of type error
+//
 // It returns an error if the receiver is not an exported type or has
 // no suitable methods. It also logs the error using package log.
 // The client accesses each method using a string of the form "Type.Method",

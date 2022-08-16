@@ -91,7 +91,7 @@ func InstallRegistrator(name string, f func(opts Options) Registrator) {
 	openlog.Info("Installed registry plugin: " + name)
 }
 
-//NewRegistrator return registrator
+// NewRegistrator return registrator
 func NewRegistrator(name string, opts Options) (Registrator, error) {
 	f := registryFunc[name]
 	if f == nil {

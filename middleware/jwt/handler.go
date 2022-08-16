@@ -32,17 +32,17 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//errors
+// errors
 var (
 	ErrNoHeader    = errors.New("no authorization in header")
 	ErrInvalidAuth = errors.New("invalid authentication")
 )
 
-//Handler is is a jwt interceptor
+// Handler is is a jwt interceptor
 type Handler struct {
 }
 
-//Handle intercept unauthorized request
+// Handle intercept unauthorized request
 func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	if auth == nil {
 		//jwt is not initialized, then skip authentication, do not report error

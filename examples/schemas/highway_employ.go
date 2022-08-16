@@ -6,16 +6,16 @@ import (
 	"github.com/go-chassis/go-chassis/v2/examples/schemas/employ"
 )
 
-//EmployServer is a struct
+// EmployServer is a struct
 type EmployServer struct{}
 
-//AddEmploy 这里实现服务端接口中的方法。
+// AddEmploy 这里实现服务端接口中的方法。
 func (s *EmployServer) AddEmploy(ctx context.Context, in *employ.EmployRequest) (*employ.EmployResponse, error) {
 	in.EmployList = append(in.EmployList, in.Employ)
 	return &employ.EmployResponse{Employ: nil, EmployList: in.EmployList}, nil
 }
 
-//EditEmploy is a method used to edit employ
+// EditEmploy is a method used to edit employ
 func (s *EmployServer) EditEmploy(ctx context.Context, in *employ.EmployRequest) (*employ.EmployResponse, error) {
 	for index, value := range in.EmployList {
 		if in.Name == value.Name {
@@ -28,7 +28,7 @@ func (s *EmployServer) EditEmploy(ctx context.Context, in *employ.EmployRequest)
 	return &employ.EmployResponse{Employ: nil, EmployList: in.EmployList}, nil
 }
 
-//GetEmploys is a method used to get employs
+// GetEmploys is a method used to get employs
 func (s *EmployServer) GetEmploys(ctx context.Context, in *employ.EmployRequest) (*employ.EmployResponse, error) {
 	for index, value := range in.EmployList {
 		if in.Name == value.Name {
@@ -39,7 +39,7 @@ func (s *EmployServer) GetEmploys(ctx context.Context, in *employ.EmployRequest)
 	return &employ.EmployResponse{Employ: nil, EmployList: in.EmployList}, nil
 }
 
-//DeleteEmploys is a method used to delete employ
+// DeleteEmploys is a method used to delete employ
 func (s *EmployServer) DeleteEmploys(ctx context.Context, in *employ.EmployRequest) (*employ.EmployResponse, error) {
 	for index, value := range in.EmployList {
 		if in.Name == value.Name {

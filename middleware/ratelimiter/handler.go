@@ -32,7 +32,7 @@ func init() {
 	}
 }
 
-//Handler can only be used in server(provider) side
+// Handler can only be used in server(provider) side
 type Handler struct{}
 
 // Handle limit request rate according to marker

@@ -16,7 +16,7 @@ var TracerFuncMap = make(map[string]NewTracer)
 // NewTracer is the func to return global tracer
 type NewTracer func(o map[string]string) (opentracing.Tracer, error)
 
-//InstallTracer install new opentracing tracer
+// InstallTracer install new opentracing tracer
 func InstallTracer(name string, f NewTracer) {
 	TracerFuncMap[name] = f
 	openlog.Info("installed tracing plugin: " + name)

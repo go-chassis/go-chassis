@@ -17,13 +17,13 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//const for doc
+// const for doc
 const (
 	Path  = "path"
 	Query = "query"
 )
 
-//Route describe http route path and swagger specifications for API
+// Route describe http route path and swagger specifications for API
 type Route struct {
 	Method           string                 //Method is one of the following: GET,PUT,POST,DELETE. required
 	Path             string                 //Path contains a path pattern. required
@@ -38,7 +38,7 @@ type Route struct {
 	Metadata         map[string]interface{} //Metadata adds or updates a key=value pair to api
 }
 
-//Returns describe response doc
+// Returns describe response doc
 type Returns struct {
 	Code    int // http response code
 	Message string
@@ -46,7 +46,7 @@ type Returns struct {
 	Headers map[string]restful.Header
 }
 
-//Parameters describe parameters in url path or query params
+// Parameters describe parameters in url path or query params
 type Parameters struct {
 	Name      string //parameter name
 	DataType  string // string, int etc
@@ -55,19 +55,19 @@ type Parameters struct {
 	Required  bool
 }
 
-//Router is to define how route the request
+// Router is to define how route the request
 type Router interface {
 	//URLPatterns returns route
 	URLPatterns() []Route
 }
 
-//RouteGroup is to define the route group name
+// RouteGroup is to define the route group name
 type RouteGroup interface {
 	//GroupPath if return non-zero-value, it would be appended to route as prefix
 	GroupPath() string
 }
 
-//GetRouteGroup is to return a router group path
+// GetRouteGroup is to return a router group path
 func GetRouteGroup(schema interface{}) string {
 	v, ok := schema.(RouteGroup)
 	if !ok {
@@ -77,7 +77,7 @@ func GetRouteGroup(schema interface{}) string {
 	return v.GroupPath()
 }
 
-//GetRouteSpecs is to return a rest API specification of a go struct
+// GetRouteSpecs is to return a rest API specification of a go struct
 func GetRouteSpecs(schema interface{}) ([]Route, error) {
 	v, ok := schema.(Router)
 	if !ok {
@@ -86,7 +86,7 @@ func GetRouteSpecs(schema interface{}) ([]Route, error) {
 	return v.URLPatterns(), nil
 }
 
-//WrapHandlerChain wrap business handler with handler chain
+// WrapHandlerChain wrap business handler with handler chain
 func WrapHandlerChain(route *Route, schema interface{}, schemaName string, opts server.Options) (restful.RouteFunction, error) {
 	handleFunc, err := BuildRouteHandler(route, schema)
 	if err != nil {
@@ -165,7 +165,7 @@ func GroupRoutePath(route *Route, schema interface{}) {
 	}
 }
 
-//BuildRouteHandler build handler func from ResourceFunc or ResourceFuncName
+// BuildRouteHandler build handler func from ResourceFunc or ResourceFuncName
 func BuildRouteHandler(route *Route, schema interface{}) (func(ctx *Context), error) {
 	if route.ResourceFunc != nil {
 		if route.ResourceFuncName == "" {
@@ -188,7 +188,7 @@ func BuildRouteHandler(route *Route, schema interface{}) (func(ctx *Context), er
 	}, nil
 }
 
-//getFunctionName get method name from func
+// getFunctionName get method name from func
 func getFunctionName(i interface{}) string {
 	metaName := runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 	metaNameArr := strings.Split(metaName, ".")
@@ -199,7 +199,7 @@ func getFunctionName(i interface{}) string {
 	return reg.ReplaceAllString(funcName, "")
 }
 
-//GetTrace get trace
+// GetTrace get trace
 func GetTrace() string {
 	var stacktrace string
 	for i := 1; ; i++ {

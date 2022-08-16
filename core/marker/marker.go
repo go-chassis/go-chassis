@@ -37,7 +37,7 @@ const (
 
 var matches sync.Map
 
-//Operate decide value match expression or not
+// Operate decide value match expression or not
 type Operate func(value, expression string) bool
 
 var operatorPlugin = map[string]Operate{
@@ -51,12 +51,12 @@ var operatorPlugin = map[string]Operate{
 	"noGreater": noGreater,
 }
 
-//Install a strategy
+// Install a strategy
 func Install(name string, m Operate) {
 	operatorPlugin[name] = m
 }
 
-//Mark mark an invocation with matchName by match policy
+// Mark mark an invocation with matchName by match policy
 func Mark(inv *invocation.Invocation) {
 	matchName := ""
 	policy := "once"
@@ -147,7 +147,7 @@ func headsMatch(headers map[string]string, headPolicy map[string]map[string]stri
 	return true
 }
 
-//match compare value and expression
+// match compare value and expression
 func Match(operator, value, expression string) (bool, error) {
 	f, ok := operatorPlugin[operator]
 	if !ok {
@@ -156,7 +156,7 @@ func Match(operator, value, expression string) (bool, error) {
 	return f(value, expression), nil
 }
 
-//SaveMatchPolicy saves match policy
+// SaveMatchPolicy saves match policy
 func SaveMatchPolicy(name, value string, k string) error {
 	m := &config.MatchPolicies{}
 	err := yaml.Unmarshal([]byte(value), m)
@@ -172,7 +172,7 @@ func SaveMatchPolicy(name, value string, k string) error {
 	return nil
 }
 
-//Policy return policy
+// Policy return policy
 func Policy(name string) *config.MatchPolicies {
 	i, ok := matches.Load(name)
 	if !ok {

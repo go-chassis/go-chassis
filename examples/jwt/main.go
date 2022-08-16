@@ -13,7 +13,7 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/server/
+// if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/server/
 func main() {
 	chassis.RegisterSchema("rest", &HelloAuth{})
 
@@ -69,7 +69,7 @@ func (r *HelloAuth) Access(b *rf.Context) {
 	b.Write([]byte("success"))
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *HelloAuth) URLPatterns() []rf.Route {
 	return []rf.Route{
 		{Method: http.MethodPost, Path: "/login", ResourceFunc: r.Login,

@@ -27,7 +27,7 @@ const (
 	regexSource = "\\.(.+)\\.(Provider|Consumer)\\.(.*)"
 )
 
-//GetMetricsName get only metrics name from cmd name
+// GetMetricsName get only metrics name from cmd name
 func GetMetricsName(cmd string) (source string) {
 	regNormal := regexp.MustCompile(regex)
 	regSource := regexp.MustCompile(regexSource)
@@ -49,11 +49,11 @@ func GetMetricsName(cmd string) (source string) {
 	return role + "." + GetEventType(cmd)
 }
 
-//ParseCircuitCMD return metrics related infos
-//example Consumer.ErrServer.rest./sayhimessage.rejects
-//the first and last string consist of metrics name
-//second is ErrServer
-//3th and 4th is schema and operation
+// ParseCircuitCMD return metrics related infos
+// example Consumer.ErrServer.rest./sayhimessage.rejects
+// the first and last string consist of metrics name
+// second is ErrServer
+// 3th and 4th is schema and operation
 func ParseCircuitCMD(cmd string) (source string, target string, schema string, op string) {
 	regNormal := regexp.MustCompile(regex)
 	regSource := regexp.MustCompile(regexSource)
@@ -80,8 +80,8 @@ func ParseCircuitCMD(cmd string) (source string, target string, schema string, o
 	return role + "." + metrics, sn, scID, opID
 }
 
-//ExtractServiceSchemaOperationMetrics parse service,schema and operation
-//key example Microservice.SchemaID.OperationId.metrics
+// ExtractServiceSchemaOperationMetrics parse service,schema and operation
+// key example Microservice.SchemaID.OperationId.metrics
 func ExtractServiceSchemaOperationMetrics(raw string) (target, schemaID, operation, metrics string) {
 	metrics = GetEventType(raw)
 	tokens := strings.Split(raw, ".")
@@ -99,7 +99,7 @@ func ExtractServiceSchemaOperationMetrics(raw string) (target, schemaID, operati
 	return
 }
 
-//GetEventType get metrics suffix
+// GetEventType get metrics suffix
 func GetEventType(cmdName string) string {
 	tokens := strings.Split(cmdName, ".")
 	return tokens[len(tokens)-1]

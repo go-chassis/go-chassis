@@ -16,7 +16,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/client/
+// if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/client/
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {

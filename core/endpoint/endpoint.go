@@ -9,8 +9,8 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//GetEndpoint is an API used to get the endpoint of a service in discovery service
-//it will only return endpoints of a service
+// GetEndpoint is an API used to get the endpoint of a service in discovery service
+// it will only return endpoints of a service
 func GetEndpoint(appID, microService, version string) (string, error) {
 	var endpoint string
 	tags := utiltags.NewDefaultTag(version, appID)

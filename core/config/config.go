@@ -25,31 +25,31 @@ var lbConfig *model.LBWrapper
 // and description of the instance
 var MicroserviceDefinition *model.ServiceSpec
 
-//MonitorCfgDef has monitor info, including zipkin and apm.
+// MonitorCfgDef has monitor info, including zipkin and apm.
 var MonitorCfgDef *model.MonitorCfg
 
-//HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
+// HystrixConfig is having info about isolation, circuit breaker, fallback properities of the micro service
 var HystrixConfig *model.HystrixConfigWrapper
 
 // ErrNoName is used to represent the service name missing error
 var ErrNoName = errors.New("micro service name is missing in description file")
 
-//GetConfigServerConf return config server conf
+// GetConfigServerConf return config server conf
 func GetConfigServerConf() model.ConfigClient {
 	return GlobalDefinition.ServiceComb.Config.Client
 }
 
-//GetTransportConf return transport settings
+// GetTransportConf return transport settings
 func GetTransportConf() model.Transport {
 	return GlobalDefinition.ServiceComb.Transport
 }
 
-//GetDataCenter return data center info
+// GetDataCenter return data center info
 func GetDataCenter() *model.DataCenterInfo {
 	return GlobalDefinition.DataCenter
 }
 
-//GetAPM return monitor config info
+// GetAPM return monitor config info
 func GetAPM() model.APMStruct {
 	return MonitorCfgDef.ServiceComb.APM
 }
@@ -167,7 +167,7 @@ func ReadLBFromArchaius() error {
 	return nil
 }
 
-//ReadMonitorFromArchaius read monitor config from archauis pkg
+// ReadMonitorFromArchaius read monitor config from archauis pkg
 func ReadMonitorFromArchaius() error {
 	MonitorCfgDef = &model.MonitorCfg{}
 	err := archaius.UnmarshalConfig(&MonitorCfgDef)
@@ -189,7 +189,7 @@ func ReadHystrixFromArchaius() error {
 	return nil
 }
 
-//GetLoadBalancing return lb config
+// GetLoadBalancing return lb config
 func GetLoadBalancing() *model.LoadBalancing {
 	if lbConfig != nil {
 		return &lbConfig.Prefix.LBConfig
@@ -197,7 +197,7 @@ func GetLoadBalancing() *model.LoadBalancing {
 	return nil
 }
 
-//GetHystrixConfig return cb config
+// GetHystrixConfig return cb config
 func GetHystrixConfig() *model.HystrixConfig {
 	if HystrixConfig != nil {
 		return HystrixConfig.HystrixConfig

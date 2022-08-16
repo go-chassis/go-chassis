@@ -22,7 +22,7 @@ const (
 	protocolSymbol = "://"
 )
 
-//GetProtocolMap returns the protocol map
+// GetProtocolMap returns the protocol map
 func GetProtocolMap(eps []string) (map[string]*Endpoint, string) {
 	m := make(map[string]*Endpoint)
 	var p string
@@ -48,7 +48,7 @@ func GetProtocolMap(eps []string) (map[string]*Endpoint, string) {
 	return m, p
 }
 
-//GetProtocolList returns the protocol list
+// GetProtocolList returns the protocol list
 func GetProtocolList(m map[string]*Endpoint) []string {
 	eps := []string{}
 	for p, ep := range m {
@@ -58,7 +58,7 @@ func GetProtocolList(m map[string]*Endpoint) []string {
 	return eps
 }
 
-//MakeEndpoints returns the endpoints
+// MakeEndpoints returns the endpoints
 func MakeEndpoints(m map[string]model.Protocol) []string {
 	var eps = make([]string, 0)
 	for name, protocol := range m {
@@ -76,7 +76,7 @@ func MakeEndpoints(m map[string]model.Protocol) []string {
 	return eps
 }
 
-//MakeEndpointMap returns the endpoints map
+// MakeEndpointMap returns the endpoints map
 func MakeEndpointMap(m map[string]model.Protocol) (map[string]*Endpoint, error) {
 	eps := make(map[string]*Endpoint)
 	for name, protocol := range m {
@@ -127,7 +127,7 @@ func FillUnspecifiedIP(host string) (string, error) {
 	return addr, nil
 }
 
-//Microservice2ServiceKeyStr prepares a microservice key
+// Microservice2ServiceKeyStr prepares a microservice key
 func Microservice2ServiceKeyStr(m *MicroService) string {
 	return strings.Join([]string{m.ServiceName, m.Version, m.AppID}, ":")
 }
@@ -154,7 +154,7 @@ func startBackOff(operation func() error) {
 	}
 }
 
-//URIs2Hosts return hosts and scheme
+// URIs2Hosts return hosts and scheme
 func URIs2Hosts(uris []string) ([]string, string, error) {
 	hosts := make([]string, 0)
 	var scheme string

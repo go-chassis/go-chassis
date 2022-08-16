@@ -15,13 +15,13 @@ const (
 	LagerLevelKey = "logLevel"
 )
 
-//LagerEventListener is a struct used for Event listener
+// LagerEventListener is a struct used for Event listener
 type LagerEventListener struct {
 	//Key []string
 	Key string
 }
 
-//Event is a method for Lager event listening
+// Event is a method for Lager event listening
 func (el *LagerEventListener) Event(e *event.Event) {
 	logger := openlog.GetLogger()
 	l, ok := logger.(lager.Logger)

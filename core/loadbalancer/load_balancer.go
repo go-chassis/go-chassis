@@ -18,7 +18,7 @@ const (
 	ZoneAware = "zoneaware"
 )
 
-//StrategyLatency is name
+// StrategyLatency is name
 const StrategyLatency = "WeightedResponse"
 
 // constant strings for load balance variables
@@ -103,7 +103,7 @@ type Strategy interface {
 	Pick() (*registry.MicroServiceInstance, error)
 }
 
-//Criteria is rule for filter
+// Criteria is rule for filter
 type Criteria struct {
 	Key      string
 	Operator string
@@ -145,7 +145,7 @@ var (
 	LatencyMapRWMutex sync.RWMutex
 )
 
-//BuildKey return key of stats map
+// BuildKey return key of stats map
 func BuildKey(microServiceName, tags, protocol string) string {
 	//TODO add more data
 	return strings.Join([]string{microServiceName, tags, protocol}, "/")

@@ -20,6 +20,7 @@ package chassis
 import (
 	"fmt"
 	"github.com/go-chassis/go-chassis/v2/core/tracing"
+	"github.com/go-chassis/go-chassis/v2/pkg/codec"
 	"github.com/go-chassis/go-chassis/v2/security/cipher"
 	"os"
 	"sync"
@@ -103,7 +104,7 @@ func (c *chassis) initHandler() error {
 	return nil
 }
 
-//Init
+// Init
 func (c *chassis) initialize() error {
 	if c.Initialized {
 		return nil
@@ -153,11 +154,23 @@ func (c *chassis) initialize() error {
 	if err := initBackendPlugins(); err != nil {
 		return err
 	}
+	if err := initTooling(); err != nil {
+		return err
+	}
+
+	governance.Init()
+	c.Initialized = true
+	return nil
+}
+func initTooling() error {
+	if err := codec.Init(codec.Options{
+		Plugin: archaius.GetString("servicecomb.codec.plugin", "encoding/json"),
+	}); err != nil {
+		return err
+	}
 	if err := cipher.Init(); err != nil {
 		return err
 	}
-	governance.Init()
-	c.Initialized = true
 	return nil
 }
 func initBackendPlugins() error {

@@ -8,12 +8,12 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 )
 
-//ErrCanceled means Request is canceled by context management
+// ErrCanceled means Request is canceled by context management
 var ErrCanceled = errors.New("request cancelled")
 
-//TransportFailure is caused by client call failure
-//for example:  resp, err = client.Do(req)
-//if err is not nil then should wrap original error with TransportFailure
+// TransportFailure is caused by client call failure
+// for example:  resp, err = client.Do(req)
+// if err is not nil then should wrap original error with TransportFailure
 type TransportFailure struct {
 	Message string
 }

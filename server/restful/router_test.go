@@ -72,7 +72,7 @@ type WrongSchema struct {
 func (r *WrongSchema) Put(b *Context) {
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *WrongSchema) URLPatterns2() []Route {
 	return []Route{
 		{Method: http.MethodGet, Path: "/", ResourceFuncName: "Put",
@@ -83,7 +83,7 @@ func (r *WrongSchema) URLPatterns2() []Route {
 type WrongSchema2 struct {
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *WrongSchema2) URLPatterns() {
 }
 

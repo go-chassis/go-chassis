@@ -77,7 +77,7 @@ func parseHandlers(handlerStr string) []string {
 	return s
 }
 
-//CreateChains create the chains based on type and handler map
+// CreateChains create the chains based on type and handler map
 func CreateChains(chainType string, handlerNameMap map[string]string) error {
 	for chainName := range handlerNameMap {
 		handlerNames := parseHandlers(handlerNameMap[chainName])
@@ -91,7 +91,7 @@ func CreateChains(chainType string, handlerNameMap map[string]string) error {
 	return nil
 }
 
-//CreateChain create consumer or provider's chain,the handlers is different
+// CreateChain create consumer or provider's chain,the handlers is different
 func CreateChain(serviceType string, chainName string, handlerNames ...string) (*Chain, error) {
 	c := &Chain{
 		ServiceType: serviceType,

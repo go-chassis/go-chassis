@@ -12,8 +12,8 @@ var (
 	ErrInvalidURL = errors.New("invalid url, url must be {protocol}://{service-name}:{port-name}")
 )
 
-//ParsePortName a port name is composite by protocol-name,like http-admin,http-api,grpc-console,grpc-api
-//ParsePortName return two string separately
+// ParsePortName a port name is composite by protocol-name,like http-admin,http-api,grpc-console,grpc-api
+// ParsePortName return two string separately
 func ParsePortName(n string) (string, string, error) {
 	if n == "" {
 		return "", "", ErrInvalidPortName
@@ -30,7 +30,7 @@ func ParsePortName(n string) (string, string, error) {
 
 }
 
-//ParseServiceAndPort returns service name and port name
+// ParseServiceAndPort returns service name and port name
 func ParseServiceAndPort(n string) (string, string, error) {
 	if n == "" {
 		return "", "", ErrInvalidURL

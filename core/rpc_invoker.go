@@ -9,8 +9,8 @@ import (
 )
 
 // RPCInvoker is rpc invoker
-//one invoker for one microservice
-//thread safe
+// one invoker for one microservice
+// thread safe
 type RPCInvoker struct {
 	*abstractInvoker
 	sync.RWMutex

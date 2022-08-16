@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-//Package authr defines a standard interface to decouple with specify auth solution.
-//it also decouple user name and password from authentication action
+// Package authr defines a standard interface to decouple with specify auth solution.
+// it also decouple user name and password from authentication action
 package authr
 
 import (
@@ -27,7 +27,7 @@ import (
 
 var defaultAuthenticator Authenticator
 
-//errors
+// errors
 var (
 	ErrNoImpl = errors.New("no implementation")
 )
@@ -36,28 +36,28 @@ type newFunc func(opts *Options) (Authenticator, error)
 
 var plugins = make(map[string]newFunc)
 
-//Install install a Plugin
+// Install install a Plugin
 func Install(name string, f newFunc) {
 	plugins[name] = f
 }
 
-//Authenticator can sign a token and authenticate that token
+// Authenticator can sign a token and authenticate that token
 type Authenticator interface {
 	Login(ctx context.Context, user string, password string, opts ...LoginOption) (string, error)
 	Authenticate(ctx context.Context, token string) (interface{}, error)
 }
 
-//Login verify a user info and return a token
+// Login verify a user info and return a token
 func Login(ctx context.Context, user string, password string, opts ...LoginOption) (string, error) {
 	return defaultAuthenticator.Login(ctx, user, password, opts...)
 }
 
-//Authenticate parse a token and return the claims in that token
+// Authenticate parse a token and return the claims in that token
 func Authenticate(ctx context.Context, token string) (interface{}, error) {
 	return defaultAuthenticator.Authenticate(ctx, token)
 }
 
-//Init initiate this module
+// Init initiate this module
 func Init(opts ...Option) error {
 	o := &Options{}
 	for _, opt := range opts {
