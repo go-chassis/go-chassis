@@ -19,7 +19,7 @@ type ProviderKeys struct {
 	ServiceOriented string
 }
 
-//Prefix is const
+// Prefix is const
 const Prefix = "cse.flowcontrol"
 
 // GetConsumerKey get specific key for consumer

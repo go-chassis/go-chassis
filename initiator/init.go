@@ -1,4 +1,4 @@
-//Package initiator init necessary module
+// Package initiator init necessary module
 // before every other package init functions
 package initiator
 

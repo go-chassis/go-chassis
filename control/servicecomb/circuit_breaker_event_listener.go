@@ -21,12 +21,12 @@ const (
 	regex4normal              = "cse\\.(isolation|circuitBreaker|fallback|fallbackpolicy)\\.Consumer\\.(.*)\\.(timeout|timeoutInMilliseconds|maxConcurrentRequests|enabled|forceOpen|forceClosed|sleepWindowInMilliseconds|requestVolumeThreshold|errorThresholdPercentage|enabled|maxConcurrentRequests|policy)\\.(.+)"
 )
 
-//CircuitBreakerEventListener is a struct with one string variable
+// CircuitBreakerEventListener is a struct with one string variable
 type CircuitBreakerEventListener struct {
 	Key string
 }
 
-//Event is a method which triggers flush circuit
+// Event is a method which triggers flush circuit
 func (el *CircuitBreakerEventListener) Event(e *event.Event) {
 	openlog.Info("circuit change e: %v", openlog.WithTags(openlog.Tags{
 		"key": e.Key,
@@ -45,7 +45,7 @@ func (el *CircuitBreakerEventListener) Event(e *event.Event) {
 	}
 }
 
-//FlushCircuitByKey is a function used to flush for a particular key
+// FlushCircuitByKey is a function used to flush for a particular key
 func FlushCircuitByKey(key string) {
 	sourceName, serviceName := GetNames(key)
 	cmdName := GetCircuitName(sourceName, serviceName)
@@ -59,7 +59,7 @@ func FlushCircuitByKey(key string) {
 
 }
 
-//GetNames is function
+// GetNames is function
 func GetNames(key string) (string, string) {
 	regNormal := regexp.MustCompile(regex4normal)
 	var sourceName string
@@ -73,7 +73,7 @@ func GetNames(key string) (string, string) {
 	return sourceName, serviceName
 }
 
-//GetCircuitName is a function used to get circuit names
+// GetCircuitName is a function used to get circuit names
 func GetCircuitName(sourceName, serviceName string) string {
 	if sourceName != "" {
 		return strings.Join([]string{sourceName, "Consumer", serviceName}, ".")

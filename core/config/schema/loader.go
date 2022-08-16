@@ -38,7 +38,7 @@ var schemaIDsMap map[string]string
 // defaultMicroServiceNames default micro-service names
 var defaultMicroServiceNames = make([]string, 0)
 
-//GetSchemaPath calculate the schema root path and return
+// GetSchemaPath calculate the schema root path and return
 func GetSchemaPath(name string) string {
 	schemaEnv := os.Getenv(common.EnvSchemaRoot)
 	var p string
@@ -51,7 +51,7 @@ func GetSchemaPath(name string) string {
 }
 
 // LoadSchema to load the schema files and micro-service information under the conf directory
-//path is the conf path
+// path is the conf path
 func LoadSchema(path string) error {
 	/*
 		conf/
@@ -156,7 +156,7 @@ func loadSchemaFileContent(schemaPath string) (*MicroserviceMeta, error) {
 	return microserviceMeta, nil
 }
 
-//GetContent get schema content by id
+// GetContent get schema content by id
 func GetContent(schemaID string) string {
 	return schemaIDsMap[schemaID]
 }

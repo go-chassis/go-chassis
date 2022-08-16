@@ -13,12 +13,12 @@ const (
 	LoadBalanceKey = "^cse\\.loadbalance\\."
 )
 
-//LoadBalancingEventListener is a struct
+// LoadBalancingEventListener is a struct
 type LoadBalancingEventListener struct {
 	Key string
 }
 
-//Event is a method used to handle a load balancing event
+// Event is a method used to handle a load balancing event
 func (e *LoadBalancingEventListener) Event(evt *event.Event) {
 	openlog.Debug(fmt.Sprintf("LB event, key: %s, type: %s", evt.Key, evt.EventType))
 	if err := config.ReadLBFromArchaius(); err != nil {

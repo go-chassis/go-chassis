@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-//Package quota is a alpha feature. it manage service quota
-//quota management can not assure you strong consistency
+// Package quota is a alpha feature. it manage service quota
+// quota management can not assure you strong consistency
 package quota
 
 import (
@@ -25,7 +25,7 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//errors
+// errors
 var (
 	ErrReached   = errors.New("reached maximum allowed quota")
 	ErrGetFailed = errors.New("get quota failed")
@@ -35,12 +35,12 @@ type newManager func(opts Options) (Manager, error)
 
 var plugins = make(map[string]newManager)
 
-//Install install quota plugin
+// Install install quota plugin
 func Install(name string, f newManager) {
 	plugins[name] = f
 }
 
-//Init init manager
+// Init init manager
 func Init(opts Options) error {
 	if opts.Plugin == "" {
 		return nil
@@ -59,7 +59,7 @@ func Init(opts Options) error {
 	return nil
 }
 
-//defaultManager is manage quotas
+// defaultManager is manage quotas
 var defaultManager Manager
 
 // Quota describe quota infos
@@ -70,7 +70,7 @@ type Quota struct {
 	Unit         string
 }
 
-//Manager could be a quota management system as a remote service, which saves and manages all of your system resources.
+// Manager could be a quota management system as a remote service, which saves and manages all of your system resources.
 // or it could be a module of your service which manage quota saved in database
 type Manager interface {
 	GetQuota(domain, project, resourceType string) (*Quota, error)
@@ -80,8 +80,8 @@ type Manager interface {
 	SetLimit(domain, project, resourceType string, limit int64) error
 }
 
-//PreCreate only check quota usage before creating a resource for a domain(tenant) and project.
-//it will not increase resource usage number after check, you have to increase after resource actually created
+// PreCreate only check quota usage before creating a resource for a domain(tenant) and project.
+// it will not increase resource usage number after check, you have to increase after resource actually created
 func PreCreate(domain, project, resource string, number int64) error {
 	if defaultManager == nil {
 		openlog.Warn("quota management not available, fallback")

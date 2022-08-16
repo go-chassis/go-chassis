@@ -5,18 +5,18 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 )
 
-//MetadataHandler
+// MetadataHandler
 type MetadataHandler struct {
 }
 
-//Handle
+// Handle
 func (h *MetadataHandler) Handle(chain *handler.Chain, inv *invocation.Invocation, cb invocation.ResponseCallBack) {
 	inv.SetMetadata("auth", "user1")
 	inv.SetHeader("X-Auth", "user2")
 	chain.Next(inv, cb)
 }
 
-//Name
+// Name
 func (h *MetadataHandler) Name() string {
 	return "test"
 }

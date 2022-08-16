@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-//Context is a struct which has both request and response objects
+// Context is a struct which has both request and response objects
 // and request context
 type Context struct {
 	Ctx  context.Context
@@ -14,7 +14,7 @@ type Context struct {
 	Resp *restful.Response
 }
 
-//NewBaseServer is a function which return context
+// NewBaseServer is a function which return context
 func NewBaseServer(ctx context.Context) *Context {
 	return &Context{
 		Ctx: ctx,
@@ -27,17 +27,17 @@ func (bs *Context) Write(body []byte) error {
 	return err
 }
 
-//WriteHeader is the response head writer
+// WriteHeader is the response head writer
 func (bs *Context) WriteHeader(httpStatus int) {
 	bs.Resp.WriteHeader(httpStatus)
 }
 
-//AddHeader is a function used to add header to a response
+// AddHeader is a function used to add header to a response
 func (bs *Context) AddHeader(header string, value string) {
 	bs.Resp.AddHeader(header, value)
 }
 
-//WriteError is a function used to write error into a response
+// WriteError is a function used to write error into a response
 func (bs *Context) WriteError(httpStatus int, err error) error {
 	return bs.Resp.WriteError(httpStatus, err)
 }
@@ -52,62 +52,63 @@ func (bs *Context) WriteHeaderAndJSON(status int, value interface{}, contentType
 	return bs.Resp.WriteHeaderAndJson(status, value, contentType)
 }
 
-//ReadEntity is request reader
+// ReadEntity is request reader
 func (bs *Context) ReadEntity(schema interface{}) (err error) {
 	return bs.Req.ReadEntity(schema)
 }
 
-//ReadHeader is used to read header of request
+// ReadHeader is used to read header of request
 func (bs *Context) ReadHeader(name string) string {
 	return bs.Req.HeaderParameter(name)
 }
 
-//ReadPathParameter is used to read path parameter of a request
+// ReadPathParameter is used to read path parameter of a request
 func (bs *Context) ReadPathParameter(name string) string {
 	return bs.Req.PathParameter(name)
 }
 
-//ReadPathParameters used to read multiple path parameters of a request
+// ReadPathParameters used to read multiple path parameters of a request
 func (bs *Context) ReadPathParameters() map[string]string {
 	return bs.Req.PathParameters()
 }
 
-//ReadQueryParameter is used to read query parameter of a request
+// ReadQueryParameter is used to read query parameter of a request
 func (bs *Context) ReadQueryParameter(name string) string {
 	return bs.Req.QueryParameter(name)
 }
 
 // ReadQueryEntity is used to read query parameters into a specified struct.
 // The struct tag should be `form` like:
-// type QueryRequest struct {
-//     Name string `form:"name"`
-//     Password string `form:"password"`
-// }
+//
+//	type QueryRequest struct {
+//	    Name string `form:"name"`
+//	    Password string `form:"password"`
+//	}
 func (bs *Context) ReadQueryEntity(schema interface{}) (err error) {
 	return mapForm(schema, bs.Req.Request.URL.Query())
 }
 
-//ReadBodyParameter used to read body parameter of a request
+// ReadBodyParameter used to read body parameter of a request
 func (bs *Context) ReadBodyParameter(name string) (string, error) {
 	return bs.Req.BodyParameter(name)
 }
 
-//ReadRequest return a native net/http request
+// ReadRequest return a native net/http request
 func (bs *Context) ReadRequest() *http.Request {
 	return bs.Req.Request
 }
 
-//ReadRestfulRequest return a native  go-restful request
+// ReadRestfulRequest return a native  go-restful request
 func (bs *Context) ReadRestfulRequest() *restful.Request {
 	return bs.Req
 }
 
-//ReadResponseWriter return a native net/http ResponseWriter
+// ReadResponseWriter return a native net/http ResponseWriter
 func (bs *Context) ReadResponseWriter() http.ResponseWriter {
 	return bs.Resp.ResponseWriter
 }
 
-//ReadRestfulResponse return a native go-restful Response
+// ReadRestfulResponse return a native go-restful Response
 func (bs *Context) ReadRestfulResponse() *restful.Response {
 	return bs.Resp
 }

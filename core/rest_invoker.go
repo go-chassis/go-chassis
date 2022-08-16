@@ -13,7 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/pkg/util"
 )
 
-//schemas
+// schemas
 const (
 	HTTP  = "http"
 	HTTPS = "https"

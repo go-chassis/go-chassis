@@ -1,6 +1,6 @@
 package model
 
-//RegistryStruct SC information
+// RegistryStruct SC information
 type RegistryStruct struct {
 	Disable         bool                     `yaml:"disabled"`
 	Type            string                   `yaml:"type"`

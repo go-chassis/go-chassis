@@ -88,7 +88,7 @@ func (s *HeartbeatService) sendNonPersistenceHeartBeat() {
 	}
 }
 
-//RetryRegister try to register micro-service, and instance
+// RetryRegister try to register micro-service, and instance
 func (s *HeartbeatService) RetryRegister(sid, iid string) {
 	for !s.shutdown {
 		openlog.Info("try to re-register")

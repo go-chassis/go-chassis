@@ -1,6 +1,6 @@
 package storage
 
-//Options is yaml file struct to set db config
+// Options is yaml file struct to set db config
 type Options struct {
 	URI        string `yaml:"uri"`
 	PoolSize   int    `yaml:"poolSize"`

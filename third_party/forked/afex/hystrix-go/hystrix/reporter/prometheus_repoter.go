@@ -57,7 +57,7 @@ var desc = map[string]string{
 	"Provider.runDuration":       "how long a request consumed",
 }
 
-//GetDesc retrieve metric doc
+// GetDesc retrieve metric doc
 func GetDesc(name string) string {
 	h := desc[name]
 	if h != "" {
@@ -108,7 +108,7 @@ func gaugeVecFromNameAndValue(name string, val float64, labels prometheus.Labels
 	gVec.With(labels).Set(val)
 }
 
-//ReportMetricsToPrometheus report metrics to prometheus registry, you can use GetSystemPrometheusRegistry to get prometheus registry. by default chassis will report system metrics to prometheus
+// ReportMetricsToPrometheus report metrics to prometheus registry, you can use GetSystemPrometheusRegistry to get prometheus registry. by default chassis will report system metrics to prometheus
 func ReportMetricsToPrometheus(cb *hystrix.CircuitBreaker) error {
 	GetPrometheusSinker()
 

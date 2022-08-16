@@ -13,7 +13,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/pkg/util/httputil"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
+// if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/path/to/conf/folder
 func main() {
 	//chassis operation
 	if err := chassis.Init(); err != nil {

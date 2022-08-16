@@ -26,8 +26,8 @@ import (
 
 var auth *Auth
 
-//Auth should implement auth logic
-//it is singleton
+// Auth should implement auth logic
+// it is singleton
 type Auth struct {
 	SecretFunc token.SecretFunc //required
 	Expire     time.Duration
@@ -43,8 +43,8 @@ type Auth struct {
 	MustAuth func(req *http.Request) bool
 }
 
-//Use put a custom auth logic
-//then register handler to chassis
+// Use put a custom auth logic
+// then register handler to chassis
 func Use(middleware *Auth) {
 	auth = middleware
 	if auth.Expire == 0 {
@@ -57,7 +57,7 @@ func Use(middleware *Auth) {
 	}
 }
 
-//SetExpire reset the expire time
+// SetExpire reset the expire time
 func SetExpire(duration time.Duration) {
 	auth.Expire = duration
 }

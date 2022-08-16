@@ -19,7 +19,7 @@ package status
 
 import "net/http"
 
-//status key const
+// status key const
 const (
 	Unauthorized = "Unauthorized"
 
@@ -42,14 +42,14 @@ func init() {
 	protocolStatus["rest"] = defaultStatus
 }
 
-//Register allows you custom a status map for a protocol plugin
+// Register allows you custom a status map for a protocol plugin
 func Register(protocol string, status map[string]int) {
 	//TODO map key list check
 	protocolStatus[protocol] = status
 
 }
 
-//Status return a status, if protocol do not has dedicated status map will use http status as standard map
+// Status return a status, if protocol do not has dedicated status map will use http status as standard map
 func Status(protocol, statusKey string) int {
 	s, ok := protocolStatus[protocol]
 	if !ok {

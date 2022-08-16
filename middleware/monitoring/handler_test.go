@@ -48,7 +48,7 @@ func (r *DummyResource) Err(b *restful.Context) {
 	b.WriteError(500, errors.New("err"))
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *DummyResource) URLPatterns() []restful.Route {
 	return []restful.Route{
 		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFunc: r.Sayhello,

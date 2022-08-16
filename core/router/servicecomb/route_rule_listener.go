@@ -67,7 +67,7 @@ func (r *routeRuleEventListener) Event(e *event.Event) {
 
 }
 
-//SaveRouteRule save event rule to local cache
+// SaveRouteRule save event rule to local cache
 func SaveRouteRule(service string, raw string, isV2 bool) {
 	var routeRules []*config.RouteRule
 	var err error

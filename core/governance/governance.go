@@ -23,7 +23,7 @@ import (
 	"strings"
 )
 
-//prefix const
+// prefix const
 const (
 	KindMatchPrefix        = "servicecomb.match"
 	KindRateLimitingPrefix = "servicecomb.rateLimiting"
@@ -35,17 +35,17 @@ var processFuncMap = map[string]ProcessFunc{
 	KindRateLimitingPrefix: ProcessLimiter,
 }
 
-//ProcessFunc process a config
+// ProcessFunc process a config
 type ProcessFunc func(key string, value string) error
 
-//InstallProcessor install a func to process config,
-//if a config key matches the key prefix, then the func will process the config
+// InstallProcessor install a func to process config,
+// if a config key matches the key prefix, then the func will process the config
 func InstallProcessor(keyPrefix string, process ProcessFunc) {
 	processFuncMap[keyPrefix] = process
 }
 
-//Init go through all governance configs
-//and call process func according to key prefix
+// Init go through all governance configs
+// and call process func according to key prefix
 func Init() {
 	configMap := archaius.GetConfigs()
 	openlog.Info("process all governance rules")

@@ -17,7 +17,7 @@ func (r *RestFulHello) Root(b *rf.Context) {
 	b.Write([]byte(fmt.Sprintf("hello %s", b.ReadRequest().RemoteAddr)))
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *RestFulHello) URLPatterns() []rf.Route {
 	return []rf.Route{
 		{Method: http.MethodGet, Path: "/hello", ResourceFunc: r.Root,

@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-// Package basicauth supply basicAuth middleware abstraction
-package basicauth
+package codec_test
 
 import (
-	"github.com/go-chassis/go-chassis/v2/core/handler"
-	"github.com/go-chassis/openlog"
-	"net/http"
+	"github.com/go-chassis/go-chassis/v2/pkg/codec"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-var auth *BasicAuth
-
-// BasicAuth should implement basic auth server side logic
-// it is singleton
-type BasicAuth struct {
-	Realm string //required
-
-	Authenticate func(user, pwd string) error               //required
-	Authorize    func(user string, req *http.Request) error //optional
-
+type Person struct {
+	Name string
 }
 
-// Use put a custom basic auth logic
-// then register handler to chassis
-func Use(middleware *BasicAuth) {
-	auth = middleware
-	err := handler.RegisterHandler("basicAuth", newBasicAuth)
-	if err != nil {
-		openlog.Error(err.Error())
-	}
+func TestInit(t *testing.T) {
+	t.Run("init codec, should success", func(t *testing.T) {
+		err := codec.Init(codec.Options{
+			Plugin: "json",
+		})
+		assert.NoError(t, err)
+	})
+	t.Run("encode and decode, should success", func(t *testing.T) {
+		data, err := codec.Encode(Person{Name: "a"})
+		assert.NoError(t, err)
+		p := &Person{}
+		err = codec.Decode(data, p)
+		assert.NoError(t, err)
+		assert.Equal(t, "a", p.Name)
+	})
 }

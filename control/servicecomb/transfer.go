@@ -17,7 +17,7 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//SaveToLBCache save configs
+// SaveToLBCache save configs
 func SaveToLBCache(raw *model.LoadBalancing) {
 	openlog.Debug("Loading lb config from archaius into cache")
 	oldKeys := LBConfigCache.Items()
@@ -93,7 +93,7 @@ func setDefaultLBValue(c *control.LoadBalancingConfig) {
 	}
 }
 
-//SaveToCBCache save configs
+// SaveToCBCache save configs
 func SaveToCBCache(raw *model.HystrixConfig) {
 	openlog.Debug("Loading cb config from archaius into cache")
 	oldKeys := CBConfigCache.Items()
@@ -148,7 +148,7 @@ func saveEachCB(serviceName, serviceType string) string { //return updated key
 	return cbcCacheKey
 }
 
-//GetCBCacheKey generate cache key
+// GetCBCacheKey generate cache key
 func GetCBCacheKey(serviceName, serviceType string) string {
 	key := serviceType
 	if serviceName != "" {

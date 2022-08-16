@@ -17,5 +17,5 @@
 
 package restful
 
-//HeaderAuth is const
+// HeaderAuth is const
 const HeaderAuth = "Authorization"

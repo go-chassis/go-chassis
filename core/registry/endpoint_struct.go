@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-//const
+// const
 const (
 	SSLEnabledQuery = "sslEnabled=true"
 )
@@ -20,7 +20,7 @@ func NewEndPoint(schema string) (*Endpoint, error) {
 	return parseAddress(schema)
 }
 
-//GenEndpoint return the endpoint string which it contain the sslEnabled=true query arg or not
+// GenEndpoint return the endpoint string which it contain the sslEnabled=true query arg or not
 func (e *Endpoint) GenEndpoint() string {
 	if e.SSLEnabled {
 		return e.Address + "?" + SSLEnabledQuery
@@ -28,12 +28,12 @@ func (e *Endpoint) GenEndpoint() string {
 	return e.Address
 }
 
-//IsSSLEnable return it is use ssl or not
+// IsSSLEnable return it is use ssl or not
 func (e *Endpoint) IsSSLEnable() bool {
 	return e.SSLEnabled
 }
 
-//SetSSLEnable set ssl enable or not
+// SetSSLEnable set ssl enable or not
 func (e *Endpoint) SetSSLEnable(enabled bool) {
 	e.SSLEnabled = enabled
 }

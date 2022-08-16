@@ -9,7 +9,7 @@ import (
 	rf "github.com/go-chassis/go-chassis/v2/server/restful"
 )
 
-//RestFulUpload is a struct used to implement restful upload
+// RestFulUpload is a struct used to implement restful upload
 type RestFulUpload struct {
 }
 
@@ -117,7 +117,7 @@ func uploadForm(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *RestFulUpload) URLPatterns() []rf.Route {
 	return []rf.Route{
 		{Method: http.MethodPost, Path: "/uploadfile", ResourceFunc: r.UploadFile},

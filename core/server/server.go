@@ -1,4 +1,4 @@
-//Package server is a package for protocol of a micro service
+// Package server is a package for protocol of a micro service
 package server
 
 // ProtocolServer interface for the protocol server, a server should implement init, register, start, and stop

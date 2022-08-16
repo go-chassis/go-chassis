@@ -24,16 +24,16 @@ import (
 	"time"
 )
 
-//DefaultManager can be replaced
+// DefaultManager can be replaced
 var DefaultManager Manager = &jwtTokenManager{}
 
-//token pkg common errors
+// token pkg common errors
 var (
 	ErrInvalidExp = errors.New("expire time is illegal")
 )
 
-//jwt claims RFC 7519
-//https://tools.ietf.org/html/rfc7519#section-4.1.2
+// jwt claims RFC 7519
+// https://tools.ietf.org/html/rfc7519#section-4.1.2
 const (
 	JWTClaimsExp = "exp"
 	JWTClaimsSub = "sub"
@@ -45,17 +45,17 @@ const (
 // claims of the token (such as `username`) to identify which key to use.
 type SecretFunc func(claims interface{}, method SigningMethod) (interface{}, error)
 
-//Sign gen token
+// Sign gen token
 func Sign(claims map[string]interface{}, secret interface{}, opts ...Option) (string, error) {
 	return DefaultManager.Sign(claims, secret, opts...)
 }
 
-//Verify return claims
+// Verify return claims
 func Verify(tokenString string, f SecretFunc, opts ...Option) (map[string]interface{}, error) {
 	return DefaultManager.Verify(tokenString, f, opts...)
 }
 
-//Manager manages token
+// Manager manages token
 type Manager interface {
 	Sign(claims map[string]interface{}, secret interface{}, option ...Option) (string, error)
 	Verify(tokenString string, f SecretFunc, opts ...Option) (map[string]interface{}, error)
@@ -63,7 +63,7 @@ type Manager interface {
 type jwtTokenManager struct {
 }
 
-//Sign signature a token
+// Sign signature a token
 func (j *jwtTokenManager) Sign(claims map[string]interface{}, secret interface{}, opts ...Option) (string, error) {
 	o := &Options{}
 	for _, opt := range opts {
@@ -95,7 +95,7 @@ func (j *jwtTokenManager) Sign(claims map[string]interface{}, secret interface{}
 
 }
 
-//Verify return claims
+// Verify return claims
 func (j *jwtTokenManager) Verify(tokenString string, f SecretFunc, opts ...Option) (map[string]interface{}, error) {
 	o := &Options{}
 	for _, opt := range opts {

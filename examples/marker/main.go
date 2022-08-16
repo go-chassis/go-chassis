@@ -11,10 +11,10 @@ import (
 
 type Hello struct{}
 
-//Hello
+// Hello
 func (r *Hello) Hello(b *rf.Context) { b.Write([]byte("hi from hello")) }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *Hello) URLPatterns() []rf.Route {
 	return []rf.Route{
 		{Method: http.MethodGet, Path: "/hello", ResourceFunc: r.Hello},

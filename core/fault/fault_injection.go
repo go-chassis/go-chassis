@@ -68,7 +68,7 @@ func ValidateFaultDelay(fault *model.Fault) error {
 	return nil
 }
 
-//ApplyFaultInjection abort/delay
+// ApplyFaultInjection abort/delay
 func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configuredPercent int, faultType string) error {
 	if rand.Intn(MaxPercentage)+1 <= configuredPercent {
 		return injectFault(faultType, fault)
@@ -76,7 +76,7 @@ func ApplyFaultInjection(fault *model.Fault, inv *invocation.Invocation, configu
 	return nil
 }
 
-//injectFault apply fault based on the type
+// injectFault apply fault based on the type
 func injectFault(faultType string, fault *model.Fault) error {
 	if faultType == "delay" {
 		time.Sleep(fault.Delay.FixedDelay)

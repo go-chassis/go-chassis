@@ -19,31 +19,31 @@ package token
 
 type SigningMethod int
 
-//const
+// const
 const (
 	RS256 SigningMethod = 1
 	RS512 SigningMethod = 2
 	HS256 SigningMethod = 3
 )
 
-//Options is options
+// Options is options
 type Options struct {
 	Expire        string
 	SigningMethod SigningMethod
 }
 
-//Option is option
+// Option is option
 type Option func(options *Options)
 
-//WithExpTime generate a token which expire after a duration
-//for example 5s,1m,24h
+// WithExpTime generate a token which expire after a duration
+// for example 5s,1m,24h
 func WithExpTime(exp string) Option {
 	return func(options *Options) {
 		options.Expire = exp
 	}
 }
 
-//WithSigningMethod specify the sign method
+// WithSigningMethod specify the sign method
 func WithSigningMethod(m SigningMethod) Option {
 	return func(options *Options) {
 		options.SigningMethod = m

@@ -13,15 +13,15 @@ import (
 
 const pluginSuffix = ".so"
 
-//CipherPlugins is a map
+// CipherPlugins is a map
 var cipherPlugins = make(map[string]func() security.Cipher)
 
-//InstallCipherPlugin is a function
+// InstallCipherPlugin is a function
 func InstallCipherPlugin(name string, f func() security.Cipher) {
 	cipherPlugins[name] = f
 }
 
-//NewCipher create and return a cipher
+// NewCipher create and return a cipher
 func NewCipher(name string) (security.Cipher, error) {
 	f, err := GetCipherNewFunc(name)
 	if err != nil {
@@ -30,7 +30,7 @@ func NewCipher(name string) (security.Cipher, error) {
 	return f(), nil
 }
 
-//GetCipherNewFunc return a function which is able to create a cipher
+// GetCipherNewFunc return a function which is able to create a cipher
 func GetCipherNewFunc(name string) (func() security.Cipher, error) {
 	if f, ok := cipherPlugins[name]; ok {
 		return f, nil

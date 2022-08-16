@@ -10,7 +10,7 @@ func init() {
 	loadbalancer.InstallFilter(loadbalancer.ZoneAware, FilterAvailableZoneAffinity)
 }
 
-//FilterAvailableZoneAffinity is a region and zone based Select Filter which will Do the selection of instance in the same region and zone, if not Do the selection of instance in any zone in same region , if not Do the selection of instance in any zone of any region
+// FilterAvailableZoneAffinity is a region and zone based Select Filter which will Do the selection of instance in the same region and zone, if not Do the selection of instance in any zone in same region , if not Do the selection of instance in any zone of any region
 func FilterAvailableZoneAffinity(old []*registry.MicroServiceInstance, c []*loadbalancer.Criteria) []*registry.MicroServiceInstance {
 	var instances []*registry.MicroServiceInstance
 	if config.GetDataCenter() == nil {

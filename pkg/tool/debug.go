@@ -22,7 +22,7 @@ import (
 	"runtime"
 )
 
-//GetStackTrace get stack trace
+// GetStackTrace get stack trace
 func GetStackTrace(skip int) string {
 	var stacktrace string
 	for i := skip; ; i++ {

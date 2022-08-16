@@ -49,7 +49,7 @@ func (r *DummyResource) Panic(b *restful.Context) {
 	panic("panic msg")
 }
 
-//URLPatterns helps to respond for corresponding API calls
+// URLPatterns helps to respond for corresponding API calls
 func (r *DummyResource) URLPatterns() []restful.Route {
 	return []restful.Route{
 		{Method: http.MethodGet, Path: "/sayhello/{userid}", ResourceFuncName: "Sayhello",

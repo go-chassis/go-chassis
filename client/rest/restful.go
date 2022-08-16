@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-//NewRequest is a function which creates new request
+// NewRequest is a function which creates new request
 func NewRequest(method, urlStr string, body []byte) (*http.Request, error) {
 	var r io.Reader
 	if body != nil {

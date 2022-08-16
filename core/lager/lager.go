@@ -32,7 +32,7 @@ const (
 // logFilePath log file path
 var logFilePath string
 
-//Options is the struct for lager information(lager.yaml)
+// Options is the struct for lager information(lager.yaml)
 type Options struct {
 	Writers       string `yaml:"logWriters"`
 	LoggerLevel   string `yaml:"logLevel"`

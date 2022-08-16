@@ -72,7 +72,7 @@ func SetContextMetadata(ctx context.Context, key string, value string) context.C
 	return context.WithValue(ctx, common.ContextHeaderKey{}, md)
 }
 
-//GetSessionFromResp return session uuid in resp if there is
+// GetSessionFromResp return session uuid in resp if there is
 func GetSessionFromResp(cookieKey string, resp *http.Response) string {
 	bytes := httputil.GetRespCookie(resp, cookieKey)
 	if bytes != nil {
@@ -120,7 +120,7 @@ func SaveSessionIDFromContext(ctx context.Context, ep string, autoTimeout int) c
 	return SetContextMetadata(ctx, common.LBSessionID, cookie)
 }
 
-//Temporary responsewriter for SetCookie
+// Temporary responsewriter for SetCookie
 type cookieResponseWriter http.Header
 
 // Header implements ResponseWriter Header interface
@@ -128,17 +128,17 @@ func (c cookieResponseWriter) Header() http.Header {
 	return http.Header(c)
 }
 
-//Write is a dummy function
+// Write is a dummy function
 func (c cookieResponseWriter) Write([]byte) (int, error) {
 	panic("ERROR")
 }
 
-//WriteHeader is a dummy function
+// WriteHeader is a dummy function
 func (c cookieResponseWriter) WriteHeader(int) {
 	panic("ERROR")
 }
 
-//setCookie appends cookie with already present cookie with ';' in between
+// setCookie appends cookie with already present cookie with ';' in between
 func setCookie(resp *http.Response, value string) {
 
 	newCookie := common.LBSessionID + "=" + value
@@ -197,7 +197,7 @@ func SaveSessionIDFromHTTP(ep string, autoTimeout int, resp *http.Response, req 
 
 }
 
-//GenerateSessionID generate a session id
+// GenerateSessionID generate a session id
 func GenerateSessionID() (string, error) {
 	b := make([]byte, 32)
 	_, err := rand.Read(b)

@@ -24,19 +24,19 @@ const (
 	DefaultProfilePath = "profile"
 )
 
-//NewFunc returns a ProtocolServer
+// NewFunc returns a ProtocolServer
 type NewFunc func(Options) ProtocolServer
 
 var serverPlugins = make(map[string]NewFunc)
 var servers = make(map[string]ProtocolServer)
 
-//InstallPlugin For developer
+// InstallPlugin For developer
 func InstallPlugin(protocol string, newFunc NewFunc) {
 	serverPlugins[protocol] = newFunc
 	openlog.Info("Installed Server Plugin, protocol:" + protocol)
 }
 
-//GetServerFunc returns the server function
+// GetServerFunc returns the server function
 func GetServerFunc(protocol string) (NewFunc, error) {
 	f, ok := serverPlugins[protocol]
 	if !ok {
@@ -45,7 +45,7 @@ func GetServerFunc(protocol string) (NewFunc, error) {
 	return f, nil
 }
 
-//GetServer return the server based on protocol
+// GetServer return the server based on protocol
 func GetServer(protocol string) (ProtocolServer, error) {
 	s, ok := servers[protocol]
 	if !ok {
@@ -54,15 +54,15 @@ func GetServer(protocol string) (ProtocolServer, error) {
 	return s, nil
 }
 
-//GetServers returns the map of servers
+// GetServers returns the map of servers
 func GetServers() map[string]ProtocolServer {
 	return servers
 }
 
-//ErrRuntime is an error channel, if it receive any signal will cause graceful shutdown of go chassis, process will exit
+// ErrRuntime is an error channel, if it receive any signal will cause graceful shutdown of go chassis, process will exit
 var ErrRuntime = make(chan error)
 
-//StartServer starting the server
+// StartServer starting the server
 func StartServer() error {
 	for name, server := range servers {
 		openlog.Info("starting server " + name + "...")
@@ -78,7 +78,7 @@ func StartServer() error {
 	return nil
 }
 
-//UnRegistrySelfInstances this function removes the self instance
+// UnRegistrySelfInstances this function removes the self instance
 func UnRegistrySelfInstances() error {
 	if err := registry.DefaultRegistrator.UnRegisterMicroServiceInstance(runtime.ServiceID, runtime.InstanceID); err != nil {
 		openlog.Error(fmt.Sprintf("unregister instance failed, sid/iid: %s/%s: %s",
@@ -88,7 +88,7 @@ func UnRegistrySelfInstances() error {
 	return nil
 }
 
-//Init initializes
+// Init initializes
 func Init() error {
 	var err error
 	for k, v := range config.GlobalDefinition.ServiceComb.Protocols {

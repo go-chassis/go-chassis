@@ -10,7 +10,7 @@ import (
 
 var panelPlugin = make(map[string]func(options Options) Panel)
 
-//DefaultPanel get fetch config
+// DefaultPanel get fetch config
 var DefaultPanel Panel
 
 const (
@@ -28,9 +28,9 @@ var (
 	DefaultBurst = 10
 )
 
-//Panel is a abstraction of pulling configurations from various of systems, and transfer different configuration into standardized model
-//you can use different panel implementation to pull different of configs from Istio or Archaius
-//TODO able to set configs
+// Panel is a abstraction of pulling configurations from various of systems, and transfer different configuration into standardized model
+// you can use different panel implementation to pull different of configs from Istio or Archaius
+// TODO able to set configs
 type Panel interface {
 	GetCircuitBreaker(inv invocation.Invocation, serviceType string) (string, hystrix.CommandConfig)
 	GetLoadBalancing(inv invocation.Invocation) LoadBalancingConfig
@@ -39,12 +39,12 @@ type Panel interface {
 	GetEgressRule() []EgressConfig
 }
 
-//InstallPlugin install implementation
+// InstallPlugin install implementation
 func InstallPlugin(name string, f func(options Options) Panel) {
 	panelPlugin[name] = f
 }
 
-//Init initialize DefaultPanel
+// Init initialize DefaultPanel
 func Init(opts Options) error {
 	infra := opts.Infra
 	if infra == "" {
@@ -59,10 +59,10 @@ func Init(opts Options) error {
 	return nil
 }
 
-//NewCircuitName create circuit command string
-//scope means has two choices, service and api
-//if you set it to api, a api level command string will be created. like "Consumer.mall.rest./test"
-//set to service, a service level command will be created, like "Consumer.mall"
+// NewCircuitName create circuit command string
+// scope means has two choices, service and api
+// if you set it to api, a api level command string will be created. like "Consumer.mall.rest./test"
+// set to service, a service level command will be created, like "Consumer.mall"
 func NewCircuitName(serviceType, scope string, inv invocation.Invocation) string {
 	var cmd = serviceType
 	if inv.MicroServiceName != "" {

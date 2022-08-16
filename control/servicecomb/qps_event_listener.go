@@ -12,13 +12,13 @@ import (
 	"strings"
 )
 
-//QPSEventListener is a struct used for Event listener
+// QPSEventListener is a struct used for Event listener
 type QPSEventListener struct {
 	//Key []string
 	Key string
 }
 
-//Event is a method for QPS event listening
+// Event is a method for QPS event listening
 func (el *QPSEventListener) Event(e *event.Event) {
 	qpsLimiter := rate.GetRateLimiters()
 

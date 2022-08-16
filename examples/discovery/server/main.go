@@ -8,7 +8,7 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/discovery/server/
+// if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/discovery/server/
 func main() {
 	chassis.RegisterSchema("rest", &schemas.RestFulHello{})
 	chassis.RegisterSchema("rest", &schemas.RestFulMessage{})

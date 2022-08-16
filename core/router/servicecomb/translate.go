@@ -14,7 +14,7 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//ConvertJSON2RouteRule parse raw json from cse server to route rule config
+// ConvertJSON2RouteRule parse raw json from cse server to route rule config
 func ConvertJSON2RouteRule(raw string) ([]*config.RouteRule, error) {
 	rule := &config.DarkLaunchRule{}
 	if err := json.Unmarshal([]byte(raw), rule); err != nil {

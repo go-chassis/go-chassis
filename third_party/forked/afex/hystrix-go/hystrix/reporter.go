@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-//Reporter receive a circuit breaker Metrics and sink it to monitoring system
+// Reporter receive a circuit breaker Metrics and sink it to monitoring system
 type Reporter func(cb *CircuitBreaker) error
 
-//ErrDuplicated means you can not install reporter with same name
+// ErrDuplicated means you can not install reporter with same name
 var ErrDuplicated = errors.New("duplicated reporter")
 var reporterPlugins = make(map[string]Reporter)
 
-//InstallReporter install reporter implementation
-//it receives a circuit breaker and sink its Metrics to monitoring system
+// InstallReporter install reporter implementation
+// it receives a circuit breaker and sink its Metrics to monitoring system
 func InstallReporter(name string, reporter Reporter) error {
 	_, ok := reporterPlugins[name]
 	if ok {
@@ -25,7 +25,7 @@ func InstallReporter(name string, reporter Reporter) error {
 	return nil
 }
 
-//StartReporter starts reporting to reporters
+// StartReporter starts reporting to reporters
 func StartReporter() {
 	tick := time.Tick(10 * time.Second)
 	for {

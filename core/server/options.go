@@ -7,7 +7,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/provider"
 )
 
-//Options is the options for service initiating
+// Options is the options for service initiating
 type Options struct {
 	Address            string
 	ProtocolServerName string
@@ -25,7 +25,7 @@ type Options struct {
 	MetricsAPI    string
 }
 
-//RegisterOptions is options when you register a schema to chassis
+// RegisterOptions is options when you register a schema to chassis
 type RegisterOptions struct {
 	SchemaID   string
 	Method     string
@@ -33,31 +33,31 @@ type RegisterOptions struct {
 	RPCSvcDesc interface{}
 }
 
-//RegisterOption is option when you register a schema to chassis
+// RegisterOption is option when you register a schema to chassis
 type RegisterOption func(*RegisterOptions)
 
-//WithSchemaID you can specify a unique id for schema
+// WithSchemaID you can specify a unique id for schema
 func WithSchemaID(schemaID string) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.SchemaID = schemaID
 	}
 }
 
-//WithPath specify a url pattern
+// WithPath specify a url pattern
 func WithPath(Path string) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.Path = Path
 	}
 }
 
-//WithPah specify a method
+// WithPah specify a method
 func WithMethod(Method string) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.Method = Method
 	}
 }
 
-//WithRPCServiceDesc you can set rpc service desc, it cloud be *grpc.ServiceDesc
+// WithRPCServiceDesc you can set rpc service desc, it cloud be *grpc.ServiceDesc
 func WithRPCServiceDesc(RPCSvcDesc interface{}) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.RPCSvcDesc = RPCSvcDesc

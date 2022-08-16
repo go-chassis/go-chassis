@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/
+// if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/rest/client/
 func main() {
 	//Init framework
 	if err := chassis.Init(); err != nil {

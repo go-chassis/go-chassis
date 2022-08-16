@@ -6,7 +6,7 @@ import (
 	"github.com/go-chassis/openlog"
 )
 
-//if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/server/
+// if you use go run main.go instead of binary run, plz export CHASSIS_HOME=/{path}/{to}/fileupload/server/
 func main() {
 	chassis.RegisterSchema("rest", &example.RestFulUpload{})
 

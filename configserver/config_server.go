@@ -23,7 +23,7 @@ const (
 	configServerName = "configServer"
 )
 
-//ErrRefreshMode means config is mis used
+// ErrRefreshMode means config is mis used
 var (
 	ErrRefreshMode      = errors.New("refreshMode must be 0 or 1")
 	ErrRegistryDisabled = errors.New("discovery is disabled")
@@ -66,7 +66,7 @@ func Init() error {
 	return nil
 }
 
-//GetConfigServerEndpoint will read local config server uri first, if there is not,
+// GetConfigServerEndpoint will read local config server uri first, if there is not,
 // it will try to discover config server from registry
 func GetConfigServerEndpoint() (string, error) {
 	configServerURL := config.GetConfigServerConf().ServerURI

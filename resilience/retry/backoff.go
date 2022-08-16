@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//retry kind
+// retry kind
 const (
 	KindExponential    = "exponential"
 	KindConstant       = "constant"
@@ -13,8 +13,8 @@ const (
 	DefaultBackOffKind = KindExponential
 )
 
-//GetBackOff return the the back off policy
-//min and max unit is million second
+// GetBackOff return the the back off policy
+// min and max unit is million second
 func GetBackOff(kind string, min, max int) backoff.BackOff {
 	switch kind {
 	case KindExponential:

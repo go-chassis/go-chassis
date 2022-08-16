@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-//DefaultCipher is a struct
+// DefaultCipher is a struct
 type DefaultCipher struct {
 }
 
@@ -21,12 +21,12 @@ func new() security.Cipher {
 	return &DefaultCipher{}
 }
 
-//Encrypt is method used for encryption
+// Encrypt is method used for encryption
 func (c *DefaultCipher) Encrypt(src string) (string, error) {
 	return src, nil
 }
 
-//Decrypt is method used for decryption
+// Decrypt is method used for decryption
 func (c *DefaultCipher) Decrypt(src string) (string, error) {
 	return src, nil
 }

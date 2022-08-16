@@ -5,20 +5,20 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-//OneServiceRule save route rule for one service
+// OneServiceRule save route rule for one service
 type OneServiceRule []*RouteRule
 
-//Len return the length of rule
+// Len return the length of rule
 func (o OneServiceRule) Len() int {
 	return len(o)
 }
 
-//Value return the rule
+// Value return the rule
 func (o OneServiceRule) Value() []*RouteRule {
 	return o
 }
 
-//NewServiceRule create a rule by raw data
+// NewServiceRule create a rule by raw data
 func NewServiceRule(raw string) (*OneServiceRule, error) {
 	b := stringutil.Str2bytes(raw)
 	r := &OneServiceRule{}
@@ -26,12 +26,12 @@ func NewServiceRule(raw string) (*OneServiceRule, error) {
 	return r, err
 }
 
-//ServiceComb hold all config items
+// ServiceComb hold all config items
 type ServiceComb struct {
 	Prefix Prefix `yaml:"servicecomb"`
 }
 
-//Prefix hold all config items
+// Prefix hold all config items
 type Prefix struct {
 	RouteRule       map[string]string `yaml:"routeRule"`      //service name is key,value is route rule yaml config
 	SourceTemplates map[string]string `yaml:"sourceTemplate"` //template name is key, value is template policy
@@ -66,15 +66,15 @@ type Match struct {
 	Headers     map[string]map[string]string `json:"headers" yaml:"headers"`
 }
 
-//DarkLaunchRule dark launch rule
-//Deprecated
+// DarkLaunchRule dark launch rule
+// Deprecated
 type DarkLaunchRule struct {
 	Type  string      `json:"policyType"` // RULE/RATE
 	Items []*RuleItem `json:"ruleItems"`
 }
 
-//RuleItem rule item
-//Deprecated
+// RuleItem rule item
+// Deprecated
 type RuleItem struct {
 	GroupName       string   `json:"groupName"`
 	GroupCondition  string   `json:"groupCondition"`  // version=0.0.1
@@ -83,12 +83,12 @@ type RuleItem struct {
 	Versions        []string `json:"versions"`
 }
 
-//MatchPolicy specify a request mach policy
+// MatchPolicy specify a request mach policy
 type MatchPolicies struct {
 	Matches []MatchPolicy `yaml:"matches"`
 }
 
-//MatchPolicy specify a request mach policy
+// MatchPolicy specify a request mach policy
 type MatchPolicy struct {
 	TrafficMarkPolicy string                       `yaml:"trafficMarkPolicy"`
 	Headers           map[string]map[string]string `yaml:"headers"`
@@ -96,7 +96,7 @@ type MatchPolicy struct {
 	Method            []string                     `yaml:"method"`
 }
 
-//LimiterConfig is rate limiter policy
+// LimiterConfig is rate limiter policy
 type LimiterConfig struct {
 	Match string
 	QPS   string

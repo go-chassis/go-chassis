@@ -1,4 +1,4 @@
-//Package api supply a bunch of common http handler that could be mounted on you rest server and expose ability
+// Package api supply a bunch of common http handler that could be mounted on you rest server and expose ability
 // for example: prometheus metrics will be exported on /metrics api
 package api
 

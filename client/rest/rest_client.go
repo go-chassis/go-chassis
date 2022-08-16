@@ -43,7 +43,7 @@ func init() {
 	client.InstallPlugin(Name, NewRestClient)
 }
 
-//Client is a struct
+// Client is a struct
 type Client struct {
 	c    *http.Client
 	opts client.Options
@@ -56,7 +56,7 @@ func (c *Client) Status(rsp interface{}) (status int, err error) {
 	return 0, fmt.Errorf("imcompatible type: %s", reflect.TypeOf(rsp))
 }
 
-//NewRestClient is a function
+// NewRestClient is a function
 func NewRestClient(opts client.Options) (client.ProtocolClient, error) {
 	tp := newTransport(opts)
 	rc := &Client{
@@ -111,7 +111,7 @@ func (c *Client) failure2Error(e error, r *http.Response, addr string) error {
 	return nil
 }
 
-//Call is a method which uses client struct object
+// Call is a method which uses client struct object
 func (c *Client) Call(ctx context.Context, addr string, inv *invocation.Invocation, rsp interface{}) error {
 	var err error
 	reqSend, err := httputil.HTTPRequest(inv)

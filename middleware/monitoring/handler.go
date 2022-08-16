@@ -30,7 +30,7 @@ import (
 	"time"
 )
 
-//errors
+// errors
 const (
 	MetricsLatency = "scb_request_process_duration"
 	MetricsRequest = "scb_request_count"
@@ -42,7 +42,7 @@ var labels = []string{"service", "instance", "version", "app", "env"}
 var labels4Resp = []string{"service", "instance", "version", "app", "env", "code"}
 var labelMap map[string]string
 
-//Handler monitor server side metrics, the key metrics is latency, QPS, Errors, do not use it in consumer chain
+// Handler monitor server side metrics, the key metrics is latency, QPS, Errors, do not use it in consumer chain
 type Handler struct {
 }
 

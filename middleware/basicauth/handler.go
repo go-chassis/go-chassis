@@ -30,17 +30,17 @@ import (
 	"strings"
 )
 
-//errors
+// errors
 var (
 	ErrInvalidBase64 = errors.New("invalid base64")
 	ErrNoHeader      = errors.New("not authorized")
 	ErrInvalidAuth   = errors.New("invalid authentication")
 )
 
-//HeaderAuth is common auth header
+// HeaderAuth is common auth header
 const HeaderAuth = "Authorization"
 
-//Handler is is a basic auth pre process raw data in handler
+// Handler is is a basic auth pre process raw data in handler
 type Handler struct {
 }
 

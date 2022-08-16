@@ -1,5 +1,5 @@
-//Package rate supply functionality about QPS
-//for example rate limiting
+// Package rate supply functionality about QPS
+// for example rate limiting
 package rate
 
 import (
@@ -14,9 +14,9 @@ const (
 	DefaultRate = 2147483647
 )
 
-//Limiters manages all rate limiters. it is thread safe and singleton.
-//it create new limiters and try to limit request.
-//each limiter has a unique name.
+// Limiters manages all rate limiters. it is thread safe and singleton.
+// it create new limiters and try to limit request.
+// each limiter has a unique name.
 type Limiters struct {
 	sync.RWMutex
 	m map[string]flowcontrol.RateLimiter
@@ -36,9 +36,9 @@ func GetRateLimiters() *Limiters {
 	return qpsLimiter
 }
 
-//TryAccept try to accept a request. if limiter can not accept a request, it returns false
-//name is the limiter name
-//qps is not necessary if the limiter already exists
+// TryAccept try to accept a request. if limiter can not accept a request, it returns false
+// name is the limiter name
+// qps is not necessary if the limiter already exists
 func (qpsL *Limiters) TryAccept(name string, qps, burst int) bool {
 	qpsL.RLock()
 	limiter, ok := qpsL.m[name]

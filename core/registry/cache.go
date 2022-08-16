@@ -14,17 +14,17 @@ const (
 	DefaultExpireTime = 0
 )
 
-//MicroserviceInstanceIndex key: ServiceName, value: []instance
+// MicroserviceInstanceIndex key: ServiceName, value: []instance
 var MicroserviceInstanceIndex CacheIndex
 
-//ipIndexedCache is for caching map of instance IP and service information
-//key: instance ip, value: SourceInfo
+// ipIndexedCache is for caching map of instance IP and service information
+// key: instance ip, value: SourceInfo
 var ipIndexedCache *cache.Cache
 
-//SchemaInterfaceIndexedCache key: schema interface name value: []*microservice
+// SchemaInterfaceIndexedCache key: schema interface name value: []*microservice
 var SchemaInterfaceIndexedCache *cache.Cache
 
-//SchemaServiceIndexedCache key: schema service name value: []*microservice
+// SchemaServiceIndexedCache key: schema service name value: []*microservice
 var SchemaServiceIndexedCache *cache.Cache
 
 // ProvidersMicroServiceCache  key: micro service  name and appId, value: []*MicroService
@@ -32,7 +32,7 @@ var ProvidersMicroServiceCache *cache.Cache
 
 func initCache() *cache.Cache { return cache.New(DefaultExpireTime, 0) }
 
-//EnableRegistryCache init caches
+// EnableRegistryCache init caches
 func EnableRegistryCache() {
 	MicroserviceInstanceIndex = NewIndexCache()
 	ipIndexedCache = initCache()
@@ -50,12 +50,12 @@ type CacheIndex interface {
 	Delete(service string)
 }
 
-//SetIPIndex save ip index
+// SetIPIndex save ip index
 func SetIPIndex(ip string, si *SourceInfo) {
 	ipIndexedCache.Set(ip, si, 0)
 }
 
-//GetIPIndex get ip corresponding source info
+// GetIPIndex get ip corresponding source info
 func GetIPIndex(ip string) *SourceInfo {
 	cacheDatum, ok := ipIndexedCache.Get(ip)
 	if !ok {

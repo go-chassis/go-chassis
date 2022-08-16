@@ -68,7 +68,7 @@ func (m *MicroServiceInstance) WithAppID(v string) *MicroServiceInstance {
 	return m
 }
 
-//Equal compares 2 instances is same or not
+// Equal compares 2 instances is same or not
 func (m *MicroServiceInstance) Equal(ins *MicroServiceInstance) bool {
 	if m.InstanceID != ins.InstanceID {
 		return false

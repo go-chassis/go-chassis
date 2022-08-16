@@ -16,8 +16,8 @@ import (
 // RouterTLS defines tls prefix
 const RouterTLS = "router"
 
-//Init initialize router config in local file
-//then is create the router component
+// Init initialize router config in local file
+// then is create the router component
 func Init() error {
 	err := BuildRouter(config.GetRouterType())
 	if err != nil {

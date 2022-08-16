@@ -13,10 +13,10 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/common"
 )
 
-//Localhost is a function which returns localhost IP address
+// Localhost is a function which returns localhost IP address
 func Localhost() string { return "127.0.0.1" }
 
-//GetLocalIP 获得本机IP
+// GetLocalIP 获得本机IP
 func GetLocalIP() string {
 	addresses, err := net.InterfaceAddrs()
 	if err != nil {
@@ -43,7 +43,7 @@ func DefaultEndpoint4Protocol(proto string) string {
 	return strings.Join([]string{Localhost(), DefaultPort4Protocol(proto)}, ":")
 }
 
-//DefaultPort4Protocol returns the default port for different protocols
+// DefaultPort4Protocol returns the default port for different protocols
 func DefaultPort4Protocol(proto string) string {
 	switch proto {
 	case common.ProtocolRest:
@@ -79,7 +79,7 @@ func URIs2Hosts(uris []string) ([]string, string, error) {
 	return hosts, scheme, nil
 }
 
-//GetLocalIPv6 Get IPv6 address of NIC.
+// GetLocalIPv6 Get IPv6 address of NIC.
 func GetLocalIPv6() string {
 	addresses, err := net.InterfaceAddrs()
 	if err != nil {

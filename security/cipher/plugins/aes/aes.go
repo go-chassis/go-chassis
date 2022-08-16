@@ -13,7 +13,7 @@ import (
 
 const cipherPlugin = "cipher_plugin.so"
 
-//Cipher interface declares Init(), Encrypyt(), Decrypyt() methods
+// Cipher interface declares Init(), Encrypyt(), Decrypyt() methods
 type Cipher interface {
 	Init()
 	Encrypt(src string) (string, error)
@@ -56,12 +56,12 @@ func new() security.Cipher {
 	}
 }
 
-//Encrypt is method used for encryption
+// Encrypt is method used for encryption
 func (ac *HWAESCipher) Encrypt(src string) (string, error) {
 	return ac.gcryptoEngine.Encrypt(src)
 }
 
-//Decrypt is method used for decryption
+// Decrypt is method used for decryption
 func (ac *HWAESCipher) Decrypt(src string) (string, error) {
 	return ac.gcryptoEngine.Decrypt(src)
 }

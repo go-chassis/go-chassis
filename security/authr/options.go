@@ -22,10 +22,10 @@ type Options struct {
 	Plugin string
 }
 
-//Option is option
+// Option is option
 type Option func(options *Options)
 
-//WithPlugin specify plugin name
+// WithPlugin specify plugin name
 func WithPlugin(p string) Option {
 	return func(options *Options) {
 		options.Plugin = p
@@ -37,10 +37,10 @@ type LoginOptions struct {
 	ExpireAfter string
 }
 
-//Option is option
+// Option is option
 type LoginOption func(options *LoginOptions)
 
-//ExpireAfter specify time duration, for example: 3d, 3m, 1s, 3h
+// ExpireAfter specify time duration, for example: 3d, 3m, 1s, 3h
 func ExpireAfter(p string) LoginOption {
 	return func(options *LoginOptions) {
 		options.ExpireAfter = p
