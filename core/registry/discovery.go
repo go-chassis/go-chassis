@@ -15,7 +15,7 @@ var cdFunc = make(map[string]func(opts Options) ContractDiscovery)
 // InstallServiceDiscovery install service discovery client
 func InstallServiceDiscovery(name string, f func(opts Options) ServiceDiscovery) {
 	sdFunc[name] = f
-	openlog.Info("Installed service discovery plugin: " + name)
+	openlog.Info("installed service discovery plugin: " + name)
 }
 
 // NewDiscovery create discovery service

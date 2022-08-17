@@ -204,7 +204,7 @@ func (c *chassis) registerSchema(serverName string, structPtr interface{}, opts 
 	c.mu.Unlock()
 }
 
-func (c *chassis) start() error {
+func (c *chassis) start(options ...server.RunOption) error {
 	if !c.Initialized {
 		return fmt.Errorf("the chassis do not init. please run chassis.Init() first")
 	}
@@ -222,7 +222,7 @@ func (c *chassis) start() error {
 			return err
 		}
 	}
-	err := server.StartServer()
+	err := server.StartServer(options...)
 	if err != nil {
 		return err
 	}

@@ -33,7 +33,7 @@ var servers = make(map[string]ProtocolServer)
 // InstallPlugin For developer
 func InstallPlugin(protocol string, newFunc NewFunc) {
 	serverPlugins[protocol] = newFunc
-	openlog.Info("Installed Server Plugin, protocol:" + protocol)
+	openlog.Info("installed server plugin: " + protocol)
 }
 
 // GetServerFunc returns the server function
@@ -63,9 +63,17 @@ func GetServers() map[string]ProtocolServer {
 var ErrRuntime = make(chan error)
 
 // StartServer starting the server
-func StartServer() error {
+func StartServer(options ...RunOption) error {
+	opts := RunOptions{}
+	for _, o := range options {
+		o(&opts)
+	}
 	for name, server := range servers {
 		openlog.Info("starting server " + name + "...")
+		if opts.serverMasks.Has(name) {
+			openlog.Warn("server " + name + " is masked, and will not start.")
+			continue
+		}
 		err := server.Start()
 		if err != nil {
 			openlog.Error(fmt.Sprintf("servers failed to start, err %s", err))

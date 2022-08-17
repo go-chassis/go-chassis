@@ -135,6 +135,7 @@ var Filters = make(map[string]Filter)
 // InstallFilter install filter
 func InstallFilter(name string, f Filter) {
 	Filters[name] = f
+	openlog.Info("Installed filter plugin: " + name)
 }
 
 // variables for latency map, rest and highway requests count

@@ -19,6 +19,7 @@ var cipherPlugins = make(map[string]func() security.Cipher)
 // InstallCipherPlugin is a function
 func InstallCipherPlugin(name string, f func() security.Cipher) {
 	cipherPlugins[name] = f
+	openlog.Info("installed cipher plugin: " + name)
 }
 
 // NewCipher create and return a cipher

@@ -20,7 +20,7 @@ func init() {
 // InstallStrategy install strategy
 func InstallStrategy(name string, s func() Strategy) {
 	strategies[name] = s
-	openlog.Debug(fmt.Sprintf("installed strategy plugin: %s.", name))
+	openlog.Info(fmt.Sprintf("installed strategy plugin: %s.", name))
 }
 
 // GetStrategyPlugin get strategy plugin

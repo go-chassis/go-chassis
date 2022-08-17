@@ -2,6 +2,7 @@ package server
 
 import (
 	"crypto/tls"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"time"
 
 	"github.com/go-chassis/go-chassis/v2/core/provider"
@@ -50,7 +51,7 @@ func WithPath(Path string) RegisterOption {
 	}
 }
 
-// WithPah specify a method
+// WithMethod specify a method
 func WithMethod(Method string) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.Method = Method
@@ -61,5 +62,18 @@ func WithMethod(Method string) RegisterOption {
 func WithRPCServiceDesc(RPCSvcDesc interface{}) RegisterOption {
 	return func(o *RegisterOptions) {
 		o.RPCSvcDesc = RPCSvcDesc
+	}
+}
+
+type RunOptions struct {
+	serverMasks sets.String
+}
+
+type RunOption func(*RunOptions)
+
+// WithServerMask you can specify do not start a protocol server
+func WithServerMask(serverNames ...string) RunOption {
+	return func(o *RunOptions) {
+		o.serverMasks.Insert(serverNames...)
 	}
 }
