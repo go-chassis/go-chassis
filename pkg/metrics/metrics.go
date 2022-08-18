@@ -27,6 +27,9 @@ type Registry interface {
 	SummaryObserve(name string, val float64, Labels map[string]string) error
 	HistogramObserve(name string, val float64, labels map[string]string) error
 
+	GaugeValue(name string, labels map[string]string) float64
+	CounterValue(name string, labels map[string]string) float64
+
 	Reset(name string) error
 }
 
@@ -80,6 +83,14 @@ func HistogramObserve(name string, val float64, labels map[string]string) error 
 // Reset clear collector metrics
 func Reset(name string) error {
 	return defaultRegistry.Reset(name)
+}
+
+func GaugeValue(name string, labels map[string]string) float64 {
+	return defaultRegistry.GaugeValue(name, labels)
+}
+
+func CounterValue(name string, labels map[string]string) float64 {
+	return defaultRegistry.CounterValue(name, labels)
 }
 
 // CounterOpts is options to create a counter options

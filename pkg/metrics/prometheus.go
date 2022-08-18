@@ -8,6 +8,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	dto "github.com/prometheus/client_model/go"
 )
 
 var onceEnable sync.Once
@@ -101,6 +103,18 @@ func (c *PrometheusExporter) GaugeAdd(name string, val float64, labels map[strin
 	}
 	gVec.With(labels).Add(val)
 	return nil
+}
+
+func (c *PrometheusExporter) GaugeValue(name string, labels map[string]string) float64 {
+	return getValue(name, labels, func(m *dto.Metric) float64 {
+		return m.GetGauge().GetValue()
+	})
+}
+
+func (c *PrometheusExporter) CounterValue(name string, labels map[string]string) float64 {
+	return getValue(name, labels, func(m *dto.Metric) float64 {
+		return m.GetCounter().GetValue()
+	})
 }
 
 // CreateCounter create collector
@@ -265,6 +279,50 @@ func Split(key string) (string, string, string) {
 	name := strings.Join(arr[i:], "_")
 	return ns, sub, name
 }
+
 func init() {
 	registries["prometheus"] = NewPrometheusExporter
+}
+
+func getValue(name string, labels map[string]string, getV func(m *dto.Metric) float64) float64 {
+	f := family(name)
+	if f == nil {
+		return 0
+	}
+	matchAll := len(labels) == 0
+	var sum float64
+	for _, m := range f.Metric {
+		if !matchAll && !matchLabels(m, labels) {
+			continue
+		}
+		sum += getV(m)
+	}
+	return sum
+}
+
+func family(name string) *dto.MetricFamily {
+	families, err := GetSystemPrometheusRegistry().Gather()
+	if err != nil {
+		return nil
+	}
+	for _, f := range families {
+		if f.GetName() == name {
+			return f
+		}
+	}
+	return nil
+}
+
+func matchLabels(m *dto.Metric, labels map[string]string) bool {
+	count := 0
+	for _, label := range m.GetLabel() {
+		v, ok := labels[label.GetName()]
+		if ok && v != label.GetValue() {
+			return false
+		}
+		if ok {
+			count++
+		}
+	}
+	return count == len(labels)
 }

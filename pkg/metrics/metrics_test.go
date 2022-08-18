@@ -38,10 +38,24 @@ func TestCounterAdd(t *testing.T) {
 	})
 	assert.Error(t, err)
 
-	err = metrics.CounterAdd("total", 1, map[string]string{
+	labels := map[string]string{
 		"service": "s",
+	}
+	t.Run("testCounterAdd", func(t *testing.T) {
+		err = metrics.CounterAdd("total", 1, labels)
+		assert.NoError(t, err)
+
+		val := metrics.CounterValue("total", labels)
+		assert.Equal(t, 1.0, val)
+
+		val = metrics.CounterValue("total", nil)
+		assert.Equal(t, 1.0, val)
+
+		val = metrics.CounterValue("total", map[string]string{
+			"service": "test",
+		})
+		assert.Equal(t, 0.0, val)
 	})
-	assert.NoError(t, err)
 }
 
 func TestGaugeSet(t *testing.T) {
@@ -63,10 +77,23 @@ func TestGaugeSet(t *testing.T) {
 	})
 	assert.Error(t, err)
 
-	err = metrics.GaugeSet("cpu", 1, map[string]string{
+	labels := map[string]string{
 		"service": "s",
+	}
+	t.Run("testGaugeSet", func(t *testing.T) {
+		err = metrics.GaugeSet("cpu", 1, labels)
+		assert.NoError(t, err)
+
+		val := metrics.GaugeValue("cpu", labels)
+		assert.Equal(t, 1.0, val)
+
+		val = metrics.GaugeValue("cpu", nil)
+		assert.Equal(t, 1.0, val)
+
+		val = metrics.GaugeValue("cpu", map[string]string{"service": "test"})
+		assert.Equal(t, 0.0, val)
 	})
-	assert.NoError(t, err)
+
 }
 func TestSummaryObserve(t *testing.T) {
 	err := metrics.SummaryObserve("latency", 1, map[string]string{
