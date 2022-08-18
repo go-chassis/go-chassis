@@ -285,14 +285,14 @@ func init() {
 }
 
 func getValue(name string, labels map[string]string, getV func(m *dto.Metric) float64) float64 {
-	f := Family(name)
+	f := family(name)
 	if f == nil {
 		return 0
 	}
 	matchAll := len(labels) == 0
 	var sum float64
 	for _, m := range f.Metric {
-		if !matchAll && !MatchLabels(m, labels) {
+		if !matchAll && !matchLabels(m, labels) {
 			continue
 		}
 		sum += getV(m)
@@ -300,8 +300,8 @@ func getValue(name string, labels map[string]string, getV func(m *dto.Metric) fl
 	return sum
 }
 
-func Family(name string) *dto.MetricFamily {
-	families, err := Gather()
+func family(name string) *dto.MetricFamily {
+	families, err := GetSystemPrometheusRegistry().Gather()
 	if err != nil {
 		return nil
 	}
@@ -313,7 +313,7 @@ func Family(name string) *dto.MetricFamily {
 	return nil
 }
 
-func MatchLabels(m *dto.Metric, labels map[string]string) bool {
+func matchLabels(m *dto.Metric, labels map[string]string) bool {
 	count := 0
 	for _, label := range m.GetLabel() {
 		v, ok := labels[label.GetName()]
@@ -325,8 +325,4 @@ func MatchLabels(m *dto.Metric, labels map[string]string) bool {
 		}
 	}
 	return count == len(labels)
-}
-
-func Gather() ([]*dto.MetricFamily, error) {
-	return GetSystemPrometheusRegistry().Gather()
 }
