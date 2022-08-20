@@ -18,7 +18,12 @@ this address will be registered in service center, so that other service can dis
 then go chassis will automatically generate advertise address, it is convenience to run in container
  because the internal IP is not sure until container runs
 
-
+## API
+You can use WithServerMask to ignore protocol server configurations, 
+just give protocol server name list. then chassis will not start them
+```go
+chassis.Run(WithServerMask("rest-admin","grpc"))
+```
 
 ## Example
 this config will launch 2 http server and 1 grpc server

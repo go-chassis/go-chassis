@@ -31,7 +31,7 @@ var DefaultRouter Router
 
 // InstallRouterPlugin install router plugin
 func InstallRouterPlugin(name string, f func() (Router, error)) {
-	openlog.Info("install route rule plugin: " + name)
+	openlog.Info("installed route rule plugin: " + name)
 	routerServices[name] = f
 }
 

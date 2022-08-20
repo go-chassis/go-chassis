@@ -96,8 +96,8 @@ func HijackGracefulShutdown(f func(os.Signal)) {
 
 // Run bring up the service,it waits for os signal,and shutdown gracefully
 // before all protocol server start successfully, it may return error.
-func Run() error {
-	err := goChassis.start()
+func Run(options ...server.RunOption) error {
+	err := goChassis.start(options...)
 	if err != nil {
 		openlog.Error("run chassis failed:" + err.Error())
 		return err

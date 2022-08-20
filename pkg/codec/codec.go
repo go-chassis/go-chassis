@@ -37,6 +37,7 @@ var defaultCodec codec.Codec = &StdJson{}
 // Install install codec plugin
 func Install(name string, f newCodec) {
 	plugins[name] = f
+	openlog.Info("installed codec plugin: " + name)
 }
 
 // Init init codec

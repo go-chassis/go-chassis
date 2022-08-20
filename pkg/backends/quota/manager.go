@@ -38,6 +38,7 @@ var plugins = make(map[string]newManager)
 // Install install quota plugin
 func Install(name string, f newManager) {
 	plugins[name] = f
+	openlog.Info("installed quota plugin: " + name)
 }
 
 // Init init manager
