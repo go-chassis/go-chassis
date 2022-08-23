@@ -68,7 +68,7 @@ func TestSrcMgr(t *testing.T) {
 	assert.NotNil(t, srv)
 	err := server.UnRegistrySelfInstances()
 	assert.NoError(t, err)
-	err = server.StartServer()
+	err = server.StartServer(server.WithServerMask("fake"))
 	assert.NoError(t, err)
 
 	sr, err := server.GetServer("rest")
