@@ -74,6 +74,11 @@ type RunOption func(*RunOptions)
 // WithServerMask you can specify do not start a protocol server
 func WithServerMask(serverNames ...string) RunOption {
 	return func(o *RunOptions) {
-		o.serverMasks.Insert(serverNames...)
+		if o.serverMasks == nil {
+			o.serverMasks = sets.NewString(serverNames...)
+		} else {
+			o.serverMasks.Insert(serverNames...)
+		}
+
 	}
 }
