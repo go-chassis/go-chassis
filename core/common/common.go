@@ -108,9 +108,10 @@ const (
 	HeaderMark = "X-Mark"
 )
 
+// Rest metadata key for restful protocol
 const (
-	// RestMethod is the http method for restful protocol
-	RestMethod = "method"
+	RestMethod    = "method"
+	RestRoutePath = "url_pattern"
 )
 
 // constant for default application name and version
