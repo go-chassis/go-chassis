@@ -49,7 +49,9 @@ type Invocation struct {
 
 	SchemaID    string // correspond struct name
 	OperationID string // correspond func name of struct
-	URLPath     string // relative API path of http request
+
+	// relative API path of http request
+	URLPath string
 
 	// it holds native request of protocol, use http protocol for example,
 	// it is *http.request

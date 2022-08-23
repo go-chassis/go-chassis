@@ -120,7 +120,8 @@ func HTTPRequest2Invocation(req *restful.Request, schema, operation string, resp
 		OperationID:        operation,
 		URLPath:            req.Request.URL.Path,
 		Metadata: map[string]interface{}{
-			common.RestMethod: req.Request.Method,
+			common.RestMethod:    req.Request.Method,
+			common.RestRoutePath: req.SelectedRoute(),
 		},
 	}
 	//set headers to Ctx, then user do not  need to consider about protocol in handlers
@@ -168,7 +169,7 @@ func (r *restfulServer) Register(schema interface{}, options ...server.RegisterO
 // Invocation2HTTPRequest convert invocation back to http request, set down all meta data
 func Invocation2HTTPRequest(inv *invocation.Invocation, req *restful.Request) {
 	for k, v := range inv.Metadata {
-		req.SetAttribute(k, v.(string))
+		req.SetAttribute(k, v)
 	}
 	m := common.FromContext(inv.Ctx)
 	for k, v := range m {
