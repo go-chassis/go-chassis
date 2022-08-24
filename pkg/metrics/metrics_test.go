@@ -117,20 +117,23 @@ func TestSummaryObserve(t *testing.T) {
 	labels := map[string]string{
 		"service": "s",
 	}
-	err = metrics.SummaryObserve("latency", 1, labels)
-	assert.NoError(t, err)
+	t.Run("testSummaryObserve", func(t *testing.T) {
+		err = metrics.SummaryObserve("latency", 1, labels)
+		assert.NoError(t, err)
 
-	count, sum := metrics.SummaryValue("latency", labels)
-	assert.Equal(t, uint64(1), count)
-	assert.Equal(t, float64(1), sum)
+		count, sum := metrics.SummaryValue("latency", labels)
+		assert.Equal(t, uint64(1), count)
+		assert.Equal(t, float64(1), sum)
 
-	count, sum = metrics.SummaryValue("latency", nil)
-	assert.Equal(t, uint64(1), count)
-	assert.Equal(t, float64(1), sum)
+		count, sum = metrics.SummaryValue("latency", nil)
+		assert.Equal(t, uint64(1), count)
+		assert.Equal(t, float64(1), sum)
 
-	count, sum = metrics.SummaryValue("latency", map[string]string{"service": "test"})
-	assert.Equal(t, uint64(0), count)
-	assert.Equal(t, float64(0), sum)
+		count, sum = metrics.SummaryValue("latency", map[string]string{"service": "test"})
+		assert.Equal(t, uint64(0), count)
+		assert.Equal(t, float64(0), sum)
+	})
+
 }
 func TestCreateHistogram(t *testing.T) {
 	err := metrics.HistogramObserve("hlatency", 1, map[string]string{
