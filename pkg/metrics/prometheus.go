@@ -117,6 +117,12 @@ func (c *PrometheusExporter) CounterValue(name string, labels map[string]string)
 	})
 }
 
+func (c *PrometheusExporter) SummaryValue(name string, labels map[string]string) (uint64, float64) {
+	return getSummaryValue(name, labels, func(m *dto.Metric) *dto.Summary {
+		return m.GetSummary()
+	})
+}
+
 // CreateCounter create collector
 func (c *PrometheusExporter) CreateCounter(opts CounterOpts) error {
 	key := opts.Key
@@ -298,6 +304,25 @@ func getValue(name string, labels map[string]string, getV func(m *dto.Metric) fl
 		sum += getV(m)
 	}
 	return sum
+}
+
+func getSummaryValue(name string, labels map[string]string, getV func(m *dto.Metric) *dto.Summary) (uint64, float64) {
+	f := family(name)
+	if f == nil {
+		return 0, 0
+	}
+	var count uint64
+	var sum float64
+	matchAll := len(labels) == 0
+	for _, m := range f.Metric {
+		if !matchAll && !matchLabels(m, labels) {
+			continue
+		}
+		count += getV(m).GetSampleCount()
+		sum += getV(m).GetSampleSum()
+
+	}
+	return count, sum
 }
 
 func family(name string) *dto.MetricFamily {
