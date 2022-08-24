@@ -29,6 +29,7 @@ type Registry interface {
 
 	GaugeValue(name string, labels map[string]string) float64
 	CounterValue(name string, labels map[string]string) float64
+	SummaryValue(name string, labels map[string]string) (uint64, float64)
 
 	Reset(name string) error
 }
@@ -91,6 +92,10 @@ func GaugeValue(name string, labels map[string]string) float64 {
 
 func CounterValue(name string, labels map[string]string) float64 {
 	return defaultRegistry.CounterValue(name, labels)
+}
+
+func SummaryValue(name string, labels map[string]string) (uint64, float64) {
+	return defaultRegistry.SummaryValue(name, labels)
 }
 
 // CounterOpts is options to create a counter options
