@@ -53,7 +53,7 @@ func (c *Client) Status(rsp interface{}) (status int, err error) {
 	if resp, ok := rsp.(*http.Response); ok {
 		return resp.StatusCode, nil
 	}
-	return 0, fmt.Errorf("imcompatible type: %s", reflect.TypeOf(rsp))
+	return 0, fmt.Errorf("incompatible type: %s", reflect.TypeOf(rsp))
 }
 
 // NewRestClient is a function
