@@ -50,7 +50,7 @@ func unmarshalSchemaContent(content []byte) (*registry.SchemaContent, error) {
 	return schemaContent, nil
 }
 
-// filterInstances filterAndCache instances
+// filterInstances filter instances
 func filterInstances(providerInstances []*scregistry.MicroServiceInstance) []*registry.MicroServiceInstance {
 	instances := make([]*registry.MicroServiceInstance, 0)
 	for _, ins := range providerInstances {

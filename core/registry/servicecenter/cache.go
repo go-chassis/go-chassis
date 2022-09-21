@@ -280,11 +280,8 @@ func filterAndCache(services sets.String, providerInstances map[string][]*regist
 	//append instances from different app and same service name into one unified slice
 	downs := make(map[string]struct{})
 	if len(providerInstances) == 0 {
-		openlog.Warn("can not find instance in service center, " +
-			"but must set empty cache to avoid frequent call to service center")
-		for service, _ := range services {
-			registry.MicroserviceInstanceIndex.Set(service, make([]*registry.MicroServiceInstance, 0))
-		}
+		setEmptyCache(services)
+		return
 	}
 
 	for serviceName, instances := range providerInstances {
@@ -306,6 +303,17 @@ func filterAndCache(services sets.String, providerInstances map[string][]*regist
 		health.RefreshCache(serviceName, up, downs) //save cache after get all instances of a service name
 	}
 
+}
+
+func setEmptyCache(services sets.String) {
+	for service := range services {
+		_, ok := registry.MicroserviceInstanceIndex.Get(service, nil)
+		if !ok {
+			openlog.Warn(fmt.Sprintf("set [%s] cache to avoid frequent call to service center", service))
+			registry.MicroserviceInstanceIndex.Set(service, make([]*registry.MicroServiceInstance, 0))
+		}
+
+	}
 }
 
 // watch watching micro-service instance status
