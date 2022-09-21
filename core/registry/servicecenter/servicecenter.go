@@ -4,6 +4,7 @@ import (
 	"fmt"
 	scregistry "github.com/go-chassis/cari/discovery"
 	"github.com/go-chassis/sc-client"
+	"k8s.io/apimachinery/pkg/util/sets"
 
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
@@ -263,7 +264,7 @@ func (r *ServiceDiscovery) FindMicroServiceInstances(consumerID, microServiceNam
 			return nil, fmt.Errorf("FindMicroServiceInstances failed, ProviderID: %s, err: %w", microServiceName, err)
 		}
 		providerInstances := RegroupInstances(criteria, providerInstancesResponse)
-		filter(providerInstances)
+		filterAndCache(sets.NewString(microServiceName), providerInstances)
 		microServiceInstance, boo = registry.MicroserviceInstanceIndex.Get(microServiceName, tags.KV)
 		if !boo || microServiceInstance == nil {
 			openlog.Debug(fmt.Sprintf("Find no micro service instances for %s from cache", microServiceName))
