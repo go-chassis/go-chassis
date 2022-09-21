@@ -21,7 +21,7 @@ import (
 
 func init() {
 	lager.Init(&lager.Options{
-		LoggerLevel: "INFO",
+		LoggerLevel: "DEBUG",
 	})
 	archaius.Init(archaius.WithMemorySource())
 	archaius.Set("servicecomb.registry.address", "http://127.0.0.1:30100")
@@ -62,21 +62,30 @@ func TestCacheManager_AutoSync(t *testing.T) {
 	assert.Equal(t, "event1", instanceID)
 	time.Sleep(time.Second * 1)
 	tags := utiltags.NewDefaultTag("0.1", "default")
-	instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "Server", tags)
-	assert.NotZero(t, len(instances))
-	assert.NoError(t, err)
-	var ok = false
-	for _, ins := range instances {
-		t.Log(ins.InstanceID)
-		if ins.InstanceID == "event1" {
-			ok = true
-			break
-		}
-	}
-	assert.True(t, ok)
-	t.Log("新增实例感知成功")
-	t.Log("测试EVT_CREATE操作")
 
+	t.Run("find instances, should has response", func(t *testing.T) {
+		instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "Server", tags)
+		assert.NotZero(t, len(instances))
+		assert.NoError(t, err)
+		var ok = false
+		for _, ins := range instances {
+			t.Log(ins.InstanceID)
+			if ins.InstanceID == "event1" {
+				ok = true
+				break
+			}
+		}
+		assert.True(t, ok)
+	})
+	t.Run("find instances with service do not exists in service center", func(t *testing.T) {
+		instances, err := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "NotExistServer", tags)
+		assert.NoError(t, err)
+		assert.Equal(t, 0, len(instances))
+
+		instances2, err2 := registry.DefaultServiceDiscoveryService.FindMicroServiceInstances(sid, "NotExistServer", tags)
+		assert.NoError(t, err2)
+		assert.Equal(t, 0, len(instances2))
+	})
 	var exist = false
 	pro := make(map[string]string)
 	pro["attr1"] = "b"
