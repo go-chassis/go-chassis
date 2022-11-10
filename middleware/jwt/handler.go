@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/go-restful"
+	"github.com/go-chassis/cari/rbac"
 	"github.com/go-chassis/go-chassis/v2/core/handler"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/go-chassis/v2/core/status"
@@ -75,6 +76,9 @@ func (h *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invo
 			openlog.Error("can not parse jwt:" + err.Error())
 			handler.WriteBackErr(ErrNoHeader, status.Status(i.Protocol, status.Unauthorized), cb)
 			return
+		}
+		if i.Ctx != nil {
+			i.Ctx = rbac.NewContext(i.Ctx, payload)
 		}
 		if auth.Authorize != nil {
 			err = auth.Authorize(payload, req)
