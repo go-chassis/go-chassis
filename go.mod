@@ -2,7 +2,7 @@ module github.com/go-chassis/go-chassis/v2
 
 require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
-	github.com/emicklei/go-restful v2.15.1-0.20220703112237-d9c71e118c95+incompatible
+	github.com/emicklei/go-restful v2.16.0+incompatible
 	github.com/go-chassis/cari v0.7.1-0.20220815112157-2c62cc5ae1a3
 	github.com/go-chassis/foundation v0.4.0
 	github.com/go-chassis/go-archaius v1.5.1
