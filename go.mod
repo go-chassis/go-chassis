@@ -21,7 +21,7 @@ require (
 	github.com/prometheus/common v0.32.1
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/stretchr/testify v1.7.1
-	golang.org/x/text v0.3.7
+	golang.org/x/text v0.7.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.20.0
 	k8s.io/client-go v0.20.0
@@ -48,8 +48,8 @@ require (
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/spf13/cast v1.3.0 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
