@@ -25,6 +25,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/status"
 	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
+	restful_test "github.com/emicklei/go-restful"
 	"github.com/go-chassis/openlog"
 	"time"
 )
@@ -49,7 +50,14 @@ func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb inv
 	start := time.Now()
 	path, ok := i.Metadata[common.RestRoutePath].(string)
 	if !ok {
-		path = "default"
+		var route restful_test.RouteReader
+		route, ok = i.Metadata[common.RestRoutePath].(restful_test.RouteReader)
+		path = route.Path()
+		if ok {
+			path = route.Path()
+		} else {
+			path = "default"
+		}
 	}
 	method, ok := i.Metadata[common.RestMethod].(string)
 	if !ok {
