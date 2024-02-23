@@ -92,7 +92,7 @@ func TestNewWithChain(t *testing.T) {
 	urlList = append(urlList, "/sayhello/{userid}")
 
 	for _, mf := range mfs {
-	err := enc.Encode(mf)
+		err := enc.Encode(mf)
 		assert.NoError(t, err)
 		for _, metric := range mf.Metric {
 			for _, label := range metric.Label {
