@@ -87,8 +87,28 @@ func TestNewWithChain(t *testing.T) {
 
 	enc := expfmt.NewEncoder(w, expfmt.FmtText)
 
+	var urlList []string
+	urlList = append(urlList, "/err")
+	urlList = append(urlList, "/sayhello/{userid}")
+
 	for _, mf := range mfs {
-		err := enc.Encode(mf)
+	err := enc.Encode(mf)
 		assert.NoError(t, err)
+		for _, metric := range mf.Metric {
+			for _, label := range metric.Label {
+				if *label.Name == "API" {
+					assert.Equal(t, true, checkContains(urlList, *label.Value))
+				}
+			}
+		}
 	}
+}
+
+func checkContains(urlList []string, url string) bool {
+	for _, rulPath := range urlList {
+		if rulPath == url {
+			return true
+		}
+	}
+	return false
 }
