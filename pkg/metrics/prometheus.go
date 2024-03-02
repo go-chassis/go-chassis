@@ -2,12 +2,13 @@ package metrics
 
 import (
 	"fmt"
-	"github.com/go-chassis/openlog"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/collectors"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/go-chassis/openlog"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 
 	dto "github.com/prometheus/client_model/go"
 )
@@ -297,7 +298,7 @@ func getValue(name string, labels map[string]string, getV func(m *dto.Metric) fl
 	}
 	matchAll := len(labels) == 0
 	var sum float64
-	for _, m := range f.Metric {
+	for _, m := range f.GetMetric() {
 		if !matchAll && !matchLabels(m, labels) {
 			continue
 		}
@@ -314,7 +315,7 @@ func getSummaryValue(name string, labels map[string]string, getV func(m *dto.Met
 	var count uint64
 	var sum float64
 	matchAll := len(labels) == 0
-	for _, m := range f.Metric {
+	for _, m := range f.GetMetric() {
 		if !matchAll && !matchLabels(m, labels) {
 			continue
 		}
