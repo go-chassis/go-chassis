@@ -48,7 +48,7 @@ type Handler struct {
 // Handle record metrics
 func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	start := time.Now()
-	path := getUrlPath(i)
+	path := GetUrlPath(i)
 	method, ok := i.Metadata[common.RestMethod].(string)
 	if !ok {
 		method = "default"
@@ -120,7 +120,7 @@ func newHandler() handler.Handler {
 	return &Handler{}
 }
 
-func getUrlPath(i *invocation.Invocation) string {
+func GetUrlPath(i *invocation.Invocation) string {
 	path, ok := i.Metadata[common.RestRoutePath].(string)
 	if !ok {
 		var route restful.RouteReader
