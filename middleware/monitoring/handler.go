@@ -19,14 +19,17 @@ package monitoring
 
 import (
 	"fmt"
+	"time"
+
+	restful "github.com/emicklei/go-restful"
+	"github.com/go-chassis/openlog"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/handler"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/go-chassis/v2/core/status"
 	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
-	"github.com/go-chassis/openlog"
-	"time"
 )
 
 // errors
@@ -47,10 +50,7 @@ type Handler struct {
 // Handle record metrics
 func (ph *Handler) Handle(chain *handler.Chain, i *invocation.Invocation, cb invocation.ResponseCallBack) {
 	start := time.Now()
-	path, ok := i.Metadata[common.RestRoutePath].(string)
-	if !ok {
-		path = "default"
-	}
+	path := GetUrlPath(i)
 	method, ok := i.Metadata[common.RestMethod].(string)
 	if !ok {
 		method = "default"
@@ -120,6 +120,20 @@ func newHandler() handler.Handler {
 	}
 
 	return &Handler{}
+}
+
+func GetUrlPath(i *invocation.Invocation) string {
+	path, ok := i.Metadata[common.RestRoutePath].(string)
+	if !ok {
+		var route restful.RouteReader
+		route, ok = i.Metadata[common.RestRoutePath].(restful.RouteReader)
+		if ok {
+			path = route.Path()
+		} else {
+			path = "default"
+		}
+	}
+	return path
 }
 
 // Name returns the router string

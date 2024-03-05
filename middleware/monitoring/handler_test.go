@@ -19,21 +19,25 @@ package monitoring_test
 
 import (
 	"errors"
-	"github.com/go-chassis/go-archaius"
-	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
-	"github.com/prometheus/common/expfmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
+	"github.com/go-chassis/go-archaius"
+	"github.com/prometheus/common/expfmt"
+
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
+	"github.com/go-chassis/go-chassis/v2/pkg/metrics"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/handler"
-	_ "github.com/go-chassis/go-chassis/v2/middleware/monitoring"
+	monitoring "github.com/go-chassis/go-chassis/v2/middleware/monitoring"
 	"github.com/go-chassis/go-chassis/v2/server/restful"
 	"github.com/go-chassis/go-chassis/v2/server/restful/restfultest"
-	"github.com/stretchr/testify/assert"
 )
 
 type DummyResource struct {
@@ -87,8 +91,35 @@ func TestNewWithChain(t *testing.T) {
 
 	enc := expfmt.NewEncoder(w, expfmt.FmtText)
 
+	var urlList []string
+	urlList = append(urlList, "/err")
+	urlList = append(urlList, "/sayhello/{userid}")
+
 	for _, mf := range mfs {
 		err := enc.Encode(mf)
 		assert.NoError(t, err)
+		for _, metric := range mf.Metric {
+			for _, label := range metric.Label {
+				if *label.Name == "API" {
+					assert.Equal(t, true, checkContains(urlList, *label.Value))
+				}
+			}
+		}
 	}
+}
+
+func checkContains(urlList []string, url string) bool {
+	for _, rulPath := range urlList {
+		if rulPath == url {
+			return true
+		}
+	}
+	return false
+}
+
+func TestNewWithInvocation(t *testing.T) {
+	i := &invocation.Invocation{Metadata: map[string]interface{}{}}
+	assert.Equal(t, "default", monitoring.GetUrlPath(i))
+	i = &invocation.Invocation{Metadata: map[string]interface{}{common.RestRoutePath: restful.Route{Path: "/test"}}}
+	assert.Equal(t, "default", monitoring.GetUrlPath(i))
 }
