@@ -1,12 +1,12 @@
 package lager
 
 import (
-	"github.com/go-chassis/seclog"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/go-chassis/openlog"
+	"github.com/go-chassis/seclog"
 	"github.com/go-chassis/seclog/third_party/forked/cloudfoundry/lager"
 )
 
@@ -109,7 +109,7 @@ func checkPassLagerDefinition(option *Options) {
 		option.LogRotateAge = LogRotateDate
 	}
 
-	if option.LogRotateSize <= 0 || option.LogRotateSize > 50 {
+	if option.LogRotateSize <= 0 || option.LogRotateSize > 500 {
 		option.LogRotateSize = LogRotateSize
 	}
 
