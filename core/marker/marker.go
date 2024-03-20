@@ -19,15 +19,17 @@ package marker
 
 import (
 	"fmt"
-	"github.com/emicklei/go-restful"
-	"github.com/go-chassis/go-chassis/v2/core/common"
-	"github.com/go-chassis/go-chassis/v2/core/config"
-	"github.com/go-chassis/go-chassis/v2/core/invocation"
-	"github.com/go-chassis/openlog"
-	"gopkg.in/yaml.v2"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/emicklei/go-restful"
+	"github.com/go-chassis/openlog"
+	"gopkg.in/yaml.v2"
+
+	"github.com/go-chassis/go-chassis/v2/core/common"
+	"github.com/go-chassis/go-chassis/v2/core/config"
+	"github.com/go-chassis/go-chassis/v2/core/invocation"
 )
 
 const (
@@ -78,7 +80,7 @@ func Mark(inv *invocation.Invocation) {
 		return true
 	})
 	if matchName != "" {
-		//the invocation math policy
+		// the invocation math policy
 		if policy == Once {
 			inv.SetHeader(common.HeaderMark, matchName)
 		}
@@ -101,6 +103,9 @@ func isMatch(inv *invocation.Invocation, matchPolicy config.MatchPolicy) bool {
 	}
 
 	if len(matchPolicy.APIPaths) != 0 && !apiMatch(req.URL.Path, matchPolicy.APIPaths) {
+		return false
+	}
+	if len(matchPolicy.QueryParams) != 0 && !queryMatch(req.URL.RawQuery, matchPolicy.QueryParams) {
 		return false
 	}
 	if len(matchPolicy.Method) != 0 {
@@ -126,6 +131,19 @@ func apiMatch(apiPath string, apiPolicy map[string]string) bool {
 
 	for strategy, exp := range apiPolicy {
 		if ok, _ := Match(strategy, apiPath, exp); ok {
+			return true
+		}
+	}
+	return false
+}
+
+func queryMatch(query string, queryPolicy map[string]string) bool {
+	if len(query) == 0 {
+		return false
+	}
+
+	for strategy, exp := range queryPolicy {
+		if ok, _ := Match(strategy, query, exp); ok {
 			return true
 		}
 	}

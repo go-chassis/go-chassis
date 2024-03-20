@@ -19,12 +19,14 @@ package marker_test
 
 import (
 	"context"
+	"net/http"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/go-chassis/go-chassis/v2/client/rest"
 	"github.com/go-chassis/go-chassis/v2/core/invocation"
 	"github.com/go-chassis/go-chassis/v2/core/marker"
-	"github.com/stretchr/testify/assert"
-	"net/http"
-	"testing"
 )
 
 func TestMatch(t *testing.T) {
@@ -53,6 +55,8 @@ matches:
     method: 
       - GET
       - POST
+    queries:
+      contains: wait
     trafficMarkPolicy: once
 `
 	marker.SaveMatchPolicy(testName, testMatchPolicy, "servicecomb.marker."+testName)
@@ -60,6 +64,7 @@ matches:
 	assert.Equal(t, "GET", m.Matches[0].Method[0])
 	assert.Equal(t, "/some/api", m.Matches[0].APIPaths["exact"])
 	assert.Equal(t, "linux", m.Matches[0].Headers["os"]["contains"])
+	assert.Equal(t, "wait", m.Matches[0].QueryParams["contains"])
 }
 
 func TestMark(t *testing.T) {
@@ -99,6 +104,18 @@ matches:
       contains: "path/test"`
 		marker.SaveMatchPolicy(testName, testMatchPolic, "servicecomb.marker."+testName)
 		i := createInvoker(nil, http.MethodPost, "http://127.0.0.1:9992/path/test")
+		marker.Mark(i)
+		assert.Equal(t, testName, i.GetMark())
+	})
+
+	t.Run("test match query", func(t *testing.T) {
+		testName := "match-query"
+		testMatchPolic := `
+matches: 
+  - queries: 
+      contains: "mait"`
+		marker.SaveMatchPolicy(testName, testMatchPolic, "servicecomb.marker."+testName)
+		i := createInvoker(nil, http.MethodPost, "http://127.0.0.1:9992/path/tes?mait=2s")
 		marker.Mark(i)
 		assert.Equal(t, testName, i.GetMark())
 	})
