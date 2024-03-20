@@ -33,8 +33,8 @@ type ServiceComb struct {
 
 // Prefix hold all config items
 type Prefix struct {
-	RouteRule       map[string]string `yaml:"routeRule"`      //service name is key,value is route rule yaml config
-	SourceTemplates map[string]string `yaml:"sourceTemplate"` //template name is key, value is template policy
+	RouteRule       map[string]string `yaml:"routeRule"`      // service name is key,value is route rule yaml config
+	SourceTemplates map[string]string `yaml:"sourceTemplate"` // template name is key, value is template policy
 }
 
 // Router define where rule comes from
@@ -94,6 +94,7 @@ type MatchPolicy struct {
 	Headers           map[string]map[string]string `yaml:"headers"`
 	APIPaths          map[string]string            `yaml:"apiPath"`
 	Method            []string                     `yaml:"method"`
+	QueryParams       map[string]string            `yaml:"queries"`
 }
 
 // LimiterConfig is rate limiter policy
