@@ -10,7 +10,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/core/registry"
 	"github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
-	_ "github.com/go-chassis/go-chassis/v2/core/registry/servicecenter"
 	"github.com/go-chassis/go-chassis/v2/pkg/runtime"
 	_ "github.com/go-chassis/go-chassis/v2/security/cipher/plugins/plain"
 	"github.com/go-chassis/sc-client"
