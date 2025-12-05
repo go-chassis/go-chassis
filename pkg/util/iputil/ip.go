@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/go-chassis/go-chassis/v2/core/common"
@@ -107,12 +108,72 @@ func IsIPv6Address(ip net.IP) bool {
 	return false
 }
 
+func NormalizeAddrWithNetwork(addr string) (normalizedAddr string, network string, err error) {
+	ipStr, portStr, err := splitIPAndPort(addr)
+	if err != nil {
+		return "", "", fmt.Errorf("拆分地址%s失败: %v", addr, err)
+	}
+
+	port, err := strconv.Atoi(portStr)
+	if err != nil || port < 0 || port > 65535 {
+		return "", "", fmt.Errorf("端口非法（需0-65535）: %s", portStr)
+	}
+
+	ip := net.ParseIP(ipStr)
+	if ip == nil {
+		return "", "", fmt.Errorf("无效IP地址: %s", ipStr)
+	}
+
+	if ip.To4() != nil {
+		// IPv4：地址不变，网络类型tcp4
+		normalizedAddr = fmt.Sprintf("%s:%d", ipStr, port)
+		network = "tcp4"
+	} else {
+		// IPv6：转为[ip]:port格式，网络类型tcp6
+		normalizedAddr = fmt.Sprintf("[%s]:%d", ipStr, port)
+		network = "tcp6"
+	}
+
+	return normalizedAddr, network, nil
+}
+
+// splitIPAndPort 拆分IP和端口（兼容IPv4/IPv6格式）
+func splitIPAndPort(addr string) (ip string, port string, err error) {
+	// 处理IPv6带方括号的情况（提前兼容，避免拆分错误）
+	if strings.HasPrefix(addr, "[") && strings.Contains(addr, "]:") {
+		parts := strings.SplitN(addr, "]:", 2)
+		if len(parts) != 2 {
+			return "", "", fmt.Errorf("IPv6地址格式错误: %s", addr)
+		}
+		return strings.TrimPrefix(parts[0], "["), parts[1], nil
+	}
+
+	// 从后往前找最后一个冒号（区分IPv6多冒号和端口分隔符）
+	lastColonIdx := strings.LastIndex(addr, ":")
+	if lastColonIdx == -1 {
+		return "", "", fmt.Errorf("地址缺少端口分隔符: %s", addr)
+	}
+
+	ipPart := addr[:lastColonIdx]
+	portPart := addr[lastColonIdx+1:]
+
+	if _, err := strconv.Atoi(portPart); err != nil {
+		return "", "", fmt.Errorf("端口不是有效数字: %s", portPart)
+	}
+
+	return ipPart, portPart, nil
+}
+
 // StartListener start listener with address and tls(if has), returns the listener and the real listened ip/port
 func StartListener(listenAddress string, tlsConfig *tls.Config) (listener net.Listener, listenedIP string, port string, err error) {
+	normalizedAddr, network, err := NormalizeAddrWithNetwork(listenAddress)
+	if err != nil {
+		return
+	}
 	if tlsConfig == nil {
-		listener, err = net.Listen("tcp", listenAddress)
+		listener, err = net.Listen(network, normalizedAddr)
 	} else {
-		listener, err = tls.Listen("tcp", listenAddress, tlsConfig)
+		listener, err = tls.Listen(network, normalizedAddr, tlsConfig)
 	}
 	if err != nil {
 		return
