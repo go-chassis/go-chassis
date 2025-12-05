@@ -111,17 +111,17 @@ func IsIPv6Address(ip net.IP) bool {
 func NormalizeAddrWithNetwork(addr string) (normalizedAddr string, network string, err error) {
 	ipStr, portStr, err := splitIPAndPort(addr)
 	if err != nil {
-		return "", "", fmt.Errorf("拆分地址%s失败: %v", addr, err)
+		return "", "", fmt.Errorf("splitIPAndPort %s failed: %v", addr, err)
 	}
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil || port < 0 || port > 65535 {
-		return "", "", fmt.Errorf("端口非法（需0-65535）: %s", portStr)
+		return "", "", fmt.Errorf("invalid port(not 0-65535): %s", portStr)
 	}
 
 	ip := net.ParseIP(ipStr)
 	if ip == nil {
-		return "", "", fmt.Errorf("无效IP地址: %s", ipStr)
+		return "", "", fmt.Errorf("invalid ip: %s", ipStr)
 	}
 
 	if ip.To4() != nil {
@@ -143,7 +143,7 @@ func splitIPAndPort(addr string) (ip string, port string, err error) {
 	if strings.HasPrefix(addr, "[") && strings.Contains(addr, "]:") {
 		parts := strings.SplitN(addr, "]:", 2)
 		if len(parts) != 2 {
-			return "", "", fmt.Errorf("IPv6地址格式错误: %s", addr)
+			return "", "", fmt.Errorf("invalid addr: %s", addr)
 		}
 		return strings.TrimPrefix(parts[0], "["), parts[1], nil
 	}
@@ -151,14 +151,14 @@ func splitIPAndPort(addr string) (ip string, port string, err error) {
 	// 从后往前找最后一个冒号（区分IPv6多冒号和端口分隔符）
 	lastColonIdx := strings.LastIndex(addr, ":")
 	if lastColonIdx == -1 {
-		return "", "", fmt.Errorf("地址缺少端口分隔符: %s", addr)
+		return "", "", fmt.Errorf("invalid addr, not ip:port : %s", addr)
 	}
 
 	ipPart := addr[:lastColonIdx]
 	portPart := addr[lastColonIdx+1:]
 
 	if _, err := strconv.Atoi(portPart); err != nil {
-		return "", "", fmt.Errorf("端口不是有效数字: %s", portPart)
+		return "", "", fmt.Errorf("invalid port: %s", portPart)
 	}
 
 	return ipPart, portPart, nil
