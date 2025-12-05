@@ -4,6 +4,7 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/pkg/util/iputil"
 	"github.com/stretchr/testify/assert"
+	"fmt"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -101,4 +102,53 @@ func TestClientIP(t *testing.T) {
 	r.Header.Add("X-Forwarded-For", "127.0.0.1")
 
 	assert.EqualValues(t, "127.0.0.1", iputil.ClientIP(r))
+}
+
+func TestNormalizeAddrWithNetwork(t *testing.T) {
+	tests := []struct {
+		name               string
+		addr               string
+		wantNormalizedAddr string
+		wantNetwork        string
+		wantErr            assert.ErrorAssertionFunc
+	}{
+		{
+			name:               "normal ipv4 addr",
+			addr:               "127.0.0.1:30110",
+			wantNormalizedAddr: "127.0.0.1:30110",
+			wantNetwork:        "tcp4",
+			wantErr:            assert.NoError,
+		},
+		{
+			name:               "invalid ipv4 addr",
+			addr:               "127.0.0.256:30110",
+			wantNormalizedAddr: "",
+			wantNetwork:        "",
+			wantErr:            assert.Error,
+		},
+		{
+			name:               "normal ipv6 addr",
+			addr:               "::1:30100",
+			wantNormalizedAddr: "[::1]:30100",
+			wantNetwork:        "tcp6",
+			wantErr:            assert.NoError,
+		},
+		{
+			name:               "invalid ipv6 addr",
+			addr:               "::1:301000",
+			wantNormalizedAddr: "",
+			wantNetwork:        "",
+			wantErr:            assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotNormalizedAddr, gotNetwork, err := iputil.NormalizeAddrWithNetwork(tt.addr)
+			if !tt.wantErr(t, err, fmt.Sprintf("NormalizeAddrWithNetwork(%v)", tt.addr)) {
+				return
+			}
+			assert.Equalf(t, tt.wantNormalizedAddr, gotNormalizedAddr, "NormalizeAddrWithNetwork(%v)", tt.addr)
+			assert.Equalf(t, tt.wantNetwork, gotNetwork, "NormalizeAddrWithNetwork(%v)", tt.addr)
+		})
+	}
 }
