@@ -98,7 +98,8 @@ func (s *HeartbeatService) RetryRegister(sid, iid string) {
 			if err != nil {
 				openlog.Error("recover failed:" + err.Error())
 			} else {
-				openlog.Warn("recovered service")
+				openlog.Warn("recovered service and instance")
+				break
 			}
 		}
 		err = reRegisterSelfMSI(sid, iid)
