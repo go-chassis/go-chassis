@@ -9,7 +9,6 @@ import (
 	"time"
 
 	_ "github.com/go-chassis/go-chassis/v2/core/loadbalancer"
-	_ "github.com/go-chassis/go-chassis/v2/server/restful"
 
 	"github.com/go-chassis/go-archaius"
 	"github.com/go-chassis/go-chassis/v2/client/rest"
