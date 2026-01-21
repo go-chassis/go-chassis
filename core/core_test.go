@@ -10,7 +10,6 @@ import (
 	"github.com/go-chassis/go-chassis/v2/core"
 	"github.com/go-chassis/go-chassis/v2/core/common"
 	"github.com/go-chassis/go-chassis/v2/core/config"
-	_ "github.com/go-chassis/go-chassis/v2/core/config"
 	"github.com/go-chassis/go-chassis/v2/core/config/model"
 	"github.com/go-chassis/go-chassis/v2/core/lager"
 	"github.com/go-chassis/go-chassis/v2/examples/schemas/helloworld"
