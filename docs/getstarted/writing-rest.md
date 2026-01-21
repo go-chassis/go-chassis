@@ -21,17 +21,17 @@ server
 ```go
 type RestFulHello struct {}
 
-func (r *RestFulHello) SayHello(b *rf.Context) {
+func (r *RestFulHello) SayHello(b *restful.Context) {
     b.Write([]byte("get user id: " + b.ReadPathParameter("userid")))
 }
 ```
 2.Write your url patterns
 ```go
-func (r *RestFulHello) URLPatterns() []rf.Route {
-    return []rf.RouteSpec{
+func (r *RestFulHello) URLPatterns() []restful.Route {
+    return []restful.RouteSpec{
         {Method: http.MethodGet, Path: "/sayhello/{userid}", 
          ResourceFunc: r.SayHello,
-         Returns: []*rf.Returns{{Code: 200}}},
+         Returns: []*restful.Returns{{Code: 200}}},
     }
 }
 ```
@@ -133,18 +133,18 @@ Here you can configure Method、Path、Parameters，and so on.
 For example:
 
 ```go
-func (d *Data) URLPatterns() []rf.Route {
-	return []rf.Route{
+func (d *Data) URLPatterns() []restful.Route {
+	return []restful.Route{
 		{
 			Method:http.MethodGet,
 			Path:"/price/{id}",
 			ResourceFunc:d.GetPrice, #schema=operationId
 			Consumes: []string{goRestful.MIME_JSON,goRestful.MIME_XML},
 			Produces: []string{goRestful.MIME_JSON},
-			Returns: []*rf.Returns{{Code: http.StatusOK,Message:"true",Model: Data{}}},
-			Parameters:[]*rf.Parameters{#schema=parameter
-				&rf.Parameters{"x-auth-token","string",goRestful.HeaderParameterKind,"this is a token"},
-				&rf.Parameters{"x-auth-token2","string",goRestful.HeaderParameterKind,"this is a token"},
+			Returns: []*restful.Returns{{Code: http.StatusOK,Message:"true",Model: Data{}}},
+			Parameters:[]*restful.Parameters{#schema=parameter
+				&restful.Parameters{"x-auth-token","string",goRestful.HeaderParameterKind,"this is a token"},
+				&restful.Parameters{"x-auth-token2","string",goRestful.HeaderParameterKind,"this is a token"},
 			},
 		},
 	}
