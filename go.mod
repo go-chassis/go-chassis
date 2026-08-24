@@ -12,7 +12,7 @@ require (
 	github.com/go-chassis/seclog v1.3.1-0.20210917082355-52c40864f240
 	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/golang/protobuf v1.5.2
-	github.com/gorilla/websocket v1.4.3-0.20210424162022-e8629af678b7
+	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/go-version v1.0.0
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
